@@ -735,7 +735,7 @@ int main
 
 		if ( massint.save(time_now) )
 		{
-			/*write_soln_row_major
+			write_soln_row_major
 			(
 				respath, 
 				mesh_dim, 
@@ -747,7 +747,7 @@ int main
 				d_indices, 
 				d_assem_sol, 
 				d_plot_assem_sol
-			);*/
+			);
 			
 			write_soln_vtk
 			(

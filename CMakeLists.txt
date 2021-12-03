@@ -16,8 +16,6 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
-
 add_executable(gpu-mwdg2)
 
 if (CMAKE_CUDA_COMPILER)
@@ -103,7 +101,7 @@ endif()
  target_include_directories(
      gpu-mwdg2
 	 PRIVATE
-	 ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
+	 #${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 	 "src/classes/"
 	 "src/input/"
 	 "src/mra/"
