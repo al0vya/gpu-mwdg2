@@ -1,13 +1,13 @@
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 #include "cuda_utils.cuh"
 
 #include "AssembledSolution.h"
-#include "SimulationParameters.h"
-#include "SolverParameters.h"
+#include "SimulationParams.h"
+#include "SolverParams.h"
 #include "SaveInterval.h"
 
 #include "compact.cuh"
@@ -28,11 +28,11 @@ typedef struct Points
 
 __host__ void write_soln_vtk
 (
-	const char*                 respath,
-	const AssembledSolution&    d_assem_sol,
-	const real&                 dx_finest,
-	const real&                 dy_finest,
-	const SimulationParameters& sim_params,
-	const SolverParameters&     solver_params,
-	const SaveInterval&         saveint
+	const char*              respath,
+	const AssembledSolution& d_assem_sol,
+	const real&              dx_finest,
+	const real&              dy_finest,
+	const SimulationParams&  sim_params,
+	const SolverParams&      solver_params,
+	const SaveInterval&      saveint
 );

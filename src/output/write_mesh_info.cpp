@@ -2,7 +2,7 @@
 
 void write_mesh_info
 (
-	const SimulationParameters& sim_params,
+	const SimulationParams& sim_params,
 	const int&                  mesh_dim,
 	const char*                 respath
 )

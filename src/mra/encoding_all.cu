@@ -9,7 +9,7 @@ void encoding_all
 	bool*              d_sig_details,
 	bool*              d_preflagged_details,
 	Maxes&             maxes, 
-	SolverParameters&  solver_params,
+	SolverParams&  solver_params,
 	bool               for_nghbrs
 )
 {

@@ -6,7 +6,7 @@ void load_soln_and_nghbr_coeffs
 	Neighbours        d_neighbours,
 	ScaleCoefficients d_scale_coeffs,
 	AssembledSolution d_assem_sol,
-	SolverParameters  solver_params
+	SolverParams  solver_params
 )
 {
 	HierarchyIndex idx = blockIdx.x * blockDim.x + threadIdx.x;

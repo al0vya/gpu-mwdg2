@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SimulationParameters.h"
+#include "SimulationParams.h"
 
 #include "generate_morton_code.cuh"
 
@@ -13,7 +13,7 @@ typedef struct GaugePoints
 	GaugePoints
 	(
 		const char*                input_filename,
-		const SimulationParameters sim_params,
+		const SimulationParams sim_params,
 		const real&                cell_size
 
 	)
@@ -80,7 +80,7 @@ typedef struct GaugePoints
 	(
 		const char*                 input_filename,
 		const real&                 cell_size,
-		const SimulationParameters& sim_params
+		const SimulationParams& sim_params
 	)
 	{
 		if (num_points == 0) return;

@@ -2,8 +2,8 @@
 
 #include "cuda_utils.cuh"
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 
 __host__

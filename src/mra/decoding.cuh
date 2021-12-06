@@ -5,7 +5,7 @@
 
 #include "cub/block/block_scan.cuh"
 
-#include "SolverParameters.h"
+#include "SolverParams.h"
 #include "HierarchyIndex.h"
 #include "Details.h"
 #include "ScaleCoefficients.h"
@@ -24,7 +24,7 @@ void decoding
 	bool*             d_sig_details,
 	Details           d_details,
 	ScaleCoefficients d_scale_coeffs,
-	SolverParameters  solver_params,
+	SolverParams  solver_params,
 	int               level,
 	int               num_threads
 );

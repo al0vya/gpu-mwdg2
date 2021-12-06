@@ -31,7 +31,7 @@ void encode_and_thresh_flow
 	bool*             d_sig_details,
 	bool*             d_preflagged_details,
 	Maxes             maxes,
-	SolverParameters  solver_params,
+	SolverParams  solver_params,
 	int               level,
 	int               num_threads,
 	bool              for_nghbrs
@@ -536,7 +536,7 @@ inline void dummy_template_instantiator
 	bool*             d_sig_details,
 	bool*             d_preflagged_details,
 	Maxes             maxes,
-	SolverParameters  solver_params,
+	SolverParams  solver_params,
 	int               level,
 	int               num_threads,
 	bool              for_nghbrs

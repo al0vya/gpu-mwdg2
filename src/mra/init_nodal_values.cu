@@ -36,7 +36,7 @@ void init_nodal_values
 	real                 dx_finest,
 	real                 dy_finest,
 	Depths1D             bcs,
-	SimulationParameters sim_params,
+	SimulationParams sim_params,
 	int                  interface_dim,
 	int                  test_case
 )

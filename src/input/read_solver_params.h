@@ -1,12 +1,12 @@
 #pragma once
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "read_keyword_int.h"
+#include "read_keyword_real.h"
+#include "read_keyword_str.h"
 
-#include "SolverParameters.h"
+#include "SolverParams.h"
 
-SolverParameters read_solver_params
+SolverParams read_solver_params
 (
 	const char* input_filename
 );

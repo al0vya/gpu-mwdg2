@@ -6,7 +6,7 @@ void extra_significance
 (
 	bool*            d_sig_details,
 	real*            d_norm_details,
-	SolverParameters solver_params,
+	SolverParams solver_params,
 	int              level,
 	int              num_threads
 )
@@ -79,7 +79,7 @@ inline void dummy_template_instantiator
 (
 	bool*            d_sig_details,
 	real*            d_norm_details,
-	SolverParameters solver_params,
+	SolverParams solver_params,
 	int              level,
 	int              num_threads
 )

@@ -5,8 +5,8 @@ void fv1_update
 (
     Neighbours           d_neighbours,
     AssembledSolution    d_assem_sol,
-    SolverParameters     solver_params,
-    SimulationParameters sim_params,
+    SolverParams     solver_params,
+    SimulationParams sim_params,
     real                 dx_finest,
     real                 dy_finest,
     real                 dt,

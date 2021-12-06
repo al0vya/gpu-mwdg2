@@ -9,7 +9,7 @@
 
 #include "Neighbours.h"
 #include "MortonCode.h"
-#include "SolverParameters.h"
+#include "SolverParams.h"
 
 __host__
 void sort_neighbours_z_order
@@ -19,5 +19,5 @@ void sort_neighbours_z_order
 	MortonCode*        d_morton_codes,
 	MortonCode*        d_sorted_morton_codes,
 	int                num_finest_elems,
-	const SolverParameters& solver_params
+	const SolverParams& solver_params
 );

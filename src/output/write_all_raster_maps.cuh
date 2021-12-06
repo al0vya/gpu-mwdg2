@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AssembledSolution.h"
-#include "SolverParameters.h"
+#include "SolverParams.h"
 
 #include "write_raster_file.cuh"
 
@@ -10,8 +10,8 @@ void write_all_raster_maps
 (
 	const char*                 respath,
 	const AssembledSolution&    d_assem_sol,
-	const SimulationParameters& sim_params,
-	const SolverParameters&     solver_params,
+	const SimulationParams& sim_params,
+	const SolverParams&     solver_params,
 	const SaveInterval          massint,
 	const int&                  mesh_dim,
 	const real&                 dx_finest,

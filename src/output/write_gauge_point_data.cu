@@ -7,7 +7,7 @@ void write_gauge_point_data
 	bool*&                   d_sig_details,
 	const ScaleCoefficients& d_scale_coeffs,
 	AssembledSolution        d_buf_assem_sol,
-	const SolverParameters&  solver_params,
+	const SolverParams&  solver_params,
 	MortonCode*              d_rev_z_order,
 	MortonCode*              d_indices,
 	AssembledSolution        d_assem_sol,
@@ -19,19 +19,6 @@ void write_gauge_point_data
 {
 	if (gauge_points.num_points == 0) return;
 	
-	project_assem_sol
-	(
-		mesh_dim,
-		d_sig_details,
-		d_scale_coeffs,
-		d_buf_assem_sol,
-		solver_params,
-		d_rev_z_order,
-		d_indices,
-		d_assem_sol,
-		d_plot_assem_sol
-	);
-
 	int num_finest_elems = mesh_dim * mesh_dim;
 	
 	size_t bytes = sizeof(real) * num_finest_elems;

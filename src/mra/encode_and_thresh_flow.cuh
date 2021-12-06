@@ -8,7 +8,7 @@
 #include "BLOCK_VAR_MACROS.cuh"
 #include "HierarchyIndex.h"
 #include "ScaleCoefficients.h"
-#include "SolverParameters.h"
+#include "SolverParams.h"
 #include "Details.h"
 #include "Detail.h"
 #include "Maxes.h"
@@ -31,7 +31,7 @@ void encode_and_thresh_flow
 	bool*             d_sig_details,
 	bool*             d_preflagged_details,
 	Maxes             maxes,
-	SolverParameters  solver_params,
+	SolverParams  solver_params,
 	int               level,
 	int               num_threads,
 	bool              for_nghbrs

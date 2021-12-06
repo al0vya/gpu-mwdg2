@@ -2,15 +2,15 @@
 
 __host__ void write_soln_vtk
 (
-	const char*                 respath,
-	const AssembledSolution&    d_assem_sol,
-	const real&                 dx_finest,
-	const real&                 dy_finest,
-	const SimulationParameters& sim_params,
-	const SolverParameters&     solver_params,
-	const SaveInterval&         saveint
+	const char*              respath,
+	const AssembledSolution& d_assem_sol,
+	const real&              dx_finest,
+	const real&              dy_finest,
+	const SimulationParams&  sim_params,
+	const SolverParams&      solver_params,
+	const SaveInterval&      saveint
 )
-{
+{	
 	char fullpath[255] = {'\0'};
 
 	sprintf(fullpath, "%s%s%d%s", respath, "results-", saveint.count - 1, ".vtk");
@@ -43,12 +43,12 @@ __host__ void write_soln_vtk
 	real xmax_0_orig = sim_params.xsz * dx_finest;
 	real ymax_0_orig = sim_params.ysz * dx_finest;
 
-	real*     h        = new real[d_assem_sol.length];
-	real*     qx       = new real[d_assem_sol.length];
-	real*     qy       = new real[d_assem_sol.length];
-	real*     z        = new real[d_assem_sol.length];
+	real*           h        = new real[d_assem_sol.length];
+	real*           qx       = new real[d_assem_sol.length];
+	real*           qy       = new real[d_assem_sol.length];
+	real*           z        = new real[d_assem_sol.length];
 	HierarchyIndex* act_idcs = new HierarchyIndex[d_assem_sol.length];
-	int*      levels   = new int[d_assem_sol.length];
+	int*            levels   = new int[d_assem_sol.length];
 
 	size_t bytes_flow     = d_assem_sol.length * sizeof(real);
 	size_t bytes_act_idcs = d_assem_sol.length * sizeof(HierarchyIndex);

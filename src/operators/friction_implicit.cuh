@@ -8,8 +8,8 @@
 #include "BLOCK_VAR_MACROS.cuh"
 
 #include "Neighbours.h"
-#include "SolverParameters.h"
-#include "SimulationParameters.h"
+#include "SolverParams.h"
+#include "SimulationParams.h"
 
 #include "apply_friction.cuh"
 #include "generate_morton_code.cuh"
@@ -19,7 +19,7 @@ void friction_implicit
 (
 	AssembledSolution    d_assem_sol,
 	Neighbours           d_neighbours,
-	SolverParameters     solver_params, 
-	SimulationParameters sim_params,
+	SolverParams     solver_params, 
+	SimulationParams sim_params,
 	real                 dt
 );

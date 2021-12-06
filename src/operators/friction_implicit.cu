@@ -5,8 +5,8 @@ void friction_implicit
 (
 	AssembledSolution    d_assem_sol,
 	Neighbours           d_neighbours,
-	SolverParameters     solver_params,
-	SimulationParameters sim_params,
+	SolverParams     solver_params,
+	SimulationParams sim_params,
 	real                 dt
 )
 {

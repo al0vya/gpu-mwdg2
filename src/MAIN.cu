@@ -40,19 +40,20 @@
 #include "get_dt_CFL.cuh"
 
 // Input/output
-#include "read_solver_params.h"
-#include "read_sim_params.h"
-#include "read_test_case.h"
 #include "read_bound_conds.h"
+#include "read_cell_size.h"
+#include "read_plot_params.h"
 #include "read_respath.h"
 #include "read_save_interval.h"
-#include "read_cell_size.h"
-#include "write_mesh_info.h"
-#include "write_gauge_point_data.cuh"
+#include "read_sim_params.h"
+#include "read_solver_params.h"
+#include "read_test_case.h"
 #include "write_all_raster_maps.cuh"
 #include "write_c_prop_data.cuh"
-#include "write_soln_vtk.cuh"
+#include "write_mesh_info.h"
+#include "write_gauge_point_data.cuh"
 #include "write_soln_row_major.cuh"
+#include "write_soln_vtk.cuh"
 
 // Helper functions
 #include "get_lvl_idx.cuh"
@@ -168,11 +169,12 @@ int main
 	// =========================================================== //
 
 	// Structures setting up simulation
-	SolverParameters     solver_params = read_solver_params(input_filename);
-	SimulationParameters sim_params    = read_sim_params(test_case, input_filename, solver_params);
-	Depths1D             bcs           = read_bound_conds(test_case);
-	SaveInterval         saveint       = read_save_interval(input_filename, "saveint");
-	SaveInterval         massint       = read_save_interval(input_filename, "massint");
+	SolverParams     solver_params = read_solver_params(input_filename);
+	SimulationParams sim_params    = read_sim_params(test_case, input_filename, solver_params);
+	PlottingParams   plot_params   = read_plot_params(input_filename);
+	Depths1D         bcs           = read_bound_conds(test_case);
+	SaveInterval     saveint       = read_save_interval(input_filename, "saveint");
+	SaveInterval     massint       = read_save_interval(input_filename, "massint");
 
 	// Variables
 	int mesh_dim      = 1 << solver_params.L;
@@ -180,6 +182,7 @@ int main
 
 	real dx_finest = (test_case != 0) ? (sim_params.xmax - sim_params.xmin) / mesh_dim : read_cell_size(input_filename);
 	real dy_finest = (test_case != 0) ? (sim_params.ymax - sim_params.ymin) / mesh_dim : read_cell_size(input_filename);
+	real dt        = C(0.001);
 
 	int num_finest_elems      = mesh_dim * mesh_dim;
 	int num_blocks_finest     = get_num_blocks(num_finest_elems, THREADS_PER_BLOCK);
@@ -193,17 +196,6 @@ int main
 	
 	HierarchyIndex finest_lvl_idx = get_lvl_idx(solver_params.L);
 	
-	clock_t end           = clock();
-	real    run_time      = C(0.0);
-	real    dt            = C(0.001);
-	real    time_now      = C(0.0);
-	bool    first_t_step  = true;
-	bool    for_nghbrs    = false;
-	bool    rkdg2         = false;
-	float   avg_cuda_time = 0.0f;
-	int     steps         = 0;
-	real    compression   = C(0.0);
-
 	// Structures
 	Maxes maxes = { C(1.0), C(1.0), C(1.0), C(1.0) };
 	
@@ -211,6 +203,17 @@ int main
 	Boundaries   boundaries   (input_filename, sim_params, dx_finest, test_case);
 	PointSources point_sources(input_filename, sim_params, dx_finest, test_case, dt);
 	
+	clock_t end             = clock();
+	real    run_time        = C(0.0);
+	real    time_now        = C(0.0);
+	bool    first_t_step    = true;
+	bool    for_nghbrs      = false;
+	bool    rkdg2           = false;
+	bool    need_projection = plot_params.row_major || plot_params.raster || gauge_points.num_points > 0;
+	float   avg_cuda_time   = 0.0f;
+	int     steps           = 0;
+	real    compression     = C(0.0);
+
 	NodalValues       d_nodal_vals      (interface_dim);
 	AssembledSolution d_assem_sol       (num_finest_elems, solver_params.solver_type);
 	AssembledSolution d_buf_assem_sol   (num_finest_elems, solver_params.solver_type);
@@ -741,59 +744,86 @@ int main
 		// -------------- WRITING TO FILE -------------- //
 		// --------------------------------------------- //
 
-		if ( massint.save(time_now) )
+		if (need_projection)
 		{
-			write_soln_row_major
+			project_assem_sol
 			(
-				respath, 
-				mesh_dim, 
-				d_sig_details, 
-				d_scale_coeffs, 
-				d_buf_assem_sol, 
-				solver_params, 
-				d_rev_z_order, 
-				d_indices, 
-				d_assem_sol, 
+				mesh_dim,
+				d_sig_details,
+				d_scale_coeffs,
+				d_buf_assem_sol,
+				solver_params,
+				d_rev_z_order,
+				d_indices,
+				d_assem_sol,
 				d_plot_assem_sol
 			);
-			
-			write_soln_vtk
-			(
-				respath,
-				d_assem_sol,
-				dx_finest,
-				dy_finest,
-				sim_params,
-				solver_params,
-				massint
-			);
-			
-			/*
-			write_all_raster_maps
-			(
-				respath,
-				d_plot_assem_sol,
-				sim_params,
-				solver_params,
-				massint,
-				mesh_dim,
-				dx_finest,
-				first_t_step
-			);*/
-			
-			/*write_c_prop_data
-			(
-				respath, 
-				start, 
-				solver_params, 
-				d_assem_sol, 
-				time_now, 
-				first_t_step
-			);*/
 		}
-		
-		if ( saveint.save(time_now) )
-		{			
+
+		if (massint.save(time_now))
+		{
+			if (plot_params.row_major)
+			{
+				write_soln_row_major
+				(
+					respath,
+					mesh_dim,
+					d_sig_details,
+					d_scale_coeffs,
+					d_buf_assem_sol,
+					solver_params,
+					d_rev_z_order,
+					d_indices,
+					d_assem_sol,
+					d_plot_assem_sol
+				);
+			}
+
+			if (plot_params.vtk)
+			{
+				write_soln_vtk
+				(
+					respath,
+					d_assem_sol,
+					dx_finest,
+					dy_finest,
+					sim_params,
+					solver_params,
+					massint
+				);
+			}
+
+			if (plot_params.raster)
+			{
+				write_all_raster_maps
+				(
+					respath,
+					d_plot_assem_sol,
+					sim_params,
+					solver_params,
+					massint,
+					mesh_dim,
+					dx_finest,
+					first_t_step
+				);
+			}
+
+			if (plot_params.c_prop)
+			{
+				write_c_prop_data
+				(
+					respath,
+					start,
+					solver_params,
+					d_assem_sol,
+					time_now,
+					first_t_step
+				);
+			}
+		}
+
+		if (saveint.save(time_now))
+		{
 			write_gauge_point_data
 			(
 				respath,
@@ -805,9 +835,9 @@ int main
 				d_rev_z_order,
 				d_indices,
 				d_assem_sol,
-				d_plot_assem_sol, 
-				gauge_points, 
-				time_now, 
+				d_plot_assem_sol,
+				gauge_points,
+				time_now,
 				first_t_step
 			);
 		}

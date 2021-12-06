@@ -12,7 +12,7 @@ typedef struct Boundaries
 	Boundaries
 	(
 		const char*                 input_filename,
-		const SimulationParameters& sim_params,
+		const SimulationParams& sim_params,
 		const real&                 cell_size,
 		const int&                  test_case
 	)

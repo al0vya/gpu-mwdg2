@@ -3,16 +3,16 @@
 #include "real.h"
 #include "SolverTypes.h"
 
-typedef struct SolverParameters
+typedef struct SolverParams
 {
-	real CFL;
+	int  L;
 	real min_dt;
+	real epsilon;
 	real tol_h;
 	real tol_q;
 	real tol_s;
-	real epsilon;
 	real wall_height;
-	int  L;
 	int  solver_type;
+	real CFL;
 
-} SolverParameters;
+} SolverParams;

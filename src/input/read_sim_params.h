@@ -1,14 +1,14 @@
 #pragma once
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 
-#include "SimulationParameters.h"
-#include "SolverParameters.h"
+#include "SimulationParams.h"
+#include "SolverParams.h"
 
-SimulationParameters read_sim_params
+SimulationParams read_sim_params
 (
 	const int&              test_case,
 	const char*             input_filename,
-	const SolverParameters& solver_params
+	const SolverParams& solver_params
 );

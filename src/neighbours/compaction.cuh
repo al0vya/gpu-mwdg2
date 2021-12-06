@@ -7,7 +7,7 @@
 #include "AssembledSolution.h"
 #include "Neighbours.h"
 #include "CompactionFlags.h"
-#include "SolverParameters.h"
+#include "SolverParams.h"
 
 __host__
 void compaction
@@ -18,5 +18,5 @@ void compaction
 	Neighbours&        d_buf_neighbours, 
 	CompactionFlags&   d_compaction_flags,
 	int                num_finest_elems,
-	const SolverParameters& solver_params
+	const SolverParams& solver_params
 );

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
-#include "SimulationParameters.h"
+#include "SimulationParams.h"
 
 void write_mesh_info
 (
-	const SimulationParameters& sim_params,
+	const SimulationParams& sim_params,
 	const int&                  mesh_dim,
 	const char*                 resdir
 );

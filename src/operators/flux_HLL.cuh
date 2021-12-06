@@ -3,16 +3,16 @@
 #include "cuda_runtime.h"
 
 #include "FlowVector.h"
-#include "SolverParameters.h"
-#include "SimulationParameters.h"
+#include "SolverParams.h"
+#include "SimulationParams.h"
 
 __device__ __forceinline__
 FlowVector flux_HLL_x
 (
 	const FlowVector&           U_neg,
 	const FlowVector&           U_pos,
-	const SolverParameters&     solver_params,
-	const SimulationParameters& sim_params
+	const SolverParams&     solver_params,
+	const SimulationParams& sim_params
 )
 {
 	if (U_neg.h < solver_params.tol_h && U_pos.h < solver_params.tol_h) return FlowVector();
@@ -92,8 +92,8 @@ FlowVector flux_HLL_y
 (
 	const FlowVector&           U_neg,
 	const FlowVector&           U_pos,
-	const SolverParameters&     solver_params,
-	const SimulationParameters& sim_params
+	const SolverParams&     solver_params,
+	const SimulationParams& sim_params
 )
 {
 	FlowVector U_neg_rotated = { U_neg.h, U_neg.qy, -U_neg.qx };

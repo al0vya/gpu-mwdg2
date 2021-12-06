@@ -5,14 +5,16 @@ void write_all_raster_maps
 (
 	const char*                 respath,
 	const AssembledSolution&    d_assem_sol,
-	const SimulationParameters& sim_params,
-	const SolverParameters&     solver_params,
+	const SimulationParams& sim_params,
+	const SolverParams&     solver_params,
 	const SaveInterval          massint,
 	const int&                  mesh_dim,
 	const real&                 dx_finest,
 	const bool                  first_t_step
 )
 {
+	printf("Writing raster file.\n");
+	
 	if (first_t_step)
 	{
 		write_raster_file

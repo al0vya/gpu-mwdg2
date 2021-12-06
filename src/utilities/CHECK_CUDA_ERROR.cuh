@@ -2,8 +2,8 @@
 
 #include "cuda_runtime.h"
 
-#include <stdio.h>  // for fprintf
-#include <stdlib.h> // for exit(error)
+#include <cstdio>  // for fprintf
+#include <cstdlib> // for exit(error)
 
 // macro to check for CUDA errors
 #define CHECK_CUDA_ERROR(ans) { CUDAAssert( (ans), __FILE__, __LINE__); }

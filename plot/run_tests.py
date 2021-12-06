@@ -2,8 +2,9 @@ import subprocess
 import sys
 import os
 from plot_2D_solution import Solution
+from plot_c_prop      import DischargeErrors
 
-def set_params(test_case, results, epsilon, massint, solver, input_file):
+def set_params(test_case, results, epsilon, massint, solver, row_major, c_prop, input_file):
     params = ("" +
     "test_case   %s\n" +
     "max_ref_lvl	7\n" +
@@ -16,7 +17,9 @@ def set_params(test_case, results, epsilon, massint, solver, input_file):
     "g			9.80665\n" +
     "massint		%s\n" +
     "solver		%s\n" +
-    "wall_height	0") % (test_case, results, epsilon, massint, solver)
+    "wall_height	0\n" +
+    "row_major    %s\n" +
+    "c_prop %s") % (test_case, results, epsilon, massint, solver, row_major, c_prop)
 
     with open(input_file, 'w') as fp:
         fp.write(params)
@@ -25,8 +28,6 @@ path        = os.path.join("..", "out", "build", "x64-Release")
 input_file  = os.path.join(path, "test", "inputs.par")
 solver_file = os.path.join(path, "gpu-mwdg2.exe")
 results     = os.path.join(path, "test", "results")
-
-num_tests = 18
 
 test_names = [
 "1D-c-prop-x-dir",
@@ -78,16 +79,26 @@ massints = [
 3.5    # radial dam break
 ]
 
-for test in range(2, 4):
+num_tests = 22
+
+c_prop_tests = [1, 2, 3, 4, 19, 20, 21]
+
+for test in range(num_tests):
     test_case = test + 1
-    epsilon   = 1e-3
+    epsilon   = 0
     massint   = massints[test]
     test_name = test_names[test]
+    row_major = "off" if test_case in c_prop_tests else "on"
+    c_prop    = "on"  if test_case in c_prop_tests else "off"
     solver    = "mw"
 
-    set_params(test_case, results, epsilon, massint, solver, input_file)
+    set_params(test_case, results, epsilon, massint, solver, row_major, c_prop, input_file)
 
-    subprocess.run( [solver_file, input_file] )
+    if test_case not in c_prop_tests:
+        subprocess.run( [solver_file, input_file] ) 
     
-    Solution().plot_soln(test_case, test_name)
-
+    if test_case in c_prop_tests:
+        a = 1
+        #DischargeErrors(solver).plot_errors(test_case, solver, test_name)
+    else:
+        Solution().plot_soln(test_case, test_name)

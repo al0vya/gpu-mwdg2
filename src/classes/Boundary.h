@@ -2,15 +2,15 @@
 
 #include "cuda_runtime.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "Directions.h"
 #include "Coordinate.h"
 #include "MortonCode.h"
 #include "InletTypes.h"
-#include "SimulationParameters.h"
+#include "SimulationParams.h"
 
 #include "generate_morton_code.cuh"
 
@@ -32,7 +32,7 @@ typedef struct Boundary
 	Boundary
 	(
 		const char*                 input_filename,
-		const SimulationParameters& sim_params,
+		const SimulationParams& sim_params,
 		const real&                 cell_size,
 		const int                   test_case,
 		const int                   direction
@@ -85,7 +85,7 @@ typedef struct Boundary
 	int read_num_cells
 	(
 		const char*                 input_filename,
-		const SimulationParameters& sim_params,
+		const SimulationParams& sim_params,
 		const real&                 cell_size,
 		const int&                  test_case
 	)
@@ -182,7 +182,7 @@ typedef struct Boundary
 
 	void gen_bdy_morton_codes
 	(
-		const SimulationParameters& sim_params
+		const SimulationParams& sim_params
 	)
 	{
 		Coordinate current = 0;
@@ -241,7 +241,7 @@ typedef struct Boundary
 	void read_bdy_conds
 	(
 		const char*                 input_filename,
-		const SimulationParameters& sim_params,
+		const SimulationParams& sim_params,
 		const real&                 cell_size,
 		const int&                  test_case
 	)

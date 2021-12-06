@@ -12,5 +12,5 @@ void decoding_all
 	real*              d_norm_details,
 	Details&           d_details,
 	ScaleCoefficients& d_scale_coeffs,
-	SolverParameters&  solver_params
+	SolverParams&  solver_params
 );

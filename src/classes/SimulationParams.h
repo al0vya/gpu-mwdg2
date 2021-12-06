@@ -3,7 +3,7 @@
 #include "Coordinate.h"
 #include "real.h"
 
-typedef struct SimulationParameters
+typedef struct SimulationParams
 {
 	real       xmin;
 	real       xmax;
@@ -15,4 +15,4 @@ typedef struct SimulationParameters
 	real       time;
 	real       manning;
 
-} SimulationParameters;
+} SimulationParams;

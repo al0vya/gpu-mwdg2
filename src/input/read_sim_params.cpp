@@ -1,15 +1,15 @@
 #include "read_sim_params.h"
 
-SimulationParameters read_sim_params
+SimulationParams read_sim_params
 (
 	const int&              test_case,
 	const char*             input_filename,
-	const SolverParameters& solver_params
+	const SolverParams& solver_params
 )
 {
 	int mesh_dim = 1 << solver_params.L;
 	
-	SimulationParameters sim_params = SimulationParameters();
+	SimulationParams sim_params = SimulationParams();
 
 	switch (test_case)
 	{

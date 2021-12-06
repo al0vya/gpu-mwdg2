@@ -2,13 +2,13 @@
 
 #include "cuda_utils.cuh"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "MortonCode.h"
 #include "InletTypes.h"
-#include "SimulationParameters.h"
+#include "SimulationParams.h"
 
 #include "generate_morton_code.cuh"
 
@@ -31,7 +31,7 @@ typedef struct PointSources
 	PointSources
 	(
 		const char*                 input_filename,
-		const SimulationParameters& sim_params,
+		const SimulationParams& sim_params,
 		const real&                 cell_size,
 		const int&                  test_case,
 		const real&                 dt
@@ -190,7 +190,7 @@ typedef struct PointSources
 	(
 		const char*                 input_filename,
 		const int&                  num_srcs,
-		const SimulationParameters& sim_params,
+		const SimulationParams& sim_params,
 		const real&                 cell_size
 	)
 	{

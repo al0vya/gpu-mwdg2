@@ -7,7 +7,7 @@
 #include "CHECK_CUDA_ERROR.cuh"
 
 #include "AssembledSolution.h"
-#include "SolverParameters.h"
+#include "SolverParams.h"
 #include "MortonCode.h"
 
 __host__
@@ -19,5 +19,5 @@ void sort_finest_scale_coeffs_z_order
 	AssembledSolution& d_buf_assem_sol,
 	MortonCode*        d_indices,
 	MortonCode*        d_rev_z_order,
-	SolverParameters&  solver_params
+	SolverParams&  solver_params
 );

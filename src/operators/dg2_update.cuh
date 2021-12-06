@@ -9,8 +9,8 @@
 #include "MortonCode.h"
 #include "Neighbours.h"
 #include "FlowCoeffs.h"
-#include "SolverParameters.h"
-#include "SimulationParameters.h"
+#include "SolverParams.h"
+#include "SimulationParams.h"
 #include "FlowVector.h"
 
 #include "compact.cuh"
@@ -25,8 +25,8 @@ void dg2_update
     Neighbours           d_neighbours,
     AssembledSolution    d_assem_sol_load,
     AssembledSolution    d_assem_sol_store,
-    SolverParameters     solver_params,
-    SimulationParameters sim_params,
+    SolverParams     solver_params,
+    SimulationParams sim_params,
     real                 dx_finest,
     real                 dy_finest,
     real                 dt,

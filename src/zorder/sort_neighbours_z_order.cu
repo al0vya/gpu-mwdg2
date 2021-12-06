@@ -8,7 +8,7 @@ void sort_neighbours_z_order
 	MortonCode*        d_morton_codes,
 	MortonCode*        d_sorted_morton_codes,
 	int                num_finest_elems,
-	const SolverParameters& solver_params
+	const SolverParams& solver_params
 )
 {
 	void*  d_temp_storage = NULL;

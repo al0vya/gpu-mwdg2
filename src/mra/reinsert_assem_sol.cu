@@ -6,7 +6,7 @@ void reinsert_assem_sol
 	AssembledSolution d_assem_sol,
 	HierarchyIndex*   act_idcs,
 	ScaleCoefficients d_scale_coeffs,
-	SolverParameters  solver_params
+	SolverParams  solver_params
 )
 {
 	HierarchyIndex idx = blockIdx.x * blockDim.x + threadIdx.x;

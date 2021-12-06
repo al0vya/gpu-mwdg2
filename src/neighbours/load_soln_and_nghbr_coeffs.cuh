@@ -7,7 +7,7 @@
 #include "Neighbours.h"
 #include "ScaleCoefficients.h"
 #include "AssembledSolution.h"
-#include "SolverParameters.h"
+#include "SolverParams.h"
 
 __global__
 void load_soln_and_nghbr_coeffs
@@ -15,5 +15,5 @@ void load_soln_and_nghbr_coeffs
 	Neighbours        d_neighbours,
 	ScaleCoefficients d_scale_coeffs,
 	AssembledSolution d_assem_sol,
-	SolverParameters  solver_params
+	SolverParams  solver_params
 );

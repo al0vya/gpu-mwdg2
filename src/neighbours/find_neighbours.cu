@@ -5,7 +5,7 @@ void find_neighbours
 (
     AssembledSolution    d_assem_sol,
     Neighbours           d_neighbours,
-    SimulationParameters sim_params,
+    SimulationParams sim_params,
     int                  mesh_dim
 )
 {

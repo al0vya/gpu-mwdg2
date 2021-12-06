@@ -97,16 +97,17 @@ class Solution:
         self.z  = pd.read_csv( os.path.join(path, z_file) ) ["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
 
     def plot_soln(self, test_number, test_name):
-        print("Plotting flow solution and topography...")
+        print("Plotting flow solution and topography for test %s..." % test_name)
 
-        #plot_surface (self.X, self.Y, self.h, "$\eta (m)$",         test_number, self.path, "eta", test_name)
-        #plot_surface (self.X, self.Y, self.qx,         "$qx   (m^2s^{-1})$", test_number, self.path, "qx",  test_name)
-        #plot_surface (self.X, self.Y, self.qy,         "$qy   (m^2s^{-1})$", test_number, self.path, "qy",  test_name)
+        #plot_surface (self.X, self.Y, self.h, "$\eta \, (m)$",         test_number, self.path, "eta", test_name)
+        #plot_surface (self.X, self.Y, self.qx,         "$qx \, (m^2s^{-1})$", test_number, self.path, "qx",  test_name)
+        #plot_surface (self.X, self.Y, self.qy,         "$qy \, (m^2s^{-1})$", test_number, self.path, "qy",  test_name)
         
-        plot_contours(self.X, self.Y, self.h,  "$h  (m)$",         test_number, self.path, "h",  test_name)
-        plot_contours(self.X, self.Y, self.qx, "$qx (m^2s^{-1})$", test_number, self.path, "qx", test_name)
-        plot_contours(self.X, self.Y, self.qy, "$qy (m^2s^{-1})$", test_number, self.path, "qy", test_name)
-        plot_contours(self.X, self.Y, self.z,  "$z  (m)$",         test_number, self.path, "z",  test_name)
+        plot_contours(self.X, self.Y, self.h,  "$h  \, (m)$",         test_number, self.path, "h",  test_name)
+        plot_contours(self.X, self.Y, self.qx, "$qx \, (m^2s^{-1})$", test_number, self.path, "qx", test_name)
+        plot_contours(self.X, self.Y, self.qy, "$qy \, (m^2s^{-1})$", test_number, self.path, "qy", test_name)
+        plot_contours(self.X, self.Y, self.z,  "$z  \, (m)$",         test_number, self.path, "z",  test_name)
 
-#if len(sys.argv) > 1:
-#    Solution().plot_soln(0, "ad''hoc")
+if len(sys.argv) > 1:
+    if sys.argv[1] == "plot":
+        Solution().plot_soln(0, "ad-hoc")

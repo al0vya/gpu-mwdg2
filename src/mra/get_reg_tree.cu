@@ -4,7 +4,7 @@ __host__
 void get_reg_tree
 (
 	bool*            d_sig_details,
-	SolverParameters solver_params
+	SolverParams solver_params
 )
 {
 	for (int level = solver_params.L - 1; level > LVL_SINGLE_BLOCK; level--)

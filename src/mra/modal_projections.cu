@@ -30,7 +30,7 @@ void modal_projections
 (
 	NodalValues       d_nodal_vals,
 	AssembledSolution d_assem_sol,
-	SolverParameters  solver_params,
+	SolverParams  solver_params,
 	int               mesh_dim,
 	int               interface_dim
 )

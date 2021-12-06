@@ -2,9 +2,9 @@
 
 #include "BLOCK_VAR_MACROS.cuh"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <time.h>
 
 #include "real.h"

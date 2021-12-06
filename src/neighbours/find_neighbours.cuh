@@ -7,7 +7,7 @@
 #include "Coordinate.h"
 #include "Directions.h"
 #include "MortonCode.h"
-#include "SimulationParameters.h"
+#include "SimulationParams.h"
 
 #include "get_lvl_idx.cuh"
 
@@ -16,6 +16,6 @@ void find_neighbours
 (
     AssembledSolution    d_assem_ol,
     Neighbours           d_neighbours,
-    SimulationParameters sim_params,
+    SimulationParams sim_params,
     int                  mesh_dim
 );

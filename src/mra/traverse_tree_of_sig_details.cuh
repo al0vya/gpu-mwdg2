@@ -10,7 +10,7 @@
 #include "HierarchyIndex.h"
 #include "AssembledSolution.h"
 #include "MortonCode.h"
-#include "SolverParameters.h"
+#include "SolverParams.h"
 #include "ScaleCoefficients.h"
 
 #include "get_lvl_idx.cuh"
@@ -22,5 +22,5 @@ void traverse_tree_of_sig_details
 	ScaleCoefficients d_scale_coeffs,
 	AssembledSolution d_buf_assem_sol,
 	int               num_threads,
-	SolverParameters  solver_params
+	SolverParams  solver_params
 );

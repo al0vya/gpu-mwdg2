@@ -34,6 +34,10 @@ if (CMAKE_CUDA_COMPILER)
 		src/input/read_and_project_modes_fv1.cu
 		src/input/read_bound_conds.cpp
 		src/input/read_cell_size.cpp
+		src/input/read_keyword_int.cpp
+		src/input/read_keyword_real.cpp
+		src/input/read_keyword_str.cpp
+		src/input/read_plot_params.cpp
 		src/input/read_raster_file.cpp
 		src/input/read_respath.cpp
 		src/input/read_save_interval.cpp
@@ -94,7 +98,7 @@ if (CMAKE_CUDA_COMPILER)
 		src/zorder/rev_z_order_reals.cu
 		src/zorder/sort_finest_scale_coeffs_z_order.cu
 		src/zorder/sort_neighbours_z_order.cu
-	 "src/types (2)/Coordinate.h" "src/types (2)/Directions.h" "src/types (2)/HierarchyIndex.h" "src/types (2)/InletTypes.h" "src/types (2)/MortonCode.h" "src/types (2)/real.h" "src/types (2)/SolverTypes.h")
+	)
 	
 endif()
 

@@ -6,7 +6,7 @@ void zero_details
 	Details          d_details,
 	real*            d_norm_details,
 	int              num_details,
-	SolverParameters solver_params
+	SolverParams solver_params
 )
 {
 	HierarchyIndex idx = blockIdx.x * blockDim.x + threadIdx.x;

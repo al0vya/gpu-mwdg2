@@ -10,7 +10,7 @@
 
 #include "BLOCK_VAR_MACROS.cuh"
 
-#include "SolverParameters.h"
+#include "SolverParams.h"
 #include "HierarchyIndex.h"
 
 #include "get_lvl_idx.cuh"
@@ -21,7 +21,7 @@ void extra_significance
 (
 	bool*            d_sig_details,
 	real*            d_norm_details,
-	SolverParameters solver_params,
+	SolverParams solver_params,
 	int              level,
 	int              num_threads
 );

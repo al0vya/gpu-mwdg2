@@ -5,7 +5,7 @@
 
 #include "Details.h"
 #include "HierarchyIndex.h"
-#include "SolverParameters.h"
+#include "SolverParams.h"
 
 __global__
 void zero_details
@@ -13,5 +13,5 @@ void zero_details
 	Details          d_details,
 	real*            d_norm_details,
 	int              num_details,
-	SolverParameters solver_params
+	SolverParams solver_params
 );

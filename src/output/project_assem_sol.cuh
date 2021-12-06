@@ -23,7 +23,7 @@ void project_assem_sol
 	bool*&                   d_sig_details,
 	const ScaleCoefficients& d_scale_coeffs,
 	AssembledSolution        d_buf_assem_sol,
-	const SolverParameters&  solver_params,
+	const SolverParams&  solver_params,
 	MortonCode*              d_rev_z_order,
 	MortonCode*              d_indices,
 	AssembledSolution        d_assem_sol,

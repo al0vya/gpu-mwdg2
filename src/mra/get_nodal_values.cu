@@ -6,7 +6,7 @@ __host__ void get_nodal_values
 	const real&                 dx_finest,
 	const real&                 dy_finest,
 	const Depths1D&             bcs,
-	const SimulationParameters& sim_params,
+	const SimulationParams& sim_params,
 	const int&                  interface_dim,
 	const int&                  test_case
 )

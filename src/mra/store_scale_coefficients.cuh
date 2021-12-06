@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "ParentScaleCoeffs.h"
 #include "ChildScaleCoeffs.h"

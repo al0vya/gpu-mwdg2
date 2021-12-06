@@ -9,7 +9,7 @@
 
 #include "HierarchyIndex.h"
 #include "ScaleCoefficients.h"
-#include "SolverParameters.h"
+#include "SolverParams.h"
 #include "Details.h"
 #include "Detail.h"
 #include "Maxes.h"
@@ -28,7 +28,7 @@ __global__ void encode_and_thresh_topo
 	Details           d_details,
 	bool*             d_preflagged_details,
 	Maxes             maxes,
-	SolverParameters  solver_params,
+	SolverParams  solver_params,
 	int               level,
 	bool              first_time_step
 );

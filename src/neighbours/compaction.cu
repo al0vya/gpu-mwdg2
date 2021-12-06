@@ -9,7 +9,7 @@ void compaction
 	Neighbours&        d_buf_neighbours, 
 	CompactionFlags&   d_compaction_flags,
 	int                num_finest_elems,
-	const SolverParameters& solver_params
+	const SolverParams& solver_params
 )
 {
 	void*  d_temp_storage = NULL;

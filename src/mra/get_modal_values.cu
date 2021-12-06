@@ -5,8 +5,8 @@ void get_modal_values
 (
 	NodalValues&          d_nodal_vals,
 	AssembledSolution&    d_assem_sol,
-	SolverParameters&     solver_params,
-	SimulationParameters& sim_params,
+	SolverParams&     solver_params,
+	SimulationParams& sim_params,
 	const int&            mesh_dim,
 	const int&            interface_dim,
 	const int&            test_case,

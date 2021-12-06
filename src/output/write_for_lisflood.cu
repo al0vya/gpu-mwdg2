@@ -6,7 +6,7 @@ __host__ void write_for_lisflood
 	const AssembledSolution&    d_assem_sol,
 	const int&                  mesh_dim,
 	const real&                 dx_finest,
-	const SimulationParameters& sim_params
+	const SimulationParams& sim_params
 )
 {
 	size_t bytes = mesh_dim * mesh_dim * sizeof(real);

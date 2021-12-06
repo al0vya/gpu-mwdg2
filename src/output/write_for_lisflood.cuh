@@ -1,12 +1,12 @@
 #pragma once
 
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstring>
 
 #include "BLOCK_VAR_MACROS.cuh"
 #include "cuda_utils.cuh"
 #include "AssembledSolution.h"
-#include "SimulationParameters.h"
+#include "SimulationParams.h"
 
 __host__ void write_for_lisflood
 (
@@ -14,5 +14,5 @@ __host__ void write_for_lisflood
 	const AssembledSolution&    d_assem_sol,
 	const int&                  mesh_dim,
 	const real&                 dx_finest,
-	const SimulationParameters& sim_params
+	const SimulationParams& sim_params
 );

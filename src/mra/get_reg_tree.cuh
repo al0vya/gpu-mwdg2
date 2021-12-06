@@ -5,7 +5,7 @@
 #include "BLOCK_VAR_MACROS.cuh"
 
 #include "HierarchyIndex.h"
-#include "SolverParameters.h"
+#include "SolverParams.h"
 
 #include "get_num_blocks.h"
 
@@ -15,5 +15,5 @@ __host__
 void get_reg_tree
 (
 	bool*            d_sig_details,
-	SolverParameters solver_params
+	SolverParams solver_params
 );
