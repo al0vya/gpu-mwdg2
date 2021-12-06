@@ -15,9 +15,9 @@ SolverParameters read_solver_params
 
 	SolverParameters solver_params = SolverParameters();
 
-	char str[255]           = {'\0'};
-	char buf[64]            = {'\0'};
-	char solvertype_buf[16] = {'\0'};
+	char str[255]            = {'\0'};
+	char buf[64]             = {'\0'};
+	char solvertype_buf[255] = {'\0'};
 
 	while ( strncmp(buf, "max_ref_lvl", 11) )
 	{
@@ -57,20 +57,6 @@ SolverParameters read_solver_params
 		}
 
 		sscanf(str, "%s %" NUM_FRMT, buf, &solver_params.epsilon);
-	}
-
-	rewind(fp);
-
-	while ( strncmp(buf, "CFL", 3) )
-	{
-		if ( NULL == fgets( str, sizeof(str), fp) )
-		{
-			fprintf(stderr, "Error reading input file for CFL number.\n");
-			fclose(fp);
-			exit(-1);
-		}
-
-		sscanf(str, "%s %" NUM_FRMT, buf, &solver_params.CFL);
 	}
 
 	rewind(fp);
@@ -132,10 +118,12 @@ SolverParameters read_solver_params
 	if ( !strncmp(solvertype_buf, "hw", 2) )
 	{
 		solver_params.solver_type = HWFV1;
+		solver_params.CFL         = C(0.5);
 	}
 	else if ( !strncmp(solvertype_buf, "mw", 2) )
 	{
 		solver_params.solver_type = MWDG2;
+		solver_params.CFL         = C(0.33);
 	}
 	else
 	{

@@ -302,6 +302,19 @@ void dg2_update
         idx
     );
 
+    if (false)//idx == 3951)
+    {
+        printf("i: %i, j: %i, idx: %i\n", i, j, idx);
+        printf("coeffs.qx0: %f\n", coeffs.qx0);
+        printf("Lx.qx0: %f\n", Lx.qx0);
+        printf("Sbx.qx0: %f\n", Sbx.qx0);
+        printf("F_e.qx: %f\n", F_e.qx);
+        printf("F_w.qx: %f\n", F_w.qx);
+        printf("Phys 1: %f\n", ((U0x_star - U1x_star).phys_flux_x(solver_params.tol_h, sim_params.g)).qx);
+        printf("Phys 2: %f\n", ((U0x_star + U1x_star).phys_flux_x(solver_params.tol_h, sim_params.g)).qx);
+        //printf("Ly.qx0: %f\n", Ly.qy0);
+    }
+
     Lx += get_bed_src_x
     (
         coeffs.local_face_val(basis_e_loc).h + z_e_neg,

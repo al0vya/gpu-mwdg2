@@ -65,22 +65,30 @@
 /*
  * SYNTHETIC TEST CASES:
  * 
- * The following test cases can be run by inputting a number between 1 and 14 in inputs.par:
+ * The following test cases can be run by inputting a number between 1 and 22 in inputs.par:
  * 
- * 1: 1D c-property in the x-direction
- * 2: 1D c-property in the y-direction
- * 3: Three cones
- * 4: Wet dam break in the x-direction
- * 5: Wet dam break in the y-direction
- * 6: Dry dam break in the x-direction
- * 7: Dry dam break in the y-direction
- * 8: Dry dam break with friction in the x-direction
- * 9: Dry dam break with friction in the y-direction
- * 10: Building overtopping in the x-direction
- * 11: Building overtopping in the y-direction
- * 12: Radial dam break
- * 13: Three peaks c-property
- * 14: Three blocks c-property
+ * 1:  Wet 1D c-property x direction
+ * 2:  Wet 1D c-property y direction
+ * 3:  Wet-dry 1D c-property x direction
+ * 4:  Wet-dry 1D c-property y direction
+ * 5:  Wet dam break in x direction
+ * 6:  Wet dam break in y direction
+ * 7:  Dry dam break in x direction
+ * 8:  Dry dam break in y direction
+ * 9:  Dry dam break in x direction with friction
+ * 10: Dry dam break in y direction with friction
+ * 11: Wet building overtopping in x direction
+ * 12: Wet building overtopping in y direction
+ * 13: Wet-dry building overtopping in x direction
+ * 14: Wet-dry building overtopping in y direction
+ * 15: Triangular dam break in x direction
+ * 16: Triangular dam break in y direction
+ * 17: Parabolic bowl in x direction
+ * 18: Parabolic bowl in y direction
+ * 19: Three cones
+ * 20: Differentiable blocks
+ * 21: Non-differentiable blocks
+ * 22: Radial dam break
  * 
  */
 
@@ -90,8 +98,8 @@
  *   z : topography
  *   h : water height
  * eta : free surface height (h + z)
- *  qx : discharge in x-direction
- *  qy : discharge in y-direction
+ *  qx : discharge in x direction
+ *  qy : discharge in y direction
  * 
  */
 
@@ -162,7 +170,7 @@ int main
 	// Structures setting up simulation
 	SolverParameters     solver_params = read_solver_params(input_filename);
 	SimulationParameters sim_params    = read_sim_params(test_case, input_filename, solver_params);
-	Depths1D   bcs           = read_bound_conds(test_case);
+	Depths1D             bcs           = read_bound_conds(test_case);
 	SaveInterval         saveint       = read_save_interval(input_filename, "saveint");
 	SaveInterval         massint       = read_save_interval(input_filename, "massint");
 

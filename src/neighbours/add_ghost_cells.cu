@@ -36,20 +36,24 @@ void add_ghost_cells
 	
 	switch (test_case)
 	{
-	case 1:  // 1D c property
-	case 4:  // wet dam break
-	case 6:  // dry dam break
-	case 8:  // dry dam break with friction
-	case 10: // building overtopping
-	case 15: // triangular dam break
-	case 17: // parabolic bowl
+	case 1:   // wet 1D c property
+	case 3:   // wet/dry 1D c property
+	case 5:   // wet dam break
+	case 7:   // dry dam break
+	case 9:   // dry dam break with friction
+	case 11:  // wet building overtopping
+	case 13:  // dry building overtopping
+	case 15:  // triangular dam break
+	case 17:  // parabolic bowl
 		flow_EW = true;
 		break;
-	case 2:
-	case 5:
-	case 7:
-	case 9:
-	case 11:
+	case 2: 
+	case 4: 
+	case 6: 
+	case 8: 
+	case 10:
+	case 12:
+	case 14:
 	case 16:
 	case 18:
 		flow_NS = true;

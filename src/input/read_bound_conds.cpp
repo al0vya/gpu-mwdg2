@@ -7,21 +7,26 @@ Depths1D read_bound_conds(const int& test_case)
 	switch (test_case)
 	{
 	case 1: case 2: // wet c property
+		bcs.hl = C(6.0);
+		bcs.hr = C(6.0);
+		break;
+	case 3: case 4: // wet/dry c property
 		bcs.hl = C(2.0);
 		bcs.hr = C(2.0);
 		break;
-	case 3: // three humps
-		bcs.hl = C(2.0);
+	case 5: case 6:   // wet dam break
+	case 11: case 12: // wet overtopping
+		bcs.hl = C(6.0);
+		bcs.hr = C(2.0);
+		break;
+	case 7:  case 8:  // dry dam break
+	case 9:  case 10: // dry dam break with fric
+	case 13: case 14: // dry overtopping
+		bcs.hl = C(6.0);
 		bcs.hr = C(0.0);
 		break;
-	case 4: case 5: // wet dam break
-		bcs.hl = C(6.0);
-		bcs.hr = C(2.0);
-		break;
-	case 6:  case 7:  // dry dam break
-	case 8:  case 9:  // dry dam break with fric
-	case 10: case 11: // overtopping
-		bcs.hl = C(6.0);
+	case 17: // three humps
+		bcs.hl = C(2.0);
 		bcs.hr = C(0.0);
 		break;
 	default:

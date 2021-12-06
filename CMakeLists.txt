@@ -94,7 +94,7 @@ if (CMAKE_CUDA_COMPILER)
 		src/zorder/rev_z_order_reals.cu
 		src/zorder/sort_finest_scale_coeffs_z_order.cu
 		src/zorder/sort_neighbours_z_order.cu
-	)
+	 "src/types (2)/Coordinate.h" "src/types (2)/Directions.h" "src/types (2)/HierarchyIndex.h" "src/types (2)/InletTypes.h" "src/types (2)/MortonCode.h" "src/types (2)/real.h" "src/types (2)/SolverTypes.h")
 	
 endif()
 

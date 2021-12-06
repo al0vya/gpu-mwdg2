@@ -8,8 +8,8 @@ __device__ __forceinline__
 real h_init_c_property
 (
 	const Depths1D& bcs, 
-	const real&               z_int,
-	const real&               x_or_y_int
+	const real&     z_int,
+	const real&     x_or_y_int
 )
 {
 	real eta_west = bcs.hl;
