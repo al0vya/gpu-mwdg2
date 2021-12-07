@@ -15,7 +15,7 @@ else:
 
 import matplotlib.pylab as pylab
 
-from ..classes import Test
+from classes.Test import Test
 
 # from: https://stackoverflow.com/questions/12444716/how-do-i-set-the-figure-title-and-axes-labels-font-size-in-matplotlib
 params = {
