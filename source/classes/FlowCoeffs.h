@@ -28,7 +28,7 @@ typedef struct FlowCoeffs
 			eval_loc_face_val_dg2(qy0, qy1x, qy1y, basis),
 		};
 	}
-
+	/*
 	__device__
 	FlowCoeffs threshold()
 	{
@@ -44,7 +44,7 @@ typedef struct FlowCoeffs
 		    (abs(qy1x) > 1e-13) ? qy1x : C(0.0),
 		    (abs(qy1y) > 1e-13) ? qy1y : C(0.0)
 		};
-	}
+	}*/
 
 	__device__
 		void set_0

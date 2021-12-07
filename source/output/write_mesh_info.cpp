@@ -15,7 +15,7 @@ void write_mesh_info
 
 	if (NULL == fp)
 	{
-		fprintf(stderr, "Error in opening mesh information file.");
+		fprintf(stderr, "Error in opening mesh information file.\n");
 		exit(-1);
 	}
 

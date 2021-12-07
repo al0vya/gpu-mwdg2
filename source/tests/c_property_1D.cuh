@@ -38,5 +38,5 @@ real c_property_1D(real x_or_y_int)
 		z_int = 0;
 	}
 	
-	return 0;// x_or_y_int < 20 ? C(2.5) : 0;
+	return C(10.0) * z_int;
 }

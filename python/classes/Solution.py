@@ -1,22 +1,9 @@
 import os
-import matplotlib.pyplot as plt
-import matplotlib.pylab  as pylab
-import matplotlib.cm as cm
-import numpy as np
+import numpy  as np
 import pandas as pd
-import sys
+import matplotlib.pyplot as plt
 
-from mpl_toolkits.mplot3d import Axes3D # import for 3D viewing
-
-params = {
-"legend.fontsize" : "xx-large",
-"axes.labelsize"  : "large",
-"axes.titlesize"  : "large",
-"xtick.labelsize" : "large",
-"ytick.labelsize" : "large"
-}
-
-pylab.rcParams.update(params)
+from mpl_toolkits.mplot3d import Axes3D
 
 def plot_surface(X, Y, Z, zlabel, test_number, path, quantity, test_name):
     fig, ax = plt.subplots( subplot_kw={"projection" : "3d"} )
@@ -49,11 +36,16 @@ def plot_contours(X, Y, Z, ylabel, test_number, path, quantity, test_name):
     plt.clf()
 
 class Solution:
-    def __init__(self):
-        dirname   = os.path.dirname(__file__)
-        path      = os.path.join(dirname, "..", "out", "build", "x64-Release", "test", "results")
-        self.path = path
+    def __init__(self, relativepath=""):
+        self.relativepath = relativepath
+
+        if (relativepath == "debug"):
+            self.relativepath = os.path.join("..", "out", "build", "x64-Debug", "test", "results")
+        elif (relativepath == "release"):
+            self.relativepath = os.path.join("..", "out", "build", "x64-Release", "test", "results")
         
+        self.savepath = os.path.join(os.path.dirname(__file__), self.relativepath)
+ 
         h_file  = "depths.csv"
         qx_file = "discharge_x.csv"
         qy_file = "discharge_y.csv"
@@ -62,7 +54,7 @@ class Solution:
         # finest resolution mesh info
         mesh_info_file = "mesh_info.csv"
         
-        mesh_info = pd.read_csv( os.path.join(path, mesh_info_file) )
+        mesh_info = pd.read_csv( os.path.join(self.savepath, mesh_info_file) )
         
         # to access a dataframe with only one row
         # we use iloc, which stands for 'integer location'
@@ -91,10 +83,10 @@ class Solution:
         
         self.X, self.Y = np.meshgrid(x, y)
         
-        self.h  = pd.read_csv( os.path.join(path, h_file) ) ["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.h  = pd.read_csv( os.path.join(path, h_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
         self.qx = pd.read_csv( os.path.join(path, qx_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
         self.qy = pd.read_csv( os.path.join(path, qy_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
-        self.z  = pd.read_csv( os.path.join(path, z_file) ) ["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.z  = pd.read_csv( os.path.join(path, z_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
 
     def plot_soln(self, test_number, test_name):
         print("Plotting flow solution and topography for test %s..." % test_name)
@@ -103,11 +95,7 @@ class Solution:
         #plot_surface (self.X, self.Y, self.qx,         "$qx \, (m^2s^{-1})$", test_number, self.path, "qx",  test_name)
         #plot_surface (self.X, self.Y, self.qy,         "$qy \, (m^2s^{-1})$", test_number, self.path, "qy",  test_name)
         
-        plot_contours(self.X, self.Y, self.h,  "$h  \, (m)$",         test_number, self.path, "h",  test_name)
-        plot_contours(self.X, self.Y, self.qx, "$qx \, (m^2s^{-1})$", test_number, self.path, "qx", test_name)
-        plot_contours(self.X, self.Y, self.qy, "$qy \, (m^2s^{-1})$", test_number, self.path, "qy", test_name)
-        plot_contours(self.X, self.Y, self.z,  "$z  \, (m)$",         test_number, self.path, "z",  test_name)
-
-if len(sys.argv) > 1:
-    if sys.argv[1] == "plot":
-        Solution().plot_soln(0, "ad-hoc")
+        plot_contours(self.X, self.Y, self.h,  "$h  \, (m)$",         test_number, self.savepath, "h",  test_name)
+        plot_contours(self.X, self.Y, self.qx, "$qx \, (m^2s^{-1})$", test_number, self.savepath, "qx", test_name)
+        plot_contours(self.X, self.Y, self.qy, "$qy \, (m^2s^{-1})$", test_number, self.savepath, "qy", test_name)
+        plot_contours(self.X, self.Y, self.z,  "$z  \, (m)$",         test_number, self.savepath, "z",  test_name)

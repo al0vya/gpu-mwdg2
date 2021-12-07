@@ -18,8 +18,6 @@ SolverParams read_solver_params
 	char solvertype_buf[128] = {'\0'};
 	read_keyword_str(input_filename, "solver", 6, solvertype_buf);
 
-	printf("solver: %s\n", solvertype_buf);
-
 	if ( !strncmp(solvertype_buf, "hw", 2) )
 	{
 		solver_params.solver_type = HWFV1;

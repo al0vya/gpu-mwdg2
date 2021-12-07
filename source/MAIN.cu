@@ -155,7 +155,7 @@ int main
 	// TEST CASE SET UP //
 	// ================ //
 
-	const char* input_filename = "inputs.par"; argv[1];
+	const char* input_filename = argv[1];
 	
 	const int test_case = read_test_case(input_filename);
 	
@@ -457,113 +457,116 @@ int main
 		CHECK_CUDA_ERROR(peek());
 		CHECK_CUDA_ERROR(sync());
 
-		for_nghbrs = false;
+		if (solver_params.epsilon > C(0.0) || first_t_step)
+		{
+		    for_nghbrs = false;
+		    
+		    encoding_all
+		    (
+		    	d_scale_coeffs,
+		    	d_details,
+		    	d_norm_details,
+		    	d_sig_details,
+		    	d_preflagged_details,
+		    	maxes,
+		    	solver_params,
+		    	for_nghbrs
+		    );
+		    
+		    get_reg_tree
+		    (
+		    	d_sig_details,
+		    	solver_params
+		    );
+		    
+		    CHECK_CUDA_ERROR(peek());
+		    CHECK_CUDA_ERROR(sync());
+		    
+		    decoding_all
+		    (
+		    	d_sig_details,
+		    	d_norm_details,
+		    	d_details,
+		    	d_scale_coeffs,
+		    	solver_params
+		    );
+		    
+		    CHECK_CUDA_ERROR(peek());
+		    CHECK_CUDA_ERROR(sync());
+		    
+		    traverse_tree_of_sig_details<<<num_blocks_traversal, THREADS_PER_BLOCK>>>
+		    (
+		    	d_sig_details,
+		    	d_scale_coeffs,
+		    	d_buf_assem_sol,
+		    	num_threads_traversal,
+		    	solver_params
+		    );
+		    
+		    CHECK_CUDA_ERROR(peek());
+		    CHECK_CUDA_ERROR(sync());
+		    
+		    rev_z_order_act_idcs
+		    (
+		    	d_rev_z_order,
+		    	d_indices,
+		    	d_buf_assem_sol,
+		    	d_assem_sol,
+		    	num_finest_elems
+		    );
+		    
+		    CHECK_CUDA_ERROR(peek());
+		    CHECK_CUDA_ERROR(sync());
+		    
+		    find_neighbours<<<num_blocks_finest, THREADS_PER_BLOCK>>>
+		    (
+		    	d_assem_sol,
+		    	d_neighbours,
+		    	sim_params,
+		    	mesh_dim
+		    );
+		    
+		    CHECK_CUDA_ERROR(peek());
+		    CHECK_CUDA_ERROR(sync());
+		    
+		    get_compaction_flags<<<num_blocks_finest, THREADS_PER_BLOCK>>>
+		    (
+		    	d_buf_assem_sol,
+		    	d_compaction_flags,
+		    	num_finest_elems
+		    );
+		    
+		    CHECK_CUDA_ERROR(peek());
+		    CHECK_CUDA_ERROR(sync());
+		    
+		    sort_neighbours_z_order
+		    (
+		    	d_neighbours,
+		    	d_buf_neighbours,
+		    	d_morton_codes,
+		    	d_sorted_morton_codes,
+		    	num_finest_elems,
+		    	solver_params
+		    );
+		    
+		    CHECK_CUDA_ERROR(peek());
+		    CHECK_CUDA_ERROR(sync());
+		    
+		    compaction
+		    (
+		    	d_assem_sol,
+		    	d_buf_assem_sol,
+		    	d_neighbours,
+		    	d_buf_neighbours,
+		    	d_compaction_flags,
+		    	num_finest_elems,
+		    	solver_params
+		    );
+		    
+		    CHECK_CUDA_ERROR(peek());
+		    CHECK_CUDA_ERROR(sync());
+		}
 
-		encoding_all
-		(
-			d_scale_coeffs,
-			d_details,
-			d_norm_details,
-			d_sig_details,
-			d_preflagged_details,
-			maxes,
-			solver_params,
-			for_nghbrs
-		);
-
-		get_reg_tree
-		(
-			d_sig_details,
-			solver_params
-		);
-
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
-
-		decoding_all
-		(
-			d_sig_details,
-			d_norm_details,
-			d_details,
-			d_scale_coeffs,
-			solver_params
-		);
-
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
-
-		traverse_tree_of_sig_details<<<num_blocks_traversal, THREADS_PER_BLOCK>>>
-		(
-			d_sig_details,
-			d_scale_coeffs,
-			d_buf_assem_sol,
-			num_threads_traversal,
-			solver_params
-		);
-
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
-		
-		rev_z_order_act_idcs
-		(
-			d_rev_z_order,
-			d_indices,
-			d_buf_assem_sol,
-			d_assem_sol,
-			num_finest_elems
-		);
-
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
-
-		find_neighbours<<<num_blocks_finest, THREADS_PER_BLOCK>>>
-		(
-			d_assem_sol,
-			d_neighbours,
-			sim_params,
-			mesh_dim
-		);
-
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
-
-		get_compaction_flags<<<num_blocks_finest, THREADS_PER_BLOCK>>>
-		(
-			d_buf_assem_sol,
-			d_compaction_flags,
-			num_finest_elems
-		);
-
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
-
-		sort_neighbours_z_order
-		(
-			d_neighbours,
-			d_buf_neighbours,
-			d_morton_codes,
-			d_sorted_morton_codes,
-			num_finest_elems,
-			solver_params
-		);
-
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
-
-		compaction
-		(
-			d_assem_sol,
-			d_buf_assem_sol,
-			d_neighbours,
-			d_buf_neighbours,
-			d_compaction_flags,
-			num_finest_elems,
-			solver_params
-		);
-		
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
-		
 		// GRID DIMENSIONS BASED ON ASSEMBLED SOLUTION LENGTH //
 
 		num_blocks_sol = get_num_blocks(d_assem_sol.length, THREADS_PER_BLOCK);
