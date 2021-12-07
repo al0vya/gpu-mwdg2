@@ -3,17 +3,17 @@
 __global__
 void dg2_update
 (
-    Neighbours           d_neighbours,
-    AssembledSolution    d_assem_sol_load,
-    AssembledSolution    d_assem_sol_store,
-    SolverParams     solver_params,
-    SimulationParams sim_params,
-    real                 dx_finest,
-    real                 dy_finest,
-    real                 dt,
-    int                  step,
-    real*                d_dt_CFL,
-    bool                 rkdg2
+    Neighbours        d_neighbours,
+    AssembledSolution d_assem_sol_load,
+    AssembledSolution d_assem_sol_store,
+    SolverParams      solver_params,
+    SimulationParams  sim_params,
+    real              dx_finest,
+    real              dy_finest,
+    real              dt,
+    int               step,
+    real*             d_dt_CFL,
+    bool              rkdg2
 )
 {
     typedef cub::BlockScan<int, THREADS_PER_BLOCK> block_scan;
@@ -170,7 +170,7 @@ void dg2_update
         d_assem_sol_load.qy1y[idx]
     };
     
-    bool thin = false; (coeffs.h0 < C(10.0)* solver_params.tol_h);
+    bool thin = false; (coeffs.h0 < C(10.0) * solver_params.tol_h);
 
     FlowCoeffs coeffs_n
     {
@@ -350,19 +350,21 @@ void dg2_update
 
     coeffs += dt * Lx;
 
-    //coeffs += dt * Ly;
+    coeffs += dt * Ly;
 
-    if (false)//idx == 27)
+    if (false)//idx == 183)
     {
         printf("i: %i, j: %i, idx: %i\n", i, j, idx);
         printf("coeffs.qx0: %.15f\n", coeffs.qx0);
-        printf("Lx.qx0: %.15f\n", old.qx0);
-        printf("Ly.qx0: %.15f\n", Ly.qy0);
-        printf("Sbx.qx0: %.15f\n", Sbx.qx0);
-        printf("F_e.qx: %.15f\n", F_e.qx);
-        printf("F_w.qx: %.15f\n", F_w.qx);
-        printf("Phys 1: %.15f\n", ((U0x_star - U1x_star).phys_flux_x(solver_params.tol_h, sim_params.g)).qx);
-        printf("Phys 2: %.15f\n", ((U0x_star + U1x_star).phys_flux_x(solver_params.tol_h, sim_params.g)).qx);
+        printf("coeffs.qx1x: %.15f\n", coeffs.qx1x);
+        printf("coeffs.qx1y: %.15f\n", coeffs.qx1y);
+        //printf("Lx.qx0: %.15f\n", old.qx0);
+        //printf("Ly.qx0: %.15f\n", Ly.qy0);
+        //printf("Sbx.qx0: %.15f\n", Sbx.qx0);
+        //printf("F_e.qx: %.15f\n", F_e.qx);
+        //printf("F_w.qx: %.15f\n", F_w.qx);
+        //printf("Phys 1: %.15f\n", ((U0x_star - U1x_star).phys_flux_x(solver_params.tol_h, sim_params.g)).qx);
+        //printf("Phys 2: %.15f\n", ((U0x_star + U1x_star).phys_flux_x(solver_params.tol_h, sim_params.g)).qx);
     }
 
     real& h0   = d_assem_sol_store.h0[idx]  ;
@@ -385,7 +387,7 @@ void dg2_update
     qy1x = (thin) ? qy1x : (rkdg2) ? C(0.5) * (coeffs.qy1x + qy1x) : coeffs.qy1x;
     qy1y = (thin) ? qy1y : (rkdg2) ? C(0.5) * (coeffs.qy1y + qy1y) : coeffs.qy1y;
     
-    if (abs(qx0) < solver_params.tol_q)
+    /*if (abs(qx0) < solver_params.tol_q)
     {
         qx0  = C(0.0);
         qx1x = C(0.0);
@@ -397,7 +399,7 @@ void dg2_update
         qy0  = C(0.0);
         qy1x = C(0.0);
         qy1y = C(0.0);
-    }
+    }*/
 
     const bool below_depth = (h0 < solver_params.tol_h);
 

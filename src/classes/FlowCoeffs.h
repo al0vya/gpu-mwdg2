@@ -30,6 +30,23 @@ typedef struct FlowCoeffs
 	}
 
 	__device__
+	FlowCoeffs threshold()
+	{
+		return
+		{
+			(abs(h0)   > 1e-13) ? h0   : C(0.0),
+		    (abs(h1x)  > 1e-13) ? h1x  : C(0.0),
+		    (abs(h1y)  > 1e-13) ? h1y  : C(0.0),
+		    (abs(qx0)  > 1e-13) ? qx0  : C(0.0),
+		    (abs(qx1x) > 1e-13) ? qx1x : C(0.0),
+		    (abs(qx1y) > 1e-13) ? qx1y : C(0.0),
+		    (abs(qy0)  > 1e-13) ? qy0  : C(0.0),
+		    (abs(qy1x) > 1e-13) ? qy1x : C(0.0),
+		    (abs(qy1y) > 1e-13) ? qy1y : C(0.0)
+		};
+	}
+
+	__device__
 		void set_0
 		(
 			const FlowVector& v

@@ -4,6 +4,7 @@ __host__ void write_soln_vtk
 (
 	const char*              respath,
 	const AssembledSolution& d_assem_sol,
+	      real*              d_dt_CFL,
 	const real&              dx_finest,
 	const real&              dy_finest,
 	const SimulationParams&  sim_params,
@@ -47,6 +48,7 @@ __host__ void write_soln_vtk
 	real*           qx       = new real[d_assem_sol.length];
 	real*           qy       = new real[d_assem_sol.length];
 	real*           z        = new real[d_assem_sol.length];
+	real*           dt       = new real[d_assem_sol.length];
 	HierarchyIndex* act_idcs = new HierarchyIndex[d_assem_sol.length];
 	int*            levels   = new int[d_assem_sol.length];
 
@@ -58,6 +60,7 @@ __host__ void write_soln_vtk
 	copy(qx,       d_assem_sol.qx0,      bytes_flow);
 	copy(qy,       d_assem_sol.qy0,      bytes_flow);
 	copy(z,        d_assem_sol.z0,       bytes_flow);
+	copy(dt,       d_dt_CFL,             bytes_flow);
 	copy(act_idcs, d_assem_sol.act_idcs, bytes_act_idcs);
 	copy(levels,   d_assem_sol.levels,   bytes_levels);
 
@@ -142,6 +145,18 @@ __host__ void write_soln_vtk
 	{
 		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", h[i] );
 	}
+	
+	fprintf
+	(
+		fp,
+		"\nSCALARS dt float 1\n"
+		"LOOKUP_TABLE default\n"
+	);
+
+	for (int i = 0; i < d_assem_sol.length; i++)
+	{
+		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", dt[i] );
+	}
 
 	fprintf
 	(
@@ -189,6 +204,7 @@ __host__ void write_soln_vtk
 	delete[] qx;
 	delete[] qy;
 	delete[] z;
+	delete[] dt;
 	delete[] act_idcs;
 	delete[] levels;
 }

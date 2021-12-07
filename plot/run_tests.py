@@ -4,7 +4,7 @@ import os
 from plot_2D_solution import Solution
 from plot_c_prop      import DischargeErrors
 
-def set_params(test_case, results, epsilon, massint, solver, row_major, c_prop, input_file):
+def set_params(test_case, results, epsilon, massint, solver, row_major, c_prop, vtk, input_file):
     params = ("" +
     "test_case   %s\n" +
     "max_ref_lvl	7\n" +
@@ -19,7 +19,8 @@ def set_params(test_case, results, epsilon, massint, solver, row_major, c_prop, 
     "solver		%s\n" +
     "wall_height	0\n" +
     "row_major    %s\n" +
-    "c_prop %s") % (test_case, results, epsilon, massint, solver, row_major, c_prop)
+    "c_prop %s\n" +
+    "vtk        %s") % (test_case, results, epsilon, massint, solver, row_major, c_prop, vtk)
 
     with open(input_file, 'w') as fp:
         fp.write(params)
@@ -90,9 +91,10 @@ for test in range(num_tests):
     test_name = test_names[test]
     row_major = "off" if test_case in c_prop_tests else "on"
     c_prop    = "on"  if test_case in c_prop_tests else "off"
+    vtk       = "off" if test_case in c_prop_tests else "on"
     solver    = "mw"
 
-    set_params(test_case, results, epsilon, massint, solver, row_major, c_prop, input_file)
+    set_params(test_case, results, epsilon, massint, solver, row_major, c_prop, vtk, input_file)
 
     if test_case not in c_prop_tests:
         subprocess.run( [solver_file, input_file] ) 

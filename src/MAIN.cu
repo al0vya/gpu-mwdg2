@@ -155,7 +155,7 @@ int main
 	// TEST CASE SET UP //
 	// ================ //
 
-	const char* input_filename = argv[1];
+	const char* input_filename = "inputs.par"; argv[1];
 	
 	const int test_case = read_test_case(input_filename);
 	
@@ -785,6 +785,7 @@ int main
 				(
 					respath,
 					d_assem_sol,
+					d_dt_CFL,
 					dx_finest,
 					dy_finest,
 					sim_params,
