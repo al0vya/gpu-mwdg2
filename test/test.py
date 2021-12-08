@@ -13,7 +13,7 @@ def EXIT_HELP():
         " - python test.py soln <MODE> (plots solution contours)\n" +
         "    MODE : [debug,release]\n" +
         "\n" +
-        " - python test.py c_prop <MODE> <SOLVER> <EPSILON> <MAX_REF_LVL> (plots discharge errors)\n" +
+        " - python test.py c_prop <MODE> <SOLVER> (plots discharge errors)\n" +
         "    MODE   : [debug,release]\n" +
         "    SOLVER : [hw,mw]"
     )
