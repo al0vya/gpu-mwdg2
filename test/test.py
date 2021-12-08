@@ -3,20 +3,19 @@ import sys
 
 def EXIT_HELP():
     help_message = (
-        "This tool is used in the command line as follows:\n" +
+        "This tool is used in the command line as follows:\n\n" +
         " - python test.py run <MODE> <SOLVER> <EPSILON> <MAX_REF_LVL> (runs all in-built test cases)\n" +
-        "    MODE=[debug,release]\n" +
-        "    SOLVER=[hw,mw]\n" +
-        "    EPSILON=[error threshold]\n" +
-        "    MAX_REF_LVL=[maximum refinment level]\n" +
+        "    MODE        : [debug,release]\n" +
+        "    SOLVER      : [hw,mw]\n" +
+        "    EPSILON     : [error threshold]\n" +
+        "    MAX_REF_LVL : [maximum refinment level]\n" +
         "\n" +
         " - python test.py soln <MODE> (plots solution contours)\n" +
-        "    MODE=[debug,release]\n" +
+        "    MODE : [debug,release]\n" +
         "\n" +
         " - python test.py c_prop <MODE> <SOLVER> <EPSILON> <MAX_REF_LVL> (plots discharge errors)\n" +
-        "    MODE=[debug,release]\n" +
-        "    SOLVER=[hw,mw]\n" +
-        "\n"
+        "    MODE   : [debug,release]\n" +
+        "    SOLVER : [hw,mw]"
     )
 
     sys.exit(help_message)
@@ -232,6 +231,7 @@ class Test:
     def __init__(
         self,
         test_case, 
+        max_ref_lvl, 
         epsilon, 
         massint, 
         test_name, 
@@ -241,11 +241,12 @@ class Test:
         input_file,
         mode
     ):
-        self.test_case = test_case
-        self.epsilon   = epsilon
-        self.massint   = massint 
-        self.test_name = test_name
-        self.solver    = solver
+        self.test_case   = test_case
+        self.max_ref_lvl = max_ref_lvl
+        self.epsilon     = epsilon
+        self.massint     = massint 
+        self.test_name   = test_name
+        self.solver      = solver
 
         if self.test_case in c_prop_tests:
             self.row_major = "off"
@@ -265,7 +266,7 @@ class Test:
     ):
         params = ("" +
             "test_case   %s\n" +
-            "max_ref_lvl	7\n" +
+            "max_ref_lvl	%s\n" +
             "min_dt		1\n" +
             "respath	    %s\n" +
             "epsilon	    %s\n" +
@@ -280,6 +281,7 @@ class Test:
             "c_prop %s\n" +
             "vtk        %s") % (
                 self.test_case, 
+                self.max_ref_lvl, 
                 self.results, 
                 self.epsilon, 
                 self.massint, 
@@ -318,27 +320,30 @@ def plot_soln():
 
 def plot_c_prop():
     if len(sys.argv) > 3:
-        mode = sys.argv[2]
+        dummy, mode, solver = sys.argv
         
         if mode == "debug" or mode == "release":
-            solver = sys.argv[3]
-            
             if solver == "hw" or solver == "mw":
                 DischargeErrors(solver, mode).plot_errors()
+            else:
+                EXIT_HELP()
         else:
             EXIT_HELP()
     else:
         EXIT_HELP()
 
 def run_tests():
-    if len(sys.argv) > 2:
-        mode = sys.argv[2]
+    if len(sys.argv) > 5:
+        dummy, action, mode, solver, epsilon, max_ref_lvl = sys.argv
     
         if mode == "debug":
             path = os.path.join("..", "out", "build", "x64-Debug")
         elif mode == "release":
             path = os.path.join("..", "out", "build", "x64-Release")
         else:
+            EXIT_HELP()
+            
+        if solver != "hw" and solver != "mw":
             EXIT_HELP()
     else:
         EXIT_HELP()
@@ -356,8 +361,8 @@ def run_tests():
     "wet-dam-break-y-dir",
     "dry-dam-break-x-dir",
     "dry-dam-break-y-dir",
-    "dry-dam-break-wh-fric-x-dir",
-    "dry-dam-break-wh-fric-y-dir",
+    "dry-dam-break-w-fric-x-dir",
+    "dry-dam-break-w-fric-y-dir",
     "wet-building-overtopping-x-dir",
     "wet-building-overtopping-y-dir",
     "dry-building-overtopping-x-dir",
@@ -402,7 +407,18 @@ def run_tests():
     c_prop_tests = [1, 2, 3, 4, 19, 20, 21]
     
     for test in range(num_tests):
-        Test(test + 1, 0, massints[test], test_names[test], "mw", c_prop_tests, results, input_file, mode).run_test(solver_file)
+        Test(
+            test + 1,
+            max_ref_lvl,
+            epsilon,
+            massints[test],
+            test_names[test],
+            solver,
+            c_prop_tests,
+            results,
+            input_file,
+            mode
+        ).run_test(solver_file)
 
 # from: https://stackoverflow.com/questions/12444716/how-do-i-set-the-figure-title-and-axes-labels-font-size-in-matplotlib
 params = {
