@@ -11,4 +11,6 @@ if len(sys.argv) > 1:
         
         Solution(mode).plot_soln()
     else:
-        sys.exit("Please specify either \"debug\" or \"release\" in the command line.0")
+        sys.exit("Please specify either \"debug\" or \"release\" in the command line.")
+else:
+    sys.exit("Please specify either \"debug\" or \"release\" in the command line.")
