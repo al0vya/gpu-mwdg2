@@ -111,10 +111,8 @@ class Hierarchy:
                 self.show_level(level)
             else:
                 sys.exit("Exiting")
-                
-
-                
-    plt.rcParams.update({'font.size': 12}) 
+    
+plt.rcParams.update({'font.size': 12}) 
 
 mode = sys.argv[1]
 
