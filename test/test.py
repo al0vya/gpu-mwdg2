@@ -85,7 +85,7 @@ class Solution:
         self, 
         relativepath
     ):
-        self.relativepath = relativepath
+        self.relativepath = ""
 
         if (relativepath == "debug"):
             self.relativepath = os.path.join("..", "out", "build", "x64-Debug", "test", "results")
@@ -160,7 +160,7 @@ class DischargeErrors:
     ):
         self.solver = solver;
 
-        self.relativepath = relativepath
+        self.relativepath = ""
 
         if (relativepath == "debug"):
             self.relativepath = os.path.join("..", "out", "build", "x64-Debug", "test", "results")
