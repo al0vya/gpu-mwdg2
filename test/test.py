@@ -32,6 +32,19 @@ import matplotlib.pylab  as pylab
 
 from mpl_toolkits.mplot3d import Axes3D
 
+def set_path(
+    mode,
+    testdir="test"
+):
+    if (mode == "debug"):
+        path = os.path.join(os.path.dirname(__file__), "..", "out", "build", "x64-Debug", testdir, "results")
+    elif (mode == "release"):
+        path = os.path.join(os.path.dirname(__file__), "..", "out", "build", "x64-Release", testdir, "results")
+    else:
+        EXIT_HELP()
+        
+    return path
+
 def plot_surface(
     X, 
     Y, 
@@ -83,17 +96,12 @@ def plot_contours(
 class Solution:
     def __init__(
         self, 
-        relativepath
+        mode
     ):
-        self.relativepath = ""
-
-        if (relativepath == "debug"):
-            self.relativepath = os.path.join("..", "out", "build", "x64-Debug", "test", "results")
-        elif (relativepath == "release"):
-            self.relativepath = os.path.join("..", "out", "build", "x64-Release", "test", "results")
+        self.savepath = set_path(mode)
         
-        self.savepath = os.path.join(os.path.dirname(__file__), self.relativepath)
- 
+        print("Searching for solution data in path", self.savepath)
+        
         h_file  = "depths.csv"
         qx_file = "discharge_x.csv"
         qy_file = "discharge_y.csv"
@@ -156,19 +164,14 @@ class DischargeErrors:
     def __init__(
         self, 
         solver, 
-        relativepath
+        mode
     ):
         self.solver = solver;
-
-        self.relativepath = ""
-
-        if (relativepath == "debug"):
-            self.relativepath = os.path.join("..", "out", "build", "x64-Debug", "test", "results")
-        elif (relativepath == "release"):
-            self.relativepath = os.path.join("..", "out", "build", "x64-Release", "test", "results")
     
-        self.savepath = os.path.join(os.path.dirname(__file__), self.relativepath)
-
+        self.savepath = set_path(mode)
+        
+        print("Searching for discharge error data in path", self.savepath)
+        
         sim_time_file = "clock_time_vs_sim_time.csv"
         qx0_file      = "qx0-c-prop.csv"
         qx1x_file     = "qx1x-c-prop.csv"

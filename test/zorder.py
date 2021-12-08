@@ -18,6 +18,18 @@ import matplotlib.pyplot as plt
 
 from mpl_toolkits.mplot3d import Axes3D # import for 3D viewing
 
+def set_path(
+    mode
+):
+    if (mode == "debug"):
+        path = os.path.join(os.path.dirname(__file__), "..", "out", "build", "x64-Debug", testdir, "results")
+    elif (mode == "release"):
+        path = os.path.join(os.path.dirname(__file__), "..", "out", "build", "x64-Release", testdir, "results")
+    else:
+        EXIT_HELP()
+        
+    return path
+
 def dilate(coord):
     coord &= 0x0000ffff;                         # in binary: ---- ---- ---- ---- fedc ba98 7654 3210
 
@@ -44,20 +56,12 @@ class Hierarchy:
         filename,
         max_ref_lvl
     ):
-        self.relativepath = ""
-
-        if (mode == "debug"):
-            self.relativepath = os.path.join("..", "out", "build", "x64-Debug", testdir, "results")
-        elif (mode == "release"):
-            self.relativepath = os.path.join("..", "out", "build", "x64-Release", testdir, "results")
-        else:
-            EXIT_HELP()
-        
-        self.savepath = os.path.join(os.path.dirname(__file__), self.relativepath)
-        
+        self.savepath    = set_path(mode)
         self.testdir     = testdir
         self.filename    = filename
         self.max_ref_lvl = max_ref_lvl
+        
+        print("Searching for hierarchy data in path", path)
         
         self.data_z_order = pd.read_csv( os.path.join(self.savepath, self.filename) ).values.tolist()
                 
@@ -120,3 +124,5 @@ if mode == "debug" or mode == "release":
     dummy, mode, testdir, filename, max_ref_lvl = sys.argv
     
     Hierarchy( mode, testdir, filename, int(max_ref_lvl) ).show_all_levels()
+else:
+    EXIT_HELP()
