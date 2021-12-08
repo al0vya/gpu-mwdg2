@@ -1,7 +1,7 @@
 # this script runs all the in-built test cases of gpu-mwdg2
 
-import sys
 import os
+import sys
 
 path = ""
 
@@ -14,7 +14,7 @@ if len(sys.argv) > 1:
     elif mode == "release":
         path = os.path.join("..", "..", "out", "build", "x64-Release")
     else:
-        sys.exit("Please specify either debug or release in the command line.")
+        sys.exit("Please specify either \"debug\" or \"release\" in the command line.")
 else:
     sys.exit("Please specify either \"debug\" or \"release\" in the command line.")
 

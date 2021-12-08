@@ -111,8 +111,8 @@ class Solution:
 
     def plot_soln(
         self, 
-        test_number, 
-        test_name
+        test_number=0, 
+        test_name="ad-hoc"
     ):
         print("Plotting flow solution and topography for test %s..." % test_name)
 
