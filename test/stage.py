@@ -1,8 +1,8 @@
 import os
-import pandas            as pd
 import numpy             as np
-import matplotlib.pyplot as plt
+import pandas            as pd
 import matplotlib.pylab  as pylab
+import matplotlib.pyplot as plt
 
 # from: https://stackoverflow.com/questions/12444716/how-do-i-set-the-figure-title-and-axes-labels-font-size-in-matplotlib
 params = {
