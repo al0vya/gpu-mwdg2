@@ -195,14 +195,15 @@ SimulationParams read_sim_params
 	    	break;
 	    case 17: // parabolic bowl, period "T" = 14.4 s
 	    case 18:
-	    	sim_params.xmin = C(-50.0);
+			real period = C(14.4);
+			sim_params.xmin = C(-50.0);
 	    	sim_params.xmax = C( 50.0);
 	    	sim_params.ymin = C(-50.0);
 	    	sim_params.ymax = C( 50.0);
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-			sim_params.time = C(14.4) * 2; // running for 1.5T
+			sim_params.time = period * 2;
 	    	sim_params.manning = C(0.0);
 	    	break;
 	    case 19: // three cones
