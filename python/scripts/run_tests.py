@@ -1,13 +1,18 @@
+# this script runs all the in-built test cases of gpu-mwdg2
+
 import sys
 import os
 
-if len(sys.argv) > 1:
-    path = sys.argv[1]
+path = ""
 
-    if path == "debug":
-        path = os.path.join("..", "out", "build", "x64-Debug")
-    elif path == "release":
-        path = os.path.join("..", "out", "build", "x64-Release")
+# if command line argument is given
+if len(sys.argv) > 1:
+    mode = sys.argv[1]
+
+    if mode == "debug":
+        path = os.path.join("..", "..", "out", "build", "x64-Debug")
+    elif mode == "release":
+        path = os.path.join("..", "..", "out", "build", "x64-Release")
     else:
         sys.exit("Please specify either debug or release in the command line.")
 else:
@@ -15,7 +20,16 @@ else:
 
 import matplotlib.pylab as pylab
 
-from classes.Test import Test
+# adding folders to sys.path for importing
+# see: https://stackoverflow.com/questions/31291608/effect-of-using-sys-path-insert0-path-and-sys-pathappend-when-loading-modul
+package_folders = [
+    "classes"
+]
+
+for folder in package_folders:
+    sys.path.insert( 1, os.path.join(os.path.dirname(__file__), "..", folder) )
+
+from Test import Test
 
 # from: https://stackoverflow.com/questions/12444716/how-do-i-set-the-figure-title-and-axes-labels-font-size-in-matplotlib
 params = {
@@ -87,4 +101,4 @@ num_tests = 22
 c_prop_tests = [1, 2, 3, 4, 19, 20, 21]
 
 for test in range(num_tests):
-    Test(test + 1, 1e-3, massints[test], test_names[test], "mw", c_prop_tests, results, input_file).run_test(solver_file)
+    Test(test + 1, 0, massints[test], test_names[test], "mw", c_prop_tests, results, input_file, mode).run_test(solver_file)

@@ -4,15 +4,19 @@ import pandas            as pd
 import matplotlib.pyplot as plt
 
 class DischargeErrors:
-    def __init__(self, solver, relativepath=""):
+    def __init__(
+        self, 
+        solver, 
+        relativepath=""
+    ):
         self.solver = solver;
 
         self.relativepath = relativepath
 
         if (relativepath == "debug"):
-            self.relativepath = os.path.join("..", "out", "build", "x64-Debug", "test", "results")
+            self.relativepath = os.path.join("..", "..", "out", "build", "x64-Debug", "test", "results")
         elif (relativepath == "release"):
-            self.relativepath = os.path.join("..", "out", "build", "x64-Release", "test", "results")
+            self.relativepath = os.path.join("..", "..", "out", "build", "x64-Release", "test", "results")
     
         self.savepath = os.path.join(os.path.dirname(__file__), self.relativepath)
 
@@ -39,7 +43,11 @@ class DischargeErrors:
         self.qy1x_max = qy1x.abs().max(axis=1) if solver == "mw" else None
         self.qy1y_max = qy1y.abs().max(axis=1) if solver == "mw" else None
 
-    def plot_errors(self, test_number, test_name):
+    def plot_errors(
+        self, 
+        test_number, 
+        test_name
+    ):
 
         print("Plotting maximum discharge errors for test %s..." % test_name)
 
@@ -54,7 +62,7 @@ class DischargeErrors:
             plt.scatter(self.sim_time["sim_time"], self.qy1x_max, label='$q^{1x}_y$', marker='x')
             plt.scatter(self.sim_time["sim_time"], self.qy1y_max, label='$q^{1y}_y$', marker='x')
         
-        xlim = self.sim_time["sim_time"][0], self.sim_time["sim_time"][-1]
+        xlim = ( self.sim_time["sim_time"].iloc[0], self.sim_time["sim_time"].iloc[-1] )
 
         plt.ticklabel_format(axis='x', style="sci")
         plt.xlim(xlim)

@@ -1,9 +1,17 @@
+import os
+import sys
 import subprocess
 
-import Solution
-import DischargeErrors
+# adding current folder to sys.path so that 
+# imports can be done regardless of 
+# where Test is being imported
+sys.path.insert( 1, os.path.join( os.path.dirname(__file__) ) )
 
-def set_params(test_case, 
+from Solution        import Solution
+from DischargeErrors import DischargeErrors
+
+def set_params(
+    test_case, 
     results, 
     epsilon, 
     massint, 
@@ -34,15 +42,17 @@ def set_params(test_case,
         fp.write(params)
 
 class Test:
-    def __init__(self,
+    def __init__(
+        self,
         test_case, 
-        eps, 
+        epsilon, 
         massint, 
         test_name, 
         solver, 
         c_prop_tests, 
         results, 
-        input_file
+        input_file,
+        mode=""
     ):
         self.test_case = test_case
         self.epsilon   = epsilon
@@ -61,8 +71,11 @@ class Test:
 
         self.results    = results
         self.input_file = input_file
+        self.mode       = mode
 
-    def set_params(self):
+    def set_params(
+        self
+    ):
         set_params(
             self.test_case,
             self.results,
@@ -75,12 +88,15 @@ class Test:
             self.input_file
         )
 
-    def run_test(self, solver_file):
+    def run_test(
+        self,
+        solver_file
+    ):
         self.set_params()
 
         subprocess.run( [solver_file, self.input_file] )
 
         if self.c_prop == "on":
-            DischargeErrors(self.solver).plot_errors(self.test_case, self.test_name)
+            DischargeErrors(self.solver, self.mode).plot_errors(self.test_case, self.test_name)
         else:
-            Solution().plot_soln(self.test_case, self.test_name)
+            Solution(self.mode).plot_soln(self.test_case, self.test_name)

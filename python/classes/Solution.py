@@ -1,11 +1,20 @@
 import os
-import numpy  as np
-import pandas as pd
+import numpy             as np
+import pandas            as pd
 import matplotlib.pyplot as plt
 
 from mpl_toolkits.mplot3d import Axes3D
 
-def plot_surface(X, Y, Z, zlabel, test_number, path, quantity, test_name):
+def plot_surface(
+    X, 
+    Y, 
+    Z, 
+    zlabel, 
+    test_number, 
+    path, 
+    quantity, 
+    test_name
+):
     fig, ax = plt.subplots( subplot_kw={"projection" : "3d"} )
     
     ax.plot_surface(X, Y, Z)
@@ -19,7 +28,16 @@ def plot_surface(X, Y, Z, zlabel, test_number, path, quantity, test_name):
 
     plt.clf()
 
-def plot_contours(X, Y, Z, ylabel, test_number, path, quantity, test_name):
+def plot_contours(
+    X, 
+    Y, 
+    Z, 
+    ylabel, 
+    test_number, 
+    path, 
+    quantity, 
+    test_name
+):
     fig, ax = plt.subplots()
     
     contourset = ax.contourf(X, Y, Z)
@@ -36,13 +54,16 @@ def plot_contours(X, Y, Z, ylabel, test_number, path, quantity, test_name):
     plt.clf()
 
 class Solution:
-    def __init__(self, relativepath=""):
+    def __init__(
+        self, 
+        relativepath=""
+    ):
         self.relativepath = relativepath
 
         if (relativepath == "debug"):
-            self.relativepath = os.path.join("..", "out", "build", "x64-Debug", "test", "results")
+            self.relativepath = os.path.join("..", "..", "out", "build", "x64-Debug", "test", "results")
         elif (relativepath == "release"):
-            self.relativepath = os.path.join("..", "out", "build", "x64-Release", "test", "results")
+            self.relativepath = os.path.join("..", "..", "out", "build", "x64-Release", "test", "results")
         
         self.savepath = os.path.join(os.path.dirname(__file__), self.relativepath)
  
@@ -83,12 +104,16 @@ class Solution:
         
         self.X, self.Y = np.meshgrid(x, y)
         
-        self.h  = pd.read_csv( os.path.join(path, h_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
-        self.qx = pd.read_csv( os.path.join(path, qx_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
-        self.qy = pd.read_csv( os.path.join(path, qy_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
-        self.z  = pd.read_csv( os.path.join(path, z_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.h  = pd.read_csv( os.path.join(self.savepath, h_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.qx = pd.read_csv( os.path.join(self.savepath, qx_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.qy = pd.read_csv( os.path.join(self.savepath, qy_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.z  = pd.read_csv( os.path.join(self.savepath, z_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
 
-    def plot_soln(self, test_number, test_name):
+    def plot_soln(
+        self, 
+        test_number, 
+        test_name
+    ):
         print("Plotting flow solution and topography for test %s..." % test_name)
 
         #plot_surface (self.X, self.Y, self.h, "$\eta \, (m)$",         test_number, self.path, "eta", test_name)
