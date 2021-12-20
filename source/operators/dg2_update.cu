@@ -118,7 +118,15 @@ void dg2_update
     real y_e = j_e * dy_loc_e + dy_loc_e / C(2.0);
     real y_s = j_s * dy_loc_s + dy_loc_s / C(2.0);
     real y_w = j_w * dy_loc_w + dy_loc_w / C(2.0);
-
+    /*
+    if (
+        x > ( (sim_params.xsz) * dx_finest) || 
+        y > ( (sim_params.ysz) * dy_finest) 
+       )
+    {
+        return;
+    }
+    */
     // between local && east, x, y unit is (1.0, 0.5)
     real x_e_face = x - dx_loc / C(2.0) + C(1.0) * dx_loc;
     real y_e_face = y - dy_loc / C(2.0) + C(0.5) * dy_loc;
@@ -276,21 +284,19 @@ void dg2_update
 
     FlowCoeffs Lx = {};
 
-    Lx.set_0( (F_w - F_e) / dx_loc );
+    Lx.set_0(-C(1.0) * (F_e - F_w) / dx_loc);
 
     Lx.set_1x
     (
         -sqrt( C(3.0) ) / dx_loc *
         (
-            F_w + F_e
+            F_e + F_w
             - (U0x_star - U1x_star).phys_flux_x(solver_params.tol_h, sim_params.g)
             - (U0x_star + U1x_star).phys_flux_x(solver_params.tol_h, sim_params.g)
         )
     );
 
-    FlowCoeffs old = Lx;
-
-    FlowCoeffs Sbx = get_bed_src_x
+    Lx += get_bed_src_x
     (
         coeffs.local_face_val(basis_e_loc).h + z_e_neg,
         coeffs.local_face_val(basis_w_loc).h + z_w_pos,
@@ -304,7 +310,7 @@ void dg2_update
         idx
     );
 
-    Lx += get_bed_src_x
+    FlowCoeffs Sbx = get_bed_src_x
     (
         coeffs.local_face_val(basis_e_loc).h + z_e_neg,
         coeffs.local_face_val(basis_w_loc).h + z_w_pos,
@@ -323,7 +329,7 @@ void dg2_update
 
     FlowCoeffs Ly = {};
 
-    Ly.set_0( (F_s - F_n) / dy_loc );
+    Ly.set_0(-C(1.0) * (F_n - F_s) / dy_loc);
 
     Ly.set_1y
     (
@@ -334,7 +340,7 @@ void dg2_update
             - (U0y_star + U1y_star).phys_flux_y(solver_params.tol_h, sim_params.g)
         )
     );
-
+    
     Ly += get_bed_src_y
     (
         coeffs.local_face_val(basis_n_loc).h + z_n_neg,
@@ -348,23 +354,15 @@ void dg2_update
         coeffs
     );
 
-    coeffs += dt * Lx;
+    coeffs += dt * (Lx + Ly);
 
-    coeffs += dt * Ly;
-
-    if (false)//idx == 183)
+    if (i == 49 && j == 49 && level == 7)
     {
-        printf("i: %i, j: %i, idx: %i\n", i, j, idx);
-        printf("coeffs.qx0: %.15f\n", coeffs.qx0);
-        printf("coeffs.qx1x: %.15f\n", coeffs.qx1x);
-        printf("coeffs.qx1y: %.15f\n", coeffs.qx1y);
-        //printf("Lx.qx0: %.15f\n", old.qx0);
-        //printf("Ly.qx0: %.15f\n", Ly.qy0);
-        //printf("Sbx.qx0: %.15f\n", Sbx.qx0);
-        //printf("F_e.qx: %.15f\n", F_e.qx);
+        //printf("i: %d, j: %d\n", i, j);
+        //printf("x: %f, y: %f\n", x, y);
+        //printf("%.15f\n", Sbx.qx0);
         //printf("F_w.qx: %.15f\n", F_w.qx);
-        //printf("Phys 1: %.15f\n", ((U0x_star - U1x_star).phys_flux_x(solver_params.tol_h, sim_params.g)).qx);
-        //printf("Phys 2: %.15f\n", ((U0x_star + U1x_star).phys_flux_x(solver_params.tol_h, sim_params.g)).qx);
+        //printf("Sbx.qx: %.15f\n", Sbx.qx0);
     }
 
     real& h0   = d_assem_sol_store.h0[idx]  ;
@@ -377,30 +375,16 @@ void dg2_update
     real& qy1x = d_assem_sol_store.qy1x[idx];
     real& qy1y = d_assem_sol_store.qy1y[idx];
 
-    h0   =                 (rkdg2) ? C(0.5) * (coeffs.h0   + h0  ) : coeffs.h0  ;
-    h1x  = (thin) ? h1x  : (rkdg2) ? C(0.5) * (coeffs.h1x  + h1x ) : coeffs.h1x ;
-    h1y  = (thin) ? h1y  : (rkdg2) ? C(0.5) * (coeffs.h1y  + h1y ) : coeffs.h1y ;
-    qx0  =                 (rkdg2) ? C(0.5) * (coeffs.qx0  + qx0 ) : coeffs.qx0 ;
-    qx1x = (thin) ? qx1x : (rkdg2) ? C(0.5) * (coeffs.qx1x + qx1x) : coeffs.qx1x;
-    qx1y = (thin) ? qx1y : (rkdg2) ? C(0.5) * (coeffs.qx1y + qx1y) : coeffs.qx1y;
-    qy0  =                 (rkdg2) ? C(0.5) * (coeffs.qy0  + qy0 ) : coeffs.qy0 ; 
-    qy1x = (thin) ? qy1x : (rkdg2) ? C(0.5) * (coeffs.qy1x + qy1x) : coeffs.qy1x;
-    qy1y = (thin) ? qy1y : (rkdg2) ? C(0.5) * (coeffs.qy1y + qy1y) : coeffs.qy1y;
+    h0   = (rkdg2) ? C(0.5) * (coeffs.h0   + h0  ) : coeffs.h0  ;
+    h1x  = (rkdg2) ? C(0.5) * (coeffs.h1x  + h1x ) : coeffs.h1x ;
+    h1y  = (rkdg2) ? C(0.5) * (coeffs.h1y  + h1y ) : coeffs.h1y ;
+    qx0  = (rkdg2) ? C(0.5) * (coeffs.qx0  + qx0 ) : coeffs.qx0 ;
+    qx1x = (rkdg2) ? C(0.5) * (coeffs.qx1x + qx1x) : coeffs.qx1x;
+    qx1y = (rkdg2) ? C(0.5) * (coeffs.qx1y + qx1y) : coeffs.qx1y;
+    qy0  = (rkdg2) ? C(0.5) * (coeffs.qy0  + qy0 ) : coeffs.qy0 ;
+    qy1x = (rkdg2) ? C(0.5) * (coeffs.qy1x + qy1x) : coeffs.qy1x;
+    qy1y = (rkdg2) ? C(0.5) * (coeffs.qy1y + qy1y) : coeffs.qy1y;
     
-    /*if (abs(qx0) < solver_params.tol_q)
-    {
-        qx0  = C(0.0);
-        qx1x = C(0.0);
-        qx1y = C(0.0);
-    }
-    
-    if (abs(qy0) < solver_params.tol_q)
-    {
-        qy0  = C(0.0);
-        qy1x = C(0.0);
-        qy1y = C(0.0);
-    }*/
-
     const bool below_depth = (h0 < solver_params.tol_h);
 
     if (below_depth)

@@ -52,6 +52,7 @@
 #include "write_c_prop_data.cuh"
 #include "write_mesh_info.h"
 #include "write_gauge_point_data.cuh"
+#include "write_soln_planar.cuh"
 #include "write_soln_row_major.cuh"
 #include "write_soln_vtk.cuh"
 
@@ -307,7 +308,7 @@ int main
 
 	CHECK_CUDA_ERROR(peek());
 	CHECK_CUDA_ERROR(sync());
-
+	/*
 	write_all_raster_maps
 	(
 		respath,
@@ -319,7 +320,7 @@ int main
 		dx_finest,
 		first_t_step
 	);
-	
+	*/
 	generate_all_morton_codes<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 	(
 		d_morton_codes,
@@ -658,11 +659,6 @@ int main
 			CHECK_CUDA_ERROR(peek());
 			CHECK_CUDA_ERROR(sync());
 			
-			dt = get_dt_CFL(d_dt_CFL, d_buf_assem_sol.length);
-
-			CHECK_CUDA_ERROR(peek());
-			CHECK_CUDA_ERROR(sync());
-
 			reinsert_assem_sol<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(
 				d_buf_assem_sol,
@@ -785,6 +781,21 @@ int main
 			if (plot_params.vtk)
 			{
 				write_soln_vtk
+				(
+					respath,
+					d_assem_sol,
+					d_dt_CFL,
+					dx_finest,
+					dy_finest,
+					sim_params,
+					solver_params,
+					massint
+				);
+			}
+			
+			if (plot_params.planar)
+			{
+				write_soln_planar
 				(
 					respath,
 					d_assem_sol,

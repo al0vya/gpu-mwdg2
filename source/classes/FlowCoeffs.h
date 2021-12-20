@@ -143,8 +143,8 @@ inline FlowCoeffs operator+
 {
 	return
 	{
-		lhs.h0  + rhs.h0,  lhs.h0  + rhs.h1x,  lhs.h0  + rhs.h1y,
-		lhs.qx0 + rhs.qx0, lhs.qx0 + rhs.qx1x, lhs.qx0 + rhs.qx1y,
-		lhs.qy0 + rhs.qy0, lhs.qy0 + rhs.qy1x, lhs.qy0 + rhs.qy1y
+		lhs.h0  + rhs.h0,  lhs.h1x  + rhs.h1x,  lhs.h1y  + rhs.h1y,
+		lhs.qx0 + rhs.qx0, lhs.qx1x + rhs.qx1x, lhs.qx1y + rhs.qx1y,
+		lhs.qy0 + rhs.qy0, lhs.qy1x + rhs.qy1x, lhs.qy1y + rhs.qy1y
 	};
 }

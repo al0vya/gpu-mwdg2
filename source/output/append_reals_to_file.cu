@@ -42,12 +42,12 @@ void append_reals_to_file
 	{
 		fprintf(fp, "%" NUM_FIG NUM_FRMT ",", h_results[i]);
 
-		sum += h_results[i];
+		sum += abs(h_results[i]);
 	}
 	
 	fprintf(fp, "\n");
 
-	printf("Appending to %s: %" NUM_FRMT "\n", filename, sum / array_length);
+	printf("Appending to %s: %" NUM_FIG NUM_FRMT "\n", filename, sum / array_length);
 
 	fclose(fp);
 

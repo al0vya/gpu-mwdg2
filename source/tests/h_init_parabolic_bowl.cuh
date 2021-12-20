@@ -12,7 +12,7 @@ real h_init_parabolic_bowl
 	const real& z_int
 )
 {
-	const real eta = C(0.3) * x_or_y_int + C(5.0);
+	const real eta = C(0.2) * x_or_y_int + C(10.0);
 
 	return max(C(0.0), eta - z_int);
 }

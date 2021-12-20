@@ -137,6 +137,18 @@ __host__ void write_soln_vtk
 	fprintf
 	(
 		fp,
+		"\nSCALARS dt float 1\n"
+		"LOOKUP_TABLE default\n"
+	);
+
+	for (int i = 0; i < d_assem_sol.length; i++)
+	{
+		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", dt[i] );
+	}
+	
+	fprintf
+	(
+		fp,
 		"\nSCALARS h float 1\n"
 		"LOOKUP_TABLE default\n"
 	);
@@ -146,18 +158,6 @@ __host__ void write_soln_vtk
 		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", h[i] );
 	}
 	
-	fprintf
-	(
-		fp,
-		"\nSCALARS dt float 1\n"
-		"LOOKUP_TABLE default\n"
-	);
-
-	for (int i = 0; i < d_assem_sol.length; i++)
-	{
-		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", dt[i] );
-	}
-
 	fprintf
 	(
 		fp,
@@ -196,6 +196,18 @@ __host__ void write_soln_vtk
 	for (int i = 0; i < d_assem_sol.length; i++)
 	{
 		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", z[i] );
+	}
+	
+	fprintf
+	(
+		fp,
+		"\nSCALARS eta float 1\n"
+		"LOOKUP_TABLE default\n"
+	);
+
+	for (int i = 0; i < d_assem_sol.length; i++)
+	{
+		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", h[i] + z[i] );
 	}
 
 	fclose(fp);

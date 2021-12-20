@@ -68,21 +68,21 @@ void modal_projections
 	real z_NW = d_nodal_vals.z[NW];
 	real z_NE = d_nodal_vals.z[NE];
 
-	d_assem_sol.h0[idx]  = C(0.25) * (h_NW  + h_NE  + h_SE  + h_SW);
+	d_assem_sol.h0[idx]  = C(0.25) * (h_NW  + h_NE  + h_SE  + h_SW );
 	d_assem_sol.qx0[idx] = C(0.25) * (qx_NW + qx_NE + qx_SE + qx_SW);
 	d_assem_sol.qy0[idx] = C(0.25) * (qy_NW + qy_NE + qy_SE + qy_SW);
-	d_assem_sol.z0[idx]  = C(0.25) * (z_NW  + z_NE  + z_SE  + z_SW);
+	d_assem_sol.z0[idx]  = C(0.25) * (z_NW  + z_NE  + z_SE  + z_SW );
 
 	if (solver_params.solver_type == MWDG2)
 	{
-		d_assem_sol.h1x[idx]  = ( (h_NE  - h_NW)  / C(2.0) + (h_SE  - h_SW)  / C(2.0) ) / ( C(2.0) * sqrt( C(3.0) ) );
-		d_assem_sol.qx1x[idx] = ( (qx_NE - qx_NW) / C(2.0) + (qx_SE - qx_SW) / C(2.0) ) / ( C(2.0) * sqrt( C(3.0) ) );
-		d_assem_sol.qy1x[idx] = ( (qy_NE - qy_NW) / C(2.0) + (qy_SE - qy_SW) / C(2.0) ) / ( C(2.0) * sqrt( C(3.0) ) );
-		d_assem_sol.z1x[idx]  = ( (z_NE  - z_NW)  / C(2.0) + (z_SE  - z_SW)  / C(2.0) ) / ( C(2.0) * sqrt( C(3.0) ) );
+		d_assem_sol.h1x[idx]  = (h_NE  - h_NW  + h_SE  - h_SW ) / ( C(4.0) * sqrt( C(3.0) ) );
+		d_assem_sol.qx1x[idx] = (qx_NE - qx_NW + qx_SE - qx_SW) / ( C(4.0) * sqrt( C(3.0) ) );
+		d_assem_sol.qy1x[idx] = (qy_NE - qy_NW + qy_SE - qy_SW) / ( C(4.0) * sqrt( C(3.0) ) );
+		d_assem_sol.z1x[idx]  = (z_NE  - z_NW  + z_SE  - z_SW ) / ( C(4.0) * sqrt( C(3.0) ) );
 
-		d_assem_sol.h1y[idx]  = ( (h_NE  - h_SE)  / C(2.0) + (h_NW  - h_SW)  / C(2.0) ) / ( C(2.0) * sqrt( C(3.0) ) );
-		d_assem_sol.qx1y[idx] = ( (qx_NE - qx_SE) / C(2.0) + (qx_NW - qx_SW) / C(2.0) ) / ( C(2.0) * sqrt( C(3.0) ) );
-		d_assem_sol.qy1y[idx] = ( (qy_NE - qy_SE) / C(2.0) + (qy_NW - qy_SW) / C(2.0) ) / ( C(2.0) * sqrt( C(3.0) ) );
-		d_assem_sol.z1y[idx]  = ( (z_NE  - z_SE)  / C(2.0) + (z_NW  - z_SW)  / C(2.0) ) / ( C(2.0) * sqrt( C(3.0) ) );
+		d_assem_sol.h1y[idx]  = (h_NE  - h_SE  + h_NW  - h_SW ) / ( C(4.0) * sqrt( C(3.0) ) );
+		d_assem_sol.qx1y[idx] = (qx_NE - qx_SE + qx_NW - qx_SW) / ( C(4.0) * sqrt( C(3.0) ) );
+		d_assem_sol.qy1y[idx] = (qy_NE - qy_SE + qy_NW - qy_SW) / ( C(4.0) * sqrt( C(3.0) ) );
+		d_assem_sol.z1y[idx]  = (z_NE  - z_SE  + z_NW  - z_SW ) / ( C(4.0) * sqrt( C(3.0) ) );
 	}
 }

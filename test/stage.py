@@ -19,9 +19,9 @@ path = os.path.dirname(__file__)
 
 stagefile = "stage.wd"
 
-stages_adaptive_3 = pd.read_csv( os.path.join(path, stagefile ) )
+stage = pd.read_csv( os.path.join(path, stagefile ) )
 
-plt.plot(stages_adaptive_3["time"], stages_adaptive_3["stage1"], linewidth=2)
+plt.plot(stage["time"], stage["stage1"], linewidth=2)
 plt.xlabel("Time (s)")
 plt.ylabel("h (m)")
 plt.legend()

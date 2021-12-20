@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 include(CheckLanguage)
 
 check_language(CUDA)
-
+enable_language(CUDA)
+	
 enable_language(CXX)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -12,15 +13,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(proj-gpu-mwdg2)
 
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
-
 add_executable(gpu-mwdg2)
 
 if (CMAKE_CUDA_COMPILER)
-	
-	enable_language(CUDA)
 	
 	set_property(TARGET gpu-mwdg2 PROPERTY CUDA_SEPARABLE_COMPILATION ON)
 	
@@ -87,6 +82,9 @@ if (CMAKE_CUDA_COMPILER)
 		source/output/write_mesh_info.cpp
 		source/output/write_raster_file.cu
 		source/output/write_reals_to_file.cu
+		source/output/write_soln_planar.cu
+		source/output/write_soln_planar_dg2.cu
+		source/output/write_soln_planar_fv1.cu
 		source/output/write_soln_row_major.cu
 		source/output/write_soln_vtk.cu
 		source/utilities/cuda_utils.cu
@@ -117,7 +115,3 @@ endif()
 	 "source/utilities/"
 	 "source/zorder/"
 	 )
-
-if (CMAKE_BUILD_TYPE MATCHES Debug)
-	target_compile_definitions(gpu-mwdg2 INTERFACE _DEBUG)
-endif()

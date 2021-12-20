@@ -26,7 +26,7 @@ SolverParams read_solver_params
 	else if ( !strncmp(solvertype_buf, "mw", 2) )
 	{
 		solver_params.solver_type = MWDG2;
-		solver_params.CFL         = C(0.33);
+		solver_params.CFL         = C(0.25);
 	}
 	else
 	{

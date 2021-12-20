@@ -128,7 +128,7 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-	    	sim_params.time = C(100.0);
+	    	sim_params.time = C(60.0);
 	    	sim_params.manning = C(0.0);
 	    	break;
 	    case 5: // wet dam break
@@ -202,7 +202,7 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-			sim_params.time = C(14.4) * 2;
+			sim_params.time = C(27.0) * 4;
 	    	sim_params.manning = C(0.0);
 	    	break;
 	    case 19: // three cones

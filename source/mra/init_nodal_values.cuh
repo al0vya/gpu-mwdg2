@@ -10,7 +10,7 @@
 #include "Coordinate.h"
 
 #include "h_init.cuh"
-#include "bed_data.cuh"
+#include "topo.cuh"
 
 // initialise nodal values of h, qx, qy and z depending on x, y nodal values
 __global__

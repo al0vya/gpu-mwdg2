@@ -55,7 +55,7 @@ void init_nodal_values
 
 	real& z_int = d_nodal_vals.z[idx];
 
-	z_int = bed_data
+	z_int = topo
 	(
 		x_int, 
 		y_int, 

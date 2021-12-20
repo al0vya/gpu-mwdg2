@@ -5,6 +5,7 @@
 
 #include "cuda_utils.cuh"
 
+#include "Points.h"
 #include "AssembledSolution.h"
 #include "SimulationParams.h"
 #include "SolverParams.h"
@@ -12,20 +13,6 @@
 
 #include "compact.cuh"
 #include "get_lvl_idx.cuh"
-
-typedef struct Points
-{
-	real ll_x;
-	real ll_y;
-	real ul_x;
-	real ul_y;
-	real lr_x;
-	real lr_y;
-	real ur_x;
-	real ur_y;
-	
-} Points;
-
 __host__ void write_soln_vtk
 (
 	const char*              respath,
