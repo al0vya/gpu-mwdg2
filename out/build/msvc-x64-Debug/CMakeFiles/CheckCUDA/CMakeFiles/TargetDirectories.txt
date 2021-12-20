@@ -1,2 +1,0 @@
-C:/Users/alovy/Documents/gpu-mwdg2/out/build/msvc-x64-Debug/CMakeFiles/CheckCUDA/CMakeFiles/edit_cache.dir
-C:/Users/alovy/Documents/gpu-mwdg2/out/build/msvc-x64-Debug/CMakeFiles/CheckCUDA/CMakeFiles/rebuild_cache.dir

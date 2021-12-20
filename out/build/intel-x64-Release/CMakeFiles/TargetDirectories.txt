@@ -1,3 +1,0 @@
-C:/Users/alovy/Documents/gpu-mwdg2/out/build/intel-x64-Release/CMakeFiles/gpu-mwdg2.dir
-C:/Users/alovy/Documents/gpu-mwdg2/out/build/intel-x64-Release/CMakeFiles/edit_cache.dir
-C:/Users/alovy/Documents/gpu-mwdg2/out/build/intel-x64-Release/CMakeFiles/rebuild_cache.dir
