@@ -774,7 +774,8 @@ int main
 					d_rev_z_order,
 					d_indices,
 					d_assem_sol,
-					d_plot_assem_sol
+					d_plot_assem_sol,
+					massint
 				);
 			}
 

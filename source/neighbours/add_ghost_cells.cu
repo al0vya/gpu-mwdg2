@@ -468,7 +468,7 @@ void add_ghost_cells
 				// monai test case
 				real hp  = d_assem_sol.h0[idx];
 				real qxp = d_assem_sol.qx0[idx];
-				real up  = (hp > C(1e-4)) ? qxp / hp : C(0.0);
+				real up  = (hp > solver_params.tol_h) ? qxp / hp : C(0.0);
 
 				real hb = C(0.13535);
 				real ub = C(0.0);

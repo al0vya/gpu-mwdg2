@@ -4,6 +4,7 @@
 #include "AssembledSolution.h"
 #include "ScaleCoefficients.h"
 #include "SolverParams.h"
+#include "SaveInterval.h"
 
 #include "write_reals_to_file.cuh"
 
@@ -19,5 +20,6 @@ void write_soln_row_major
 	MortonCode*              d_rev_z_order,
 	MortonCode*              d_indices,
 	AssembledSolution        d_assem_sol,
-	AssembledSolution        d_plot_assem_sol
+	AssembledSolution        d_plot_assem_sol,
+	SaveInterval&            saveint
 );

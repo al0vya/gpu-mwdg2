@@ -118,15 +118,9 @@ void dg2_update
     real y_e = j_e * dy_loc_e + dy_loc_e / C(2.0);
     real y_s = j_s * dy_loc_s + dy_loc_s / C(2.0);
     real y_w = j_w * dy_loc_w + dy_loc_w / C(2.0);
-    /*
-    if (
-        x > ( (sim_params.xsz) * dx_finest) || 
-        y > ( (sim_params.ysz) * dy_finest) 
-       )
-    {
-        return;
-    }
-    */
+    
+    if ( (i >= sim_params.xsz) || (j >= sim_params.ysz) ) return;
+    
     // between local && east, x, y unit is (1.0, 0.5)
     real x_e_face = x - dx_loc / C(2.0) + C(1.0) * dx_loc;
     real y_e_face = y - dy_loc / C(2.0) + C(0.5) * dy_loc;
@@ -356,13 +350,25 @@ void dg2_update
 
     coeffs += dt * (Lx + Ly);
 
-    if (i == 49 && j == 49 && level == 7)
+    if (false)//idx == 2387)
     {
-        //printf("i: %d, j: %d\n", i, j);
-        //printf("x: %f, y: %f\n", x, y);
-        //printf("%.15f\n", Sbx.qx0);
-        //printf("F_w.qx: %.15f\n", F_w.qx);
-        //printf("Sbx.qx: %.15f\n", Sbx.qx0);
+        printf("i: %d, j: %d\n", i, j);
+        printf("x: %f, y: %f\n", x, y);
+        printf("Lx.h0: %.15f\n",  Lx.h0);
+        printf("Lx.qx0: %.15f\n", Lx.qx0);
+        printf("Ly.h0: %.15f\n",  Ly.h0);
+        printf("Ly.qy0: %.15f\n", Ly.qy0);
+        printf("coeffs.h1y: %.15f\n", coeffs.h1y);
+        printf("coeffs.h0: %.15f\n", coeffs.h0);
+        printf("coeffs.qx0: %.15f\n", coeffs.qx0);
+        printf("coeffs.qy0: %.15f\n", coeffs.qy0);
+        printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
+        printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
+        printf("F_n.h: %.15f\n", F_n.h);
+        printf("F_s.h: %.15f\n", F_s.h);
+        printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_n_loc));
+        printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_s_loc));
+        
     }
 
     real& h0   = d_assem_sol_store.h0[idx]  ;

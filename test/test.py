@@ -4,16 +4,23 @@ import sys
 def EXIT_HELP():
     help_message = (
         "This tool is used in the command line as follows:\n\n" +
-        " - python test.py run <MODE> <SOLVER> <EPSILON> <MAX_REF_LVL> (runs all in-built test cases)\n" +
+        " - python test.py test <MODE> <SOLVER> <EPSILON> <MAX_REF_LVL> (runs all in-built test cases)\n" +
         "    MODE        : [debug,release]\n" +
         "    SOLVER      : [hw,mw]\n" +
         "    EPSILON     : [error threshold]\n" +
         "    MAX_REF_LVL : [maximum refinment level]\n" +
         "\n" +
+        " - python test.py run <MODE> <SOLVER> <TEST_CASE> <EPSILON> <MAX_REF_LVL> <SAVE_INT> (runs a single in-built test cases)\n" +
+        "    MODE        : [debug,release]\n" +
+        "    SOLVER      : [hw,mw]\n" +
+        "    EPSILON     : [error threshold]\n" +
+        "    MAX_REF_LVL : [maximum refinment level]\n" +
+        "    SAVE_INT    : [interval in seconds that solution data are saved]\n" +
+        "\n" +
         " - python test.py planar <MODE> <SOLVER> <TEST_CASE_DIR> <PHYS_QUANTITY> <INTERVAL> (plots planar solution)\n" +
         "    MODE          : [debug,release]\n" +
         "    SOLVER        : [hw,mw]\n" +
-        "    PHYS_QUANTITY : [h,qx,qy,z]\n" +
+        "    PHYS_QUANTITY : [h,eta,qx,qy,z]\n" +
         "    INTERVAL      : [interval]\n" +
         "\n" +
         " - python test.py row_major <MODE> <PLOT_TYPE> (plots either solution surface or contours)\n" +
@@ -30,6 +37,7 @@ def EXIT_HELP():
 if len(sys.argv) < 3:
     EXIT_HELP()
 
+import imageio
 import subprocess
 import numpy             as np
 import pandas            as pd
@@ -37,6 +45,39 @@ import matplotlib.pyplot as plt
 import matplotlib.pylab  as pylab
 
 from mpl_toolkits.mplot3d import Axes3D
+
+####################################
+# NATURAL SORTING, READ UP ON THIS #
+####################################
+
+import re
+
+def atoi(text):
+    return int(text) if text.isdigit() else text
+
+def natural_keys(text):
+    '''
+    alist.sort(key=natural_keys) sorts in human order
+    http://nedbatchelder.com/blog/200712/human_sorting.html
+    (See Toothy's implementation in the comments)
+    '''
+    return [ atoi(c) for c in re.split(r'(\d+)', text) ]
+
+def get_filenames_natural_order(path):
+    filenames_natural_order = os.listdir(path)
+    
+    filenames_natural_order.sort(key=natural_keys)
+    
+    return filenames_natural_order
+
+####################################
+####################################
+####################################
+
+def clear_jpg_files(path):
+    for filename in os.listdir(path):
+        if filename.endswith(".jpg"):
+            os.remove( os.path.join(path, filename) )
 
 def set_path(
     mode,
@@ -50,6 +91,56 @@ def set_path(
         EXIT_HELP()
         
     return path
+
+test_names = [
+    "1D-c-prop-x-dir-wet",
+    "1D-c-prop-y-dir-wet",
+    "1D-c-prop-x-dir-wet-dry",
+    "1D-c-prop-y-dir-wet-dry",
+    "wet-dam-break-x-dir",
+    "wet-dam-break-y-dir",
+    "dry-dam-break-x-dir",
+    "dry-dam-break-y-dir",
+    "dry-dam-break-w-fric-x-dir",
+    "dry-dam-break-w-fric-y-dir",
+    "wet-building-overtopping-x-dir",
+    "wet-building-overtopping-y-dir",
+    "dry-building-overtopping-x-dir",
+    "dry-building-overtopping-y-dir",
+    "triangular-dam-break-x-dir",
+    "triangular-dam-break-y-dir",
+    "parabolic-bowl-x-dir",
+    "parabolic-bowl-y-dir",
+    "three-cones",
+    "differentiable-blocks",
+    "non-differentiable-blocks",
+    "radial-dam-break"
+]
+
+sim_times = [
+    1,    # 1D c prop x dir
+    1,    # 1D c prop y dir
+    1,    # 1D c prop x dir
+    1,    # 1D c prop y dir
+    2.5,  # wet dam break x dir
+    2.5,  # wet dam break y dir
+    1.3,  # dry dam break x dir
+    1.3,  # dry dam break y dir
+    1.3,  # dry dam break wh fric x dir
+    1.3,  # dry dam break wh fric y dir
+    10,   # wet building overtopping x dir
+    10,   # wet building overtopping y dir
+    10,   # dry building overtopping x dir
+    10,   # dry building overtopping y dir
+    29.6, # triangular dam break x dir
+    29.6, # triangular dam break y dir
+    108,  # parabolic bowl x dir
+    108,  # parabolic bowl y dir
+    1,    # three cones
+    1,    # differentiable blocks
+    1,    # non-differentiable blocks
+    3.5   # radial dam break
+]
 
 class PlanarSolution:
     def __init__(
@@ -144,10 +235,12 @@ class PlanarSolution:
             
             if   quantity == 'h':
                 S = H
+            elif quantity == "eta":
+                S = H + Z
             elif quantity == "qx":
                 S = QX
             elif quantity == "qy":
-                S = QX
+                S = QY
             elif quantity == 'z':
                 S = Z
             else:
@@ -155,29 +248,33 @@ class PlanarSolution:
             
             self.ax.plot_surface(X, Y, S, color="#599DEE", rcount=1, ccount=1, shade=False, edgecolors='k', linewidth=0.25)
             
-        plt.savefig( os.path.join(self.savepath, "planar-soln-" + str(self.interval) + ".svg"), bbox_inches="tight" )
+        elev = 29   if quantity != 'h' else 52
+        azim = -120 if quantity != 'h' else 40
+        
+        self.ax.view_init(elev, azim)
+        plt.savefig(os.path.join(self.savepath, "planar-soln-" + str(self.interval) + ".svg"), bbox_inches="tight")
 
 def plot_surface(
-    X, 
-    Y, 
-    Z, 
-    zlabel, 
-    test_number, 
-    path, 
-    quantity, 
+    X,
+    Y,
+    Z,
+    zlabel,
+    test_number,
+    path,
+    quantity,
+    interval,
     test_name
 ):
     fig, ax = plt.subplots( subplot_kw={"projection" : "3d"} )
     
     ax.plot_surface(X, Y, Z)
+    ax.set_zlim(-3, 3)
     ax.set_xlabel("x (m)")
     ax.set_ylabel("y (m)")
     ax.set_zlabel(zlabel)
     
-    filename = str(test_number) + "-surf-" + quantity + "-" + test_name
+    filename = test_name + "-surf-" + str(interval) + "-" + quantity + ".jpg" 
     
-    plt.show()
-
     plt.savefig(os.path.join(path, filename), bbox_inches="tight")
 
     plt.clf()
@@ -190,6 +287,7 @@ def plot_contours(
     test_number, 
     path, 
     quantity, 
+    interval, 
     test_name
 ):
     fig, ax = plt.subplots()
@@ -201,7 +299,7 @@ def plot_contours(
     colorbar = fig.colorbar(contourset)
     colorbar.ax.set_ylabel(ylabel)
     
-    filename = str(test_number) + "-cont-" + quantity + "-" + test_name
+    filename = test_name + "-cont-" + str(interval) + "-" + quantity + ".jpg"
 
     plt.savefig(os.path.join(path, filename), bbox_inches="tight")
     
@@ -209,22 +307,24 @@ def plot_contours(
 
 class RowMajorSolution:
     def __init__(
-        self, 
-        mode
+        self,
+        mode,
+        interval
     ):
         if mode != "debug" and mode != "release":
             EXIT_HELP()
         
         self.savepath = set_path(mode)
+        self.interval = interval
         
         print("Searching for RowMajorSolution data in path", self.savepath)
         
-        h_file  = "depths.csv"
-        qx_file = "discharge_x.csv"
-        qy_file = "discharge_y.csv"
-        z_file  = "topo.csv"
+        h_file  = "depths-" +      str(self.interval) + ".csv"
+        qx_file = "discharge_x-" + str(self.interval) + ".csv"
+        qy_file = "discharge_y-" + str(self.interval) + ".csv"
+        z_file  = "topo-" +        str(self.interval) + ".csv"
         
-        # finest reRowMajorSolution mesh info
+        # finest resolution mesh info
         mesh_info_file = "mesh_info.csv"
         
         mesh_info = pd.read_csv( os.path.join(self.savepath, mesh_info_file) )
@@ -266,23 +366,23 @@ class RowMajorSolution:
         test_number=0, 
         test_name="ad-hoc"
     ):
-        print("Plotting flow RowMajorSolution and topography for test %s..." % test_name)
+        print("Plotting flow solution and topography for test %s..." % test_name)
 
-        plot_surface(self.X, self.Y, self.h,  "$\eta \, (m)$",        test_number, self.savepath, "eta", test_name)
-        plot_surface(self.X, self.Y, self.qx, "$q_x \, (m^2s^{-1})$", test_number, self.savepath, "qx",  test_name)
-        plot_surface(self.X, self.Y, self.qy, "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy",  test_name)
+        #plot_surface(self.X, self.Y, self.h,  "$\h \, (m)$",          test_number, self.savepath, "h",  self.interval, test_name)
+        plot_surface(self.X, self.Y, self.qx, "$q_x \, (m^2s^{-1})$", test_number, self.savepath, "qx", self.interval, test_name)
+        #plot_surface(self.X, self.Y, self.qy, "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy", self.interval, test_name)
 
     def plot_contours(
         self, 
         test_number=0, 
         test_name="ad-hoc"
     ):
-        print("Plotting flow RowMajorSolution and topography for test %s..." % test_name)
+        print("Plotting flow solution and topography for test %s..." % test_name)
         
-        plot_contours(self.X, self.Y, self.h,  "$h  \, (m)$",          test_number, self.savepath, "h",  test_name)
-        plot_contours(self.X, self.Y, self.qx, "$q_x \, (m^2s^{-1})$", test_number, self.savepath, "qx", test_name)
-        plot_contours(self.X, self.Y, self.qy, "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy", test_name)
-        plot_contours(self.X, self.Y, self.z,  "$z  \, (m)$",          test_number, self.savepath, "z",  test_name)
+        plot_contours(self.X, self.Y, self.h,  "$h  \, (m)$",          test_number, self.savepath, "h",  self.interval, test_name)
+        plot_contours(self.X, self.Y, self.qx, "$q_x \, (m^2s^{-1})$", test_number, self.savepath, "qx", self.interval, test_name)
+        plot_contours(self.X, self.Y, self.qy, "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy", self.interval, test_name)
+        plot_contours(self.X, self.Y, self.z,  "$z  \, (m)$",          test_number, self.savepath, "z",  self.interval, test_name)
         
     def plot_soln(
         self, 
@@ -411,11 +511,12 @@ class Test:
         self.results    = results
         self.input_file = input_file
         self.mode       = mode
+        self.intervals  = int(sim_times[self.test_case - 1] / self.massint)
 
     def set_params(
         self
     ):
-        params = ("" +
+        params = (
             "test_case   %s\n" +
             "max_ref_lvl	%s\n" +
             "min_dt		1\n" +
@@ -456,8 +557,68 @@ class Test:
         if self.c_prop == "on":
             DischargeErrors(self.solver, self.mode).plot_errors(self.test_case, self.test_name)
         else:
-            RowMajorSolution(self.mode).plot_soln(self.test_case, self.test_name)
+            for interval in range(self.intervals):
+                RowMajorSolution(self.mode, interval).plot_soln(self.test_case, self.test_name, "surf")
 
+def animate(path):
+    images = []
+    
+    filenames_natural_order = get_filenames_natural_order(path)
+    
+    vars = ["h", "qx", "qy"]
+    
+    for test_name in test_names:
+        for var in vars:
+            suffix = var + ".jpg"
+            for filename in filenames_natural_order:
+                if filename.startswith(test_name) and filename.endswith(suffix):
+                    image = imageio.imread( os.path.join(path, filename) )
+                    
+                    images.append(image)
+            
+            if images:
+                imageio.mimsave(os.path.join(path, test_name + "-" + var + ".gif"), images)
+                images = []
+
+def run():
+    if len(sys.argv) > 7:
+        dummy, action, mode, solver, test_case, epsilon, max_ref_lvl, massint = sys.argv
+    
+        if   mode == "debug":
+            path = os.path.join("..", "out", "build", "x64-Debug")
+        elif mode == "release":
+            path = os.path.join("..", "out", "build", "x64-Release")
+        else:
+            EXIT_HELP()
+            
+        if solver != "hw" and solver != "mw":
+            EXIT_HELP()
+    else:
+        EXIT_HELP()
+
+    input_file  = os.path.join(path, "test", "inputs.par")
+    solver_file = os.path.join(path, "gpu-mwdg2.exe")
+    results     = os.path.join(path, "test", "results")
+    
+    clear_jpg_files(results)
+    
+    c_prop_tests = [1, 2, 3, 4, 19, 20, 21]
+    
+    Test(
+        int(test_case),
+        max_ref_lvl,
+        epsilon,
+        float(massint),
+        test_names[int(test_case) - 1],
+        solver,
+        c_prop_tests,
+        results,
+        input_file,
+        mode
+    ).run_test(solver_file)
+    
+    animate(results)
+    
 def run_tests():
     if len(sys.argv) > 5:
         dummy, action, mode, solver, epsilon, max_ref_lvl = sys.argv
@@ -478,63 +639,11 @@ def run_tests():
     solver_file = os.path.join(path, "gpu-mwdg2.exe")
     results     = os.path.join(path, "test", "results")
     
-    test_names = [
-        "1D-c-prop-x-dir-wet",
-        "1D-c-prop-y-dir-wet",
-        "1D-c-prop-x-dir-wet-dry",
-        "1D-c-prop-y-dir-wet-dry",
-        "wet-dam-break-x-dir",
-        "wet-dam-break-y-dir",
-        "dry-dam-break-x-dir",
-        "dry-dam-break-y-dir",
-        "dry-dam-break-w-fric-x-dir",
-        "dry-dam-break-w-fric-y-dir",
-        "wet-building-overtopping-x-dir",
-        "wet-building-overtopping-y-dir",
-        "dry-building-overtopping-x-dir",
-        "dry-building-overtopping-y-dir",
-        "triangular-dam-break-x-dir",
-        "triangular-dam-break-y-dir",
-        "parabolic-bowl-x-dir",
-        "parabolic-bowl-y-dir",
-        "three-cones",
-        "differentiable-blocks",
-        "non-differentiable-blocks",
-        "radial-dam-break"
-    ]
-    
-    massints = [
-        1,     # 1D c prop x dir
-        1,     # 1D c prop y dir
-        1,     # 1D c prop x dir
-        1,     # 1D c prop y dir
-        2.5,   # wet dam break x dir
-        2.5,   # wet dam break y dir
-        1.3,   # dry dam break x dir
-        1.3,   # dry dam break y dir
-        1.3,   # dry dam break wh fric x dir
-        1.3,   # dry dam break wh fric y dir
-        10,    # wet building overtopping x dir
-        10,    # wet building overtopping y dir
-        10,    # dry building overtopping x dir
-        10,    # dry building overtopping y dir
-        29.6,  # triangular dam break x dir
-        29.6,  # triangular dam break y dir
-        108,  # parabolic bowl x dir
-        108,  # parabolic bowl y dir
-        1,     # three cones
-        1,     # differentiable blocks
-        1,     # non-differentiable blocks
-        3.5    # radial dam break
-    ]
-    
     tests = []
     
     with open("tests.txt", 'r') as fp:
         tests = fp.readlines()
         tests = [int( test.rstrip() ) for test in tests]
-    
-    print(tests)
     
     c_prop_tests = [1, 2, 3, 4, 19, 20, 21]
     
@@ -543,7 +652,7 @@ def run_tests():
             test,
             max_ref_lvl,
             epsilon,
-            massints[test - 1],
+            sim_times[test - 1],
             test_names[test - 1],
             solver,
             c_prop_tests,
@@ -589,8 +698,10 @@ pylab.rcParams.update(params)
 
 action = sys.argv[1]
 
-if   action == "run":
+if   action == "test":
     run_tests()
+elif action == "run":
+    run()
 elif action == "planar":
     plot_soln_planar()
 elif action == "row_major":
