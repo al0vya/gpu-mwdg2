@@ -254,10 +254,43 @@ class PlanarSolution:
         self.ax.view_init(elev, azim)
         plt.savefig(os.path.join(self.savepath, "planar-soln-" + str(self.interval) + ".svg"), bbox_inches="tight")
 
+    class Limits:
+        def __init__(
+                self,
+                intervals,
+                results
+            ):
+                h  = []
+                qx = []
+                qy = []
+                z  = []
+                
+                for interval in range(intervals):
+                    h_file  = "depths-" +      str(interval) + ".csv"
+                    qx_file = "discharge_x-" + str(interval) + ".csv"
+                    qy_file = "discharge_y-" + str(interval) + ".csv"
+                    z_file  = "topo-" +        str(interval) + ".csv"
+                    
+                    h.append ( pd.read_csv( os.path.join(results, h_file ) )["results"] )
+                    qx.append( pd.read_csv( os.path.join(results, qx_file) )["results"] )
+                    qy.append( pd.read_csv( os.path.join(results, qy_file) )["results"] )
+                    z.append ( pd.read_csv( os.path.join(results, z_file ) )["results"] )
+                    
+                self.h_max  = np.max(h)
+                self.qx_max = np.max(qx)
+                self.qy_max = np.max(qy)
+                self.z_max  = np.max(z)
+                
+                self.h_min  = np.min(h)
+                self.qx_min = np.min(qx)
+                self.qy_min = np.min(qy)
+                self.z_min  = np.min(z)
+
 def plot_surface(
     X,
     Y,
     Z,
+    zlim,
     zlabel,
     test_number,
     path,
@@ -268,7 +301,7 @@ def plot_surface(
     fig, ax = plt.subplots( subplot_kw={"projection" : "3d"} )
     
     ax.plot_surface(X, Y, Z)
-    ax.set_zlim(-3, 3)
+    ax.set_zlim(zlim)
     ax.set_xlabel("x (m)")
     ax.set_ylabel("y (m)")
     ax.set_zlabel(zlabel)
@@ -362,15 +395,16 @@ class RowMajorSolution:
         self.z  = pd.read_csv( os.path.join(self.savepath, z_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
 
     def plot_surfaces(
-        self, 
+        self,
+        limits,
         test_number=0, 
         test_name="ad-hoc"
     ):
         print("Plotting flow solution and topography for test %s..." % test_name)
 
-        #plot_surface(self.X, self.Y, self.h,  "$\h \, (m)$",          test_number, self.savepath, "h",  self.interval, test_name)
-        plot_surface(self.X, self.Y, self.qx, "$q_x \, (m^2s^{-1})$", test_number, self.savepath, "qx", self.interval, test_name)
-        #plot_surface(self.X, self.Y, self.qy, "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy", self.interval, test_name)
+        plot_surface(self.X, self.Y, self.h,  (limits.h_min,  limits.h_max),  "$h \, (m)$",           test_number, self.savepath, "h",  self.interval, test_name)
+        plot_surface(self.X, self.Y, self.qx, (limits.qx_min, limits.qx_max), "$q_x \, (m^2s^{-1})$", test_number, self.savepath, "qx", self.interval, test_name)
+        plot_surface(self.X, self.Y, self.qy, (limits.qy_min, limits.qy_max), "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy", self.interval, test_name)
 
     def plot_contours(
         self, 
@@ -385,7 +419,8 @@ class RowMajorSolution:
         plot_contours(self.X, self.Y, self.z,  "$z  \, (m)$",          test_number, self.savepath, "z",  self.interval, test_name)
         
     def plot_soln(
-        self, 
+        self,
+        limits=None,
         test_number=0,
         test_name="ad-hoc",
         plot_type="cont"
@@ -393,7 +428,7 @@ class RowMajorSolution:
         if plot_type == "cont":
             self.plot_contours(test_number, test_name)
         elif plot_type == "surf":
-            self.plot_surfaces(test_number, test_name)
+            self.plot_surfaces(limits, test_number, test_name)
         else:
             EXIT_HELP()
         
@@ -548,7 +583,8 @@ class Test:
 
     def run_test(
         self,
-        solver_file
+        solver_file,
+        results
     ):
         self.set_params()
 
@@ -558,7 +594,12 @@ class Test:
             DischargeErrors(self.solver, self.mode).plot_errors(self.test_case, self.test_name)
         else:
             for interval in range(self.intervals):
-                RowMajorSolution(self.mode, interval).plot_soln(self.test_case, self.test_name, "surf")
+                RowMajorSolution(self.mode, interval).plot_soln(
+                    Limits(self.intervals, results),
+                    self.test_case,
+                    self.test_name,
+                    "surf"
+                )
 
 def animate(path):
     images = []
@@ -615,7 +656,7 @@ def run():
         results,
         input_file,
         mode
-    ).run_test(solver_file)
+    ).run_test(solver_file, results)
     
     animate(results)
     
@@ -662,7 +703,7 @@ def run_tests():
         ).run_test(solver_file)
 
 def plot_soln_planar():
-    if len(sys.argv) > 5:
+    if len(sys.argv) > 6:
         dummy, action, mode, solver, testdir, quantity, interval = sys.argv
         
         PlanarSolution(mode, solver, interval, testdir).plot_soln(quantity)
