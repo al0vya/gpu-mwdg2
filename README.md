@@ -14,10 +14,31 @@ Depending on whether the `x64-Debug` or `x64-Release` option was selected, the b
 
 To run a simulation using the executable, a `.par` must be created. This file contains all the parameters needed to run a simulation. The parameters and what function they serve are shown in the table below, and an example `.par` file is included after the table.
 
+
 | Parameter   | Description |
-| ----------- | ----------- |
-| Header      | Title       |
-| Paragraph   | Text        |
+| ------------|-------------|
+| test_case 	| 0           |
+| max_ref_lvl	| 9           |
+| min_dt		| 1           |
+| respath		| .\results   |
+| epsilon		| 1e-3        |
+| fpfric 		| 0.01        |
+| rasterroot	| monai       |
+| bcifile		| monai.bci   |
+| bdyfile		| monai.bdy   |
+| stagefile	| monai.stage |
+| tol_h		| 1e-3        |
+| tol_q		| 0           |
+| tol_s		| 1e-9        |
+| g			| 9.80665     |
+| massint		| 1           |
+| vtk			| on          |
+| planar		| on          |
+| row_major	| off         |
+| c_prop		| off         |
+| sim_time	| 22.5        |
+| solver		| mw          |
+| wall_height	| 0.5         |
 
 ```
 test_case 	0
