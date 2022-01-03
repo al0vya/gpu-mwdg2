@@ -33,9 +33,9 @@ stagefile	monai.stage
 tol_h		1e-3
 tol_q		0
 tol_s		1e-9
-g			9.80665
+g		9.80665
 massint		1
-vtk			on
+vtk		on
 planar		on
 row_major	off
 c_prop		off
