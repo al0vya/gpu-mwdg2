@@ -14,6 +14,7 @@ Depending on whether the `x64-Debug` or `x64-Release` option was selected, the b
 
 To run a simulation using the executable, a `.par` must be created. This file is a text file that contains all the parameters needed to run a simulation. The parameters and what function they serve are shown in the table below, and an example `.par` file is included after the table.
 
+
 | Parameter   | Description |
 | ------------|-------------|
 | test_case 	| Enter 0 if running a real world test case, otherwise enter a number between 1 and 22 to run an in-built test case. |
@@ -38,6 +39,7 @@ To run a simulation using the executable, a `.par` must be created. This file is
 | sim_time	| Simulation time. |
 | solver		| Solver with which to run the simulation: `hw` for HWFV1 and `mw` for MWDG2. |
 | wall_height	| Wall height for the computational domain in case the physical domain is not square. |
+
 
 ```
 test_case 	0
