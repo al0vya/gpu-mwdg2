@@ -119,7 +119,7 @@ void dg2_update
     real y_s = j_s * dy_loc_s + dy_loc_s / C(2.0);
     real y_w = j_w * dy_loc_w + dy_loc_w / C(2.0);
     
-    if ( (i >= sim_params.xsz) || (j >= sim_params.ysz) ) return;
+    if ( (x >= sim_params.xsz * dx_finest) || (y >= sim_params.ysz * dy_finest) ) return;
     
     // between local && east, x, y unit is (1.0, 0.5)
     real x_e_face = x - dx_loc / C(2.0) + C(1.0) * dx_loc;
@@ -335,6 +335,19 @@ void dg2_update
         )
     );
     
+    FlowCoeffs Sby = get_bed_src_y
+    (
+        coeffs.local_face_val(basis_n_loc).h + z_n_neg,
+        coeffs.local_face_val(basis_s_loc).h + z_s_pos,
+        z_inter_n,
+        z_inter_s,
+        U0y_star.h,
+        U1y_star.h,
+        sim_params.g,
+        dy_loc,
+        coeffs
+    );
+    
     Ly += get_bed_src_y
     (
         coeffs.local_face_val(basis_n_loc).h + z_n_neg,
@@ -348,10 +361,36 @@ void dg2_update
         coeffs
     );
 
+    if (false)//idx == 1574)
+    {
+        printf("Before operator:\n");
+        printf("i: %d, j: %d\n", i, j);
+        printf("x: %f, y: %f\n", x, y);
+        printf("Lx.h0: %.15f\n", Lx.h0);
+        printf("Lx.qx0: %.15f\n", Lx.qx0);
+        printf("Ly.h0: %.15f\n", Ly.h0);
+        printf("Ly.qy0: %.15f\n", Ly.qy0);
+        printf("coeffs.h1y: %.15f\n", coeffs.h1y);
+        printf("coeffs.h0: %.15f\n", coeffs.h0);
+        printf("coeffs.qx0: %.15f\n", coeffs.qx0);
+        printf("coeffs.qy0: %.15f\n", coeffs.qy0);
+        printf("Ustar_n_pos.h: %.15f\n", Ustar_n_pos.h);
+        printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
+        printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
+        printf("Ustar_s_neg.h: %.15f\n", Ustar_s_neg.h);
+        printf("F_n.h: %.15f\n", F_n.h);
+        printf("F_s.h: %.15f\n", F_s.h);
+        printf("Sby.h: %.15f\n", Sby.h0);
+        printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_n_loc));
+        printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_s_loc));
+
+    }
+
     coeffs += dt * (Lx + Ly);
 
-    if (false)//idx == 2387)
+    if (false)//idx == 1574)
     {
+        printf("After operator:\n");
         printf("i: %d, j: %d\n", i, j);
         printf("x: %f, y: %f\n", x, y);
         printf("Lx.h0: %.15f\n",  Lx.h0);
@@ -366,6 +405,7 @@ void dg2_update
         printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
         printf("F_n.h: %.15f\n", F_n.h);
         printf("F_s.h: %.15f\n", F_s.h);
+        printf("Sby.h: %.15f\n", Sby.h0);
         printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_n_loc));
         printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_s_loc));
         

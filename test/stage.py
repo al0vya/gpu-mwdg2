@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 
 # from: https://stackoverflow.com/questions/12444716/how-do-i-set-the-figure-title-and-axes-labels-font-size-in-matplotlib
 params = {
-'legend.fontsize' : 'xx-large',
-'axes.labelsize'  : 'xx-large',
-'axes.titlesize'  : 'xx-large',
-'xtick.labelsize' : 'xx-large',
-'ytick.labelsize' : 'xx-large'
+    "legend.fontsize" : "xx-large",
+    "axes.labelsize"  : "xx-large",
+    "axes.titlesize"  : "xx-large",
+    "xtick.labelsize" : "xx-large",
+    "ytick.labelsize" : "xx-large"
 }
 
 pylab.rcParams.update(params)
@@ -19,11 +19,28 @@ path = os.path.dirname(__file__)
 
 stagefile = "stage.wd"
 
-stage = pd.read_csv( os.path.join(path, stagefile ) )
+stages = pd.read_csv( os.path.join(path, stagefile ) )
 
-plt.plot(stage["time"], stage["stage1"], linewidth=2)
-plt.xlabel("Time (s)")
-plt.ylabel("h (m)")
-plt.legend()
+num_stages = stages.shape[1] - 2
 
+xlim = (np.min( stages["time"] ), np.max( stages["time"] ))
+
+nrows = int( np.ceil( np.sqrt(num_stages) ) )
+ncols = nrows
+
+fig, axs = plt.subplots(nrows=nrows, ncols=ncols)
+
+fig.tight_layout()
+
+for i, ax in enumerate(axs.flat):
+    if i + 1 > num_stages: continue
+    
+    stage = "stage" + str(i + 1)
+    
+    ax.plot(stages["time"], stages[stage], linewidth=2)
+    
+    ylim = ( np.min( stages[stage] ), np.max( stages[stage] ) )
+    
+    plt.setp(ax, xlabel="$t \, (m)$", ylabel="$h \, (m)$", xlim=xlim, ylim=ylim)
+    
 plt.show()

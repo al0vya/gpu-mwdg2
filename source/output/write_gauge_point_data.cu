@@ -26,10 +26,12 @@ void write_gauge_point_data
 	real* h  = new real[num_finest_elems];
 	real* qx = new real[num_finest_elems];
 	real* qy = new real[num_finest_elems];
+	real* z  = new real[num_finest_elems];
 
 	copy(h,  d_plot_assem_sol.h0,  bytes);
 	copy(qx, d_plot_assem_sol.qx0, bytes);
 	copy(qy, d_plot_assem_sol.qy0, bytes);
+	copy(z,  d_plot_assem_sol.z0,  bytes);
 	
 	char fullpath[255];
 
@@ -47,7 +49,10 @@ void write_gauge_point_data
 	{
 		fprintf(fp, "time,");
 		
-		for (int i = 0; i < gauge_points.num_points; i++) fprintf(fp, "stage%d,", i + 1);
+		for (int i = 0; i < gauge_points.num_points; i++)
+		{
+			fprintf(fp, ( (i + 1) == gauge_points.num_points) ? "stage%d" : "stage%d,", i + 1);
+		}
 
 		fprintf(fp, "\n");
 	}
@@ -61,7 +66,7 @@ void write_gauge_point_data
 
 		HierarchyIndex idx = y * mesh_dim + x;
 
-		fprintf( fp, "%" NUM_FRMT ",", h[idx] );
+		fprintf( fp, ( (i + 1) == gauge_points.num_points ) ? "%" NUM_FRMT : "%" NUM_FRMT ",", h[idx] + z[idx] );
 	}
 
 	fprintf(fp, "\n");
@@ -71,4 +76,5 @@ void write_gauge_point_data
 	delete[] h;
 	delete[] qx;
 	delete[] qy;
+	delete[] z;
 }
