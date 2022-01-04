@@ -291,8 +291,8 @@ int main
 		);
 	}
 
-	CHECK_CUDA_ERROR(peek());
-	CHECK_CUDA_ERROR(sync());
+	//CHECK_CUDA_ERROR(peek());
+	//CHECK_CUDA_ERROR(sync());
 
 	get_modal_values
 	(
@@ -306,8 +306,8 @@ int main
 		input_filename
 	);
 
-	CHECK_CUDA_ERROR(peek());
-	CHECK_CUDA_ERROR(sync());
+	//CHECK_CUDA_ERROR(peek());
+	//CHECK_CUDA_ERROR(sync());
 	/*
 	write_all_raster_maps
 	(
@@ -328,8 +328,8 @@ int main
 		mesh_dim
 	);
 
-	CHECK_CUDA_ERROR(peek());
-	CHECK_CUDA_ERROR(sync());
+	//CHECK_CUDA_ERROR(peek());
+	//CHECK_CUDA_ERROR(sync());
 
 	sort_finest_scale_coeffs_z_order
 	(
@@ -342,8 +342,8 @@ int main
 		solver_params
 	);
 
-	CHECK_CUDA_ERROR(peek());
-	CHECK_CUDA_ERROR(sync());
+	//CHECK_CUDA_ERROR(peek());
+	//CHECK_CUDA_ERROR(sync());
 
 	copy_finest_coefficients<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 	(
@@ -353,8 +353,8 @@ int main
 		finest_lvl_idx
 	);
 
-	CHECK_CUDA_ERROR(peek());
-	CHECK_CUDA_ERROR(sync());
+	//CHECK_CUDA_ERROR(peek());
+	//CHECK_CUDA_ERROR(sync());
 
 	if (point_sources.num_srcs > 0)
 	{
@@ -367,8 +367,8 @@ int main
 		);
 	}
 
-	CHECK_CUDA_ERROR(peek());
-	CHECK_CUDA_ERROR(sync());
+	//CHECK_CUDA_ERROR(peek());
+	//CHECK_CUDA_ERROR(sync());
 
 	init_sig_details<<<num_blocks_details, THREADS_PER_BLOCK>>>
 	(
@@ -376,13 +376,13 @@ int main
 		num_details
 	);
 
-	CHECK_CUDA_ERROR(peek());
-	CHECK_CUDA_ERROR(sync());
+	//CHECK_CUDA_ERROR(peek());
+	//CHECK_CUDA_ERROR(sync());
 
 	maxes = get_max_scale_coeffs(d_assem_sol, d_eta_temp);
 
-	CHECK_CUDA_ERROR(peek());
-	CHECK_CUDA_ERROR(sync());
+	//CHECK_CUDA_ERROR(peek());
+	//CHECK_CUDA_ERROR(sync());
 
 	preflag_topo
 	(
@@ -394,8 +394,8 @@ int main
 		first_t_step
 	);
 
-	CHECK_CUDA_ERROR(peek());
-	CHECK_CUDA_ERROR(sync());
+	//CHECK_CUDA_ERROR(peek());
+	//CHECK_CUDA_ERROR(sync());
 
 	// ================================ //
 
@@ -422,8 +422,8 @@ int main
 			solver_params
 		);
 
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
+		//CHECK_CUDA_ERROR(peek());
+		//CHECK_CUDA_ERROR(sync());
 
 		maxes = get_max_scale_coeffs(d_assem_sol, d_eta_temp);
 
@@ -438,8 +438,8 @@ int main
 			);
 		}
 
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
+		//CHECK_CUDA_ERROR(peek());
+		//CHECK_CUDA_ERROR(sync());
 
 		point_sources.update_all_srcs(time_now);
 
@@ -455,8 +455,8 @@ int main
 			);
 		}
 
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
+		//CHECK_CUDA_ERROR(peek());
+		//CHECK_CUDA_ERROR(sync());
 
 		if (solver_params.epsilon > C(0.0) || first_t_step)
 		{
@@ -480,8 +480,8 @@ int main
 		    	solver_params
 		    );
 		    
-		    CHECK_CUDA_ERROR(peek());
-		    CHECK_CUDA_ERROR(sync());
+		    //CHECK_CUDA_ERROR(peek());
+		    //CHECK_CUDA_ERROR(sync());
 		    
 		    decoding_all
 		    (
@@ -492,8 +492,8 @@ int main
 		    	solver_params
 		    );
 		    
-		    CHECK_CUDA_ERROR(peek());
-		    CHECK_CUDA_ERROR(sync());
+		    //CHECK_CUDA_ERROR(peek());
+		    //CHECK_CUDA_ERROR(sync());
 		    
 		    traverse_tree_of_sig_details<<<num_blocks_traversal, THREADS_PER_BLOCK>>>
 		    (
@@ -504,8 +504,8 @@ int main
 		    	solver_params
 		    );
 		    
-		    CHECK_CUDA_ERROR(peek());
-		    CHECK_CUDA_ERROR(sync());
+		    //CHECK_CUDA_ERROR(peek());
+		    //CHECK_CUDA_ERROR(sync());
 		    
 		    rev_z_order_act_idcs
 		    (
@@ -516,8 +516,8 @@ int main
 		    	num_finest_elems
 		    );
 		    
-		    CHECK_CUDA_ERROR(peek());
-		    CHECK_CUDA_ERROR(sync());
+		    //CHECK_CUDA_ERROR(peek());
+		    //CHECK_CUDA_ERROR(sync());
 		    
 		    find_neighbours<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 		    (
@@ -527,8 +527,8 @@ int main
 		    	mesh_dim
 		    );
 		    
-		    CHECK_CUDA_ERROR(peek());
-		    CHECK_CUDA_ERROR(sync());
+		    //CHECK_CUDA_ERROR(peek());
+		    //CHECK_CUDA_ERROR(sync());
 		    
 		    get_compaction_flags<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 		    (
@@ -537,8 +537,8 @@ int main
 		    	num_finest_elems
 		    );
 		    
-		    CHECK_CUDA_ERROR(peek());
-		    CHECK_CUDA_ERROR(sync());
+		    //CHECK_CUDA_ERROR(peek());
+		    //CHECK_CUDA_ERROR(sync());
 		    
 		    sort_neighbours_z_order
 		    (
@@ -550,8 +550,8 @@ int main
 		    	solver_params
 		    );
 		    
-		    CHECK_CUDA_ERROR(peek());
-		    CHECK_CUDA_ERROR(sync());
+		    //CHECK_CUDA_ERROR(peek());
+		    //CHECK_CUDA_ERROR(sync());
 		    
 		    compaction
 		    (
@@ -564,8 +564,8 @@ int main
 		    	solver_params
 		    );
 		    
-		    CHECK_CUDA_ERROR(peek());
-		    CHECK_CUDA_ERROR(sync());
+		    //CHECK_CUDA_ERROR(peek());
+		    //CHECK_CUDA_ERROR(sync());
 		}
 
 		// GRID DIMENSIONS BASED ON ASSEMBLED SOLUTION LENGTH //
@@ -582,8 +582,8 @@ int main
 			solver_params
 		);
 
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
+		//CHECK_CUDA_ERROR(peek());
+		//CHECK_CUDA_ERROR(sync());
 		
 		boundaries.update_all_inlets(input_filename, time_now);
 
@@ -599,8 +599,8 @@ int main
 			test_case
 		);
 
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
+		//CHECK_CUDA_ERROR(peek());
+		//CHECK_CUDA_ERROR(sync());
 
 		if ( sim_params.manning > C(0.0) )
 		{
@@ -614,8 +614,8 @@ int main
 			);
 		}
 
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
+		//CHECK_CUDA_ERROR(peek());
+		//CHECK_CUDA_ERROR(sync());
 		
 		if (solver_params.solver_type == HWFV1)
 		{
@@ -656,8 +656,8 @@ int main
 				rkdg2
 			);
 
-			CHECK_CUDA_ERROR(peek());
-			CHECK_CUDA_ERROR(sync());
+			//CHECK_CUDA_ERROR(peek());
+			//CHECK_CUDA_ERROR(sync());
 			
 			reinsert_assem_sol<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(
@@ -667,8 +667,8 @@ int main
 				solver_params
 			);
 
-			CHECK_CUDA_ERROR(peek());
-			CHECK_CUDA_ERROR(sync());
+			//CHECK_CUDA_ERROR(peek());
+			//CHECK_CUDA_ERROR(sync());
 			
 			for_nghbrs = true;
 
@@ -684,8 +684,8 @@ int main
 				for_nghbrs
 			);
 
-			CHECK_CUDA_ERROR(peek());
-			CHECK_CUDA_ERROR(sync());
+			//CHECK_CUDA_ERROR(peek());
+			//CHECK_CUDA_ERROR(sync());
 
 			load_soln_and_nghbr_coeffs<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(
@@ -695,8 +695,8 @@ int main
 				solver_params
 			);
 
-			CHECK_CUDA_ERROR(peek());
-			CHECK_CUDA_ERROR(sync());
+			//CHECK_CUDA_ERROR(peek());
+			//CHECK_CUDA_ERROR(sync());
 
 			add_ghost_cells<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(
@@ -710,8 +710,8 @@ int main
 				test_case
 			);
 
-			CHECK_CUDA_ERROR(peek());
-			CHECK_CUDA_ERROR(sync());
+			//CHECK_CUDA_ERROR(peek());
+			//CHECK_CUDA_ERROR(sync());
 
 			rkdg2 = true;
 
@@ -730,14 +730,14 @@ int main
 				rkdg2
 			);
 
-			CHECK_CUDA_ERROR(peek());
-			CHECK_CUDA_ERROR(sync());
+			//CHECK_CUDA_ERROR(peek());
+			//CHECK_CUDA_ERROR(sync());
 		}
 
 		dt = get_dt_CFL(d_dt_CFL, d_assem_sol.length);
 
-		CHECK_CUDA_ERROR(peek());
-		CHECK_CUDA_ERROR(sync());
+		//CHECK_CUDA_ERROR(peek());
+		//CHECK_CUDA_ERROR(sync());
 
 		// --------------------------------------------- //
 		// -------------- WRITING TO FILE -------------- //
