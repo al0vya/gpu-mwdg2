@@ -57,6 +57,7 @@ if (CMAKE_CUDA_COMPILER)
 		source/mra/preflag_details.cu
 		source/mra/preflag_topo.cu
 		source/mra/regularisation.cu
+		source/mra/refine_high_wall.cu
 		source/mra/reinsert_assem_sol.cu
 		source/mra/reinsert_point_srcs.cu
 		source/mra/traverse_tree_of_sig_details.cu

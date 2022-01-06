@@ -28,9 +28,9 @@ typedef struct SubDetails
 	{
 		if (!is_copy)
 		{
-			free_device(alpha);
-			free_device(beta);
-			free_device(gamma);
+			CHECK_CUDA_ERROR( free_device(alpha) );
+			CHECK_CUDA_ERROR( free_device(beta) );
+			CHECK_CUDA_ERROR( free_device(gamma) );
 		}
 	}
 

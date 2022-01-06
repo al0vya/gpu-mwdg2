@@ -81,11 +81,11 @@ typedef struct PointSources
 		if (!is_copy)
 		{
 			if (h_codes         != nullptr) delete[] h_codes;
-			if (d_codes         != nullptr) free_device(d_codes);
+			if (d_codes         != nullptr) CHECK_CUDA_ERROR( free_device(d_codes) );
 			if (h_src_types     != nullptr) delete[] h_src_types;
-			if (d_src_types     != nullptr) free_device(d_src_types);
+			if (d_src_types     != nullptr) CHECK_CUDA_ERROR( free_device(d_src_types) );
 			if (h_srcs          != nullptr) delete[] h_srcs;
-			if (d_srcs          != nullptr) free_device(d_srcs);
+			if (d_srcs          != nullptr) CHECK_CUDA_ERROR( free_device(d_srcs) );
 			if (timeseries      != nullptr) delete[] timeseries;
 			if (timeseries_lens != nullptr) delete[] timeseries_lens;
 			

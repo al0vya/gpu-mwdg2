@@ -372,8 +372,10 @@ void dg2_update
         printf("Ly.qy0: %.15f\n", Ly.qy0);
         printf("coeffs.h1y: %.15f\n", coeffs.h1y);
         printf("coeffs.h0: %.15f\n", coeffs.h0);
-        printf("coeffs.qx0: %.15f\n", coeffs.qx0);
-        printf("coeffs.qy0: %.15f\n", coeffs.qy0);
+        printf("coeffs_n.h1y: %.15f\n", coeffs_n.h1y);
+        printf("coeffs_n.h0: %.15f\n", coeffs_n.h0);
+        printf("coeffs_s.h1y: %.15f\n", coeffs_s.h1y);
+        printf("coeffs_s.h0: %.15f\n", coeffs_s.h0);
         printf("Ustar_n_pos.h: %.15f\n", Ustar_n_pos.h);
         printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
         printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
@@ -399,8 +401,10 @@ void dg2_update
         printf("Ly.qy0: %.15f\n", Ly.qy0);
         printf("coeffs.h1y: %.15f\n", coeffs.h1y);
         printf("coeffs.h0: %.15f\n", coeffs.h0);
-        printf("coeffs.qx0: %.15f\n", coeffs.qx0);
-        printf("coeffs.qy0: %.15f\n", coeffs.qy0);
+        printf("coeffs_n.h1y: %.15f\n", coeffs_n.h1y);
+        printf("coeffs_n.h0: %.15f\n", coeffs_n.h0);
+        printf("coeffs_s.h1y: %.15f\n", coeffs_s.h1y);
+        printf("coeffs_s.h0: %.15f\n", coeffs_s.h0);
         printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
         printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
         printf("F_n.h: %.15f\n", F_n.h);
