@@ -9,6 +9,7 @@
 #include "ScaleCoefficients.h"
 #include "SolverParams.h"
 #include "GaugePoints.h"
+#include "FinestGrid.h"
 
 #include "compact.cuh"
 
@@ -25,6 +26,7 @@ void write_gauge_point_data
 	MortonCode*              d_indices,
 	AssembledSolution        d_assem_sol,
 	AssembledSolution        d_plot_assem_sol,
+	FinestGrid               p_finest_grid,
 	GaugePoints              gauge_points,
 	const real&              time_now,
 	const bool&              first_t_step

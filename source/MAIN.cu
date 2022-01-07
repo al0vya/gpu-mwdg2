@@ -225,6 +225,7 @@ int main
 	ScaleCoefficients d_scale_coeffs    (num_all_elems,    solver_params.solver_type);
 	Details           d_details         (num_details,      solver_params.solver_type);
 	CompactionFlags   d_compaction_flags(num_finest_elems);
+	FinestGrid        p_finest_grid     (num_finest_elems);
 	
 	// Bytesizes
 	size_t bytes_morton  = num_finest_elems * sizeof(MortonCode);
@@ -800,7 +801,6 @@ int main
 				(
 					respath,
 					d_assem_sol,
-					d_dt_CFL,
 					dx_finest,
 					dy_finest,
 					sim_params,
@@ -852,6 +852,7 @@ int main
 				d_indices,
 				d_assem_sol,
 				d_plot_assem_sol,
+				p_finest_grid,
 				gauge_points,
 				time_now,
 				first_t_step

@@ -4,7 +4,6 @@ void write_soln_planar_fv1
 (
     const char*              respath,
 	const AssembledSolution& d_assem_sol,
-	      real*              d_dt_CFL,
 	const real&              dx_finest,
 	const real&              dy_finest,
 	const SimulationParams&  sim_params,
@@ -44,7 +43,6 @@ void write_soln_planar_fv1
 	real*           qx0      = new real[d_assem_sol.length];
 	real*           qy0      = new real[d_assem_sol.length];
 	real*           z0       = new real[d_assem_sol.length];
-	real*           dt       = new real[d_assem_sol.length];
 	HierarchyIndex* act_idcs = new HierarchyIndex[d_assem_sol.length];
 	int*            levels   = new int[d_assem_sol.length];
 
@@ -56,7 +54,6 @@ void write_soln_planar_fv1
 	copy(qx0,      d_assem_sol.qx0,      bytes_flow);
 	copy(qy0,      d_assem_sol.qy0,      bytes_flow);
 	copy(z0,       d_assem_sol.z0,       bytes_flow);
-	copy(dt,       d_dt_CFL,             bytes_flow);
 	copy(act_idcs, d_assem_sol.act_idcs, bytes_act_idcs);
 	copy(levels,   d_assem_sol.levels,   bytes_levels);
 
@@ -115,7 +112,6 @@ void write_soln_planar_fv1
 	delete[] qx0;
 	delete[] qy0;
 	delete[] z0;
-	delete[] dt;
 	delete[] act_idcs;
 	delete[] levels;
 }

@@ -1,5 +1,6 @@
 #include "write_gauge_point_data.cuh"
 
+__host__
 void write_gauge_point_data
 (
 	const char*              respath,
@@ -7,11 +8,12 @@ void write_gauge_point_data
 	bool*&                   d_sig_details,
 	const ScaleCoefficients& d_scale_coeffs,
 	AssembledSolution        d_buf_assem_sol,
-	const SolverParams&  solver_params,
+	const SolverParams&      solver_params,
 	MortonCode*              d_rev_z_order,
 	MortonCode*              d_indices,
 	AssembledSolution        d_assem_sol,
 	AssembledSolution        d_plot_assem_sol,
+	FinestGrid               p_finest_grid,
 	GaugePoints              gauge_points,
 	const real&              time_now,
 	const bool&              first_t_step
@@ -23,15 +25,10 @@ void write_gauge_point_data
 	
 	size_t bytes = sizeof(real) * num_finest_elems;
 
-	real* h  = new real[num_finest_elems];
-	real* qx = new real[num_finest_elems];
-	real* qy = new real[num_finest_elems];
-	real* z  = new real[num_finest_elems];
-
-	copy(h,  d_plot_assem_sol.h0,  bytes);
-	copy(qx, d_plot_assem_sol.qx0, bytes);
-	copy(qy, d_plot_assem_sol.qy0, bytes);
-	copy(z,  d_plot_assem_sol.z0,  bytes);
+	copy_async(p_finest_grid.h,  d_plot_assem_sol.h0,  bytes);
+	copy_async(p_finest_grid.qx, d_plot_assem_sol.qx0, bytes);
+	copy_async(p_finest_grid.qy, d_plot_assem_sol.qy0, bytes);
+	copy_async(p_finest_grid.z,  d_plot_assem_sol.z0,  bytes);
 	
 	char fullpath[255];
 
@@ -66,15 +63,17 @@ void write_gauge_point_data
 
 		HierarchyIndex idx = y * mesh_dim + x;
 
-		fprintf( fp, ( (i + 1) == gauge_points.num_points ) ? "%" NUM_FRMT : "%" NUM_FRMT ",", h[idx] + z[idx] );
+		fprintf
+		(
+			fp,
+			( (i + 1) == gauge_points.num_points )
+			? "%" NUM_FRMT
+			: "%" NUM_FRMT ",",
+			p_finest_grid.h[idx] + p_finest_grid.z[idx]
+		);
 	}
 
 	fprintf(fp, "\n");
 
 	fclose(fp);
-
-	delete[] h;
-	delete[] qx;
-	delete[] qy;
-	delete[] z;
 }

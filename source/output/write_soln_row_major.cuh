@@ -5,6 +5,7 @@
 #include "ScaleCoefficients.h"
 #include "SolverParams.h"
 #include "SaveInterval.h"
+#include "FinestGrid.h"
 
 #include "write_reals_to_file.cuh"
 

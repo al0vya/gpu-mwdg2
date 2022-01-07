@@ -36,19 +36,26 @@ void dg2_update
 
     if (idx < d_assem_sol_load.length)
     {
+        real z   = d_assem_sol_load.z0[idx];
         real h   = d_assem_sol_load.h0[idx];
         real h_n = d_neighbours.north.h0[idx];
         real h_e = d_neighbours.east.h0[idx];
         real h_s = d_neighbours.south.h0[idx];
         real h_w = d_neighbours.west.h0[idx];
 
+        bool highwall = ( fabs( z - solver_params.wall_height ) < C(1e-10) );
+
         is_wet =
         (
-            h   >= solver_params.tol_h ||
-            h_n >= solver_params.tol_h ||
-            h_e >= solver_params.tol_h ||
-            h_s >= solver_params.tol_h ||
-            h_w >= solver_params.tol_h
+            (
+                h   >= solver_params.tol_h ||
+                h_n >= solver_params.tol_h ||
+                h_e >= solver_params.tol_h ||
+                h_s >= solver_params.tol_h ||
+                h_w >= solver_params.tol_h
+            )
+            &&
+            !highwall
         );
 
         d_dt_CFL[idx] = solver_params.min_dt;

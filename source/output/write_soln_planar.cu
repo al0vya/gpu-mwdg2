@@ -7,7 +7,6 @@ void write_soln_planar
 (
     const char*              respath,
 	const AssembledSolution& d_assem_sol,
-	      real*              d_dt_CFL,
 	const real&              dx_finest,
 	const real&              dy_finest,
 	const SimulationParams&  sim_params,
@@ -21,7 +20,6 @@ void write_soln_planar
 		(
 			respath,
 			d_assem_sol,
-			d_dt_CFL,
 			dx_finest,
 			dy_finest,
 			sim_params,
@@ -35,7 +33,6 @@ void write_soln_planar
 		(
 			respath,
 			d_assem_sol,
-			d_dt_CFL,
 			dx_finest,
 			dy_finest,
 			sim_params,

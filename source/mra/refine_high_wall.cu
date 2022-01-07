@@ -8,7 +8,7 @@ void refine_high_wall
 	      bool*             h_preflagged_details
 )
 {
-	const int refinement_thickness = 8;
+	const int refinement_thickness = 16;
 
 	const int num_refined_cells_x = refinement_thickness * sim_params.xsz;
 	const int num_refined_cells_y = refinement_thickness * sim_params.ysz;
