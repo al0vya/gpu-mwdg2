@@ -41,8 +41,8 @@ void write_gauge_point_data
 	sprintf(fullpath_h, "%s%s", respath, "stage.wd");
 	sprintf(fullpath_v, "%s%s", respath, "stage.vl");
 	
-	FILE* fp_h = fopen(fullpath_h, (first_t_step) ? "a" : "w");
-	FILE* fp_v = fopen(fullpath_v, (first_t_step) ? "a" : "w");
+	FILE* fp_h = fopen(fullpath_h, (first_t_step) ? "w" : "a");
+	FILE* fp_v = fopen(fullpath_v, (first_t_step) ? "w" : "a");
 
 	if (nullptr == fp_h || nullptr == fp_v)
 	{
@@ -97,7 +97,7 @@ void write_gauge_point_data
 
 			fprintf
 			(
-				fp_h,
+				fp_v,
 				( (i + 1) == gauge_points.num_points )
 				? "%" NUM_FRMT
 				: "%" NUM_FRMT ",",
