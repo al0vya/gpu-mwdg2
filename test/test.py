@@ -117,7 +117,7 @@ test_names = [
     "radial-dam-break"
 ]
 
-sim_times = [
+save_intervals = [
     1,    # 1D c prop x dir
     1,    # 1D c prop y dir
     1,    # 1D c prop x dir
@@ -254,37 +254,37 @@ class PlanarSolution:
         self.ax.view_init(elev, azim)
         plt.savefig(os.path.join(self.savepath, "planar-soln-" + str(self.interval) + ".svg"), bbox_inches="tight")
 
-    class Limits:
-        def __init__(
-                self,
-                intervals,
-                results
-            ):
-                h  = []
-                qx = []
-                qy = []
-                z  = []
+class Limits:
+    def __init__(
+            self,
+            intervals,
+            results
+        ):
+            h  = []
+            qx = []
+            qy = []
+            z  = []
+            
+            for interval in range(intervals):
+                h_file  = "depths-" +      str(interval) + ".csv"
+                qx_file = "discharge_x-" + str(interval) + ".csv"
+                qy_file = "discharge_y-" + str(interval) + ".csv"
+                z_file  = "topo-" +        str(interval) + ".csv"
                 
-                for interval in range(intervals):
-                    h_file  = "depths-" +      str(interval) + ".csv"
-                    qx_file = "discharge_x-" + str(interval) + ".csv"
-                    qy_file = "discharge_y-" + str(interval) + ".csv"
-                    z_file  = "topo-" +        str(interval) + ".csv"
-                    
-                    h.append ( pd.read_csv( os.path.join(results, h_file ) )["results"] )
-                    qx.append( pd.read_csv( os.path.join(results, qx_file) )["results"] )
-                    qy.append( pd.read_csv( os.path.join(results, qy_file) )["results"] )
-                    z.append ( pd.read_csv( os.path.join(results, z_file ) )["results"] )
-                    
-                self.h_max  = np.max(h)
-                self.qx_max = np.max(qx)
-                self.qy_max = np.max(qy)
-                self.z_max  = np.max(z)
+                h  += pd.read_csv( os.path.join(results, h_file ) )["results"].to_list()
+                qx += pd.read_csv( os.path.join(results, qx_file) )["results"].to_list()
+                qy += pd.read_csv( os.path.join(results, qy_file) )["results"].to_list()
+                z  += pd.read_csv( os.path.join(results, z_file ) )["results"].to_list()
                 
-                self.h_min  = np.min(h)
-                self.qx_min = np.min(qx)
-                self.qy_min = np.min(qy)
-                self.z_min  = np.min(z)
+            self.h_max  = np.max(h)
+            self.qx_max = np.max(qx)
+            self.qy_max = np.max(qy)
+            self.z_max  = np.max(z)
+            
+            self.h_min  = np.min(h)
+            self.qx_min = np.min(qx)
+            self.qy_min = np.min(qy)
+            self.z_min  = np.min(z)
 
 def plot_surface(
     X,
@@ -513,7 +513,7 @@ class Test:
         test_case, 
         max_ref_lvl, 
         epsilon, 
-        massint, 
+        saveint, 
         test_name, 
         solver, 
         c_prop_tests, 
@@ -530,7 +530,7 @@ class Test:
         self.test_case   = test_case
         self.max_ref_lvl = max_ref_lvl
         self.epsilon     = epsilon
-        self.massint     = massint 
+        self.saveint     = saveint 
         self.test_name   = test_name
         self.solver      = solver
 
@@ -546,7 +546,7 @@ class Test:
         self.results    = results
         self.input_file = input_file
         self.mode       = mode
-        self.intervals  = int(sim_times[self.test_case - 1] / self.massint)
+        self.intervals  = int(save_intervals[self.test_case - 1] / self.saveint)
 
     def set_params(
         self
@@ -554,14 +554,14 @@ class Test:
         params = (
             "test_case   %s\n" +
             "max_ref_lvl	%s\n" +
-            "min_dt		1\n" +
+            "min_dt		0.5\n" +
             "respath	    %s\n" +
             "epsilon	    %s\n" +
             "tol_h		1e-3\n" +
             "tol_q		0\n" +
             "tol_s		1e-9\n" +
             "g			9.80665\n" +
-            "massint		%s\n" +
+            "saveint		%s\n" +
             "solver		%s\n" +
             "wall_height	0\n" +
             "row_major    %s\n" +
@@ -571,7 +571,7 @@ class Test:
                 self.max_ref_lvl, 
                 self.results, 
                 self.epsilon, 
-                self.massint, 
+                self.saveint, 
                 self.solver, 
                 self.row_major, 
                 self.c_prop, 
@@ -595,10 +595,9 @@ class Test:
         else:
             for interval in range(self.intervals):
                 RowMajorSolution(self.mode, interval).plot_soln(
-                    Limits(self.intervals, results),
-                    self.test_case,
-                    self.test_name,
-                    "surf"
+                    limits=Limits(self.intervals, results),
+                    test_number=self.test_case,
+                    test_name=self.test_name
                 )
 
 def animate(path):
@@ -623,7 +622,7 @@ def animate(path):
 
 def run():
     if len(sys.argv) > 7:
-        dummy, action, mode, solver, test_case, epsilon, max_ref_lvl, massint = sys.argv
+        dummy, action, mode, solver, test_case, epsilon, max_ref_lvl, saveint = sys.argv
     
         if   mode == "debug":
             path = os.path.join("..", "out", "build", "x64-Debug")
@@ -649,7 +648,7 @@ def run():
         int(test_case),
         max_ref_lvl,
         epsilon,
-        float(massint),
+        float(saveint),
         test_names[int(test_case) - 1],
         solver,
         c_prop_tests,
@@ -659,6 +658,7 @@ def run():
     ).run_test(solver_file, results)
     
     animate(results)
+    clear_jpg_files(results)
     
 def run_tests():
     if len(sys.argv) > 5:
@@ -693,14 +693,14 @@ def run_tests():
             test,
             max_ref_lvl,
             epsilon,
-            sim_times[test - 1],
+            save_intervals[test - 1],
             test_names[test - 1],
             solver,
             c_prop_tests,
             results,
             input_file,
             mode
-        ).run_test(solver_file)
+        ).run_test(solver_file, results)
 
 def plot_soln_planar():
     if len(sys.argv) > 6:

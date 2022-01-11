@@ -652,7 +652,7 @@ int main
 				dx_finest, 
 				dy_finest, 
 				dt, 
-				steps,
+				test_case,
 				d_dt_CFL,
 				rkdg2
 			);
@@ -726,7 +726,7 @@ int main
 				dx_finest, 
 				dy_finest, 
 				dt, 
-				steps, 
+				test_case, 
 				d_dt_CFL,
 				rkdg2
 			);
@@ -848,6 +848,7 @@ int main
 				d_scale_coeffs,
 				d_buf_assem_sol,
 				solver_params,
+				plot_params,
 				d_rev_z_order,
 				d_indices,
 				d_assem_sol,

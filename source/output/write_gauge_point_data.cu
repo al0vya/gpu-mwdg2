@@ -9,6 +9,7 @@ void write_gauge_point_data
 	const ScaleCoefficients& d_scale_coeffs,
 	AssembledSolution        d_buf_assem_sol,
 	const SolverParams&      solver_params,
+	const PlottingParams&    plot_params,
 	MortonCode*              d_rev_z_order,
 	MortonCode*              d_indices,
 	AssembledSolution        d_assem_sol,
@@ -25,18 +26,25 @@ void write_gauge_point_data
 	
 	size_t bytes = sizeof(real) * num_finest_elems;
 
-	copy_async(p_finest_grid.h,  d_plot_assem_sol.h0,  bytes);
-	copy_async(p_finest_grid.qx, d_plot_assem_sol.qx0, bytes);
-	copy_async(p_finest_grid.qy, d_plot_assem_sol.qy0, bytes);
-	copy_async(p_finest_grid.z,  d_plot_assem_sol.z0,  bytes);
+	copy_async(p_finest_grid.h, d_plot_assem_sol.h0, bytes);
+	copy_async(p_finest_grid.z, d_plot_assem_sol.z0, bytes);
 	
-	char fullpath[255];
+	if (plot_params.voutput_stage)
+	{
+		copy_async(p_finest_grid.qx, d_plot_assem_sol.qx0, bytes);
+		copy_async(p_finest_grid.qy, d_plot_assem_sol.qy0, bytes);
+	}
 
-	sprintf(fullpath, "%s%s", respath, "stage.wd");
+	char fullpath_h[255];
+	char fullpath_v[255];
+
+	sprintf(fullpath_h, "%s%s", respath, "stage.wd");
+	sprintf(fullpath_v, "%s%s", respath, "stage.vl");
 	
-	FILE* fp = (first_t_step) ? fopen(fullpath, "w") : fopen(fullpath, "a");
+	FILE* fp_h = fopen(fullpath_h, (first_t_step) ? "a" : "w");
+	FILE* fp_v = fopen(fullpath_v, (first_t_step) ? "a" : "w");
 
-	if (NULL == fp)
+	if (nullptr == fp_h || nullptr == fp_v)
 	{
 		fprintf(stderr, "Error opening stage results file, file: %s, line: %d.\n", __FILE__, __LINE__);
 		exit(-1);
@@ -44,36 +52,63 @@ void write_gauge_point_data
 
 	if (first_t_step)
 	{
-		fprintf(fp, "time,");
+		fprintf(fp_h, "time,");
+		fprintf(fp_v, "time,");
 		
 		for (int i = 0; i < gauge_points.num_points; i++)
 		{
-			fprintf(fp, ( (i + 1) == gauge_points.num_points) ? "stage%d" : "stage%d,", i + 1);
+			fprintf(fp_h, ( (i + 1) == gauge_points.num_points) ? "stage%d" : "stage%d,", i + 1);
+			fprintf(fp_v, ( (i + 1) == gauge_points.num_points) ? "stage%d" : "stage%d,", i + 1);
 		}
 
-		fprintf(fp, "\n");
+		fprintf(fp_h, "\n");
+		fprintf(fp_v, "\n");
 	}
 
-	fprintf(fp, "%" NUM_FRMT ",", time_now);
+	fprintf(fp_h, "%" NUM_FRMT ",", time_now);
+
+	if (plot_params.voutput_stage)
+	{
+		fprintf(fp_v, "%" NUM_FRMT ",", time_now);
+	}
 
 	for (int i = 0; i < gauge_points.num_points; i++)
 	{
-		Coordinate x = compact(gauge_points.codes[i]);
-		Coordinate y = compact(gauge_points.codes[i] >> 1);
+		Coordinate x = compact( gauge_points.codes[i] );
+		Coordinate y = compact( gauge_points.codes[i] >> 1 );
 
-		HierarchyIndex idx = y * mesh_dim + x;
+		int idx = y * mesh_dim + x;
 
 		fprintf
 		(
-			fp,
+			fp_h,
 			( (i + 1) == gauge_points.num_points )
 			? "%" NUM_FRMT
 			: "%" NUM_FRMT ",",
 			p_finest_grid.h[idx] + p_finest_grid.z[idx]
 		);
+
+		if (plot_params.voutput_stage)
+		{
+			real vx = (p_finest_grid.h[idx] < solver_params.tol_h) ? C(0.0) : p_finest_grid.qx[idx] / p_finest_grid.h[idx];
+			real vy = (p_finest_grid.h[idx] < solver_params.tol_h) ? C(0.0) : p_finest_grid.qy[idx] / p_finest_grid.h[idx];
+
+			real speed = sqrt(vx * vx + vy * vy);
+
+			fprintf
+			(
+				fp_h,
+				( (i + 1) == gauge_points.num_points )
+				? "%" NUM_FRMT
+				: "%" NUM_FRMT ",",
+				speed
+			);
+		}
 	}
 
-	fprintf(fp, "\n");
+	fprintf(fp_h, "\n");
+	fprintf(fp_v, "\n");
 
-	fclose(fp);
+	fclose(fp_h);
+	fclose(fp_v);
 }

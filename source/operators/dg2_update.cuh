@@ -22,15 +22,15 @@
 __global__
 void dg2_update
 (
-    Neighbours           d_neighbours,
-    AssembledSolution    d_assem_sol_load,
-    AssembledSolution    d_assem_sol_store,
-    SolverParams     solver_params,
-    SimulationParams sim_params,
-    real                 dx_finest,
-    real                 dy_finest,
-    real                 dt,
-    int                  step,
-    real*                d_dt_CFL,
-    bool                 rkdg2
+    Neighbours        d_neighbours,
+    AssembledSolution d_assem_sol_load,
+    AssembledSolution d_assem_sol_store,
+    SolverParams      solver_params,
+    SimulationParams  sim_params,
+    real              dx_finest,
+    real              dy_finest,
+    real              dt,
+    int               test_case,
+    real*             d_dt_CFL,
+    bool              rkdg2
 );

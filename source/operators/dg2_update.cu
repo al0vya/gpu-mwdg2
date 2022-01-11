@@ -11,7 +11,7 @@ void dg2_update
     real              dx_finest,
     real              dy_finest,
     real              dt,
-    int               step,
+    int               test_case,
     real*             d_dt_CFL,
     bool              rkdg2
 )
@@ -43,7 +43,7 @@ void dg2_update
         real h_s = d_neighbours.south.h0[idx];
         real h_w = d_neighbours.west.h0[idx];
 
-        bool highwall = ( fabs( z - solver_params.wall_height ) < C(1e-10) );
+        bool highwall = ( ( fabs( z - solver_params.wall_height ) < C(1e-10) ) && (test_case == 0) );
 
         is_wet =
         (
