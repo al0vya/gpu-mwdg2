@@ -593,7 +593,7 @@ class Test:
         if self.c_prop == "on":
             DischargeErrors(self.solver, self.mode).plot_errors(self.test_case, self.test_name)
         else:
-            for interval in range(self.intervals):
+            for interval in range(1, self.intervals + 1):
                 RowMajorSolution(self.mode, interval).plot_soln(
                     limits=Limits(self.intervals, results),
                     test_number=self.test_case,
@@ -679,6 +679,8 @@ def run_tests():
     input_file  = os.path.join(path, "test", "inputs.par")
     solver_file = os.path.join(path, "gpu-mwdg2.exe")
     results     = os.path.join(path, "test", "results")
+    
+    clear_jpg_files(results)
     
     tests = []
     

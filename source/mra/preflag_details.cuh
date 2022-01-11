@@ -18,5 +18,6 @@ bool* preflag_details
 	const GaugePoints&       gauge_points,
 	const SimulationParams&  sim_params,
 	const int&               num_details,
-	const int&               max_ref_lvl
+	const int&               max_ref_lvl,
+	const int&               test_case
 );

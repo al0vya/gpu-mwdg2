@@ -240,8 +240,18 @@ int main
 	real*       d_eta_temp            = (real*)malloc_device(bytes_soln);
 	real*       d_norm_details        = (real*)malloc_device(bytes_details);
 	bool*       d_sig_details         = (bool*)malloc_device(num_details);
-	bool*       d_preflagged_details  = preflag_details(boundaries, point_sources, gauge_points, sim_params, num_details, solver_params.L);
 	real*       d_dt_CFL              = (real*)malloc_device(bytes_soln);
+	
+	bool* d_preflagged_details  = preflag_details
+	(
+		boundaries, 
+		point_sources, 
+		gauge_points, 
+		sim_params, 
+		num_details, 
+		solver_params.L, 
+		test_case
+	);
 
 	// =========================================================== //
 
