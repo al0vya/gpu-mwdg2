@@ -4,10 +4,20 @@ import matplotlib.pyplot as plt
  
 from mpl_toolkits.mplot3d import Axes3D
 
+def remove_NODATA_values(
+        nodal_data,
+        NODATA_value
+    ):
+        tol_0 = 1e-10
+        
+        for j, row in enumerate(nodal_data):
+            for i, element in enumerate(row):
+                if ( (element - NODATA_value) < tol_0 ): nodal_data[j, i] = 110
+
 def init_water_depths(
         bed_data,
-        nrows=501,
-        ncols=901
+        nrows,
+        ncols
     ):
         cell_size = 20
         
@@ -49,8 +59,8 @@ def init_water_depths(
 
 def check_nodal_data(
         nodal_data,
-        nrows=501,
-        ncols=901
+        nrows,
+        ncols
     ):
         x = np.linspace(0, 1, ncols)
         y = np.linspace(0, 1, nrows)
@@ -61,12 +71,11 @@ def check_nodal_data(
         ax.contourf(X, Y, nodal_data)
         plt.show()
         plt.close()
- 
+
 def projection(
         nodal_data,
-        NODATA_value,
-        nrows=501,
-        ncols=901
+        nrows,
+        ncols
     ):
         raster = np.full(shape=(nrows-1, ncols-1), fill_value=-9999, dtype=float)
         
@@ -79,22 +88,15 @@ def projection(
                 SE = nodal_data[j+1, i]
                 SW = nodal_data[j+1, i+1]
                 
-                not_NODATA = (
-                    not( (NE - NODATA_value) < tol_0 ) and
-                    not( (NW - NODATA_value) < tol_0 ) and
-                    not( (SE - NODATA_value) < tol_0 ) and
-                    not( (SW - NODATA_value) < tol_0 )
-                )
-                
-                if not_NODATA: raster[j, i] = 0.25 * (NE + NW + SE + SW)
+                raster[j, i] = 0.25 * (NE + NW + SE + SW)
                 
         return raster
 
 def write_raster_file(
         filename,
         raster,
-        nrows=501,
-        ncols=901
+        nrows,
+        ncols
     ):
         header = (
             "ncols        %s\n" +
@@ -112,44 +114,49 @@ def write_raster_file(
 
 def project_and_write_raster(
         nodal_data,
-        NODATA_value,
         filename,
-        nrows=501,
-        ncols=901
+        nrows,
+        ncols
     ):
         raster = projection(
-            nodal_data=nodal_data,
-            NODATA_value=NODATA_value
+            nrows=nrows,
+            ncols=ncols,
+            nodal_data=nodal_data
         )
         
         write_raster_file(
+            nrows=nrows,
+            ncols=ncols,
             raster=raster,
             filename=filename
         )
    
-def gen_raster_malpasset(
-        datum=0,
-        ncols=901,
-        nrows=501
-    ):
-        bed_data = np.flipud( np.loadtxt(fname="bed-data.txt")[:,2].reshape(ncols, nrows).transpose() ) + datum
+def main():
+        nrows = 501
+        ncols = 901
         
-        h = init_water_depths(bed_data)
+        bed_data = np.flipud( np.loadtxt(fname="bed-data.txt")[:,2].reshape(ncols, nrows).transpose() )
         
-        check_nodal_data(nodal_data=bed_data)
-        check_nodal_data(nodal_data=h)
+        remove_NODATA_values(nodal_data=bed_data, NODATA_value=-30)
+        
+        h = init_water_depths(nrows=nrows, ncols=ncols, bed_data=bed_data)
+        
+        check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=bed_data)
+        check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=h)
         
         project_and_write_raster(
+            nrows=nrows,
+            ncols=ncols,
             nodal_data=bed_data,
-            NODATA_value=-30,
             filename="malpasset.dem"
         )
         
         project_and_write_raster(
+            nrows=nrows,
+            ncols=ncols,
             nodal_data=h,
-            NODATA_value=-30,
             filename="malpasset.start"
         )
     
 if __name__ == "__main__":
-    gen_raster_malpasset()
+    main()
