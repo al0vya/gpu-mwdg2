@@ -1,0 +1,28 @@
+DEMfile                  cockermouth-1m.dem
+resroot                  Run1
+dirroot                  cockermouth-1m
+sim_time                 7200.0
+initial_tstep            0.1
+massint                  3600.0
+saveint                  7200.0
+manningfile              cockermouth-1m.n
+#fpfric			0.05
+bdyfile                  cockermouth-1m.bdy
+stagefile                cockermouth-1m.stage
+bcifile                  cockermouth-1m.bci
+elevoff
+#acceleration
+acc_nugrid
+#dg2
+cuda
+epsilon  0.001
+L         11
+#cfl 0.25
+#drycheckoff
+#hazard
+#sgc_enable
+nodata_elevation 405.0
+
+#checkpoint 0.016
+
+mint_hk

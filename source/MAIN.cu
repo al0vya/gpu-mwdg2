@@ -225,6 +225,7 @@ int main
 	ScaleCoefficients d_scale_coeffs    (num_all_elems,    solver_params.solver_type);
 	Details           d_details         (num_details,      solver_params.solver_type);
 	CompactionFlags   d_compaction_flags(num_finest_elems);
+	FinestGrid        p_finest_grid     (num_finest_elems);
 	
 	// Bytesizes
 	size_t bytes_morton  = num_finest_elems * sizeof(MortonCode);
@@ -239,8 +240,18 @@ int main
 	real*       d_eta_temp            = (real*)malloc_device(bytes_soln);
 	real*       d_norm_details        = (real*)malloc_device(bytes_details);
 	bool*       d_sig_details         = (bool*)malloc_device(num_details);
-	bool*       d_preflagged_details  = preflag_details(boundaries, point_sources, gauge_points, num_details, solver_params.L);
 	real*       d_dt_CFL              = (real*)malloc_device(bytes_soln);
+	
+	bool* d_preflagged_details  = preflag_details
+	(
+		boundaries, 
+		point_sources, 
+		gauge_points, 
+		sim_params, 
+		num_details, 
+		solver_params.L, 
+		test_case
+	);
 
 	// =========================================================== //
 
@@ -651,7 +662,7 @@ int main
 				dx_finest, 
 				dy_finest, 
 				dt, 
-				steps,
+				test_case,
 				d_dt_CFL,
 				rkdg2
 			);
@@ -725,7 +736,7 @@ int main
 				dx_finest, 
 				dy_finest, 
 				dt, 
-				steps, 
+				test_case, 
 				d_dt_CFL,
 				rkdg2
 			);
@@ -759,7 +770,7 @@ int main
 			);
 		}
 
-		if (massint.save(time_now))
+		if ( saveint.save(time_now) )
 		{
 			if (plot_params.row_major)
 			{
@@ -775,7 +786,7 @@ int main
 					d_indices,
 					d_assem_sol,
 					d_plot_assem_sol,
-					massint
+					saveint
 				);
 			}
 
@@ -790,7 +801,7 @@ int main
 					dy_finest,
 					sim_params,
 					solver_params,
-					massint
+					saveint
 				);
 			}
 			
@@ -800,12 +811,11 @@ int main
 				(
 					respath,
 					d_assem_sol,
-					d_dt_CFL,
 					dx_finest,
 					dy_finest,
 					sim_params,
 					solver_params,
-					massint
+					saveint
 				);
 			}
 
@@ -817,7 +827,7 @@ int main
 					d_plot_assem_sol,
 					sim_params,
 					solver_params,
-					massint,
+					saveint,
 					mesh_dim,
 					dx_finest,
 					first_t_step
@@ -838,7 +848,7 @@ int main
 			}
 		}
 
-		if (saveint.save(time_now))
+		if ( massint.save(time_now) )
 		{
 			write_gauge_point_data
 			(
@@ -848,10 +858,12 @@ int main
 				d_scale_coeffs,
 				d_buf_assem_sol,
 				solver_params,
+				plot_params,
 				d_rev_z_order,
 				d_indices,
 				d_assem_sol,
 				d_plot_assem_sol,
+				p_finest_grid,
 				gauge_points,
 				time_now,
 				first_t_step
@@ -888,17 +900,17 @@ int main
 	// DEALLOCATING MEMORY //
 	// =================== //
 
-	free_device(d_morton_codes);
-	free_device(d_sorted_morton_codes);
-	free_device(d_indices);
-	free_device(d_rev_z_order);
-	free_device(d_eta_temp);
-	free_device(d_sig_details);
-	free_device(d_preflagged_details);
-	free_device(d_norm_details);
-	free_device(d_dt_CFL);
+	CHECK_CUDA_ERROR( free_device(d_morton_codes) );
+	CHECK_CUDA_ERROR( free_device(d_sorted_morton_codes) );
+	CHECK_CUDA_ERROR( free_device(d_indices) );
+	CHECK_CUDA_ERROR( free_device(d_rev_z_order) );
+	CHECK_CUDA_ERROR( free_device(d_eta_temp) );
+	CHECK_CUDA_ERROR( free_device(d_sig_details) );
+	CHECK_CUDA_ERROR( free_device(d_preflagged_details) );
+	CHECK_CUDA_ERROR( free_device(d_norm_details) );
+	CHECK_CUDA_ERROR( free_device(d_dt_CFL) );
 	
-	reset();
+	//reset();
 
 	// =================== //
 

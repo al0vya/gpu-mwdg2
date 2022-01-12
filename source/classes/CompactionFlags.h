@@ -22,8 +22,8 @@ typedef struct CompactionFlags
 	{
 		if (!is_copy)
 		{
-			free_device(north_east);
-			free_device(south_west);
+			CHECK_CUDA_ERROR( free_device(north_east) );
+			CHECK_CUDA_ERROR( free_device(south_west) );
 		}
 	}
 

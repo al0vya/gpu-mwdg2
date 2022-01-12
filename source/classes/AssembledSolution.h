@@ -60,23 +60,23 @@ typedef struct AssembledSolution
 	{
 		if (!is_copy)
 		{
-			free_device(h0);
-			free_device(qx0);
-			free_device(qy0);
-			free_device(z0);
+			CHECK_CUDA_ERROR( free_device(h0) );
+			CHECK_CUDA_ERROR( free_device(qx0) );
+			CHECK_CUDA_ERROR( free_device(qy0) );
+			CHECK_CUDA_ERROR( free_device(z0) );
 
-			free_device(h1x);
-			free_device(qx1x);
-			free_device(qy1x);
-			free_device(z1x);
-			
-			free_device(h1y);
-			free_device(qx1y);
-			free_device(qy1y);
-			free_device(z1y);
-			
-			free_device(act_idcs);
-			free_device(levels);
+			CHECK_CUDA_ERROR( free_device(h1x) );
+			CHECK_CUDA_ERROR( free_device(qx1x) );
+			CHECK_CUDA_ERROR( free_device(qy1x) );
+			CHECK_CUDA_ERROR( free_device(z1x) );
+
+			CHECK_CUDA_ERROR( free_device(h1y) );
+			CHECK_CUDA_ERROR( free_device(qx1y) );
+			CHECK_CUDA_ERROR( free_device(qy1y) );
+			CHECK_CUDA_ERROR( free_device(z1y) );
+
+			CHECK_CUDA_ERROR( free_device(act_idcs) );
+			CHECK_CUDA_ERROR( free_device(levels) );
 		}
 	}
 

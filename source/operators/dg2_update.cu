@@ -11,7 +11,7 @@ void dg2_update
     real              dx_finest,
     real              dy_finest,
     real              dt,
-    int               step,
+    int               test_case,
     real*             d_dt_CFL,
     bool              rkdg2
 )
@@ -36,19 +36,26 @@ void dg2_update
 
     if (idx < d_assem_sol_load.length)
     {
+        real z   = d_assem_sol_load.z0[idx];
         real h   = d_assem_sol_load.h0[idx];
         real h_n = d_neighbours.north.h0[idx];
         real h_e = d_neighbours.east.h0[idx];
         real h_s = d_neighbours.south.h0[idx];
         real h_w = d_neighbours.west.h0[idx];
 
+        bool highwall = ( ( fabs( z - solver_params.wall_height ) < C(1e-10) ) && (test_case == 0) );
+
         is_wet =
         (
-            h   >= solver_params.tol_h ||
-            h_n >= solver_params.tol_h ||
-            h_e >= solver_params.tol_h ||
-            h_s >= solver_params.tol_h ||
-            h_w >= solver_params.tol_h
+            (
+                h   >= solver_params.tol_h ||
+                h_n >= solver_params.tol_h ||
+                h_e >= solver_params.tol_h ||
+                h_s >= solver_params.tol_h ||
+                h_w >= solver_params.tol_h
+            )
+            &&
+            !highwall
         );
 
         d_dt_CFL[idx] = solver_params.min_dt;
@@ -372,8 +379,10 @@ void dg2_update
         printf("Ly.qy0: %.15f\n", Ly.qy0);
         printf("coeffs.h1y: %.15f\n", coeffs.h1y);
         printf("coeffs.h0: %.15f\n", coeffs.h0);
-        printf("coeffs.qx0: %.15f\n", coeffs.qx0);
-        printf("coeffs.qy0: %.15f\n", coeffs.qy0);
+        printf("coeffs_n.h1y: %.15f\n", coeffs_n.h1y);
+        printf("coeffs_n.h0: %.15f\n", coeffs_n.h0);
+        printf("coeffs_s.h1y: %.15f\n", coeffs_s.h1y);
+        printf("coeffs_s.h0: %.15f\n", coeffs_s.h0);
         printf("Ustar_n_pos.h: %.15f\n", Ustar_n_pos.h);
         printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
         printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
@@ -399,8 +408,10 @@ void dg2_update
         printf("Ly.qy0: %.15f\n", Ly.qy0);
         printf("coeffs.h1y: %.15f\n", coeffs.h1y);
         printf("coeffs.h0: %.15f\n", coeffs.h0);
-        printf("coeffs.qx0: %.15f\n", coeffs.qx0);
-        printf("coeffs.qy0: %.15f\n", coeffs.qy0);
+        printf("coeffs_n.h1y: %.15f\n", coeffs_n.h1y);
+        printf("coeffs_n.h0: %.15f\n", coeffs_n.h0);
+        printf("coeffs_s.h1y: %.15f\n", coeffs_s.h1y);
+        printf("coeffs_s.h0: %.15f\n", coeffs_s.h0);
         printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
         printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
         printf("F_n.h: %.15f\n", F_n.h);

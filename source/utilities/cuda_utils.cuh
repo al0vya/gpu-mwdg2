@@ -17,6 +17,13 @@ cudaError_t copy
 	size_t bytes
 );
 
+cudaError_t copy_async
+(
+	void* dst,
+	void* src,
+	size_t bytes
+);
+
 __host__ __device__
 void* malloc_device
 (
@@ -25,6 +32,19 @@ void* malloc_device
 
 __host__ __device__
 cudaError_t free_device
+(
+	void* ptr
+);
+
+
+__host__ __device__
+void* malloc_pinned
+(
+	size_t bytes
+);
+
+__host__ __device__
+cudaError_t free_pinned
 (
 	void* ptr
 );

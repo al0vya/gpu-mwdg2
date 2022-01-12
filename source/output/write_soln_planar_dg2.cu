@@ -4,7 +4,6 @@ void write_soln_planar_dg2
 (
     const char*              respath,
 	const AssembledSolution& d_assem_sol,
-	      real*              d_dt_CFL,
 	const real&              dx_finest,
 	const real&              dy_finest,
 	const SimulationParams&  sim_params,
@@ -52,7 +51,6 @@ void write_soln_planar_dg2
 	real*           z0       = new real[d_assem_sol.length];
 	real*           z1x      = new real[d_assem_sol.length];
 	real*           z1y      = new real[d_assem_sol.length];
-	real*           dt       = new real[d_assem_sol.length];
 	HierarchyIndex* act_idcs = new HierarchyIndex[d_assem_sol.length];
 	int*            levels   = new int[d_assem_sol.length];
 
@@ -72,7 +70,6 @@ void write_soln_planar_dg2
 	copy(z0,       d_assem_sol.z0,       bytes_flow);
 	copy(z1x,      d_assem_sol.z1x,      bytes_flow);
 	copy(z1y,      d_assem_sol.z1y,      bytes_flow);
-	copy(dt,       d_dt_CFL,             bytes_flow);
 	copy(act_idcs, d_assem_sol.act_idcs, bytes_act_idcs);
 	copy(levels,   d_assem_sol.levels,   bytes_levels);
 
@@ -147,7 +144,6 @@ void write_soln_planar_dg2
 	delete[] z0;
 	delete[] z1x;
 	delete[] z1y;
-	delete[] dt;
 	delete[] act_idcs;
 	delete[] levels;
 }

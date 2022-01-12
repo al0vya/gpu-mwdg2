@@ -3,11 +3,13 @@
 __host__
 bool* preflag_details
 (
-	const Boundaries&   boundaries,
-	const PointSources& point_sources,
-	const GaugePoints&  gauge_points,
-	const int&          num_details,
-	const int&          max_ref_lvl
+	const Boundaries&        boundaries,
+	const PointSources&      point_sources,
+	const GaugePoints&       gauge_points,
+	const SimulationParams&  sim_params,
+	const int&               num_details,
+	const int&               max_ref_lvl,
+	const int&               test_case
 )
 {
 	size_t bytes = num_details * sizeof(bool);
@@ -70,6 +72,16 @@ bool* preflag_details
 		MortonCode child_idx = point_sources.h_codes[i] / 4;
 
 		h_preflagged_details[starting_idx + child_idx] = true;
+	}
+
+	if (test_case == 0)
+	{
+		refine_high_wall
+		(
+			sim_params,
+			max_ref_lvl,
+			h_preflagged_details
+		);
 	}
 
 	copy(d_preflagged_details, h_preflagged_details, bytes);

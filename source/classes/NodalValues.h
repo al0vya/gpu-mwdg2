@@ -28,10 +28,10 @@ typedef struct NodalValues
 	{
 		if (!is_copy)
 		{
-			free_device(h);
-			free_device(qx);
-			free_device(qy);
-			free_device(z);
+			CHECK_CUDA_ERROR( free_device(h)  );
+			CHECK_CUDA_ERROR( free_device(qx) );
+			CHECK_CUDA_ERROR( free_device(qy) );
+			CHECK_CUDA_ERROR( free_device(z)  );
 		}
 	}
 

@@ -8,7 +8,9 @@
 #include "AssembledSolution.h"
 #include "ScaleCoefficients.h"
 #include "SolverParams.h"
+#include "PlottingParams.h"
 #include "GaugePoints.h"
+#include "FinestGrid.h"
 
 #include "compact.cuh"
 
@@ -21,10 +23,12 @@ void write_gauge_point_data
 	const ScaleCoefficients& d_scale_coeffs,
 	AssembledSolution        d_buf_assem_sol,
 	const SolverParams&      solver_params,
+	const PlottingParams&    plot_params,
 	MortonCode*              d_rev_z_order,
 	MortonCode*              d_indices,
 	AssembledSolution        d_assem_sol,
 	AssembledSolution        d_plot_assem_sol,
+	FinestGrid               p_finest_grid,
 	GaugePoints              gauge_points,
 	const real&              time_now,
 	const bool&              first_t_step
