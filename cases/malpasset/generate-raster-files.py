@@ -96,18 +96,22 @@ def write_raster_file(
         filename,
         raster,
         nrows,
-        ncols
+        ncols,
+        xmin,
+        ymin
     ):
         header = (
             "ncols        %s\n" +
             "nrows        %s\n" +
-            "xllcorner    0\n" +
-            "yllcorner    0\n" +
+            "xllcorner    %s\n" +
+            "yllcorner    %s\n" +
             "cellsize     20\n" +
             "NODATA_value -9999"
         ) % (
             ncols-1,
-            nrows-1
+            nrows-1,
+            xmin,
+            ymin
         )
         
         np.savetxt(filename, raster, fmt="%.15f", header=header, comments="")
@@ -116,7 +120,9 @@ def project_and_write_raster(
         nodal_data,
         filename,
         nrows,
-        ncols
+        ncols,
+        xmin,
+        ymin
     ):
         raster = projection(
             nrows=nrows,
@@ -128,7 +134,9 @@ def project_and_write_raster(
             nrows=nrows,
             ncols=ncols,
             raster=raster,
-            filename=filename
+            filename=filename,
+            xmin=xmin,
+            ymin=ymin
         )
    
 def main():
@@ -148,14 +156,18 @@ def main():
             nrows=nrows,
             ncols=ncols,
             nodal_data=bed_data,
-            filename="malpasset.dem"
+            filename="malpasset.dem",
+            xmin=0,
+            ymin=0
         )
         
         project_and_write_raster(
             nrows=nrows,
             ncols=ncols,
             nodal_data=h,
-            filename="malpasset.start"
+            filename="malpasset.start",
+            xmin=9,
+            ymin=0
         )
     
 if __name__ == "__main__":
