@@ -103,7 +103,7 @@ class CrossSectionData:
         for interval in self.intervals:
             for config, data in self.velocities[interval].items():
                 if config == "lisflood": continue
-                ax.plot([self.xmin + i * self.cellsize for i in self.i_range], data, label=config)  
+                ax.plot( [self.xmin + i * self.cellsize for i in self.i_range], data, label=config )  
             
             plt.legend()
             plt.savefig("why-" + str(interval))
