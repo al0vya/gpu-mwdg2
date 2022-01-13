@@ -143,7 +143,7 @@ def main():
         nrows = 501
         ncols = 901
         
-        bed_data = np.flipud( np.loadtxt(fname="bed-data.txt")[:,2].reshape(ncols, nrows).transpose() )
+        bed_data = np.flipud( np.loadtxt(fname="bed-data.txt", usecols=2).reshape(ncols, nrows).transpose() )
         
         remove_NODATA_values(nodal_data=bed_data, NODATA_value=-30)
         

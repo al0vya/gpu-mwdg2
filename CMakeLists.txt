@@ -105,14 +105,14 @@ endif()
      gpu-mwdg2
 	 PRIVATE
 	 #${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
-	 "source/classes/"
-	 "source/input/"
-	 "source/mra/"
-	 "source/neighbours/"
-	 "source/operators/"
-	 "source/output/"
-	 "source/tests/"
-	 "source/types/"
-	 "source/utilities/"
-	 "source/zorder/"
+	 source/classes
+	 source/input
+	 source/mra
+	 source/neighbours
+	 source/operators
+	 source/output
+	 source/tests
+	 source/types
+	 source/utilities
+	 source/zorder
 	 )

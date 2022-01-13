@@ -210,7 +210,6 @@ int main
 	bool    first_t_step    = true;
 	bool    for_nghbrs      = false;
 	bool    rkdg2           = false;
-	bool    need_projection = plot_params.row_major || plot_params.raster || gauge_points.num_points > 0;
 	float   avg_cuda_time   = 0.0f;
 	int     steps           = 0;
 	real    compression     = C(0.0);
@@ -242,7 +241,7 @@ int main
 	bool*       d_sig_details         = (bool*)malloc_device(num_details);
 	real*       d_dt_CFL              = (real*)malloc_device(bytes_soln);
 	
-	bool* d_preflagged_details  = preflag_details
+	bool* d_preflagged_details = preflag_details
 	(
 		boundaries, 
 		point_sources, 
@@ -754,7 +753,7 @@ int main
 		// -------------- WRITING TO FILE -------------- //
 		// --------------------------------------------- //
 
-		if (need_projection)
+		if ( saveint.save(time_now) )
 		{
 			project_assem_sol
 			(
@@ -768,10 +767,7 @@ int main
 				d_assem_sol,
 				d_plot_assem_sol
 			);
-		}
-
-		if ( saveint.save(time_now) )
-		{
+			
 			if (plot_params.row_major)
 			{
 				write_soln_row_major
@@ -819,7 +815,7 @@ int main
 				);
 			}
 
-			if (plot_params.raster)
+			if (plot_params.raster_out)
 			{
 				write_all_raster_maps
 				(
@@ -850,6 +846,19 @@ int main
 
 		if ( massint.save(time_now) )
 		{
+			project_assem_sol
+			(
+				mesh_dim,
+				d_sig_details,
+				d_scale_coeffs,
+				d_buf_assem_sol,
+				solver_params,
+				d_rev_z_order,
+				d_indices,
+				d_assem_sol,
+				d_plot_assem_sol
+			);
+			
 			write_gauge_point_data
 			(
 				respath,
