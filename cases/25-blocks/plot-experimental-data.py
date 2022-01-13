@@ -19,26 +19,25 @@ class CrossSectionData:
         
         ncols, nrows, xmin, ymin, cellsize = [ cast(line.split()[1], i) for i, line in enumerate(header) ]
         
-        y_range = 0.2 - ymin
-        
-        row = int(y_range / cellsize)
-        
-        # reading from the top down
-        # +6 to skip the 6 header lines
-        row_read = nrows - row + 6
-        
         x_range_start = 4 - xmin
         x_range_end   = 8 - xmin
         
         col_start = int(x_range_start / cellsize)
         col_end   = int(x_range_end   / cellsize)
         
-        cols = [ _ for _ in range(col_start,col_end) ]
-        
-        self.x         = [xmin + i * cellsize for i in cols]
-        self.intervals = [ _ for _ in range(4,9) ]
-        
+        self.xmin       = xmin
+        self.cellsize   = cellsize
+        self.i_range    = [ _ for _ in range(col_start,col_end) ]
+        self.intervals  = [ _ for _ in range(4,9) ]
         self.velocities = {}
+        
+        y_range = 0.2 - ymin
+        
+        row = int(y_range / cellsize)
+        
+        # reading from the top down
+        # +6 to skip the 6 header lines
+        self.slice_row = nrows - row + 6
 
     def run_solver(
             self,
@@ -78,9 +77,9 @@ class CrossSectionData:
                 
                 self.velocities[interval] = np.loadtxt(
                     fname=extract_file,
-                    skiprows=row_read,
+                    skiprows=self.slice_row,
                     max_rows=1,
-                    usecols=cols
+                    usecols=self.i_range
                 )
     
     def plot(
@@ -88,7 +87,7 @@ class CrossSectionData:
             epsilon
         ):
             for interval in self.intervals:
-                plt.plot(self.velocities[interval])
+                plt.plot( [self.xmin + i * self.cellsize for i in self.i_range], self.velocities[interval] )
                 plt.show()
                 plt.close()
             
@@ -96,7 +95,6 @@ class CrossSectionData:
             self,
             epsilon
         ):
-            self.run_solver(epsilon)
             self.extract(epsilon)
             self.plot(epsilon)
     
