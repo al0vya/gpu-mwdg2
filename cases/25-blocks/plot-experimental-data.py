@@ -40,7 +40,10 @@ class CrossSectionData:
         
         self.velocities = {}
 
-    def run_solver(epsilon):
+    def run_solver(
+            self,
+            epsilon
+        ):
         with open("25-blocks.par", 'w') as fp:
             params = (
                 "test_case   0\n" +
@@ -93,9 +96,9 @@ class CrossSectionData:
             self,
             epsilon
         ):
-            self.run_solver(self)
-            self.extract(self, epsilon)
-            self.plot(self, epsilon)
+            self.run_solver(epsilon)
+            self.extract(epsilon)
+            self.plot(epsilon)
     
 if __name__ == "__main__":
     CrossSectionData().run_extract_and_plot(1e-3)
