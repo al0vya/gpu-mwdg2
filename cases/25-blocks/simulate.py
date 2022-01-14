@@ -171,7 +171,7 @@ class Simulation25Blocks:
                 ax.set_ylabel("$Depth \, (m)$")
                 ax.set_xlim(4, 8)
                 ax.legend()
-                fig.savefig( os.path.join("results", "depth-" + str(interval) ) )
+                fig.savefig(os.path.join("results", "depth-" + str(interval) ), bbox_inches="tight" )
                 ax.clear()
                 
                 for config in self.configs:
@@ -189,7 +189,7 @@ class Simulation25Blocks:
                 ax.set_ylabel("$Velocity \, (ms^{-1})$")
                 ax.set_xlim(4, 8)
                 ax.legend()
-                fig.savefig( os.path.join("results", "velocity-" + str(interval) ) )
+                fig.savefig(os.path.join("results", "velocity-" + str(interval) ), bbox_inches="tight")
                 ax.clear()
                 
             for config in self.configs:
@@ -206,7 +206,7 @@ class Simulation25Blocks:
             ax.set_xlabel(r"$t \, (s)$")
             ax.set_ylabel("Speedup ratio GPU-MWDG2/GPU-DG2")
             ax.legend()
-            fig.savefig( os.path.join("results", "runtimes") )
+            fig.savefig(os.path.join("results", "runtimes"), bbox_inches="tight")
             ax.clear()
             
             plt.close()
