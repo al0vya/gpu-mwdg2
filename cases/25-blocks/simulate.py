@@ -8,21 +8,25 @@ from mpl_toolkits.mplot3d import Axes3D
 
 class ExperimentalData:
     def __init__(self):
-        depth_exp_df_4s  = pd.read_csv("WLxy_C1_4s.txt",  header=None, delimiter=' ')
-        depth_exp_df_5s  = pd.read_csv("WLxy_C1_5s.txt",  header=None, delimiter=' ')
-        depth_exp_df_6s  = pd.read_csv("WLxy_C1_6s.txt",  header=None, delimiter=' ')
-        depth_exp_df_10s = pd.read_csv("WLxy_C1_10s.txt", header=None, delimiter=' ')
-
-        velocity_exp_df_4s  = pd.read_csv("Vxy_C1_4s.txt",  header=None, delimiter=' ')
-        velocity_exp_df_5s  = pd.read_csv("Vxy_C1_5s.txt",  header=None, delimiter=' ')
-        velocity_exp_df_6s  = pd.read_csv("Vxy_C1_6s.txt",  header=None, delimiter=' ')
-        velocity_exp_df_10s = pd.read_csv("Vxy_C1_10s.txt", header=None, delimiter=' ')
-        
         self.data = {}
         
         intervals = [4, 5, 6, 10]
         flow_vars = ["depth", "velocity"]
         
+        for interval in intervals:
+            if interval not in self.data:
+                self.data[interval] = {}
+                for var in flow_vars:
+                    if var not in self.data[interval]:
+                        self.data[interval][var] = {}
+                        
+        for interval in intervals:
+            depth_file    = "WLxy_C1_" + str(interval) + "s.txt"
+            velocity_file = "Vxy_C1_"  + str(interval) + "s.txt"
+            
+            self.data[interval]["depth"]    = pd.read_csv(depth_file,    header=None, delimiter=' ')
+            self.data[interval]["velocity"] = pd.read_csv(velocity_file, header=None, delimiter=' ')
+            
 class Simulation25Blocks:
     def __init__(
             self,
@@ -77,7 +81,7 @@ class Simulation25Blocks:
             self.slice_row = nrows - row + 6
             
             for epsilon in epsilons:
-                self.run_adaptive(epsilon)
+                #self.run_adaptive(epsilon)
                 
                 time_dataframe = pd.read_csv(self.runtime_file)
                 
@@ -133,36 +137,79 @@ class Simulation25Blocks:
                 
             subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), "25-blocks.par"] )
             
-    def plot(self):
-        fig, ax = plt.subplots()
-        
-        x = [self.xmin + i * self.cellsize for i in self.i_range]
-        
-        for interval in self.intervals:
+    def plot(
+            self,
+            exp_data
+        ):
+            my_rc_params = {
+                "legend.fontsize" : "xx-large",
+                "axes.labelsize"  : "xx-large",
+                "axes.titlesize"  : "xx-large",
+                "xtick.labelsize" : "xx-large",
+                "ytick.labelsize" : "xx-large"
+            }
+            
+            plt.rcParams.update(my_rc_params)
+            
+            x = [self.xmin + i * self.cellsize for i in self.i_range]
+            
+            fig, ax = plt.subplots()
+            
+            for interval in self.intervals:
+                for config in self.configs:
+                    if config == "lisflood": continue
+                    ax.plot(x, self.results[config][interval]["depth"], label=config)
+                
+                ax.scatter(
+                    exp_data.data[interval]["depth"].iloc[:][0],
+                    exp_data.data[interval]["depth"].iloc[:][1],
+                    label="Experimental",
+                    color="black"
+                )
+                
+                ax.set_xlabel("$x \, (m)$")
+                ax.set_ylabel("$Depth \, (m)$")
+                ax.set_xlim(4, 8)
+                ax.legend()
+                fig.savefig( os.path.join("results", "depth-" + str(interval) ) )
+                ax.clear()
+                
+                for config in self.configs:
+                    if config == "lisflood": continue
+                    ax.plot(x, self.results[config][interval]["velocity"], label=config)
+                
+                ax.scatter(
+                    exp_data.data[interval]["velocity"].iloc[:][0],
+                    exp_data.data[interval]["velocity"].iloc[:][1],
+                    label="Experimental",
+                    color="black"
+                )
+                
+                ax.set_xlabel("$x \, (m)$")
+                ax.set_ylabel("$Velocity \, (ms^{-1})$")
+                ax.set_xlim(4, 8)
+                ax.legend()
+                fig.savefig( os.path.join("results", "velocity-" + str(interval) ) )
+                ax.clear()
+                
             for config in self.configs:
                 if config == "lisflood": continue
-                ax.plot(x, self.results[config][interval]["depth"], label=config)
+                runtime_ratio = self.results[config]["runtime"] / self.results[1e-2]["runtime"]
+                ax.plot(self.results[config]["simtime"], runtime_ratio, label=config)
             
-            plt.legend()
-            plt.savefig( os.path.join("results", "depth-" + str(interval) ) )
+            xlim = (
+                np.min( self.results[self.configs[0]]["simtime"] ),
+                np.max( self.results[self.configs[0]]["simtime"] )
+            )
+            
+            ax.set_xlim(xlim)
+            ax.set_xlabel(r"$t \, (s)$")
+            ax.set_ylabel("Speedup ratio GPU-MWDG2/GPU-DG2")
+            ax.legend()
+            fig.savefig( os.path.join("results", "runtimes") )
             ax.clear()
             
-            for config in self.configs:
-                if config == "lisflood": continue
-                ax.plot(x, self.results[config][interval]["velocity"], label=config)
-            
-            plt.legend()
-            plt.savefig( os.path.join("results", "velocity-" + str(interval) ) )
-            ax.clear()
-            
-        for config in self.configs:
-            if config == "lisflood": continue
-            runtime_ratio = self.results[config]["runtime"] / self.results[1e-2]["runtime"]
-            ax.plot(self.results[config]["simtime"], runtime_ratio, label=config)
-        
-        plt.legend()
-        plt.savefig( os.path.join("results", "runtimes") )
-        ax.clear()
+            plt.close()
         
 if __name__ == "__main__":
-    Simulation25Blocks( [1e-2, 1e-3] ).plot()
+    Simulation25Blocks( [1e-2, 1e-3] ).plot( ExperimentalData() )
