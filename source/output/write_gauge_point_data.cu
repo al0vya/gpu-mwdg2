@@ -26,13 +26,13 @@ void write_gauge_point_data
 	
 	size_t bytes = sizeof(real) * num_finest_elems;
 
-	copy_async(p_finest_grid.h, d_plot_assem_sol.h0, bytes);
-	copy_async(p_finest_grid.z, d_plot_assem_sol.z0, bytes);
+	copy(p_finest_grid.h, d_plot_assem_sol.h0, bytes);
+	copy(p_finest_grid.z, d_plot_assem_sol.z0, bytes);
 	
 	if (plot_params.voutput_stage)
 	{
-		copy_async(p_finest_grid.qx, d_plot_assem_sol.qx0, bytes);
-		copy_async(p_finest_grid.qy, d_plot_assem_sol.qy0, bytes);
+		copy(p_finest_grid.qx, d_plot_assem_sol.qx0, bytes);
+		copy(p_finest_grid.qy, d_plot_assem_sol.qy0, bytes);
 	}
 
 	char fullpath_h[255];

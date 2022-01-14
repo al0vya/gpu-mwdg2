@@ -846,6 +846,17 @@ int main
 
 		if ( massint.save(time_now) )
 		{
+			if (plot_params.cumulative)
+			{
+			    write_cumu_sim_time
+			    (
+			        start,
+			        time_now,
+			        respath,
+			        first_t_step
+			    );
+			}
+			
 			project_assem_sol
 			(
 				mesh_dim,

@@ -11,8 +11,8 @@
 
 void write_cumu_sim_time
 (
-	const clock_t              start,
-	const real                 time_now,
-	const char*                respath,
-	const bool                 first_t_step
+	const clock_t start,
+	const real    time_now,
+	const char*   respath,
+	const bool    first_t_step
 );

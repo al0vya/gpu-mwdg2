@@ -6,6 +6,23 @@ import matplotlib.pyplot as plt
  
 from mpl_toolkits.mplot3d import Axes3D
 
+class ExperimentalData:
+    def __init__(self):
+        depth_exp_df_4s  = pd.read_csv("WLxy_C1_4s.txt",  header=None, delimiter=' ')
+        depth_exp_df_5s  = pd.read_csv("WLxy_C1_5s.txt",  header=None, delimiter=' ')
+        depth_exp_df_6s  = pd.read_csv("WLxy_C1_6s.txt",  header=None, delimiter=' ')
+        depth_exp_df_10s = pd.read_csv("WLxy_C1_10s.txt", header=None, delimiter=' ')
+
+        velocity_exp_df_4s  = pd.read_csv("Vxy_C1_4s.txt",  header=None, delimiter=' ')
+        velocity_exp_df_5s  = pd.read_csv("Vxy_C1_5s.txt",  header=None, delimiter=' ')
+        velocity_exp_df_6s  = pd.read_csv("Vxy_C1_6s.txt",  header=None, delimiter=' ')
+        velocity_exp_df_10s = pd.read_csv("Vxy_C1_10s.txt", header=None, delimiter=' ')
+        
+        self.data = {}
+        
+        intervals = [4, 5, 6, 10]
+        flow_vars = ["depth", "velocity"]
+        
 class Simulation25Blocks:
     def __init__(
             self,
@@ -35,7 +52,7 @@ class Simulation25Blocks:
             self.flow_vars    = ("depth", "velocity")
             self.time_vars    = ("simtime", "runtime")
             self.i_range      = [ _ for _ in range(col_start,col_end) ]
-            self.intervals    = [ _ for _ in range(4,9) ]
+            self.intervals    = [4, 5, 6, 10]
             self.results      = {}
             
             for config in self.configs:        
@@ -62,7 +79,7 @@ class Simulation25Blocks:
             for epsilon in epsilons:
                 self.run_adaptive(epsilon)
                 
-                time_dataframe = pd.read_csv(runtime_file)
+                time_dataframe = pd.read_csv(self.runtime_file)
                 
                 self.results[epsilon]["simtime"] = time_dataframe["simtime"]
                 self.results[epsilon]["runtime"] = time_dataframe["runtime"]

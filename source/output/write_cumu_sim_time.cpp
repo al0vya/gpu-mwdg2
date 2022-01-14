@@ -2,15 +2,15 @@
 
 void write_cumu_sim_time
 (
-	const clock_t              start,
-	const real                 time_now,
-	const char*                respath,
-	const bool                 first_t_step
+	const clock_t start,
+	const real    time_now,
+	const char*   respath,
+	const bool    first_t_step
 )
 {
 	char fullpath[255];
 
-	sprintf(fullpath, "%s%s", respath, "clock_time_vs_sim_time.csv");
+	sprintf(fullpath, "%s%s", respath, "simtime-vs-runtime.csv");
 	
 	FILE* cumu_sim_time_input = (first_t_step) ? fopen(fullpath, "w") : fopen(fullpath, "a");
 
@@ -20,7 +20,7 @@ void write_cumu_sim_time
 		exit(-1);
 	}
 
-	if (first_t_step) fprintf(cumu_sim_time_input, "sim_time,clock_time\n");
+	if (first_t_step) fprintf(cumu_sim_time_input, "simtime,runtime\n");
 
 	clock_t end = clock();
 

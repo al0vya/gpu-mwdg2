@@ -27,5 +27,8 @@ PlottingParams read_plot_params
 	read_keyword_str(input_filename, "voutput_stage", 13, plot_buf);
 	plot_params.voutput_stage = ( !strncmp(plot_buf, "on", 2) );
 	
+	read_keyword_str(input_filename, "cumulative", 10, plot_buf);
+	plot_params.cumulative = ( !strncmp(plot_buf, "on", 2) );
+	
 	return plot_params;
 }
