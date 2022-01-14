@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
  
 from mpl_toolkits.mplot3d import Axes3D
 
-class ExperimentalData:
+class ExperimentalData25Blocks:
     def __init__(self):
         self.data = {}
         
@@ -212,4 +212,4 @@ class Simulation25Blocks:
             plt.close()
         
 if __name__ == "__main__":
-    Simulation25Blocks( [0, 1e-4, 1e-3] ).plot( ExperimentalData() )
+    Simulation25Blocks( [0, 1e-4, 1e-3] ).plot( ExperimentalData25Blocks() )

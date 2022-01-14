@@ -217,7 +217,6 @@ int main
 	NodalValues       d_nodal_vals      (interface_dim);
 	AssembledSolution d_assem_sol       (num_finest_elems, solver_params.solver_type);
 	AssembledSolution d_buf_assem_sol   (num_finest_elems, solver_params.solver_type);
-	AssembledSolution d_buf_assem_sol1  (num_finest_elems, solver_params.solver_type);
 	AssembledSolution d_plot_assem_sol  (num_finest_elems, solver_params.solver_type);
 	Neighbours        d_neighbours      (num_finest_elems, solver_params.solver_type);
 	Neighbours        d_buf_neighbours  (num_finest_elems, solver_params.solver_type);
