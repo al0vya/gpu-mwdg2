@@ -30,7 +30,7 @@ class SimulationMonai:
                             self.results[config][field] = {}
                             
             for epsilon in epsilons:
-                #self.run_adaptive(epsilon)
+                self.run_adaptive(epsilon)
                 
                 time_dataframe = pd.read_csv(self.runtime_file)
                 
@@ -113,7 +113,7 @@ class SimulationMonai:
             for config in self.configs:
                 if config == "lisflood": continue
                 
-                runtime_ratio = self.results[config]["runtime"] / self.results[0]["runtime"]
+                runtime_ratio = self.results[0]["runtime"] / self.results[config]["runtime"]
                 
                 ax.plot(
                     self.results[config]["simtime"],
@@ -122,11 +122,9 @@ class SimulationMonai:
                     label=config
                 )
             
-            config = self.configs[0]
-            
             xlim = (
-                ( self.results[config]["simtime"] ).iloc[0],
-                ( self.results[config]["simtime"] ).iloc[-1]
+                ( self.results[0]["simtime"] ).iloc[0],
+                ( self.results[0]["simtime"] ).iloc[-1]
             )
             
             ax.set_xlabel(r"$t \, (s)$")

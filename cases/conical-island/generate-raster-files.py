@@ -45,20 +45,22 @@ def write_raster_file(
         nrows,
         ncols,
         xmin,
-        ymin
+        ymin,
+        cellsize
     ):
         header = (
             "ncols        %s\n" +
             "nrows        %s\n" +
             "xllcorner    %s\n" +
             "yllcorner    %s\n" +
-            "cellsize     20\n" +
+            "cellsize     %s\n" +
             "NODATA_value -9999"
         ) % (
             ncols-1,
             nrows-1,
             xmin,
-            ymin
+            ymin,
+            cellsize
         )
         
         np.savetxt(filename, raster, fmt="%.15f", header=header, comments="")
@@ -69,7 +71,8 @@ def project_and_write_raster(
         nrows,
         ncols,
         xmin,
-        ymin
+        ymin,
+        cellsize
     ):
         raster = projection(
             nrows=nrows,
@@ -83,7 +86,8 @@ def project_and_write_raster(
             raster=raster,
             filename=filename,
             xmin=xmin,
-            ymin=ymin
+            ymin=ymin,
+            cellsize=cellsize
         )
    
 def conical_island_raster_fields(x, y, x1, y1):
@@ -149,10 +153,10 @@ def main():
     ymin = 0
     ymax = 27
     
-    cell_size = 0.05;
+    cellsize = 0.05;
     
-    x = np.arange(xmin, xmax + cell_size, cell_size, dtype=float)
-    y = np.arange(ymin, ymax + cell_size, cell_size, dtype=float)
+    x = np.arange(xmin, xmax + cellsize, cellsize, dtype=float)
+    y = np.arange(ymin, ymax + cellsize, cellsize, dtype=float)
     
     x1 = 12.96
     y1 = 13.80
@@ -171,16 +175,18 @@ def main():
         nodal_data=raster_fields["h"],
         filename="conical-island.start",
         xmin=xmin,
-        ymin=ymin
+        ymin=ymin,
+        cellsize=cellsize
     )
     
     project_and_write_raster(
         nrows=nrows,
         ncols=ncols,
         nodal_data=raster_fields["qx"],
-        filename="conical-island.startQx",
+        filename="conical-island.start.Qx",
         xmin=xmin,
-        ymin=ymin
+        ymin=ymin,
+        cellsize=cellsize
     )
     
     project_and_write_raster(
@@ -189,7 +195,8 @@ def main():
         nodal_data=raster_fields["z"],
         filename="conical-island.dem",
         xmin=xmin,
-        ymin=ymin
+        ymin=ymin,
+        cellsize=cellsize
     )
 
 if __name__ == "__main__":

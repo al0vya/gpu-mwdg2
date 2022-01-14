@@ -81,7 +81,7 @@ class Simulation25Blocks:
             self.slice_row = nrows - row + 6
             
             for epsilon in epsilons:
-                #self.run_adaptive(epsilon)
+                self.run_adaptive(epsilon)
                 
                 time_dataframe = pd.read_csv(self.runtime_file)
                 
@@ -194,7 +194,7 @@ class Simulation25Blocks:
                 
             for config in self.configs:
                 if config == "lisflood": continue
-                runtime_ratio = self.results[config]["runtime"] / self.results[1e-2]["runtime"]
+                runtime_ratio = self.results[self.configs[0]]["runtime"] / self.results[config]["runtime"]
                 ax.plot(self.results[config]["simtime"], runtime_ratio, label=config)
             
             xlim = (
@@ -212,4 +212,4 @@ class Simulation25Blocks:
             plt.close()
         
 if __name__ == "__main__":
-    Simulation25Blocks( [1e-2, 1e-3] ).plot( ExperimentalData() )
+    Simulation25Blocks( [0, 1e-4, 1e-3] ).plot( ExperimentalData() )

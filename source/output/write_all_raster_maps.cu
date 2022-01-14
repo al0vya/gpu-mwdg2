@@ -30,7 +30,7 @@ void write_all_raster_maps
 
 		if (solver_params.solver_type == MWDG2)
 		{
-			write_raster_file
+			/*write_raster_file
 			(
 				respath,
 				"dem1x",
@@ -50,7 +50,7 @@ void write_all_raster_maps
 				massint,
 				dx_finest,
 				mesh_dim
-			);
+			);*/
 		}
 	}
 
@@ -89,7 +89,7 @@ void write_all_raster_maps
 
 	if (solver_params.solver_type == MWDG2)
 	{
-		write_raster_file
+		/*write_raster_file
 		(
 			respath,
 			"wd1x",
@@ -153,6 +153,6 @@ void write_all_raster_maps
 			massint,
 			dx_finest,
 			mesh_dim
-		);
+		);*/
 	}
 }

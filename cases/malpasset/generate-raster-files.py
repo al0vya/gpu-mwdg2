@@ -12,17 +12,16 @@ def remove_NODATA_values(
         
         for j, row in enumerate(nodal_data):
             for i, element in enumerate(row):
-                if ( (element - NODATA_value) < tol_0 ): nodal_data[j, i] = 110
+                if ( (element - NODATA_value) < tol_0 ): nodal_data[j, i] = 100
 
 def init_water_depths(
         bed_data,
         nrows,
-        ncols
+        ncols,
+        cellsize
     ):
-        cell_size = 20
-        
-        x = [ i * cell_size for i in range(ncols) ]
-        y = [ j * cell_size for j in range(nrows) ]
+        x = [ i * cellsize for i in range(ncols) ]
+        y = [ j * cellsize for j in range(nrows) ]
         
         # segments of the dam
         x1 = 4701.18
@@ -42,13 +41,8 @@ def init_water_depths(
         
         h = np.full(shape=(nrows, ncols), fill_value=0, dtype=float)
         
-        print(h.shape)
-        print(bed_data.shape)
-        
         for j, y_ in enumerate(y):
             for i, x_ in enumerate(x):
-                #print("i: %s, j: %s" % (i, j))
-                
                 yp_12 = k_12 * x_ + b_12
                 yp_13 = k_13 * x_ + b_13                
                 
@@ -68,7 +62,7 @@ def check_nodal_data(
         X, Y = np.meshgrid(x, y)
         
         fig, ax = plt.subplots()
-        ax.contourf(X, Y, nodal_data)
+        ax.contourf( X, Y, np.flipud(nodal_data) )
         plt.show()
         plt.close()
 
@@ -98,20 +92,22 @@ def write_raster_file(
         nrows,
         ncols,
         xmin,
-        ymin
+        ymin,
+        cellsize
     ):
         header = (
             "ncols        %s\n" +
             "nrows        %s\n" +
             "xllcorner    %s\n" +
             "yllcorner    %s\n" +
-            "cellsize     20\n" +
+            "cellsize     %s\n" +
             "NODATA_value -9999"
         ) % (
             ncols-1,
             nrows-1,
             xmin,
-            ymin
+            ymin,
+            cellsize
         )
         
         np.savetxt(filename, raster, fmt="%.15f", header=header, comments="")
@@ -122,7 +118,8 @@ def project_and_write_raster(
         nrows,
         ncols,
         xmin,
-        ymin
+        ymin,
+        cellsize
     ):
         raster = projection(
             nrows=nrows,
@@ -136,7 +133,8 @@ def project_and_write_raster(
             raster=raster,
             filename=filename,
             xmin=xmin,
-            ymin=ymin
+            ymin=ymin,
+            cellsize=cellsize
         )
    
 def main():
@@ -147,7 +145,9 @@ def main():
         
         remove_NODATA_values(nodal_data=bed_data, NODATA_value=-30)
         
-        h = init_water_depths(nrows=nrows, ncols=ncols, bed_data=bed_data)
+        cellsize = 20
+        
+        h = init_water_depths(nrows=nrows, ncols=ncols, bed_data=bed_data, cellsize=cellsize)
         
         check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=bed_data)
         check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=h)
@@ -158,7 +158,8 @@ def main():
             nodal_data=bed_data,
             filename="malpasset.dem",
             xmin=0,
-            ymin=0
+            ymin=0,
+            cellsize=cellsize
         )
         
         project_and_write_raster(
@@ -166,8 +167,9 @@ def main():
             ncols=ncols,
             nodal_data=h,
             filename="malpasset.start",
-            xmin=9,
-            ymin=0
+            xmin=0,
+            ymin=0,
+            cellsize=cellsize
         )
     
 if __name__ == "__main__":

@@ -318,7 +318,7 @@ int main
 
 	//CHECK_CUDA_ERROR(peek());
 	//CHECK_CUDA_ERROR(sync());
-	/*
+	
 	write_all_raster_maps
 	(
 		respath,
@@ -330,7 +330,7 @@ int main
 		dx_finest,
 		first_t_step
 	);
-	*/
+	
 	generate_all_morton_codes<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 	(
 		d_morton_codes,

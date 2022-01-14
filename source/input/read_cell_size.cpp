@@ -37,10 +37,9 @@ real read_cell_size(const char* input_filename)
 
 	fp = fopen(dem_filename, "r");
 
-	if ( NULL == fgets(str, sizeof(str), fp) )
+	if ( NULL == fp )
 	{
 		fprintf(stderr, "Error opening DEM file for cell size.\n");
-		fclose(fp);
 		exit(-1);
 	}
 
