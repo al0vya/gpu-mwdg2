@@ -18,7 +18,7 @@ class ExperimentalDataConicalIsland:
         
         for col, stage in enumerate(self.stages):
             cols = [2 * col, 2 * col + 1]
-            experimental_dataframe = pd.read_excel("experimental.xlsx", header=None, skiprows=2, usecols=cols)
+            experimental_dataframe = pd.read_excel("experimental.xls", header=None, skiprows=2, usecols=cols)
             
             self.data["time"]      [stage] = experimental_dataframe.iloc[:,0]
             self.data["gauge_data"][stage] = experimental_dataframe.iloc[:,1]
@@ -48,7 +48,7 @@ class SimulationConicalIsland:
                     self.results[config]["gauge_data"][stage] = {}
                     
             for epsilon in epsilons:
-                #self.run_adaptive(epsilon)
+                self.run_adaptive(epsilon)
                 
                 time_dataframe = pd.read_csv(self.runtime_file)
                 

@@ -115,16 +115,18 @@ def conical_island_raster_fields(x, y, x1, y1):
             
             if r1 <= 1.1:
                 z = 0.625
-            elif r1 > 1.1 and r1 <= 3.6:
+            elif r1 >= 1.1 and r1 <= 3.6:
                 z = (3.6 - r1) / 4
             else:
                 z = 0
             
-            h = h0 + a * ( ( 1 / np.cosh(k * x_) ) * ( 1 / np.cosh(k * x_) ) ) - z
+            h = max(0, h0 - z)
+            
+            h_ = h0 + a * ( ( 1 / np.cosh(k * x_) ) * ( 1 / np.cosh(k * x_) ) )
+            
+            h = h_ - z
             
             qx = h * c * (1 - (h0 - z) / h)
-            
-            h = max(0, h)
             
             h_1D.append(h)
             qx_1D.append(qx)
@@ -149,7 +151,7 @@ def main():
     xmax = 26
     
     ymin = 0
-    ymax = 27
+    ymax = 27.6
     
     cellsize = 0.05;
     
