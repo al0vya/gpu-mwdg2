@@ -16,13 +16,12 @@ class ExperimentalDataConicalIsland:
             for stage in self.stages:
                 self.data[field][stage] = {}
         
-        experimental_dataframe = pd.read_excel("experimental.xlsx", header=None, skiprows=2)
-        
-        print(experimental_dataframe)
-        
         for col, stage in enumerate(self.stages):
-            self.data["time"]      [stage] = experimental_dataframe.iloc[:][2 * col + 0]
-            self.data["gauge_data"][stage] = experimental_dataframe.iloc[:][2 * col + 1]
+            cols = [2 * col, 2 * col + 1]
+            experimental_dataframe = pd.read_excel("experimental.xlsx", header=None, skiprows=2, usecols=cols)
+            
+            self.data["time"]      [stage] = experimental_dataframe.iloc[:,0]
+            self.data["gauge_data"][stage] = experimental_dataframe.iloc[:,1]
 
 class SimulationConicalIsland:
     def __init__(
@@ -49,7 +48,7 @@ class SimulationConicalIsland:
                     self.results[config]["gauge_data"][stage] = {}
                     
             for epsilon in epsilons:
-                self.run_adaptive(epsilon)
+                #self.run_adaptive(epsilon)
                 
                 time_dataframe = pd.read_csv(self.runtime_file)
                 
@@ -117,13 +116,13 @@ class SimulationConicalIsland:
                         label=config
                     )
                 
-                #ax.scatter(
-                #    exp_data.data["time"]      [stage],
-                #    exp_data.data["gauge_data"][stage],
-                #    facecolor="None",
-                #    edgecolor="black",
-                #    label="Experimental"
-                #)
+                ax.scatter(
+                    exp_data.data["time"]      [stage],
+                    exp_data.data["gauge_data"][stage],
+                    facecolor="None",
+                    edgecolor="black",
+                    label="Experimental"
+                )
                 
                 ax.set_xlabel(r"$t \, (s)$")
                 ax.set_ylabel(r"Free surface elevation $(m)$")
