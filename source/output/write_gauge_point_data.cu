@@ -85,7 +85,7 @@ void write_gauge_point_data
 			( (i + 1) == gauge_points.num_points )
 			? "%" NUM_FRMT
 			: "%" NUM_FRMT ",",
-			p_finest_grid.h[idx] + p_finest_grid.z[idx]
+			p_finest_grid.h[idx]
 		);
 
 		if (plot_params.voutput_stage)
