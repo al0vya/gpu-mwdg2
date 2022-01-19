@@ -25,7 +25,7 @@ class SimulationMalpasset:
                 self.results[config]["arrival_time"] = [0 for stage in self.stages]
                     
             for epsilon in epsilons:
-                self.run_adaptive(epsilon)
+                #self.run_adaptive(epsilon)
                 
                 time_dataframe = pd.read_csv(self.runtime_file)
                 
@@ -63,9 +63,11 @@ class SimulationMalpasset:
                     "tol_q       0\n" +
                     "tol_s       1e-9\n" +
                     "g           9.80665\n" +
+                    "saveint     100\n" +
                     "massint     1\n" +
-                    "sim_time    200\n" +
+                    "sim_time    600\n" +
                     "solver      mw\n" +
+                    "vtk         on\n" +
                     "cumulative  on\n" +
                     "wall_height 100"
                 ) % epsilon
@@ -118,7 +120,7 @@ class SimulationMalpasset:
             for config in self.configs:
                 if config == "lisflood": continue
                 
-                runtime_ratio = self.results[0]["runtime"] / self.results[config]["runtime"]
+                runtime_ratio = self.results[1e-2]["runtime"] / self.results[config]["runtime"]
                 
                 ax.plot(
                     self.results[config]["simtime"],
@@ -128,8 +130,8 @@ class SimulationMalpasset:
                 )
             
             xlim = (
-                ( self.results[0]["simtime"] ).iloc[0],
-                ( self.results[0]["simtime"] ).iloc[-1]
+                ( self.results[1e-2]["simtime"] ).iloc[0],
+                ( self.results[1e-2]["simtime"] ).iloc[-1]
             )
             
             ax.set_xlabel(r"$t \, (s)$")
@@ -170,4 +172,4 @@ if __name__ == "__main__":
         18.8940
     ]
     
-    SimulationMalpasset( [1e-2, 0] ).plot(exp_data)
+    SimulationMalpasset( [1e-2] ).plot(exp_data)
