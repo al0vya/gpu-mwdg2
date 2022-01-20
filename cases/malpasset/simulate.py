@@ -25,7 +25,7 @@ class SimulationMalpasset:
                 self.results[config]["arrival_time"] = [0 for stage in self.stages]
                     
             for epsilon in epsilons:
-                #self.run_adaptive(epsilon)
+                self.run_adaptive(epsilon)
                 
                 time_dataframe = pd.read_csv(self.runtime_file)
                 

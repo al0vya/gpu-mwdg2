@@ -23,31 +23,26 @@ def init_water_depths(
         x = [ i * cellsize for i in range(ncols) ]
         y = [ j * cellsize for j in range(nrows) ]
         
-        # segments of the dam
-        x1 = 4701.18
-        y1 = 4143.41 + 3000.0
+        # dam as equation of straight line
+        x1 = 4481
+        y1 = 7344
         
-        x2 = 4655.5
-        y2 = 4392.1 + 3000.0
+        x2 = 4596
+        y2 = 7118
         
-        x3 = 3990.0
-        y3 = 5560.0 + 3000.0
+        slope = (y2 - y1) / (x2 - x1)
         
-        k_12  = (y1 - y2) / (x1 - x2)
-        k_13  = (y3 - y2) / (x3 - x2)
+        intercept = y1 - slope * x1
         
-        b_12  = y1 - x1 * k_12
-        b_13  = y3 - x3 * k_13
+        dam = lambda x : slope * x + intercept
         
         h = np.full(shape=(nrows, ncols), fill_value=0, dtype=float)
         
+        eta = 100
+        
         for j, y_ in enumerate(y):
-            for i, x_ in enumerate(x):
-                yp_12 = k_12 * x_ + b_12
-                yp_13 = k_13 * x_ + b_13                
-                
-                if y_ <= yp_12 and y_ <= yp_13 and bed_data[j, i] < 150:
-                    h[j, i] = 100 - bed_data[j, i]
+            for i, x_ in enumerate(x): 
+                if y_ <= dam(x_): h[j, i] = max( 0, eta - bed_data[j, i] )
                     
         return h
 
@@ -62,7 +57,7 @@ def check_nodal_data(
         X, Y = np.meshgrid(x, y)
         
         fig, ax = plt.subplots()
-        ax.contourf( X, Y, np.flipud(nodal_data) )
+        ax.contourf(X, Y, nodal_data)
         plt.show()
         plt.close()
 
@@ -110,7 +105,7 @@ def write_raster_file(
             cellsize
         )
         
-        np.savetxt(filename, raster, fmt="%.15f", header=header, comments="")
+        np.savetxt(filename, np.flipud(raster), fmt="%.15f", header=header, comments="")
 
 def project_and_write_raster(
         nodal_data,
@@ -141,7 +136,7 @@ def main():
         nrows = 501
         ncols = 901
         
-        bed_data = np.flipud( np.loadtxt(fname="bed-data.txt", usecols=2).reshape(ncols, nrows).transpose() )
+        bed_data = np.loadtxt(fname="bed-data.txt", usecols=2).reshape(ncols, nrows).transpose()
         
         remove_NODATA_values(nodal_data=bed_data, NODATA_value=-30)
         
