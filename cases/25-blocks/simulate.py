@@ -91,6 +91,7 @@ class Simulation25Blocks:
                 for interval in self.intervals:
                     h_raster_file  = os.path.join("results", "results-" + str(interval) + ".wd")
                     qx_raster_file = os.path.join("results", "results-" + str(interval) + ".qx")
+                    qy_raster_file = os.path.join("results", "results-" + str(interval) + ".qy")
                     
                     self.results[epsilon][interval]["depth"] = np.loadtxt(
                         fname=h_raster_file,
@@ -100,13 +101,22 @@ class Simulation25Blocks:
                     )
                     
                     # calculating velocity from depth and discharge
-                    self.results[epsilon][interval]["velocity"] = np.loadtxt(
+                    vx = np.loadtxt(
                         fname=qx_raster_file,
                         skiprows=self.slice_row,
                         max_rows=1,
                         usecols=self.i_range
                     ) / self.results[epsilon][interval]["depth"]
-                        
+                    
+                    vy = np.loadtxt(
+                        fname=qy_raster_file,
+                        skiprows=self.slice_row,
+                        max_rows=1,
+                        usecols=self.i_range
+                    ) / self.results[epsilon][interval]["depth"]
+                    
+                    self.results[epsilon][interval]["velocity"] = np.sqrt(vx * vx + vy * vy)
+                    
     def run_adaptive(
             self,
             epsilon
@@ -124,12 +134,11 @@ class Simulation25Blocks:
                     "tol_q       0\n" +
                     "tol_s       1e-9\n" +
                     "g           9.80665\n" +
-                    "massint     0.1\n" +
                     "saveint     1\n" +
                     "sim_time    10\n" +
                     "cumulative  on\n" +
                     "raster_out  on\n" +
-                    "solver      hw\n" +
+                    "solver      mw\n" +
                     "wall_height 2.5"
                 ) % epsilon
                 
@@ -212,4 +221,4 @@ class Simulation25Blocks:
             plt.close()
         
 if __name__ == "__main__":
-    Simulation25Blocks( [0, 1e-4, 1e-3] ).plot( ExperimentalData25Blocks() )
+    Simulation25Blocks( [1e-3, 1e-4, 0] ).plot( ExperimentalData25Blocks() )
