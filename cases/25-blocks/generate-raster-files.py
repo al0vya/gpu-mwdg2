@@ -149,8 +149,8 @@ def bed(x, y):
     return z
             
 def main():
-    ncols    =  180 + 1
-    nrows    =  180  + 1
+    ncols    =  128 + 1
+    nrows    =  128  + 1
     xmin     = -6.75
     ymin     = -1.80
     cellsize =  0.02
