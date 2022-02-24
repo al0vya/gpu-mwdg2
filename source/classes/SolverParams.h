@@ -12,6 +12,7 @@ typedef struct SolverParams
 	real tol_q;
 	real tol_s;
 	real wall_height;
+	bool grading = false;
 	int  solver_type;
 	real CFL;
 

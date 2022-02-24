@@ -379,7 +379,7 @@ int main
 	//CHECK_CUDA_ERROR(peek());
 	//CHECK_CUDA_ERROR(sync());
 
-	init_sig_details<<<num_blocks_details, THREADS_PER_BLOCK>>>
+	init_sig_details<<<num_blocks_details, THREADS_PER_BLOCK>>> //d_sig_details[idx] = true;
 	(
 		d_sig_details, 
 		num_details
@@ -399,7 +399,8 @@ int main
 		d_details,  
 		d_preflagged_details, 
 		maxes,
-		solver_params, 
+		solver_params,
+		sim_params,
 		first_t_step
 	);
 
@@ -492,7 +493,7 @@ int main
 		    //CHECK_CUDA_ERROR(peek());
 		    //CHECK_CUDA_ERROR(sync());
 		    
-		    decoding_all
+		    decoding_all // contains extra sig
 		    (
 		    	d_sig_details,
 		    	d_norm_details,
