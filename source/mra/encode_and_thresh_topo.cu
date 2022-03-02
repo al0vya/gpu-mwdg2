@@ -82,16 +82,18 @@ void encode_and_thresh_topo
 		d_details.z1y.beta[parent_idx]  = z_details_mw._1y.beta;
 		d_details.z1y.gamma[parent_idx] = z_details_mw._1y.gamma;
 
-		if ((z_details_mw.get_max() / maxes.z) >= epsilon_local) {
+		if ( (z_details_mw.get_max() / maxes.z) >= epsilon_local )
+		{
 			d_preflagged_details[parent_idx] = SIGNIFICANT;
 
-			if (solver_params.grading) {
+			if (solver_params.grading)
+			{
 				MortonCode code = idx;
 
 				Coordinate i = compact(code);
 				Coordinate j = compact(code >> 1);
 
-				if ((i > 0 && i < sim_params.xsz) && (j > 0 && j < sim_params.ysz)) {
+				if ( (i > 0 && i < sim_params.xsz) && (j > 0 && j < sim_params.ysz) ) {
 
 					Coordinate i_n = i;
 					Coordinate i_e = i + 1;
