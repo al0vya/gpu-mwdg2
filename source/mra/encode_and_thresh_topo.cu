@@ -8,11 +8,12 @@ void encode_and_thresh_topo
 	bool*             d_preflagged_details,
 	Maxes             maxes,
 	SolverParams  solver_params,
+	SimulationParams sim_params,
 	int               level,
 	bool              first_time_step
 )
 {
-	HierarchyIndex idx = blockIdx.x * blockDim.x + threadIdx.x;
+	MortonCode idx = blockIdx.x * blockDim.x + threadIdx.x;
 	
 	int num_threads = 1 << (2 * level);
 
@@ -81,6 +82,38 @@ void encode_and_thresh_topo
 		d_details.z1y.beta[parent_idx]  = z_details_mw._1y.beta;
 		d_details.z1y.gamma[parent_idx] = z_details_mw._1y.gamma;
 
-		if ( ( z_details_mw.get_max()  / maxes.z) >= epsilon_local ) d_preflagged_details[parent_idx] = SIGNIFICANT;
+		if ((z_details_mw.get_max() / maxes.z) >= epsilon_local) {
+			d_preflagged_details[parent_idx] = SIGNIFICANT;
+
+			if (solver_params.grading) {
+				MortonCode code = idx;
+
+				Coordinate i = compact(code);
+				Coordinate j = compact(code >> 1);
+
+				if ((i > 0 && i < sim_params.xsz) && (j > 0 && j < sim_params.ysz)) {
+
+					Coordinate i_n = i;
+					Coordinate i_e = i + 1;
+					Coordinate i_s = i;
+					Coordinate i_w = i - 1;
+
+					Coordinate j_n = j + 1;
+					Coordinate j_e = j;
+					Coordinate j_s = j - 1;
+					Coordinate j_w = j;
+
+					HierarchyIndex n_idx = generate_morton_code(i_n, j_n);
+					HierarchyIndex e_idx = generate_morton_code(i_e, j_e);
+					HierarchyIndex s_idx = generate_morton_code(i_s, j_s);
+					HierarchyIndex w_idx = generate_morton_code(i_w, j_w);
+
+					d_preflagged_details[curr_lvl_idx + n_idx] = SIGNIFICANT;
+					d_preflagged_details[curr_lvl_idx + e_idx] = SIGNIFICANT;
+					d_preflagged_details[curr_lvl_idx + s_idx] = SIGNIFICANT;
+					d_preflagged_details[curr_lvl_idx + w_idx] = SIGNIFICANT;
+				}
+			}
+		}
 	}
 }

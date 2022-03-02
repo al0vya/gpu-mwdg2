@@ -34,5 +34,9 @@ SolverParams read_solver_params
 		exit(-1);
 	}
 
+    read_keyword_str(input_filename, "grading", 7, solvertype_buf);
+    solver_params.grading = ( !strncmp(solvertype_buf, "on", 2) );
+
+
 	return solver_params;
 }
