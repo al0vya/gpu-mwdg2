@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 
 class ExperimentalDataMonai:
     def __init__(self):
+        print("Reading experimental data...")
+        
         experimental_dataframe = pd.read_csv("experimental.txt")
         
         self.time       = experimental_dataframe["time"]
@@ -14,34 +16,44 @@ class ExperimentalDataMonai:
 class SimulationMonai:
     def __init__(
             self,
-            epsilons
+            epsilons,
+            solvers
         ):
-            self.configs      = (*epsilons, "lisflood")
+            print("Creating fields for simulation results...")
+            
+            self.solvers      = solvers
+            self.epsilons     = epsilons
             self.fields       = ["simtime", "runtime", "gauge_data"]
             self.stage_file   = os.path.join("results", "stage.wd")
             self.runtime_file = os.path.join("results", "simtime-vs-runtime.csv")
             self.results      = {}
             
-            for config in self.configs:
-                if config not in self.results:
-                    self.results[config] = {}
-                    for field in self.fields:
-                        if field not in self.results[config]:
-                            self.results[config][field] = {}
-                            
-            for epsilon in epsilons:
-                self.run_adaptive(epsilon)
+            for solver in self.solvers:
+                self.results[solver] = {}
                 
-                time_dataframe = pd.read_csv(self.runtime_file)
-                
-                self.results[epsilon]["simtime"]    = time_dataframe["simtime"]
-                self.results[epsilon]["runtime"]    = time_dataframe["runtime"]
-                self.results[epsilon]["gauge_data"] = pd.read_csv(self.stage_file)["stage1"]
+                for epsilon in self.epsilons:
+                    if epsilon not in self.results:
+                        self.results[solver][epsilon] = {}
+                        for field in self.fields:
+                            if field not in self.results[solver][epsilon]:
+                                self.results[solver][epsilon][field] = {}
+                                
+                for epsilon in epsilons:
+                    self.run(epsilon, solver)
+                    
+                    time_dataframe = pd.read_csv(self.runtime_file)
+                    
+                    self.results[solver][epsilon]["simtime"]    = time_dataframe["simtime"]
+                    self.results[solver][epsilon]["runtime"]    = time_dataframe["runtime"]
+                    self.results[solver][epsilon]["gauge_data"] = pd.read_csv(self.stage_file)["stage1"]
             
-    def run_adaptive(
+    def run(
             self,
-            epsilon
+            epsilon,
+            solver
         ):
+            print("Running simulation, eps =", str(epsilon), ", solver:", solver)
+            
             with open("monai.par", 'w') as fp:
                 params = (
                     "test_case   0\n" +
@@ -60,10 +72,10 @@ class SimulationMonai:
                     "g           9.80665\n" +
                     "massint     0.1\n" +
                     "sim_time    22.5\n" +
-                    "solver      mw\n" +
+                    "solver      %s\n" +
                     "cumulative  on\n" +
                     "wall_height 0.5"
-                ) % epsilon
+                ) % (epsilon, solver)
                 
                 fp.write(params)
             
@@ -83,48 +95,48 @@ class SimulationMonai:
             
             plt.rcParams.update(my_rc_params)
             
+            print("Plotting stage data...")
+            
             fig, ax = plt.subplots()
             
-            for config in self.configs:
-                if config == "lisflood": continue
+            for solver in self.solvers:
+                for epsilon in self.epsilons:
+                    ax.plot(
+                        self.results[solver][epsilon]["simtime"],
+                        self.results[solver][epsilon]["gauge_data"],
+                        linewidth=2.5,
+                        label=epsilon
+                    )
                 
-                ax.plot(
-                    self.results[config]["simtime"],
-                    self.results[config]["gauge_data"] - 0.13535,
-                    linewidth=2.5,
-                    label=config
+                ax.scatter(
+                    exp_data.time,
+                    exp_data.gauge_data,
+                    facecolor="None",
+                    edgecolor="black",
+                    label="Experimental"
                 )
-            
-            ax.scatter(
-                exp_data.time,
-                exp_data.gauge_data,
-                facecolor="None",
-                edgecolor="black",
-                label="Experimental"
-            )
-            
-            ax.set_xlabel(r"$t \, (s)$")
-            ax.set_ylabel(r"Free surface elevation $(m)$")
-            ax.set_xlim( exp_data.time.iloc[0], exp_data.time.iloc[-1] )
-            ax.legend()
-            fig.savefig(os.path.join("results", "stage"), bbox_inches="tight")
-            ax.clear()
-            
-            for config in self.configs:
-                if config == "lisflood": continue
                 
-                runtime_ratio = self.results[0]["runtime"] / self.results[config]["runtime"]
-                
-                ax.plot(
-                    self.results[config]["simtime"],
-                    runtime_ratio,
-                    linewidth=2.5,
-                    label=config
-                )
+                ax.set_xlabel(r"$t \, (s)$")
+                ax.set_ylabel(r"Free surface elevation $(m)$")
+                ax.set_xlim( exp_data.time.iloc[0], exp_data.time.iloc[-1] )
+                ax.legend()
+                fig.savefig(os.path.join("results", "stage"), bbox_inches="tight")
+                ax.clear()
+            
+            for solver in self.solvers:
+                for epsilon in self.epsilons:
+                    runtime_ratio = self.results[ self.solvers[0] ][0]["runtime"] / self.results[solver][epsilon]["runtime"]
+                    
+                    ax.plot(
+                        self.results[solver][epsilon]["simtime"],
+                        runtime_ratio,
+                        linewidth=2.5,
+                        label=epsilon
+                    )
             
             xlim = (
-                ( self.results[0]["simtime"] ).iloc[0],
-                ( self.results[0]["simtime"] ).iloc[-1]
+                ( self.results[solver][0]["simtime"] ).iloc[0],
+                ( self.results[solver][0]["simtime"] ).iloc[-1]
             )
             
             ax.set_xlabel(r"$t \, (s)$")
@@ -137,4 +149,4 @@ class SimulationMonai:
             plt.close()
         
 if __name__ == "__main__":
-    SimulationMonai( [1e-3, 1e-4, 0] ).plot( ExperimentalDataMonai() )
+    SimulationMonai( [0, 1e-4, 1e-3], ["mw"] ).plot( ExperimentalDataMonai() )

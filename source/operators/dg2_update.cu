@@ -241,8 +241,6 @@ void dg2_update
         d_neighbours.west.qy1y[idx]
     };
 
-    if (idx == 1604) printf("coeffs.h0: %f\n", coeffs.h0);
-
     // LFVs from neighbour cells
     real z_n_pos = eval_loc_face_val_dg2(d_neighbours.north.z0[idx], d_neighbours.north.z1x[idx], d_neighbours.north.z1y[idx], basis_n);
     real z_e_pos = eval_loc_face_val_dg2(d_neighbours.east.z0[idx],  d_neighbours.east.z1x[idx],  d_neighbours.east.z1y[idx],  basis_e);
@@ -370,7 +368,7 @@ void dg2_update
         coeffs
     );
 
-    if (idx == 1604)
+    if (false)
     {
         //printf("Before operator:\n");
         //printf("level: %d\n", level);
@@ -415,7 +413,7 @@ void dg2_update
 
     coeffs += dt * (Lx + Ly);
 
-    if (idx == 1604)
+    if (false)
     {
         //printf("After operator:\n");
         //printf("level: %d\n", level);

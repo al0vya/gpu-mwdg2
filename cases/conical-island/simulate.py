@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 
 class ExperimentalDataConicalIsland:
     def __init__(self):
+        print("Reading experimental data...")
+        
         self.stages = [ "#" + str(i) for i in [6, 9, 16, 22] ]
         self.fields = ["time", "gauge_data"]
         self.data = {}
@@ -26,10 +28,14 @@ class ExperimentalDataConicalIsland:
 class SimulationConicalIsland:
     def __init__(
             self,
-            epsilons
+            epsilons,
+            solvers
         ):
-            self.configs      = (*epsilons, "lisflood")
-            self.fields       = ["simtime", "runtime", "gauge_data"]
+            print("Creating fields for simulation results...")
+            
+            self.epsilons = epsilons
+            self.solvers  = solvers
+            self.fields   = ["simtime", "runtime", "gauge_data"]
             
             # stages 6, 9, 12 and 22 from
             # "Laboratory experiments of tsunami runup on a circular island"
@@ -38,32 +44,38 @@ class SimulationConicalIsland:
             self.runtime_file = os.path.join("results", "simtime-vs-runtime.csv")
             self.results      = {}
             
-            for config in self.configs:
-                self.results[config] = {}
-
-                for field in self.fields:
-                    self.results[config][field] = {}
+            for solver in self.solvers:
+                self.results[solver] = {}
+                
+                for epsilon in self.epsilons:
+                    self.results[solver][epsilon] = {}
+                
+                    for field in self.fields:
+                        self.results[solver][epsilon][field] = {}
+                        
+                    for stage in self.stages:
+                        self.results[solver][epsilon]["gauge_data"][stage] = {}
+                        
+                for epsilon in epsilons:
+                    self.run(epsilon, solver)
                     
-                for stage in self.stages:
-                    self.results[config]["gauge_data"][stage] = {}
+                    time_dataframe = pd.read_csv(self.runtime_file)
                     
-            for epsilon in epsilons:
-                self.run_adaptive(epsilon)
-                
-                time_dataframe = pd.read_csv(self.runtime_file)
-                
-                self.results[epsilon]["simtime"] = time_dataframe["simtime"]
-                self.results[epsilon]["runtime"] = time_dataframe["runtime"]
-                
-                stage_dataframe = pd.read_csv(self.stage_file)
-                
-                for i, stage in enumerate(self.stages):
-                    self.results[epsilon]["gauge_data"][stage] = stage_dataframe.iloc[:,i+1]
+                    self.results[solver][epsilon]["simtime"] = time_dataframe["simtime"]
+                    self.results[solver][epsilon]["runtime"] = time_dataframe["runtime"]
                     
-    def run_adaptive(
+                    stage_dataframe = pd.read_csv(self.stage_file)
+                    
+                    for i, stage in enumerate(self.stages):
+                        self.results[solver][epsilon]["gauge_data"][stage] = stage_dataframe.iloc[:,i+1]
+                    
+    def run(
             self,
-            epsilon
+            epsilon,
+            solver
         ):
+            print("Running simulation, eps =", str(epsilon), ", solver:", solver)
+            
             with open("conical-island.par", 'w') as fp:
                 params = (
                     "test_case   0\n" +
@@ -80,10 +92,10 @@ class SimulationConicalIsland:
                     "g           9.80665\n" +
                     "massint     0.1\n" +
                     "sim_time    20\n" +
-                    "solver      mw\n" +
+                    "solver      %s\n" +
                     "cumulative  on\n" +
                     "wall_height 1"
-                ) % epsilon
+                ) % (epsilon, solver)
                 
                 fp.write(params)
             
@@ -93,6 +105,8 @@ class SimulationConicalIsland:
             self,
             exp_data
         ):
+            T = 6
+            
             my_rc_params = {
                 "legend.fontsize" : "xx-large",
                 "axes.labelsize"  : "xx-large",
@@ -103,19 +117,20 @@ class SimulationConicalIsland:
             
             plt.rcParams.update(my_rc_params)
             
+            print("Plotting stage data...")
+            
             fig, ax = plt.subplots()
             
             for stage in self.stages:
-                for config in self.configs:
-                    if config == "lisflood": continue
+                for solver in self.solvers:
+                    for epsilon in self.epsilons:
+                        ax.plot(
+                            self.results[solver][epsilon]["simtime"] + T,
+                            self.results[solver][epsilon]["gauge_data"][stage] - self.results[solver][epsilon]["gauge_data"][stage][0],
+                            linewidth=2.5,
+                            label=str(epsilon) + ", " + solver 
+                        )
                     
-                    ax.plot(
-                        self.results[config]["simtime"],
-                        self.results[config]["gauge_data"][stage],
-                        linewidth=2.5,
-                        label=config
-                    )
-                
                 ax.scatter(
                     exp_data.data["time"]      [stage],
                     exp_data.data["gauge_data"][stage],
@@ -126,36 +141,37 @@ class SimulationConicalIsland:
                 
                 ax.set_xlabel(r"$t \, (s)$")
                 ax.set_ylabel(r"Free surface elevation $(m)$")
-                #ax.set_xlim( exp_data.data["time"][stage].iloc[0], exp_data.data["time"][stage].iloc[-1] )
+                ax.set_xlim(6, 20)
                 ax.legend()
                 fig.savefig(os.path.join("results", "stage-" + stage), bbox_inches="tight")
                 ax.clear()
             
-            for config in self.configs:
-                if config == "lisflood": continue
+            print("Plotting speedups...")
+            
+            for solver in self.solvers:
+                for epsilon in self.epsilons:
+                    runtime_ratio = self.results[solver][0]["runtime"] / self.results[solver][epsilon]["runtime"]
+                    
+                    ax.plot(
+                        self.results[solver][epsilon]["simtime"],
+                        runtime_ratio,
+                        linewidth=2.5,
+                        label=str(epsilon) + ", " + solver 
+                    )
                 
-                runtime_ratio = self.results[0]["runtime"] / self.results[config]["runtime"]
-                
-                ax.plot(
-                    self.results[config]["simtime"],
-                    runtime_ratio,
-                    linewidth=2.5,
-                    label=config
+                xlim = (
+                    ( self.results[solver][0]["simtime"] ).iloc[0],
+                    ( self.results[solver][0]["simtime"] ).iloc[-1]
                 )
-            
-            xlim = (
-                ( self.results[0]["simtime"] ).iloc[0],
-                ( self.results[0]["simtime"] ).iloc[-1]
-            )
-            
-            ax.set_xlabel(r"$t \, (s)$")
-            ax.set_ylabel("Speedup ratio GPU-MWDG2/GPU-DG2")
-            ax.set_xlim(xlim)
-            ax.legend()
-            fig.savefig(os.path.join("results", "runtimes"), bbox_inches="tight")
-            ax.clear()
-            
-            plt.close()
+                
+                ax.set_xlabel(r"$t \, (s)$")
+                ax.set_ylabel("Speedup ratio GPU-MWDG2/GPU-DG2")
+                ax.set_xlim(xlim)
+                ax.legend()
+                fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
+                ax.clear()
+                
+                plt.close()
         
 if __name__ == "__main__":
     with open("conical-island.stage", 'w') as fp:
@@ -169,4 +185,6 @@ if __name__ == "__main__":
         
         fp.write(stages)
     
-    SimulationConicalIsland( [1e-3, 1e-4, 0] ).plot( ExperimentalDataConicalIsland() )
+    subprocess.run( ["python", "raster.py"] )
+    
+    SimulationConicalIsland( [0, 1e-4, 1e-3], ["hw", "mw"] ).plot( ExperimentalDataConicalIsland() )
