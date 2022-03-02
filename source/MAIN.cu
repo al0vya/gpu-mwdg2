@@ -895,15 +895,13 @@ int main
 
 		compression = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
 
-		printf
+		//printf
 		(
 			"Elements: %d, compression: %f%%, time step: %.15f, steps: %d, sim time: %f\n", 
 			d_assem_sol.length, compression, dt, ++steps, time_now
 		);
 		
  		first_t_step = false;
-
-		int a = 1;
 	}
 
 	end = clock();

@@ -36,30 +36,30 @@ void add_ghost_cells
 	
 	switch (test_case)
 	{
-	case 1:   // wet 1D c property
-	case 3:   // wet/dry 1D c property
-	case 5:   // wet dam break
-	case 7:   // dry dam break
-	case 9:   // dry dam break with friction
-	case 11:  // wet building overtopping
-	case 13:  // dry building overtopping
-	case 15:  // triangular dam break
-	case 17:  // parabolic bowl
-		flow_EW = true;
-		break;
-	case 2: 
-	case 4: 
-	case 6: 
-	case 8: 
-	case 10:
-	case 12:
-	case 14:
-	case 16:
-	case 18:
-		flow_NS = true;
-		break;
-	default:
-		break;
+	    case 1:    // wet 1D c property
+	    case 3:    // wet/dry 1D c property
+	    case 5:    // wet dam break
+	    case 7:    // dry dam break
+	    case 9:    // dry dam break with friction
+	    case 11:   // wet building overtopping
+	    case 13:   // dry building overtopping
+	    case 15:   // triangular dam break
+	    case 17:   // parabolic bowl
+	    	flow_EW = true;
+	    	break;
+	    case 2: 
+	    case 4: 
+	    case 6: 
+	    case 8: 
+	    case 10:
+	    case 12:
+	    case 14:
+	    case 16:
+	    case 18:
+	    	flow_NS = true;
+	    	break;
+	    default:
+	    	break;
 	}
 
 	if (d_neighbours.north.act_idcs[idx] == -1)
@@ -73,21 +73,21 @@ void add_ghost_cells
 		{
 			if (test_case == 0)
 			{
-				d_assem_sol.h1x[idx]  = C(0.0);
-				d_assem_sol.qx1x[idx] = C(0.0);
-				d_assem_sol.qy1x[idx] = C(0.0);
-				d_assem_sol.z1x[idx]  = C(0.0);
-
-				d_assem_sol.h1y[idx]  = C(0.0);
-				d_assem_sol.qx1y[idx] = C(0.0);
-				d_assem_sol.qy1y[idx] = C(0.0);
-				d_assem_sol.z1y[idx]  = C(0.0);
-
+				//d_assem_sol.h1x[idx]  = C(0.0);
+				//d_assem_sol.qx1x[idx] = C(0.0);
+				//d_assem_sol.qy1x[idx] = C(0.0);
+				//d_assem_sol.z1x[idx]  = C(0.0);
+				
+				//d_assem_sol.h1y[idx]  = C(0.0);
+				//d_assem_sol.qx1y[idx] = C(0.0);
+				//d_assem_sol.qy1y[idx] = C(0.0);
+				//d_assem_sol.z1y[idx]  = C(0.0);
+				
 				d_neighbours.north.h1x[idx]  = C(0.0);
 				d_neighbours.north.qx1x[idx] = C(0.0);
 				d_neighbours.north.qy1x[idx] = C(0.0);
 				d_neighbours.north.z1x[idx]  = C(0.0);
-
+				
 				d_neighbours.north.h1y[idx]  = C(0.0);
 				d_neighbours.north.qx1y[idx] = C(0.0);
 				d_neighbours.north.qy1y[idx] = C(0.0);
@@ -142,6 +142,7 @@ void add_ghost_cells
 		{
 			if (boundaries.north.bdytype == FREE)
 			{
+				d_neighbours.north.h0[idx]  = pow( (d_assem_sol.qy0[idx] * d_assem_sol.qy0[idx]) / sim_params.g, C(1.0) / C(3.0) );
 				d_neighbours.north.qx0[idx] = d_assem_sol.qx0[idx];
 				d_neighbours.north.qy0[idx] = d_assem_sol.qy0[idx];
 			}
@@ -177,21 +178,21 @@ void add_ghost_cells
 		{
 			if (test_case == 0)
 			{
-				d_assem_sol.h1x[idx]  = C(0.0);
-				d_assem_sol.qx1x[idx] = C(0.0);
-				d_assem_sol.qy1x[idx] = C(0.0);
-				d_assem_sol.z1x[idx]  = C(0.0);
-
-				d_assem_sol.h1y[idx]  = C(0.0);
-				d_assem_sol.qx1y[idx] = C(0.0);
-				d_assem_sol.qy1y[idx] = C(0.0);
-				d_assem_sol.z1y[idx]  = C(0.0);
-
+				//d_assem_sol.h1x[idx]  = C(0.0);
+				//d_assem_sol.qx1x[idx] = C(0.0);
+				//d_assem_sol.qy1x[idx] = C(0.0);
+				//d_assem_sol.z1x[idx]  = C(0.0);
+				
+				//d_assem_sol.h1y[idx]  = C(0.0);
+				//d_assem_sol.qx1y[idx] = C(0.0);
+				//d_assem_sol.qy1y[idx] = C(0.0);
+				//d_assem_sol.z1y[idx]  = C(0.0);
+				
 				d_neighbours.east.h1x[idx]  = C(0.0);
 				d_neighbours.east.qx1x[idx] = C(0.0);
 				d_neighbours.east.qy1x[idx] = C(0.0);
 				d_neighbours.east.z1x[idx]  = C(0.0);
-
+				
 				d_neighbours.east.h1y[idx]  = C(0.0);
 				d_neighbours.east.qx1y[idx] = C(0.0);
 				d_neighbours.east.qy1y[idx] = C(0.0);
@@ -246,6 +247,7 @@ void add_ghost_cells
 		{
 			if (boundaries.east.bdytype == FREE)
 			{
+				d_neighbours.east.h0[idx]  = pow( (d_assem_sol.qx0[idx] * d_assem_sol.qx0[idx]) / sim_params.g, C(1.0) / C(3.0) );
 				d_neighbours.east.qx0[idx] = d_assem_sol.qx0[idx];
 				d_neighbours.east.qy0[idx] = d_assem_sol.qy0[idx];
 			}
@@ -281,21 +283,21 @@ void add_ghost_cells
 		{
 			if (test_case == 0)
 			{
-				d_assem_sol.h1x[idx]  = C(0.0);
-				d_assem_sol.qx1x[idx] = C(0.0);
-				d_assem_sol.qy1x[idx] = C(0.0);
-				d_assem_sol.z1x[idx]  = C(0.0);
-
-				d_assem_sol.h1y[idx]  = C(0.0);
-				d_assem_sol.qx1y[idx] = C(0.0);
-				d_assem_sol.qy1y[idx] = C(0.0);
-				d_assem_sol.z1y[idx]  = C(0.0);
-
+				//d_assem_sol.h1x[idx]  = C(0.0);
+				//d_assem_sol.qx1x[idx] = C(0.0);
+				//d_assem_sol.qy1x[idx] = C(0.0);
+				//d_assem_sol.z1x[idx]  = C(0.0);
+				
+				//d_assem_sol.h1y[idx]  = C(0.0);
+				//d_assem_sol.qx1y[idx] = C(0.0);
+				//d_assem_sol.qy1y[idx] = C(0.0);
+				//d_assem_sol.z1y[idx]  = C(0.0);
+				
 				d_neighbours.south.h1x[idx]  = C(0.0);
 				d_neighbours.south.qx1x[idx] = C(0.0);
 				d_neighbours.south.qy1x[idx] = C(0.0);
 				d_neighbours.south.z1x[idx]  = C(0.0);
-
+				
 				d_neighbours.south.h1y[idx]  = C(0.0);
 				d_neighbours.south.qx1y[idx] = C(0.0);
 				d_neighbours.south.qy1y[idx] = C(0.0);
@@ -350,6 +352,7 @@ void add_ghost_cells
 		{
 			if (boundaries.south.bdytype == FREE)
 			{
+				d_neighbours.south.h0[idx]  = pow( (d_assem_sol.qy0[idx] * d_assem_sol.qy0[idx]) / sim_params.g, C(1.0) / C(3.0) );
 				d_neighbours.south.qx0[idx] = d_assem_sol.qx0[idx];
 				d_neighbours.south.qy0[idx] = d_assem_sol.qy0[idx];
 			}
@@ -385,21 +388,21 @@ void add_ghost_cells
 		{
 			if (test_case == 0)
 			{
-				d_assem_sol.h1x[idx]  = C(0.0);
-				d_assem_sol.qx1x[idx] = C(0.0);
-				d_assem_sol.qy1x[idx] = C(0.0);
-				d_assem_sol.z1x[idx]  = C(0.0);
-
-				d_assem_sol.h1y[idx]  = C(0.0);
-				d_assem_sol.qx1y[idx] = C(0.0);
-				d_assem_sol.qy1y[idx] = C(0.0);
-				d_assem_sol.z1y[idx]  = C(0.0);
-
+				//d_assem_sol.h1x[idx]  = C(0.0);
+				//d_assem_sol.qx1x[idx] = C(0.0);
+				//d_assem_sol.qy1x[idx] = C(0.0);
+				//d_assem_sol.z1x[idx]  = C(0.0);
+				
+				//d_assem_sol.h1y[idx]  = C(0.0);
+				//d_assem_sol.qx1y[idx] = C(0.0);
+				//d_assem_sol.qy1y[idx] = C(0.0);
+				//d_assem_sol.z1y[idx]  = C(0.0);
+				
 				d_neighbours.west.h1x[idx]  = C(0.0);
 				d_neighbours.west.qx1x[idx] = C(0.0);
 				d_neighbours.west.qy1x[idx] = C(0.0);
 				d_neighbours.west.z1x[idx]  = C(0.0);
-
+				
 				d_neighbours.west.h1y[idx]  = C(0.0);
 				d_neighbours.west.qx1y[idx] = C(0.0);
 				d_neighbours.west.qy1y[idx] = C(0.0);
@@ -453,7 +456,8 @@ void add_ghost_cells
 		{
 			if (boundaries.west.bdytype == FREE)
 			{
-				d_neighbours.west.qx0[idx] = d_assem_sol.qx0[idx];
+				d_neighbours.west.h0[idx]  = pow( (d_assem_sol.qx0[idx] * d_assem_sol.qx0[idx]) / sim_params.g, C(1.0) / C(3.0) );
+				d_neighbours.west.qx0[idx] = d_assem_sol.qx0[idx]; 
 				d_neighbours.west.qy0[idx] = d_assem_sol.qy0[idx];
 			}
 			else if

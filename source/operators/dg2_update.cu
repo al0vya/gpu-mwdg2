@@ -179,7 +179,7 @@ void dg2_update
         d_assem_sol_load.qy1y[idx]
     };
     
-    bool thin = false; (coeffs.h0 < C(10.0) * solver_params.tol_h);
+    //bool thin = false; (coeffs.h0 < C(10.0) * solver_params.tol_h);
 
     FlowCoeffs coeffs_n
     {
@@ -240,6 +240,8 @@ void dg2_update
         d_neighbours.west.qy1x[idx],
         d_neighbours.west.qy1y[idx]
     };
+
+    if (idx == 1604) printf("coeffs.h0: %f\n", coeffs.h0);
 
     // LFVs from neighbour cells
     real z_n_pos = eval_loc_face_val_dg2(d_neighbours.north.z0[idx], d_neighbours.north.z1x[idx], d_neighbours.north.z1y[idx], basis_n);
@@ -368,58 +370,92 @@ void dg2_update
         coeffs
     );
 
-    if (false)//idx == 1574)
+    if (idx == 1604)
     {
-        printf("Before operator:\n");
-        printf("i: %d, j: %d\n", i, j);
-        printf("x: %f, y: %f\n", x, y);
-        printf("Lx.h0: %.15f\n", Lx.h0);
-        printf("Lx.qx0: %.15f\n", Lx.qx0);
-        printf("Ly.h0: %.15f\n", Ly.h0);
-        printf("Ly.qy0: %.15f\n", Ly.qy0);
-        printf("coeffs.h1y: %.15f\n", coeffs.h1y);
+        //printf("Before operator:\n");
+        //printf("level: %d\n", level);
+        //printf("i: %d, j: %d\n", i, j);
+        //printf("x: %f, y: %f\n", x, y);
+        //printf("Lx.h0: %.15f\n", Lx.h0);
+        //printf("Lx.qx0: %.15f\n", Lx.qx0);
+        //printf("Ly.h0: %.15f\n", Ly.h0);
+        //printf("Ly.qy0: %.15f\n", Ly.qy0);
         printf("coeffs.h0: %.15f\n", coeffs.h0);
-        printf("coeffs_n.h1y: %.15f\n", coeffs_n.h1y);
-        printf("coeffs_n.h0: %.15f\n", coeffs_n.h0);
-        printf("coeffs_s.h1y: %.15f\n", coeffs_s.h1y);
-        printf("coeffs_s.h0: %.15f\n", coeffs_s.h0);
-        printf("Ustar_n_pos.h: %.15f\n", Ustar_n_pos.h);
-        printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
-        printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
-        printf("Ustar_s_neg.h: %.15f\n", Ustar_s_neg.h);
-        printf("F_n.h: %.15f\n", F_n.h);
-        printf("F_s.h: %.15f\n", F_s.h);
-        printf("Sby.h: %.15f\n", Sby.h0);
-        printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_n_loc));
-        printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_s_loc));
+        //printf("coeffs.h1y: %.15f\n", coeffs.h1y);
+        //printf("coeffs_e.h0: %.15f\n", coeffs_e.h0);
+        //printf("coeffs_e.h1y: %.15f\n", coeffs_e.h1y);
+        //printf("coeffs_w.h0: %.15f\n", coeffs_w.h0);
+        //printf("coeffs_w.h1y: %.15f\n", coeffs_w.h1y);
+        //printf("Ustar_e_pos.h: %.15f\n", Ustar_e_pos.h);
+        //printf("Ustar_e_neg.h: %.15f\n", Ustar_e_neg.h);
+        //printf("Ustar_w_pos.h: %.15f\n", Ustar_w_pos.h);
+        //printf("Ustar_w_neg.h: %.15f\n", Ustar_w_neg.h);
+        //printf("F_e.h: %.15f\n", F_e.h);
+        //printf("F_w.h: %.15f\n", F_w.h);
+        //printf("Sbx.h: %.15f\n", Sbx.h0);
+        //printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_e_loc));
+        //printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_w_loc));
+        //printf("coeffs.h0: %.15f\n", coeffs.h0);
+        //printf("coeffs.h1y: %.15f\n", coeffs.h1y);
+        //printf("coeffs_n.h0: %.15f\n", coeffs_n.h0);
+        //printf("coeffs_n.h1y: %.15f\n", coeffs_n.h1y);
+        //printf("coeffs_s.h0: %.15f\n", coeffs_s.h0);
+        //printf("coeffs_s.h1y: %.15f\n", coeffs_s.h1y);
+        //printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
+        //printf("Ustar_n_pos.h: %.15f\n", Ustar_n_pos.h);
+        //printf("Ustar_s_neg.h: %.15f\n", Ustar_s_neg.h);
+        //printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
+        //printf("F_n.h: %.15f\n", F_n.h);
+        //printf("F_s.h: %.15f\n", F_s.h);
+        //printf("Sby.h: %.15f\n", Sby.h0);
+        //printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_n_loc));
+        //printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_s_loc));
 
     }
 
     coeffs += dt * (Lx + Ly);
 
-    if (false)//idx == 1574)
+    if (idx == 1604)
     {
-        printf("After operator:\n");
-        printf("i: %d, j: %d\n", i, j);
-        printf("x: %f, y: %f\n", x, y);
-        printf("Lx.h0: %.15f\n",  Lx.h0);
-        printf("Lx.qx0: %.15f\n", Lx.qx0);
-        printf("Ly.h0: %.15f\n",  Ly.h0);
-        printf("Ly.qy0: %.15f\n", Ly.qy0);
-        printf("coeffs.h1y: %.15f\n", coeffs.h1y);
+        //printf("After operator:\n");
+        //printf("level: %d\n", level);
+        //printf("i: %d, j: %d\n", i, j);
+        //printf("x: %f, y: %f\n", x, y);
+        //printf("Lx.h0: %.15f\n", Lx.h0);
+        //printf("Lx.qx0: %.15f\n", Lx.qx0);
+        //printf("Ly.h0: %.15f\n", Ly.h0);
+        //printf("Ly.qy0: %.15f\n", Ly.qy0);
         printf("coeffs.h0: %.15f\n", coeffs.h0);
-        printf("coeffs_n.h1y: %.15f\n", coeffs_n.h1y);
-        printf("coeffs_n.h0: %.15f\n", coeffs_n.h0);
-        printf("coeffs_s.h1y: %.15f\n", coeffs_s.h1y);
-        printf("coeffs_s.h0: %.15f\n", coeffs_s.h0);
-        printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
-        printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
-        printf("F_n.h: %.15f\n", F_n.h);
-        printf("F_s.h: %.15f\n", F_s.h);
-        printf("Sby.h: %.15f\n", Sby.h0);
-        printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_n_loc));
-        printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_s_loc));
-        
+        //printf("coeffs.h1y: %.15f\n", coeffs.h1y);
+        //printf("coeffs_e.h0: %.15f\n", coeffs_e.h0);
+        //printf("coeffs_e.h1y: %.15f\n", coeffs_e.h1y);
+        //printf("coeffs_w.h0: %.15f\n", coeffs_w.h0);
+        //printf("coeffs_w.h1y: %.15f\n", coeffs_w.h1y);
+        //printf("Ustar_e_pos.h: %.15f\n", Ustar_e_pos.h);
+        //printf("Ustar_e_neg.h: %.15f\n", Ustar_e_neg.h);
+        //printf("Ustar_w_pos.h: %.15f\n", Ustar_w_pos.h);
+        //printf("Ustar_w_neg.h: %.15f\n", Ustar_w_neg.h);
+        //printf("F_e.h: %.15f\n", F_e.h);
+        //printf("F_w.h: %.15f\n", F_w.h);
+        //printf("Sbx.h: %.15f\n", Sbx.h0);
+        //printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_e_loc));
+        //printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_w_loc));
+        //printf("coeffs.h0: %.15f\n", coeffs.h0);
+        //printf("coeffs.h1y: %.15f\n", coeffs.h1y);
+        //printf("coeffs_n.h0: %.15f\n", coeffs_n.h0);
+        //printf("coeffs_n.h1y: %.15f\n", coeffs_n.h1y);
+        //printf("coeffs_s.h0: %.15f\n", coeffs_s.h0);
+        //printf("coeffs_s.h1y: %.15f\n", coeffs_s.h1y);
+        //printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
+        //printf("Ustar_n_pos.h: %.15f\n", Ustar_n_pos.h);
+        //printf("Ustar_s_neg.h: %.15f\n", Ustar_s_neg.h);
+        //printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
+        //printf("F_n.h: %.15f\n", F_n.h);
+        //printf("F_s.h: %.15f\n", F_s.h);
+        //printf("Sby.h: %.15f\n", Sby.h0);
+        //printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_n_loc));
+        //printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_s_loc));
+
     }
 
     real& h0   = d_assem_sol_store.h0[idx]  ;
