@@ -51,19 +51,19 @@ fpfric      0.01
 rasterroot  monai
 bcifile     monai.bci
 bdyfile     monai.bdy
-stagefile	  monai.stage
-tol_h	      1e-3
+stagefile   monai.stage
+tol_h       1e-3
 tol_q       0
 tol_s       1e-9
 g           9.80665
 massint     1
 vtk         on
 planar      on
-row_major	  off
+row_major   off
 c_prop      off
 sim_time    22.5
 solver      mw
-wall_height	0.5
+wall_height 0.5
 ```
 
 Click into the search bar at the top of the File Explorer, type in `cmd` and press enter to open a command line. In the command line, type in `..\gpu-mwdg2.exe <FILENAME>.par` and press enter to run the model. where <FILENAME> is the name of a `.par` file.
