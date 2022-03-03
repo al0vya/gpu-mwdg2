@@ -111,5 +111,9 @@ gpu-mwdg2
         - conical-island.stage
 ```
 
-Start a command prompt at `gpu-mwdg2\out\build\x64-Release\conical-island`, type in `..\gpu-mwdg2.exe conical-island.par` and press enter to start running the simulation.
+Start a command prompt at `gpu-mwdg2\out\build\x64-Release\conical-island`, type in `..\gpu-mwdg2.exe conical-island.par` and press enter to start running the simulation. Before doing so however, the additional files (`conical-island.start`, `conical-island.stage`, etc) need to be created. These kinds of files are frequently needed to run simulations for real world test cases and are not straightforward to create. To address this issue, there are a set of Python scripts that automatically create these files, run simulations and plot the results.
+
+### Running automated simulations
+
+
 
