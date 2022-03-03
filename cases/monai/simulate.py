@@ -86,7 +86,7 @@ class SimulationMonai:
             exp_data
         ):
             my_rc_params = {
-                "legend.fontsize" : "xx-large",
+                "legend.fontsize" : "large",
                 "axes.labelsize"  : "xx-large",
                 "axes.titlesize"  : "xx-large",
                 "xtick.labelsize" : "xx-large",
@@ -101,52 +101,69 @@ class SimulationMonai:
             
             for solver in self.solvers:
                 for epsilon in self.epsilons:
+                    if epsilon == 0:
+                        label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
+                    elif np.isclose(epsilon, 1e-3):
+                        label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                    elif np.isclose(epsilon, 1e-4):
+                        label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
+
                     ax.plot(
                         self.results[solver][epsilon]["simtime"],
                         self.results[solver][epsilon]["gauge_data"],
                         linewidth=2.5,
-                        label=epsilon
+                        label=label
                     )
                 
-                ax.scatter(
-                    exp_data.time,
-                    exp_data.gauge_data,
-                    facecolor="None",
-                    edgecolor="black",
-                    label="Experimental"
-                )
-                
-                ax.set_xlabel(r"$t \, (s)$")
-                ax.set_ylabel(r"Free surface elevation $(m)$")
-                ax.set_xlim( exp_data.time.iloc[0], exp_data.time.iloc[-1] )
-                ax.legend()
-                fig.savefig(os.path.join("results", "stage"), bbox_inches="tight")
-                ax.clear()
+            ax.scatter(
+                exp_data.time,
+                exp_data.gauge_data,
+                facecolor="None",
+                edgecolor="black",
+                label="Experimental"
+            )
+            
+            ax.set_xlabel(r"$t \, (s)$")
+            ax.set_ylabel(r"Free surface elevation $(m)$")
+            ax.set_xlim( exp_data.time.iloc[0], exp_data.time.iloc[-1] )
+            ax.legend()
+            fig.savefig(os.path.join("results", "stage"), bbox_inches="tight")
+            ax.clear()
+            
+            print("Plotting speedups...")
             
             for solver in self.solvers:
                 for epsilon in self.epsilons:
-                    runtime_ratio = self.results[ self.solvers[0] ][0]["runtime"] / self.results[solver][epsilon]["runtime"]
+                    runtime_ratio = self.results[solver][0]["runtime"] / self.results[solver][epsilon]["runtime"]
+                    
+                    if epsilon == 0:
+                        label = "break-even"
+                    elif np.isclose(epsilon, 1e-3):
+                        label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                    elif np.isclose(epsilon, 1e-4):
+                        label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
                     
                     ax.plot(
                         self.results[solver][epsilon]["simtime"],
                         runtime_ratio,
                         linewidth=2.5,
-                        label=epsilon
+                        linestyle="--" if epsilon == 0 else "-",
+                        label=label
                     )
-            
-            xlim = (
-                ( self.results[solver][0]["simtime"] ).iloc[0],
-                ( self.results[solver][0]["simtime"] ).iloc[-1]
-            )
-            
-            ax.set_xlabel(r"$t \, (s)$")
-            ax.set_ylabel("Speedup ratio GPU-MWDG2/GPU-DG2")
-            ax.set_xlim(xlim)
-            ax.legend()
-            fig.savefig(os.path.join("results", "runtimes"), bbox_inches="tight")
-            ax.clear()
-            
+                
+                xlim = (
+                    ( self.results[solver][0]["simtime"] ).iloc[0],
+                    ( self.results[solver][0]["simtime"] ).iloc[-1]
+                )
+                
+                ax.set_xlabel(r"$t \, (s)$")
+                ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
+                ax.set_xlim(xlim)
+                ax.legend()
+                fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
+                ax.clear()
+                    
             plt.close()
         
 if __name__ == "__main__":
-    SimulationMonai( [0, 1e-4, 1e-3], ["mw"] ).plot( ExperimentalDataMonai() )
+    SimulationMonai( [0, 1e-4, 1e-3], ["hw", "mw"] ).plot( ExperimentalDataMonai() )

@@ -124,11 +124,18 @@ class SimulationConicalIsland:
             for stage in self.stages:
                 for solver in self.solvers:
                     for epsilon in self.epsilons:
+                        if epsilon == 0:
+                            label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
+                        elif np.isclose(epsilon, 1e-3):
+                            label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                        elif np.isclose(epsilon, 1e-4):
+                            label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
+                        
                         ax.plot(
                             self.results[solver][epsilon]["simtime"] + T,
                             self.results[solver][epsilon]["gauge_data"][stage] - self.results[solver][epsilon]["gauge_data"][stage][0],
                             linewidth=2.5,
-                            label=str(epsilon) + ", " + solver 
+                            label=label 
                         )
                     
                 ax.scatter(
@@ -152,11 +159,19 @@ class SimulationConicalIsland:
                 for epsilon in self.epsilons:
                     runtime_ratio = self.results[solver][0]["runtime"] / self.results[solver][epsilon]["runtime"]
                     
+                    if epsilon == 0:
+                        label = "break-even"
+                    elif np.isclose(epsilon, 1e-3):
+                        label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                    elif np.isclose(epsilon, 1e-4):
+                        label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
+                    
                     ax.plot(
                         self.results[solver][epsilon]["simtime"],
                         runtime_ratio,
                         linewidth=2.5,
-                        label=str(epsilon) + ", " + solver 
+                        linestyle="--" if epsilon == 0 else "-",
+                        label=label
                     )
                 
                 xlim = (
@@ -165,7 +180,7 @@ class SimulationConicalIsland:
                 )
                 
                 ax.set_xlabel(r"$t \, (s)$")
-                ax.set_ylabel("Speedup ratio GPU-MWDG2/GPU-DG2")
+                ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
                 ax.set_xlim(xlim)
                 ax.legend()
                 fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
