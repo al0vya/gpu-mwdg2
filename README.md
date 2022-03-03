@@ -89,25 +89,27 @@ gpu-mwdg2
 | ...
 |
 - out
-  | -- build
-       |
-       | 
-       - x64-Release
-         |
-         | ...
-         |
-         - gpu-mwdg2.exe
-         - conical-island
-           |
-           - results
-             |
-             | ...
-             |
-           - conical-island.start
-           - conical-island.start.Qx
-           - conical-island.dem
-           - conical-island.stage
+  |
+  - build
+    |
+    | ...
+    |
+    - x64-Release
+      |
+      | ...
+      |
+      - gpu-mwdg2.exe
+      - conical-island
+        |
+        - results
+          |
+          | ...
+          |
+        - conical-island.start
+        - conical-island.start.Qx
+        - conical-island.dem
+        - conical-island.stage
 ```
 
+Start a command prompt at `gpu-mwdg2\out\build\x64-Release\conical-island`, type in `..\gpu-mwdg2.exe conical-island.par` and press enter to start running the simulation.
 
-Click into the search bar at the top of the File Explorer, type in `cmd` and press enter to open a command line. In the command line, type in `..\gpu-mwdg2.exe <FILENAME>.par` and press enter to run the model. where <FILENAME> is the name of a `.par` file.
