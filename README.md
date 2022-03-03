@@ -46,24 +46,26 @@ A `.par` file is a text file containing all of the parameters needed to run a si
 | solver		| Solver with which to run the simulation: `hw` for HWFV1 and `mw` for MWDG2. |
 | wall_height	| Wall height for the computational domain in case the physical domain is not square. |
 
+An example `.par` file and how it is used to run a simulation follows.
+
 ### Running a simulation for an example test case
+
+Below is a `.par` file created to run simulations for the conical island test case (Section 3.2.1 in [Kesserwani and Sharifian (2020)](https://www.sciencedirect.com/science/article/pii/S0309170820303079)).
 
 ```
 test_case   0
-max_ref_lvl 9
+max_ref_lvl 10
 min_dt      1
 respath     .\results
 epsilon     1e-3
 fpfric      0.01
-rasterroot  monai
-bcifile     monai.bci
-bdyfile     monai.bdy
-stagefile   monai.stage
+rasterroot  conical-island
+stagefile   conical-island.stage
 tol_h       1e-3
 tol_q       0
 tol_s       1e-9
 g           9.80665
-massint     1
+massint     0.1
 vtk         on
 planar      on
 row_major   off
@@ -72,5 +74,14 @@ sim_time    22.5
 solver      mw
 wall_height 0.5
 ```
+
+In addition to this `.par` file, four other files are needed:
+
+- `conical-island.start`: [raster file](https://support.geocue.com/ascii-raster-files-asc/) describing the initial depth
+- `conical-island.start.Qx`: raster file describing the initial discharge in the x-direction
+- `conical-island.dem`: DEM file describing the topography
+- `conical-island.stage`: text file containing the coordinates of stages where hydrographs are recorded
+
+
 
 Click into the search bar at the top of the File Explorer, type in `cmd` and press enter to open a command line. In the command line, type in `..\gpu-mwdg2.exe <FILENAME>.par` and press enter to run the model. where <FILENAME> is the name of a `.par` file.
