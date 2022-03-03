@@ -74,7 +74,6 @@ sim_time    22.5
 solver      mw
 wall_height 0.5
 ```
-
 In addition to this `.par` file, four other files are needed:
 
 - `conical-island.start`: [raster file](https://support.geocue.com/ascii-raster-files-asc/) describing the initial depth
@@ -82,6 +81,33 @@ In addition to this `.par` file, four other files are needed:
 - `conical-island.dem`: DEM file describing the topography
 - `conical-island.stage`: text file containing the coordinates of stages where hydrographs are recorded
 
+Assuming that the `.par` file is called `conical-island.par` and is located inside a folder called `conical-island`, and that the model executable was built using the `x64-Release` option, there is the following folder tree:
+
+```
+gpu-mwdg2
+|
+| ...
+|
+- out
+  | -- build
+       |
+       | 
+       - x64-Release
+         |
+         | ...
+         |
+         - gpu-mwdg2.exe
+         - conical-island
+           |
+           - results
+             |
+             | ...
+             |
+           - conical-island.start
+           - conical-island.start.Qx
+           - conical-island.dem
+           - conical-island.stage
+```
 
 
 Click into the search bar at the top of the File Explorer, type in `cmd` and press enter to open a command line. In the command line, type in `..\gpu-mwdg2.exe <FILENAME>.par` and press enter to run the model. where <FILENAME> is the name of a `.par` file.
