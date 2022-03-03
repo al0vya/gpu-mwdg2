@@ -33,7 +33,7 @@ To run a simulation using the executable, a `.par` must be created. This file is
 | g			| Gravitational acceleration constant, `9.80665`.     |
 | massint		| Interval in seconds at which `.vtk`, planar and row major data are saved. |
 | vtk			| Flag controlling whether `.vtk` data will be saved: can be either `on` or `off`. Flag is taken to be `off` if the `vtk` keyword is not included in the `.par` file. |
-| planar	||
+| planar	|
 | row_major	| Flag controlling whether row major data will be saved: can be either `on` or `off`. Flag is taken to be `off` if the `row_major` keyword is not included in the `.par` file.         |
 | c_prop		| Flag controlling whether discharge data will be saved: can be either `on` or `off`. Flag is taken to be `off` if the `c_prop` keyword is not included in the `.par` file. |
 | sim_time	| Simulation time. |
