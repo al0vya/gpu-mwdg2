@@ -2,7 +2,12 @@
 
 This project is a shallow water model that is based on this paper. 
 
-To use this model you need to have an NVIDIA GPU and the [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit). You also need to have [Python](https://www.python.org/downloads/).
+To use this model you need to have an NVIDIA GPU and the [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit). You also need to have [Python](https://www.python.org/downloads/) as well as the following packages installed.
+
+- `pandas`
+- `numpy`
+- `matplotlib`
+- `imageio`
 
 ## Building the model executable
 
