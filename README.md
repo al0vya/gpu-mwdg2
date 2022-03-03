@@ -13,15 +13,13 @@ To use this model you need to have an NVIDIA GPU and the [CUDA Toolkit](https://
 
 The model is built using CMake in Visual Studio 2019: building on Linux using CMake has not been documented yet. To build the model, open the folder `gpu-mwdg2` in Visual Studio and go to toolbar at the top. In the toolbar, select either the `x64-Debug` or `x64-Release` option from the dropdown menu. After selecting an option, from the toolbar click `Build > Rebuild All`.
 
-## Running the model
+## Running simulations using the model
 
-If the `x64-Debug` option was selected, the built executable will be located in `gpu-mwdg2\out\build\x64-Debug` (`gpu-mwdg2\out\build\x64-Release` if `x64-Release` was selected). Go to the appropriate folder and make another folder. This folder will hold all the files necessary to run the model. Inside this folder make another folder named `results`, which will contain all of the simulation results.
+If the `x64-Debug` option was selected, the built executable will be located in `gpu-mwdg2\out\build\x64-Debug` (`gpu-mwdg2\out\build\x64-Release` if `x64-Release` was selected). Go to the appropriate folder and make another folder. This folder will hold all the files necessary to run the model. Inside this folder, make a `results` folder and a `.par` file.
 
-To run a simulation using the executable, a `.par` file must be created. This file is a text file that contains all the parameters needed to run a simulation. The parameters and what function they serve are shown in the table below, and an example `.par` file is included after the table.
+### Description of parameter (`.par`) file needed to run simulations
 
-### Simulation parameters
-
-Many of the following parameters are identical to [the ones](https://www.seamlesswave.com/Merewether1-1.html) used to run simulations using [LISFLOOD 8.0](https://www.seamlesswave.com/LISFLOOD8.0.html).
+A `.par` file is a text file containing all of the parameters needed to run a simulation. The parameters and what function they serve are described in the table below. Many of the parameters are identical to [the ones](https://www.seamlesswave.com/Merewether1-1.html) used to run simulations using [LISFLOOD 8.0](https://www.seamlesswave.com/LISFLOOD8.0.html).
 
 | Parameter   | Description |
 | ------------|-------------|
@@ -48,7 +46,7 @@ Many of the following parameters are identical to [the ones](https://www.seamles
 | solver		| Solver with which to run the simulation: `hw` for HWFV1 and `mw` for MWDG2. |
 | wall_height	| Wall height for the computational domain in case the physical domain is not square. |
 
-### Example `.par` file
+### Running a simulation for an example test case
 
 ```
 test_case   0
@@ -74,7 +72,5 @@ sim_time    22.5
 solver      mw
 wall_height 0.5
 ```
-
-
 
 Click into the search bar at the top of the File Explorer, type in `cmd` and press enter to open a command line. In the command line, type in `..\gpu-mwdg2.exe <FILENAME>.par` and press enter to run the model. where <FILENAME> is the name of a `.par` file.
