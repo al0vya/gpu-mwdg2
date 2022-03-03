@@ -32,37 +32,37 @@ To run a simulation using the executable, a `.par` must be created. This file is
 | tol_s		| Speed threshold. |
 | g			| Gravitational acceleration constant, `9.80665`.     |
 | massint		| Interval in seconds at which `.vtk`, planar and row major data are saved. |
-| vtk			| Flag controlling whether `.vtk` data will be saved: can be either `on` or `off`. Flag is taken to be `off` if the `vtk` keyword is not included in the `.par` file. |
-| planar	|
-| row_major	| Flag controlling whether row major data will be saved: can be either `on` or `off`. Flag is taken to be `off` if the `row_major` keyword is not included in the `.par` file.         |
-| c_prop		| Flag controlling whether discharge data will be saved: can be either `on` or `off`. Flag is taken to be `off` if the `c_prop` keyword is not included in the `.par` file. |
+| vtk			| Flag controlling whether `vtk` data will be saved: can be either `on` or `off`. Flag is taken to be `off` if  not included in the `.par` file. |
+| planar  | Flag to save data for making planar plots of the solution. |
+| row_major	| Flag to save the solution data in row major format. |
+| c_prop		| Flag to save discharge time series data (only for simulations with quiescent flow). |
 | sim_time	| Simulation time. |
 | solver		| Solver with which to run the simulation: `hw` for HWFV1 and `mw` for MWDG2. |
 | wall_height	| Wall height for the computational domain in case the physical domain is not square. |
 
 
 ```
-test_case 	0
-max_ref_lvl	9
-min_dt		1
-respath		.\results
-epsilon		1e-3
-fpfric 		0.01
-rasterroot	monai
-bcifile		monai.bci
-bdyfile		monai.bdy
-stagefile	monai.stage
-tol_h		1e-3
-tol_q		0
-tol_s		1e-9
-g		9.80665
-massint		1
-vtk		on
-planar		on
-row_major	off
-c_prop		off
-sim_time	22.5
-solver		mw
+test_case   0
+max_ref_lvl 9
+min_dt      1
+respath     .\results
+epsilon     1e-3
+fpfric      0.01
+rasterroot  monai
+bcifile     monai.bci
+bdyfile     monai.bdy
+stagefile	  monai.stage
+tol_h	      1e-3
+tol_q       0
+tol_s       1e-9
+g           9.80665
+massint     1
+vtk         on
+planar      on
+row_major	  off
+c_prop      off
+sim_time    22.5
+solver      mw
 wall_height	0.5
 ```
 
