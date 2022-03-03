@@ -144,4 +144,4 @@ The `simulate.py` script will create all the necessary files for running the sim
 - `stage-#12`
 - `stage-#22`
 
-The results are plotted to reproduce the results in Section 3.2.1 of [Kesserwani and Sharifian, (2020)](https://www.sciencedirect.com/science/article/pii/S0309170820303079))
+The results are plotted to reproduce the results in Section 3.2.1 of [Kesserwani and Sharifian, (2020)](https://www.sciencedirect.com/science/article/pii/S0309170820303079).
