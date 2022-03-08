@@ -92,6 +92,7 @@ if (CMAKE_CUDA_COMPILER)
 		source/utilities/get_num_blocks.cpp
 		source/zorder/copy_finest_coefficients.cu
 		source/zorder/generate_all_morton_codes.cu
+		source/zorder/get_sorting_indices.cu
 		source/zorder/rev_z_order_act_idcs.cu
 		source/zorder/rev_z_order_assem_sol.cu
 		source/zorder/rev_z_order_reals.cu

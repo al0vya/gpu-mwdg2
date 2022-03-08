@@ -32,7 +32,6 @@
 #include "encoding_all.cuh"
 #include "get_reg_tree.cuh"
 #include "decoding_all.cuh"
-#include "rev_z_order_assem_sol.cuh"
 #include "rev_z_order_act_idcs.cuh"
 #include "rev_z_order_reals.cuh"
 #include "sort_neighbours_z_order.cuh"
@@ -61,6 +60,9 @@
 #include "preflag_details.cuh"
 #include "project_assem_sol.cuh"
 #include "copy_to_buf_assem_sol.cuh"
+
+// Sorting
+#include "get_sorting_indices.cuh"
 
 //------------------------------------------------//
 
@@ -235,6 +237,7 @@ int main
 	MortonCode* d_sorted_morton_codes = (MortonCode*)malloc_device(bytes_morton);
 	MortonCode* d_indices             = (MortonCode*)malloc_device(bytes_morton);
 	MortonCode* d_rev_z_order         = (MortonCode*)malloc_device(bytes_morton);
+	MortonCode* d_rev_row_major       = (MortonCode*)malloc_device(bytes_morton);
 	real*       d_eta_temp            = (real*)malloc_device(bytes_soln);
 	real*       d_norm_details        = (real*)malloc_device(bytes_details);
 	bool*       d_sig_details         = (bool*)malloc_device(num_details);
@@ -340,13 +343,25 @@ int main
 	CHECK_CUDA_ERROR(peek());
 	CHECK_CUDA_ERROR(sync());
 
-	sort_finest_scale_coeffs_z_order<<<num_blocks_finest, THREADS_PER_BLOCK>>>
+	get_sorting_indices
 	(
 		d_morton_codes,
 		d_sorted_morton_codes,
 		d_buf_assem_sol,
 		d_assem_sol,
 		d_indices,
+		d_rev_z_order,
+		d_rev_row_major,
+		solver_params
+	);
+
+	CHECK_CUDA_ERROR(peek());
+	CHECK_CUDA_ERROR(sync());
+
+	sort_finest_scale_coeffs_z_order<<<num_blocks_finest, THREADS_PER_BLOCK>>>
+	(
+		d_buf_assem_sol,
+		d_assem_sol,
 		d_rev_z_order,
 		solver_params
 	);
@@ -519,8 +534,7 @@ int main
 		    
 		    rev_z_order_act_idcs<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 		    (
-				d_morton_codes,
-		    	d_indices,
+				d_rev_row_major,
 		    	d_buf_assem_sol,
 		    	d_assem_sol,
 		    	num_finest_elems
@@ -554,8 +568,7 @@ int main
 		    (
 		    	d_neighbours,
 		    	d_buf_neighbours,
-		    	d_morton_codes,
-		    	d_sorted_morton_codes,
+		    	d_rev_z_order,
 		    	num_finest_elems,
 		    	solver_params
 		    );
@@ -922,6 +935,7 @@ int main
 	CHECK_CUDA_ERROR( free_device(d_sorted_morton_codes) );
 	CHECK_CUDA_ERROR( free_device(d_indices) );
 	CHECK_CUDA_ERROR( free_device(d_rev_z_order) );
+	CHECK_CUDA_ERROR( free_device(d_rev_row_major) );
 	CHECK_CUDA_ERROR( free_device(d_eta_temp) );
 	CHECK_CUDA_ERROR( free_device(d_sig_details) );
 	CHECK_CUDA_ERROR( free_device(d_preflagged_details) );

@@ -10,9 +10,8 @@
 __global__
 void rev_z_order_act_idcs
 (
-	MortonCode*       d_morton_codes,
-	MortonCode*       d_indices,
+	MortonCode*       d_rev_row_major,
 	AssembledSolution d_buf_assem_sol,
 	AssembledSolution d_assem_sol,
-	int               array_length
+	const int         num_finest_elems
 );

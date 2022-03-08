@@ -3,11 +3,8 @@
 __global__
 void sort_finest_scale_coeffs_z_order
 (
-	MortonCode*       d_morton_codes,
-	MortonCode*       d_sorted_morton_codes,
 	AssembledSolution d_buf_assem_sol,
 	AssembledSolution d_assem_sol,
-	MortonCode*       d_indices,
 	MortonCode*       d_rev_z_order,
 	SolverParams      solver_params
 )
@@ -16,7 +13,7 @@ void sort_finest_scale_coeffs_z_order
 
 	if (idx >= d_assem_sol.length) return;
 
-	const int sorted_idx = d_morton_codes[idx];
+	const int sorted_idx = d_rev_z_order[idx];
 	
 	d_assem_sol.h0[idx]  = d_buf_assem_sol.h0[sorted_idx];
 	d_assem_sol.qx0[idx] = d_buf_assem_sol.qx0[sorted_idx];
