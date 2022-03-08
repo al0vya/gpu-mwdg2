@@ -50,7 +50,7 @@ An example `.par` file and how it is used to run a simulation follows.
 
 ### Running a simulation for an example test case
 
-Below is a `.par` file created to run simulations for the conical island test case (Section 3.2.1 in [Kesserwani and Sharifian (2020)](https://www.sciencedirect.com/science/article/pii/S0309170820303079)).
+Below is a `.par` file created to run simulations for the conical island test case (Section 3.2.1 in [Kesserwani and Sharifian, (2020)](https://www.sciencedirect.com/science/article/pii/S0309170820303079)).
 
 ```
 test_case   0
@@ -111,9 +111,37 @@ gpu-mwdg2
         - conical-island.stage
 ```
 
-Start a command prompt at `gpu-mwdg2\out\build\x64-Release\conical-island`, type in `..\gpu-mwdg2.exe conical-island.par` and press enter to start running the simulation. Before doing so however, the additional files (`conical-island.start`, `conical-island.stage`, etc) need to be created. These kinds of files are frequently needed to run simulations for real world test cases and are not straightforward to create. To address this issue, there are a set of Python scripts that automatically create these files, run simulations and plot the results.
+Start a command prompt at `gpu-mwdg2\out\build\x64-Release\conical-island`, type in `..\gpu-mwdg2.exe conical-island.par` and press enter to start running the simulation. Before doing so however, the additional files (`conical-island.start`, `conical-island.stage`, etc) need to be created.
+
+To create the raster files, go to `gpu-mwdg2\cases\conical-island`, copy the file `raster.py` to `gpu-mwdg2\out\build\x64-Release\conical-island` and in the command prompt enter and run `python raster.py`.
+
+The stage file (`conical-island.stage`) should read as:
+
+```
+4
+9.36  13.8
+10.36 13.8
+12.96 11.22
+15.56 13.8
+```
+
+These kinds of files are frequently needed to run simulations for real world test cases.
 
 ### Running automated simulations
 
+In addition to creating files before running simulations (preprocessing), plotting results after running simulations (postprocessing) is also often desirable.
 
+In the `gpu-mwdg2\cases` folder there are folders for a few commonly-used test cases with scripts that automatically preprocess files, run simulations and postprocess results.
 
+For example, to run simulations for the conical island test case, copy the folder `gpu-mwdg2\cases\conical-island` to `gpu-mwdg2\out\build\x64-Release`, open a command prompt in `gpu-mwdg2\out\build\x64-Release\conical-island`, create a folder called `results` and then run `python simulate.py`.
+
+The `simulate.py` script will create all the necessary files for running the simulation, run the simulation and plot the results in `results` as `.png` files:
+
+- `runtimes-hw`
+- `runtimes-mw`
+- `stage-#6`
+- `stage-#9`
+- `stage-#12`
+- `stage-#22`
+
+The results are plotted to reproduce the results in Section 3.2.1 of [Kesserwani and Sharifian, (2020)](https://www.sciencedirect.com/science/article/pii/S0309170820303079).
