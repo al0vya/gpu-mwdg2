@@ -7,7 +7,6 @@ tol_h		1e-3
 tol_q		0
 tol_s		1e-9
 g			9.80665
-saveint     0.1
-vtk         off
+saveint     2.5
+vtk         on
 solver		hw
-wall_height	0

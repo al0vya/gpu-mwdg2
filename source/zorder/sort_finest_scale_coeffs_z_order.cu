@@ -9,7 +9,7 @@ void sort_finest_scale_coeffs_z_order
 	AssembledSolution& d_buf_assem_sol,
 	MortonCode*        d_indices,
 	MortonCode*        d_rev_z_order,
-	SolverParams&  solver_params
+	SolverParams&      solver_params
 )
 {
 	// ------------------------------ //
