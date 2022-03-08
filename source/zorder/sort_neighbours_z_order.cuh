@@ -11,13 +11,13 @@
 #include "MortonCode.h"
 #include "SolverParams.h"
 
-__host__
+__global__
 void sort_neighbours_z_order
 (
-	const Neighbours&  d_neighbours,
-	const Neighbours&  d_buf_neighbours,
+	const Neighbours   d_neighbours,
+	const Neighbours   d_buf_neighbours,
 	MortonCode*        d_morton_codes,
 	MortonCode*        d_sorted_morton_codes,
 	int                num_finest_elems,
-	const SolverParams& solver_params
+	const SolverParams solver_params
 );

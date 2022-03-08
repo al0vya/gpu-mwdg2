@@ -12,10 +12,10 @@
 __host__
 void compaction
 (
-	AssembledSolution& d_assem_sol, 
 	AssembledSolution& d_buf_assem_sol, 
-	Neighbours&        d_neighbours, 
+	AssembledSolution& d_assem_sol, 
 	Neighbours&        d_buf_neighbours, 
+	Neighbours&        d_neighbours, 
 	CompactionFlags&   d_compaction_flags,
 	int                num_finest_elems,
 	const SolverParams& solver_params
