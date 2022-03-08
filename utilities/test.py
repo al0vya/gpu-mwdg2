@@ -540,7 +540,7 @@ class Test:
             self.c_prop    = "on"
         else:
             self.row_major = "on"
-            self.vtk       = "on"
+            self.vtk       = "off"
             self.c_prop    = "off"
 
         self.results    = results
@@ -553,20 +553,20 @@ class Test:
     ):
         params = (
             "test_case   %s\n" +
-            "max_ref_lvl	%s\n" +
-            "min_dt		0.5\n" +
-            "respath	    %s\n" +
-            "epsilon	    %s\n" +
-            "tol_h		1e-3\n" +
-            "tol_q		0\n" +
-            "tol_s		1e-9\n" +
-            "g			9.80665\n" +
-            "saveint		%s\n" +
-            "solver		%s\n" +
-            "wall_height	0\n" +
-            "row_major    %s\n" +
-            "c_prop %s\n" +
-            "vtk        %s") % (
+            "max_ref_lvl %s\n" +
+            "min_dt      0.5\n" +
+            "respath     %s\n" +
+            "epsilon     %s\n" +
+            "tol_h       1e-3\n" +
+            "tol_q       0\n" +
+            "tol_s       1e-9\n" +
+            "g           9.80665\n" +
+            "saveint     %s\n" +
+            "solver      %s\n" +
+            "wall_height 0\n" +
+            "row_major   %s\n" +
+            "c_prop      %s\n" +
+            "vtk         %s") % (
                 self.test_case, 
                 self.max_ref_lvl, 
                 self.results, 
