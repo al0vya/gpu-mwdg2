@@ -931,16 +931,16 @@ int main
 	// DEALLOCATING MEMORY //
 	// =================== //
 
-	//CHECK_CUDA_ERROR( free_device(d_morton_codes) );
-	//CHECK_CUDA_ERROR( free_device(d_sorted_morton_codes) );
-	//CHECK_CUDA_ERROR( free_device(d_indices) );
-	//CHECK_CUDA_ERROR( free_device(d_rev_z_order) );
-	//CHECK_CUDA_ERROR( free_device(d_rev_row_major) );
-	//CHECK_CUDA_ERROR( free_device(d_eta_temp) );
-	//CHECK_CUDA_ERROR( free_device(d_sig_details) );
-	//CHECK_CUDA_ERROR( free_device(d_preflagged_details) );
-	//CHECK_CUDA_ERROR( free_device(d_norm_details) );
-	//CHECK_CUDA_ERROR( free_device(d_dt_CFL) );
+	CHECK_CUDA_ERROR( free_device(d_morton_codes) );
+	CHECK_CUDA_ERROR( free_device(d_sorted_morton_codes) );
+	CHECK_CUDA_ERROR( free_device(d_indices) );
+	CHECK_CUDA_ERROR( free_device(d_rev_z_order) );
+	CHECK_CUDA_ERROR( free_device(d_rev_row_major) );
+	CHECK_CUDA_ERROR( free_device(d_eta_temp) );
+	CHECK_CUDA_ERROR( free_device(d_sig_details) );
+	CHECK_CUDA_ERROR( free_device(d_preflagged_details) );
+	CHECK_CUDA_ERROR( free_device(d_norm_details) );
+	CHECK_CUDA_ERROR( free_device(d_dt_CFL) );
 	
 	//reset();
 
