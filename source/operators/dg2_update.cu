@@ -25,8 +25,8 @@ void dg2_update
 
     } shared;
 
-    HierarchyIndex t_idx = threadIdx.x;
-    HierarchyIndex idx   = blockIdx.x * blockDim.x + t_idx;
+    int t_idx = threadIdx.x;
+    int idx   = blockIdx.x * blockDim.x + t_idx;
     
     int is_wet = 0;
 
