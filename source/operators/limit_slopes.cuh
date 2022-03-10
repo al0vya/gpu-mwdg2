@@ -1,5 +1,7 @@
 #pragma once
 
+#include "minmod.cuh"
+
 __global__
 void limit_slopes
 (
@@ -111,45 +113,36 @@ void limit_slopes
             const real z1x_w = d_neighbours.west.z1x[idx];
             const real z1y_w = d_neighbours.west.z1y[idx];
 
-            const real h_n_neg = coeffs.h0 + sqrt( C(3.0) ) * coeffs.h1y;
-            const real h_e_neg = coeffs.h0 + sqrt( C(3.0) ) * coeffs.h1x;
-            const real h_s_pos = coeffs.h0 - sqrt( C(3.0) ) * coeffs.h1y;
-            const real h_w_pos = coeffs.h0 - sqrt( C(3.0) ) * coeffs.h1x;
-            
-            const real h_n_pos = coeffs_n.h0 - sqrt( C(3.0) ) * coeffs_n.h1y;
-            const real h_e_pos = coeffs_e.h0 - sqrt( C(3.0) ) * coeffs_e.h1x;
-            const real h_s_neg = coeffs_s.h0 + sqrt( C(3.0) ) * coeffs_s.h1y;
-            const real h_w_neg = coeffs_w.h0 + sqrt( C(3.0) ) * coeffs_w.h1x;
-            
-            const real z_n_neg = z0 + sqrt( C(3.0) ) * z1y;
-            const real z_e_neg = z0 + sqrt( C(3.0) ) * z1x;
-            const real z_s_pos = z0 - sqrt( C(3.0) ) * z1y;
-            const real z_w_pos = z0 - sqrt( C(3.0) ) * z1x;
-            
-            const real z_n_pos = z0_w - sqrt( C(3.0) ) * z1y_w;
-            const real z_e_pos = z0_e - sqrt( C(3.0) ) * z1x_e;
-            const real z_s_neg = z0_s + sqrt( C(3.0) ) * z1y_s;
-            const real z_w_neg = z0_n + sqrt( C(3.0) ) * z1x_n;
-            
-            const real eta_n_neg = h_n_neg + z_n_neg;
-            const real eta_e_neg = h_e_neg + z_e_neg;
-            const real eta_s_pos = h_s_pos + z_s_pos;
-            const real eta_w_pos = h_w_pos + z_w_pos;
+            const real eta_n_neg = (coeffs.h0 + z0) + sqrt( C(3.0) ) * (coeffs.h1y + z1y);
+            const real eta_e_neg = (coeffs.h0 + z0) + sqrt( C(3.0) ) * (coeffs.h1x + z1x);
+            const real eta_s_pos = (coeffs.h0 + z0) - sqrt( C(3.0) ) * (coeffs.h1y + z1y);
+            const real eta_w_pos = (coeffs.h0 + z0) - sqrt( C(3.0) ) * (coeffs.h1x + z1x);
 
-            const real eta_n_pos = h_n_pos + z_n_pos;
-            const real eta_e_pos = h_e_pos + z_e_pos;
-            const real eta_s_neg = h_s_neg + z_s_neg;
-            const real eta_w_neg = h_w_neg + z_w_neg;
-
+            const real eta_n_pos = (coeffs_n.h0 + z0_n) - sqrt( C(3.0) ) * (coeffs_n.h1y + z1y_n);
+            const real eta_e_pos = (coeffs_e.h0 + z0_e) - sqrt( C(3.0) ) * (coeffs_e.h1x + z1x_e);
+            const real eta_s_neg = (coeffs_s.h0 + z0_s) + sqrt( C(3.0) ) * (coeffs_s.h1y + z1y_s);
+            const real eta_w_neg = (coeffs_w.h0 + z0_w) + sqrt( C(3.0) ) * (coeffs_w.h1x + z1x_w);
+            
             const real eta_jump_n = abs(eta_n_pos - eta_n_neg);
             const real eta_jump_e = abs(eta_e_pos - eta_e_neg);
             const real eta_jump_s = abs(eta_s_pos - eta_s_neg);
             const real eta_jump_w = abs(eta_w_pos - eta_w_neg);
 
-            const real denom_1_x = C(0.5) * dx_finest;
-            const real denom_1_y = C(0.5) * dy_finest;
+            const real eta_norm_x = max( abs( coeffs.h0 + z0 - (coeffs_w.h0 + z0_w) ), abs( coeffs_e.h0 + z0_e - (coeffs.h0 + z0) );
+            const real eta_norm_y = max( abs( coeffs.h0 + z0 - (coeffs_s.h0 + z0_s) ), abs( coeffs_n.h0 + z0_n - (coeffs.h0 + z0) );
 
-            const real denom_2_x;
+            const real eta_DS_e = ( eta_norm_x > C(1e-12) ) ? eta_jump_e / (C(0.5) * dx_finest * eta_norm_x) : C(0.0);
+            const real eta_DS_w = ( eta_norm_x > C(1e-12) ) ? eta_jump_w / (C(0.5) * dx_finest * eta_norm_x) : C(0.0);
+
+            const real eta_DS_n = ( eta_norm_y > C(1e-12) ) ? eta_jump_n / (C(0.5) * dy_finest * eta_norm_y) : C(0.0);
+            const real eta_DS_s = ( eta_norm_y > C(1e-12) ) ? eta_jump_s / (C(0.5) * dy_finest * eta_norm_y) : C(0.0);
+
+            const real eta1x_limit = minmod
+            (
+                coeffs.h1x + z1x,
+                ( coeffs.h0 + z0 - (coeffs_w.h0 + z0_w) ) / sqrt( C(3.0) ),
+                ( coeffs_e.h0 + z0_e - (coeffs.h0 + z0) ) / sqrt( C(3.0) )
+            );
         }
     }
 }
