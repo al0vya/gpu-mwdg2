@@ -597,7 +597,8 @@ class Test:
                 RowMajorSolution(self.mode, interval).plot_soln(
                     limits=Limits(self.intervals, results),
                     test_number=self.test_case,
-                    test_name=self.test_name
+                    test_name=self.test_name,
+                    plot_type="surf"
                 )
 
 def animate(path):

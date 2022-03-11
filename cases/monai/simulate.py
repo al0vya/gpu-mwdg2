@@ -166,4 +166,4 @@ class SimulationMonai:
             plt.close()
         
 if __name__ == "__main__":
-    SimulationMonai( [0, 1e-4, 1e-3], ["hw", "mw"] ).plot( ExperimentalDataMonai() )
+    SimulationMonai( [0, 1e-4, 1e-3], ["mw"] ).plot( ExperimentalDataMonai() )

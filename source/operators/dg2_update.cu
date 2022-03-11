@@ -96,73 +96,40 @@ void dg2_update
     real dy_loc_s = dy_finest * (1 << (solver_params.L - level_s));
     real dy_loc_w = dy_finest * (1 << (solver_params.L - level_w));
 
-    MortonCode code   = d_assem_sol_load.act_idcs[idx]   - get_lvl_idx(level);
-    MortonCode code_n = d_neighbours.north.act_idcs[idx] - get_lvl_idx(level_n);
-    MortonCode code_e = d_neighbours.east.act_idcs[idx]  - get_lvl_idx(level_e);
-    MortonCode code_s = d_neighbours.south.act_idcs[idx] - get_lvl_idx(level_s);
-    MortonCode code_w = d_neighbours.west.act_idcs[idx]  - get_lvl_idx(level_w);
+    HierarchyIndex h_idx   = d_assem_sol_load.act_idcs[idx];
+    HierarchyIndex h_idx_n = d_neighbours.north.act_idcs[idx];
+    HierarchyIndex h_idx_e = d_neighbours.east.act_idcs[idx];
+    HierarchyIndex h_idx_s = d_neighbours.south.act_idcs[idx];
+    HierarchyIndex h_idx_w = d_neighbours.west.act_idcs[idx];
 
-    Coordinate i   = compact(code);
-    Coordinate i_n = compact(code_n);
-    Coordinate i_e = compact(code_e);
-    Coordinate i_s = compact(code_s);
-    Coordinate i_w = compact(code_w);
-
-    Coordinate j   = compact(code   >> 1);
-    Coordinate j_n = compact(code_n >> 1);
-    Coordinate j_e = compact(code_e >> 1);
-    Coordinate j_s = compact(code_s >> 1);
-    Coordinate j_w = compact(code_w >> 1);
-
-    real x   = i   * dx_loc   + dx_loc   / C(2.0);
-    real x_n = i_n * dx_loc_n + dx_loc_n / C(2.0);
-    real x_e = i_e * dx_loc_e + dx_loc_e / C(2.0);
-    real x_s = i_s * dx_loc_s + dx_loc_s / C(2.0);
-    real x_w = i_w * dx_loc_w + dx_loc_w / C(2.0);
-
-    real y   = j   * dy_loc   + dy_loc   / C(2.0);
-    real y_n = j_n * dy_loc_n + dy_loc_n / C(2.0);
-    real y_e = j_e * dy_loc_e + dy_loc_e / C(2.0);
-    real y_s = j_s * dy_loc_s + dy_loc_s / C(2.0);
-    real y_w = j_w * dy_loc_w + dy_loc_w / C(2.0);
+    real x   = get_x_coord(h_idx,   level,   dx_loc);
+    real x_n = get_x_coord(h_idx_n, level_n, dx_loc_n);
+    real x_e = get_x_coord(h_idx_e, level_e, dx_loc_e);
+    real x_s = get_x_coord(h_idx_s, level_s, dx_loc_s);
+    real x_w = get_x_coord(h_idx_w, level_w, dx_loc_w);
     
+    real y   = get_y_coord(h_idx,   level,   dy_loc);
+    real y_n = get_y_coord(h_idx_n, level_n, dy_loc_n);
+    real y_e = get_y_coord(h_idx_e, level_e, dy_loc_e);
+    real y_s = get_y_coord(h_idx_s, level_s, dy_loc_s);
+    real y_w = get_y_coord(h_idx_w, level_w, dy_loc_w);
+
     if ( (x >= sim_params.xsz * dx_finest) || (y >= sim_params.ysz * dy_finest) ) return;
     
-    // between local && east, x, y unit is (1.0, 0.5)
-    real x_e_face = x - dx_loc / C(2.0) + C(1.0) * dx_loc;
-    real y_e_face = y - dy_loc / C(2.0) + C(0.5) * dy_loc;
-
-    // between local && west, x, y unit is (0.0, 0.5)
-    real x_w_face = x - dx_loc / C(2.0) + C(0.0) * dx_loc;
-    real y_w_face = y - dy_loc / C(2.0) + C(0.5) * dy_loc;
-
+    // between local && east,  x, y unit is (1.0, 0.5)
+    // between local && west,  x, y unit is (0.0, 0.5)
     // between local && north, x, y unit is (0.5, 1.0)
-    real x_n_face = x - dx_loc / C(2.0) + C(0.5) * dx_loc;
-    real y_n_face = y - dy_loc / C(2.0) + C(1.0) * dy_loc;
-
     // between local && south, x, y unit is (0.5, 0.0)
-    real x_s_face = x - dx_loc / C(2.0) + C(0.5) * dx_loc;
-    real y_s_face = y - dy_loc / C(2.0) + C(0.0) * dy_loc;
-
-    real x_n_face_unit = (d_neighbours.north.act_idcs[idx] == -1) ? C(0.5) : ( x_n_face - ( x_n - dx_loc_n / C(2.0) ) ) / dx_loc_n;
-    real x_e_face_unit = (d_neighbours.east.act_idcs[idx]  == -1) ? C(0.0) : ( x_e_face - ( x_e - dx_loc_e / C(2.0) ) ) / dx_loc_e;
-    real x_s_face_unit = (d_neighbours.south.act_idcs[idx] == -1) ? C(0.5) : ( x_s_face - ( x_s - dx_loc_s / C(2.0) ) ) / dx_loc_s;
-    real x_w_face_unit = (d_neighbours.west.act_idcs[idx]  == -1) ? C(1.0) : ( x_w_face - ( x_w - dx_loc_w / C(2.0) ) ) / dx_loc_w;
-
-    real y_n_face_unit = (d_neighbours.north.act_idcs[idx] == -1) ? C(0.0) : ( y_n_face - ( y_n - dy_loc_n / C(2.0) ) ) / dy_loc_n;
-    real y_e_face_unit = (d_neighbours.east.act_idcs[idx]  == -1) ? C(0.5) : ( y_e_face - ( y_e - dy_loc_e / C(2.0) ) ) / dy_loc_e;
-    real y_s_face_unit = (d_neighbours.south.act_idcs[idx] == -1) ? C(1.0) : ( y_s_face - ( y_s - dy_loc_s / C(2.0) ) ) / dy_loc_s;
-    real y_w_face_unit = (d_neighbours.west.act_idcs[idx]  == -1) ? C(0.5) : ( y_w_face - ( y_w - dy_loc_w / C(2.0) ) ) / dy_loc_w;
-
-    LegendreBasis basis_n = get_leg_basis(x_n_face_unit, y_n_face_unit);
-    LegendreBasis basis_e = get_leg_basis(x_e_face_unit, y_e_face_unit);
-    LegendreBasis basis_s = get_leg_basis(x_s_face_unit, y_s_face_unit);
-    LegendreBasis basis_w = get_leg_basis(x_w_face_unit, y_w_face_unit);
-
-    LegendreBasis basis_n_loc = get_leg_basis( C(0.5), C(1.0) );
-    LegendreBasis basis_e_loc = get_leg_basis( C(1.0), C(0.5) );
-    LegendreBasis basis_s_loc = get_leg_basis( C(0.5), C(0.0) );
-    LegendreBasis basis_w_loc = get_leg_basis( C(0.0), C(0.5) );
+    
+    LegendreBasis basis_n = get_leg_basis(h_idx, x, y, dx_loc, dy_loc, NORTH);
+    LegendreBasis basis_e = get_leg_basis(h_idx, x, y, dx_loc, dy_loc, EAST);
+    LegendreBasis basis_s = get_leg_basis(h_idx, x, y, dx_loc, dy_loc, SOUTH);
+    LegendreBasis basis_w = get_leg_basis(h_idx, x, y, dx_loc, dy_loc, WEST);
+    
+    LegendreBasis basis_n_loc = { C(1.0), C(0.0), sqrt( C(3.0) ) };
+    LegendreBasis basis_e_loc = { C(1.0), sqrt( C(3.0) ), C(0.0) };
+    LegendreBasis basis_s_loc = { C(1.0), C(0.0), -sqrt( C(3.0) ) };
+    LegendreBasis basis_w_loc = { C(1.0), -sqrt( C(3.0) ), C(0.0) };
     
     FlowCoeffs coeffs =
     {
@@ -179,8 +146,6 @@ void dg2_update
         d_assem_sol_load.qy1y[idx]
     };
     
-    //bool thin = false; (coeffs.h0 < C(10.0) * solver_params.tol_h);
-
     FlowCoeffs coeffs_n
     {
         d_neighbours.north.h0[idx],
@@ -264,11 +229,6 @@ void dg2_update
     FlowVector Ustar_s_neg = coeffs_s.local_face_val(basis_s).get_star(z_s_neg, z_inter_s, solver_params.tol_h);
     FlowVector Ustar_w_neg = coeffs_w.local_face_val(basis_w).get_star(z_w_neg, z_inter_w, solver_params.tol_h);
 
-    FlowVector U_n = coeffs.local_face_val(basis_n_loc);
-    FlowVector U_e = coeffs.local_face_val(basis_e_loc);
-    FlowVector U_s = coeffs.local_face_val(basis_s_loc);
-    FlowVector U_w = coeffs.local_face_val(basis_w_loc);
-    
     // LFVs of local cell
     FlowVector Ustar_n_neg = coeffs.local_face_val(basis_n_loc).get_star(z_n_neg, z_inter_n, solver_params.tol_h);
     FlowVector Ustar_e_neg = coeffs.local_face_val(basis_e_loc).get_star(z_e_neg, z_inter_e, solver_params.tol_h);
