@@ -78,53 +78,37 @@ void dg2_update
 
     idx = shared.indices[t_idx];
 
-    int level   = d_assem_sol_load.levels[idx];
+    int level = d_assem_sol_load.levels[idx];
+    
+    real dx_loc = dx_finest * ( 1 << (solver_params.L - level) );
+    real dy_loc = dy_finest * ( 1 << (solver_params.L - level) );
+    
+    HierarchyIndex h_idx   = d_assem_sol_load.act_idcs[idx];
+    
+    real x = get_x_coord(h_idx, level, solver_params.L, dx_finest);
+    real y = get_y_coord(h_idx, level, solver_params.L, dy_finest);
+    
+    if ( (x >= sim_params.xsz * dx_finest) || (y >= sim_params.ysz * dy_finest) ) return;
+    
     int level_n = d_neighbours.north.levels[idx];
     int level_e = d_neighbours.east.levels[idx];
     int level_s = d_neighbours.south.levels[idx];
     int level_w = d_neighbours.west.levels[idx];
 
-    real dx_loc   = dx_finest * (1 << (solver_params.L - level  ));
-    real dx_loc_n = dx_finest * (1 << (solver_params.L - level_n));
-    real dx_loc_e = dx_finest * (1 << (solver_params.L - level_e));
-    real dx_loc_s = dx_finest * (1 << (solver_params.L - level_s));
-    real dx_loc_w = dx_finest * (1 << (solver_params.L - level_w));
-
-    real dy_loc   = dy_finest * (1 << (solver_params.L - level  ));
-    real dy_loc_n = dy_finest * (1 << (solver_params.L - level_n));
-    real dy_loc_e = dy_finest * (1 << (solver_params.L - level_e));
-    real dy_loc_s = dy_finest * (1 << (solver_params.L - level_s));
-    real dy_loc_w = dy_finest * (1 << (solver_params.L - level_w));
-
-    HierarchyIndex h_idx   = d_assem_sol_load.act_idcs[idx];
     HierarchyIndex h_idx_n = d_neighbours.north.act_idcs[idx];
     HierarchyIndex h_idx_e = d_neighbours.east.act_idcs[idx];
     HierarchyIndex h_idx_s = d_neighbours.south.act_idcs[idx];
     HierarchyIndex h_idx_w = d_neighbours.west.act_idcs[idx];
 
-    real x   = get_x_coord(h_idx,   level,   dx_loc);
-    real x_n = get_x_coord(h_idx_n, level_n, dx_loc_n);
-    real x_e = get_x_coord(h_idx_e, level_e, dx_loc_e);
-    real x_s = get_x_coord(h_idx_s, level_s, dx_loc_s);
-    real x_w = get_x_coord(h_idx_w, level_w, dx_loc_w);
-    
-    real y   = get_y_coord(h_idx,   level,   dy_loc);
-    real y_n = get_y_coord(h_idx_n, level_n, dy_loc_n);
-    real y_e = get_y_coord(h_idx_e, level_e, dy_loc_e);
-    real y_s = get_y_coord(h_idx_s, level_s, dy_loc_s);
-    real y_w = get_y_coord(h_idx_w, level_w, dy_loc_w);
-
-    if ( (x >= sim_params.xsz * dx_finest) || (y >= sim_params.ysz * dy_finest) ) return;
-    
     // between local && east,  x, y unit is (1.0, 0.5)
     // between local && west,  x, y unit is (0.0, 0.5)
     // between local && north, x, y unit is (0.5, 1.0)
     // between local && south, x, y unit is (0.5, 0.0)
     
-    LegendreBasis basis_n = get_leg_basis(h_idx, x, y, dx_loc, dy_loc, NORTH);
-    LegendreBasis basis_e = get_leg_basis(h_idx, x, y, dx_loc, dy_loc, EAST);
-    LegendreBasis basis_s = get_leg_basis(h_idx, x, y, dx_loc, dy_loc, SOUTH);
-    LegendreBasis basis_w = get_leg_basis(h_idx, x, y, dx_loc, dy_loc, WEST);
+    LegendreBasis basis_n = get_leg_basis(h_idx, h_idx_n, level_n, solver_params.L, x, y, dx_loc, dy_loc, dx_finest, dy_finest, NORTH);
+    LegendreBasis basis_e = get_leg_basis(h_idx, h_idx_e, level_e, solver_params.L, x, y, dx_loc, dy_loc, dx_finest, dy_finest, EAST);
+    LegendreBasis basis_s = get_leg_basis(h_idx, h_idx_s, level_s, solver_params.L, x, y, dx_loc, dy_loc, dx_finest, dy_finest, SOUTH);
+    LegendreBasis basis_w = get_leg_basis(h_idx, h_idx_w, level_w, solver_params.L, x, y, dx_loc, dy_loc, dx_finest, dy_finest, WEST);
     
     LegendreBasis basis_n_loc = { C(1.0), C(0.0), sqrt( C(3.0) ) };
     LegendreBasis basis_e_loc = { C(1.0), sqrt( C(3.0) ), C(0.0) };
@@ -271,20 +255,6 @@ void dg2_update
         idx
     );
 
-    FlowCoeffs Sbx = get_bed_src_x
-    (
-        coeffs.local_face_val(basis_e_loc).h + z_e_neg,
-        coeffs.local_face_val(basis_w_loc).h + z_w_pos,
-        z_inter_e,
-        z_inter_w,
-        U0x_star.h,
-        U1x_star.h,
-        sim_params.g,
-        dx_loc,
-        coeffs,
-        idx
-    );
-
     FlowVector U0y_star = (Ustar_n_neg + Ustar_s_pos) /   C(2.0);
     FlowVector U1y_star = (Ustar_n_neg - Ustar_s_pos) / ( C(2.0) * sqrt(C(3.0) ) );
 
@@ -302,19 +272,6 @@ void dg2_update
         )
     );
     
-    FlowCoeffs Sby = get_bed_src_y
-    (
-        coeffs.local_face_val(basis_n_loc).h + z_n_neg,
-        coeffs.local_face_val(basis_s_loc).h + z_s_pos,
-        z_inter_n,
-        z_inter_s,
-        U0y_star.h,
-        U1y_star.h,
-        sim_params.g,
-        dy_loc,
-        coeffs
-    );
-    
     Ly += get_bed_src_y
     (
         coeffs.local_face_val(basis_n_loc).h + z_n_neg,
@@ -328,93 +285,7 @@ void dg2_update
         coeffs
     );
 
-    if (false)
-    {
-        //printf("Before operator:\n");
-        //printf("level: %d\n", level);
-        //printf("i: %d, j: %d\n", i, j);
-        //printf("x: %f, y: %f\n", x, y);
-        //printf("Lx.h0: %.15f\n", Lx.h0);
-        //printf("Lx.qx0: %.15f\n", Lx.qx0);
-        //printf("Ly.h0: %.15f\n", Ly.h0);
-        //printf("Ly.qy0: %.15f\n", Ly.qy0);
-        printf("coeffs.h0: %.15f\n", coeffs.h0);
-        //printf("coeffs.h1y: %.15f\n", coeffs.h1y);
-        //printf("coeffs_e.h0: %.15f\n", coeffs_e.h0);
-        //printf("coeffs_e.h1y: %.15f\n", coeffs_e.h1y);
-        //printf("coeffs_w.h0: %.15f\n", coeffs_w.h0);
-        //printf("coeffs_w.h1y: %.15f\n", coeffs_w.h1y);
-        //printf("Ustar_e_pos.h: %.15f\n", Ustar_e_pos.h);
-        //printf("Ustar_e_neg.h: %.15f\n", Ustar_e_neg.h);
-        //printf("Ustar_w_pos.h: %.15f\n", Ustar_w_pos.h);
-        //printf("Ustar_w_neg.h: %.15f\n", Ustar_w_neg.h);
-        //printf("F_e.h: %.15f\n", F_e.h);
-        //printf("F_w.h: %.15f\n", F_w.h);
-        //printf("Sbx.h: %.15f\n", Sbx.h0);
-        //printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_e_loc));
-        //printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_w_loc));
-        //printf("coeffs.h0: %.15f\n", coeffs.h0);
-        //printf("coeffs.h1y: %.15f\n", coeffs.h1y);
-        //printf("coeffs_n.h0: %.15f\n", coeffs_n.h0);
-        //printf("coeffs_n.h1y: %.15f\n", coeffs_n.h1y);
-        //printf("coeffs_s.h0: %.15f\n", coeffs_s.h0);
-        //printf("coeffs_s.h1y: %.15f\n", coeffs_s.h1y);
-        //printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
-        //printf("Ustar_n_pos.h: %.15f\n", Ustar_n_pos.h);
-        //printf("Ustar_s_neg.h: %.15f\n", Ustar_s_neg.h);
-        //printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
-        //printf("F_n.h: %.15f\n", F_n.h);
-        //printf("F_s.h: %.15f\n", F_s.h);
-        //printf("Sby.h: %.15f\n", Sby.h0);
-        //printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_n_loc));
-        //printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_s_loc));
-
-    }
-
     coeffs += dt * (Lx + Ly);
-
-    if (false)
-    {
-        //printf("After operator:\n");
-        //printf("level: %d\n", level);
-        //printf("i: %d, j: %d\n", i, j);
-        //printf("x: %f, y: %f\n", x, y);
-        //printf("Lx.h0: %.15f\n", Lx.h0);
-        //printf("Lx.qx0: %.15f\n", Lx.qx0);
-        //printf("Ly.h0: %.15f\n", Ly.h0);
-        //printf("Ly.qy0: %.15f\n", Ly.qy0);
-        printf("coeffs.h0: %.15f\n", coeffs.h0);
-        //printf("coeffs.h1y: %.15f\n", coeffs.h1y);
-        //printf("coeffs_e.h0: %.15f\n", coeffs_e.h0);
-        //printf("coeffs_e.h1y: %.15f\n", coeffs_e.h1y);
-        //printf("coeffs_w.h0: %.15f\n", coeffs_w.h0);
-        //printf("coeffs_w.h1y: %.15f\n", coeffs_w.h1y);
-        //printf("Ustar_e_pos.h: %.15f\n", Ustar_e_pos.h);
-        //printf("Ustar_e_neg.h: %.15f\n", Ustar_e_neg.h);
-        //printf("Ustar_w_pos.h: %.15f\n", Ustar_w_pos.h);
-        //printf("Ustar_w_neg.h: %.15f\n", Ustar_w_neg.h);
-        //printf("F_e.h: %.15f\n", F_e.h);
-        //printf("F_w.h: %.15f\n", F_w.h);
-        //printf("Sbx.h: %.15f\n", Sbx.h0);
-        //printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_e_loc));
-        //printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_w_loc));
-        //printf("coeffs.h0: %.15f\n", coeffs.h0);
-        //printf("coeffs.h1y: %.15f\n", coeffs.h1y);
-        //printf("coeffs_n.h0: %.15f\n", coeffs_n.h0);
-        //printf("coeffs_n.h1y: %.15f\n", coeffs_n.h1y);
-        //printf("coeffs_s.h0: %.15f\n", coeffs_s.h0);
-        //printf("coeffs_s.h1y: %.15f\n", coeffs_s.h1y);
-        //printf("Ustar_n_neg.h: %.15f\n", Ustar_n_neg.h);
-        //printf("Ustar_n_pos.h: %.15f\n", Ustar_n_pos.h);
-        //printf("Ustar_s_neg.h: %.15f\n", Ustar_s_neg.h);
-        //printf("Ustar_s_pos.h: %.15f\n", Ustar_s_pos.h);
-        //printf("F_n.h: %.15f\n", F_n.h);
-        //printf("F_s.h: %.15f\n", F_s.h);
-        //printf("Sby.h: %.15f\n", Sby.h0);
-        //printf("basis_n_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_n_loc));
-        //printf("basis_s_loc: %.15f\n", eval_loc_face_val_dg2(coeffs.h0, coeffs.h1x, coeffs.h1y, basis_s_loc));
-
-    }
 
     real& h0   = d_assem_sol_store.h0[idx]  ;
     real& h1x  = d_assem_sol_store.h1x[idx] ;

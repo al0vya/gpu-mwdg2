@@ -13,12 +13,6 @@
 #include "SimulationParams.h"
 #include "FlowVector.h"
 
-#include "get_x_coord.cuh"
-#include "get_y_coord.cuh"
-#include "get_x_face_coord.cuh"
-#include "get_y_face_coord.cuh"
-#include "get_x_face_unit.cuh"
-#include "get_y_face_unit.cuh"
 #include "get_leg_basis.cuh"
 #include "get_bed_src.cuh"
 #include "flux_HLL.cuh"
