@@ -45,6 +45,7 @@ if (CMAKE_CUDA_COMPILER)
 		source/mra/encode_and_thresh_topo.cu
 		source/mra/encoding_all.cu
 		source/mra/extra_significance.cu
+		source/mra/get_max_from_array.cu
 		source/mra/get_max_scale_coeffs.cu
 		source/mra/get_modal_values.cu
 		source/mra/get_nodal_values.cu
@@ -72,6 +73,7 @@ if (CMAKE_CUDA_COMPILER)
 		source/operators/friction_implicit.cu
 		source/operators/fv1_update.cu
 		source/operators/get_dt_CFL.cu
+		source/operators/limit_slopes.cu
 		source/output/append_reals_to_file.cu
 		source/output/project_assem_sol.cu
 		source/output/write_all_raster_maps.cu

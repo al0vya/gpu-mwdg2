@@ -73,16 +73,6 @@ void add_ghost_cells
 		{
 			if (test_case == 0)
 			{
-				//d_assem_sol.h1x[idx]  = C(0.0);
-				//d_assem_sol.qx1x[idx] = C(0.0);
-				//d_assem_sol.qy1x[idx] = C(0.0);
-				//d_assem_sol.z1x[idx]  = C(0.0);
-				
-				//d_assem_sol.h1y[idx]  = C(0.0);
-				//d_assem_sol.qx1y[idx] = C(0.0);
-				//d_assem_sol.qy1y[idx] = C(0.0);
-				//d_assem_sol.z1y[idx]  = C(0.0);
-				
 				d_neighbours.north.h1x[idx]  = C(0.0);
 				d_neighbours.north.qx1x[idx] = C(0.0);
 				d_neighbours.north.qy1x[idx] = C(0.0);
@@ -178,16 +168,6 @@ void add_ghost_cells
 		{
 			if (test_case == 0)
 			{
-				//d_assem_sol.h1x[idx]  = C(0.0);
-				//d_assem_sol.qx1x[idx] = C(0.0);
-				//d_assem_sol.qy1x[idx] = C(0.0);
-				//d_assem_sol.z1x[idx]  = C(0.0);
-				
-				//d_assem_sol.h1y[idx]  = C(0.0);
-				//d_assem_sol.qx1y[idx] = C(0.0);
-				//d_assem_sol.qy1y[idx] = C(0.0);
-				//d_assem_sol.z1y[idx]  = C(0.0);
-				
 				d_neighbours.east.h1x[idx]  = C(0.0);
 				d_neighbours.east.qx1x[idx] = C(0.0);
 				d_neighbours.east.qy1x[idx] = C(0.0);
@@ -283,16 +263,6 @@ void add_ghost_cells
 		{
 			if (test_case == 0)
 			{
-				//d_assem_sol.h1x[idx]  = C(0.0);
-				//d_assem_sol.qx1x[idx] = C(0.0);
-				//d_assem_sol.qy1x[idx] = C(0.0);
-				//d_assem_sol.z1x[idx]  = C(0.0);
-				
-				//d_assem_sol.h1y[idx]  = C(0.0);
-				//d_assem_sol.qx1y[idx] = C(0.0);
-				//d_assem_sol.qy1y[idx] = C(0.0);
-				//d_assem_sol.z1y[idx]  = C(0.0);
-				
 				d_neighbours.south.h1x[idx]  = C(0.0);
 				d_neighbours.south.qx1x[idx] = C(0.0);
 				d_neighbours.south.qy1x[idx] = C(0.0);
@@ -388,16 +358,6 @@ void add_ghost_cells
 		{
 			if (test_case == 0)
 			{
-				//d_assem_sol.h1x[idx]  = C(0.0);
-				//d_assem_sol.qx1x[idx] = C(0.0);
-				//d_assem_sol.qy1x[idx] = C(0.0);
-				//d_assem_sol.z1x[idx]  = C(0.0);
-				
-				//d_assem_sol.h1y[idx]  = C(0.0);
-				//d_assem_sol.qx1y[idx] = C(0.0);
-				//d_assem_sol.qy1y[idx] = C(0.0);
-				//d_assem_sol.z1y[idx]  = C(0.0);
-				
 				d_neighbours.west.h1x[idx]  = C(0.0);
 				d_neighbours.west.qx1x[idx] = C(0.0);
 				d_neighbours.west.qy1x[idx] = C(0.0);

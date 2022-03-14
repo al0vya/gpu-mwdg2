@@ -37,16 +37,10 @@ void write_bool_to_file
 
 	fprintf(fp, "results\n");
 
-	int sum = 0;
-
 	for (int i = 0; i < array_length; i++)
 	{
 		fprintf(fp, "%d\n", h_results[i]);
-
-		sum += h_results[i];
 	}
-
-	printf("%s: %d\n", filename, sum);
 
 	fclose(fp);
 

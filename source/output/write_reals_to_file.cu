@@ -37,16 +37,10 @@ void write_reals_to_file
 
 	fprintf(fp, "results\n");
 
-	real sum = 0;
-
 	for (int i = 0; i < array_length; i++)
 	{
-		fprintf(fp, "%" NUM_FIG NUM_FRMT "\n", h_results[i]);
-
-		sum += h_results[i];
+		fprintf(fp, "%" NUM_FRMT "\n", h_results[i]);
 	}
-
-	printf("%s: %" NUM_FIG NUM_FRMT "\n", filename, sum / array_length);
 
 	fclose(fp);
 

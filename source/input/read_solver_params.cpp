@@ -36,6 +36,9 @@ SolverParams read_solver_params
 
     read_keyword_str(input_filename, "grading", 7, solvertype_buf);
     solver_params.grading = ( !strncmp(solvertype_buf, "on", 2) );
+	
+    read_keyword_str(input_filename, "limitslopes", 11, solvertype_buf);
+    solver_params.limitslopes = ( !strncmp(solvertype_buf, "on", 2) );
 
 	return solver_params;
 }

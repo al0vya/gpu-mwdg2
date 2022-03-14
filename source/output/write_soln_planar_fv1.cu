@@ -88,14 +88,14 @@ void write_soln_planar_fv1
 		fprintf
 		(
 		    fp,
-			"%" NUM_FIG NUM_FRMT ","
-		    "%" NUM_FIG NUM_FRMT ","
-		    "%" NUM_FIG NUM_FRMT ","
-		    "%" NUM_FIG NUM_FRMT ","
-			"%" NUM_FIG NUM_FRMT ","
-		    "%" NUM_FIG NUM_FRMT ","
-		    "%" NUM_FIG NUM_FRMT ","
-		    "%" NUM_FIG NUM_FRMT
+			"%" NUM_FRMT ","
+		    "%" NUM_FRMT ","
+		    "%" NUM_FRMT ","
+		    "%" NUM_FRMT ","
+			"%" NUM_FRMT ","
+		    "%" NUM_FRMT ","
+		    "%" NUM_FRMT ","
+		    "%" NUM_FRMT
 			"\n",
 			points.ll_x,
 			points.ll_y,

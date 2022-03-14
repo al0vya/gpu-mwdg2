@@ -14,7 +14,7 @@ real minmod
 {
     if ( ( a * b > C(0.0) ) && ( a * c > C(0.0) ) )
     {
-        const int sign_a = ( a > C(0.0) ) - ( a < C(0.0) );
+        const real sign_a = ( a > C(0.0) ) - ( a < C(0.0) );
 
         return min( abs(a), min( abs(b), abs(c) ) ) * sign_a;
     }

@@ -20,6 +20,7 @@
 #include "load_soln_and_nghbr_coeffs.cuh"
 #include "add_ghost_cells.cuh"
 #include "friction_implicit.cuh"
+#include "limit_slopes.cuh"
 #include "fv1_update.cuh"
 #include "dg2_update.cuh"
 
@@ -200,7 +201,7 @@ int main
 	HierarchyIndex finest_lvl_idx = get_lvl_idx(solver_params.L);
 	
 	// Structures
-	Maxes maxes = { C(1.0), C(1.0), C(1.0), C(1.0) };
+	Maxes maxes = { C(1.0), C(1.0), C(1.0), C(1.0), C(1.0) };
 	
 	GaugePoints  gauge_points (input_filename, sim_params, dx_finest);
 	Boundaries   boundaries   (input_filename, sim_params, dx_finest, test_case);
@@ -662,6 +663,19 @@ int main
 				d_buf_assem_sol
 			);
 
+			if (solver_params.limitslopes)
+			{
+				limit_slopes<<<num_blocks_sol, THREADS_PER_BLOCK>>>
+				(
+					d_assem_sol,
+					d_neighbours,
+					sim_params,
+					solver_params,
+					dx_finest,
+					dy_finest
+				);
+			}
+
 			rkdg2 = false;
 
 			dg2_update<<<num_blocks_sol, THREADS_PER_BLOCK>>>
@@ -737,6 +751,19 @@ int main
 			//CHECK_CUDA_ERROR(sync());
 
 			rkdg2 = true;
+			
+			if (solver_params.limitslopes)
+			{
+				limit_slopes<<<num_blocks_sol, THREADS_PER_BLOCK>>>
+				(
+					d_buf_assem_sol,
+					d_neighbours,
+					sim_params,
+					solver_params,
+					dx_finest,
+					dy_finest
+				);
+			}
 
 			dg2_update<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(

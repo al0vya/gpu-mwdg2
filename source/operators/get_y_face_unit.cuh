@@ -19,7 +19,7 @@ real get_y_face_unit
 	const int&            direction
 )
 {
-	if (h_idx == -1)
+	if (h_idx_nghbr == -1)
 	{
 		real y_face_unit = C(0.0);
 

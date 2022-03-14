@@ -310,7 +310,7 @@ def plot_surface(
     
     plt.savefig(os.path.join(path, filename), bbox_inches="tight")
 
-    plt.clf()
+    plt.close()
 
 def plot_contours(
     X, 
@@ -336,7 +336,7 @@ def plot_contours(
 
     plt.savefig(os.path.join(path, filename), bbox_inches="tight")
     
-    plt.clf()
+    plt.close()
 
 class RowMajorSolution:
     def __init__(
@@ -450,7 +450,7 @@ class DischargeErrors:
         
         print("Searching for discharge error data in path", self.savepath)
         
-        sim_time_file = "clock_time_vs_sim_time.csv"
+        simtime_file = "simtime-vs-runtime.csv"
         qx0_file      = "qx0-c-prop.csv"
         qx1x_file     = "qx1x-c-prop.csv"
         qx1y_file     = "qx1y-c-prop.csv"
@@ -458,7 +458,7 @@ class DischargeErrors:
         qy1x_file     = "qy1x-c-prop.csv"
         qy1y_file     = "qy1y-c-prop.csv"
         
-        self.sim_time = pd.read_csv( os.path.join(self.savepath, sim_time_file) )
+        self.simtime = pd.read_csv( os.path.join(self.savepath, simtime_file) )
         qx0           = pd.read_csv( os.path.join(self.savepath, qx0_file),  header=None )
         qx1x          = pd.read_csv( os.path.join(self.savepath, qx1x_file), header=None ) if solver == "mw" else None
         qx1y          = pd.read_csv( os.path.join(self.savepath, qx1y_file), header=None ) if solver == "mw" else None
@@ -483,16 +483,16 @@ class DischargeErrors:
 
         plt.figure()
         
-        plt.scatter(self.sim_time["sim_time"], self.qx0_max,  label='$q^0_x$', marker='x')
-        plt.scatter(self.sim_time["sim_time"], self.qy0_max,  label='$q^0_y$', marker='x')
+        plt.scatter(self.simtime["simtime"], self.qx0_max,  label='$q^0_x$', marker='x')
+        plt.scatter(self.simtime["simtime"], self.qy0_max,  label='$q^0_y$', marker='x')
         
         if self.solver == "mw":
-            plt.scatter(self.sim_time["sim_time"], self.qx1x_max, label='$q^{1x}_x$', marker='x')
-            plt.scatter(self.sim_time["sim_time"], self.qx1y_max, label='$q^{1y}_x$', marker='x')
-            plt.scatter(self.sim_time["sim_time"], self.qy1x_max, label='$q^{1x}_y$', marker='x')
-            plt.scatter(self.sim_time["sim_time"], self.qy1y_max, label='$q^{1y}_y$', marker='x')
+            plt.scatter(self.simtime["simtime"], self.qx1x_max, label='$q^{1x}_x$', marker='x')
+            plt.scatter(self.simtime["simtime"], self.qx1y_max, label='$q^{1y}_x$', marker='x')
+            plt.scatter(self.simtime["simtime"], self.qy1x_max, label='$q^{1x}_y$', marker='x')
+            plt.scatter(self.simtime["simtime"], self.qy1y_max, label='$q^{1y}_y$', marker='x')
         
-        xlim = ( self.sim_time["sim_time"].iloc[0], self.sim_time["sim_time"].iloc[-1] )
+        xlim = ( self.simtime["simtime"].iloc[0], self.simtime["simtime"].iloc[-1] )
 
         plt.ticklabel_format(axis='x', style="sci")
         plt.xlim(xlim)
@@ -516,7 +516,7 @@ class Test:
         saveint, 
         test_name, 
         solver, 
-        c_prop_tests, 
+        c_prop_tests,
         results, 
         input_file,
         mode
@@ -535,13 +535,15 @@ class Test:
         self.solver      = solver
 
         if self.test_case in c_prop_tests:
-            self.row_major = "off"
-            self.vtk       = "off"
-            self.c_prop    = "on"
+            self.row_major  = "off"
+            self.vtk        = "off"
+            self.c_prop     = "on"
+            self.cumulative = "on"
         else:
-            self.row_major = "on"
-            self.vtk       = "off"
-            self.c_prop    = "off"
+            self.row_major  = "on"
+            self.vtk        = "off"
+            self.c_prop     = "off"
+            self.cumulative = "off"
 
         self.results    = results
         self.input_file = input_file
@@ -566,6 +568,7 @@ class Test:
             "wall_height 0\n" +
             "row_major   %s\n" +
             "c_prop      %s\n" +
+            "cumulative  %s\n" +
             "vtk         %s") % (
                 self.test_case, 
                 self.max_ref_lvl, 
@@ -575,6 +578,7 @@ class Test:
                 self.solver, 
                 self.row_major, 
                 self.c_prop, 
+                self.cumulative, 
                 self.vtk
             )
 

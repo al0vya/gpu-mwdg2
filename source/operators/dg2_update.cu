@@ -110,97 +110,123 @@ void dg2_update
     LegendreBasis basis_s = get_leg_basis(h_idx, h_idx_s, level_s, solver_params.L, x, y, dx_loc, dy_loc, dx_finest, dy_finest, SOUTH);
     LegendreBasis basis_w = get_leg_basis(h_idx, h_idx_w, level_w, solver_params.L, x, y, dx_loc, dy_loc, dx_finest, dy_finest, WEST);
     
-    LegendreBasis basis_n_loc = { C(1.0), C(0.0), sqrt( C(3.0) ) };
-    LegendreBasis basis_e_loc = { C(1.0), sqrt( C(3.0) ), C(0.0) };
+    LegendreBasis basis_n_loc = { C(1.0), C(0.0), sqrt( C(3.0) ) } ;
+    LegendreBasis basis_e_loc = { C(1.0), sqrt( C(3.0) ), C(0.0) } ;
     LegendreBasis basis_s_loc = { C(1.0), C(0.0), -sqrt( C(3.0) ) };
     LegendreBasis basis_w_loc = { C(1.0), -sqrt( C(3.0) ), C(0.0) };
     
     FlowCoeffs coeffs =
     {
-        d_assem_sol_load.h0[idx],
-        d_assem_sol_load.h1x[idx],
-        d_assem_sol_load.h1y[idx],
-
-        d_assem_sol_load.qx0[idx],
-        d_assem_sol_load.qx1x[idx],
-        d_assem_sol_load.qx1y[idx],
-
-        d_assem_sol_load.qy0[idx],
-        d_assem_sol_load.qy1x[idx],
-        d_assem_sol_load.qy1y[idx]
+        {
+            d_assem_sol_load.h0[idx],
+            d_assem_sol_load.h1x[idx],
+            d_assem_sol_load.h1y[idx],
+        },
+        {
+            d_assem_sol_load.qx0[idx],
+            d_assem_sol_load.qx1x[idx],
+            d_assem_sol_load.qx1y[idx],
+        },
+        {
+            d_assem_sol_load.qy0[idx],
+            d_assem_sol_load.qy1x[idx],
+            d_assem_sol_load.qy1y[idx],
+        }
     };
     
-    FlowCoeffs coeffs_n
+    FlowCoeffs coeffs_n =
     {
-        d_neighbours.north.h0[idx],
-        d_neighbours.north.h1x[idx],
-        d_neighbours.north.h1y[idx],
-
-        d_neighbours.north.qx0[idx],
-        d_neighbours.north.qx1x[idx],
-        d_neighbours.north.qx1y[idx],
-
-        d_neighbours.north.qy0[idx],
-        d_neighbours.north.qy1x[idx],
-        d_neighbours.north.qy1y[idx]
-    };
-
-    FlowCoeffs coeffs_e
-    {
-        d_neighbours.east.h0[idx],
-        d_neighbours.east.h1x[idx],
-        d_neighbours.east.h1y[idx],
-
-        d_neighbours.east.qx0[idx],
-        d_neighbours.east.qx1x[idx],
-        d_neighbours.east.qx1y[idx],
-
-        d_neighbours.east.qy0[idx],
-        d_neighbours.east.qy1x[idx],
-        d_neighbours.east.qy1y[idx]
-    };
-
-    FlowCoeffs coeffs_s
-    {
-        d_neighbours.south.h0[idx],
-        d_neighbours.south.h1x[idx],
-        d_neighbours.south.h1y[idx],
-
-        d_neighbours.south.qx0[idx],
-        d_neighbours.south.qx1x[idx],
-        d_neighbours.south.qx1y[idx],
-
-        d_neighbours.south.qy0[idx],
-        d_neighbours.south.qy1x[idx],
-        d_neighbours.south.qy1y[idx]
+        {
+            d_neighbours.north.h0[idx],
+            d_neighbours.north.h1x[idx],
+            d_neighbours.north.h1y[idx],
+        },
+        {
+            d_neighbours.north.qx0[idx],
+            d_neighbours.north.qx1x[idx],
+            d_neighbours.north.qx1y[idx],
+        },
+        {
+            d_neighbours.north.qy0[idx],
+            d_neighbours.north.qy1x[idx],
+            d_neighbours.north.qy1y[idx],
+        }
     };
     
-    FlowCoeffs coeffs_w
+    FlowCoeffs coeffs_e =
     {
-        d_neighbours.west.h0[idx],
-        d_neighbours.west.h1x[idx],
-        d_neighbours.west.h1y[idx],
-
-        d_neighbours.west.qx0[idx],
-        d_neighbours.west.qx1x[idx],
-        d_neighbours.west.qx1y[idx],
-
-        d_neighbours.west.qy0[idx],
-        d_neighbours.west.qy1x[idx],
-        d_neighbours.west.qy1y[idx]
+        {
+            d_neighbours.east.h0[idx],
+            d_neighbours.east.h1x[idx],
+            d_neighbours.east.h1y[idx],
+        },
+        {
+            d_neighbours.east.qx0[idx],
+            d_neighbours.east.qx1x[idx],
+            d_neighbours.east.qx1y[idx],
+        },
+        {
+            d_neighbours.east.qy0[idx],
+            d_neighbours.east.qy1x[idx],
+            d_neighbours.east.qy1y[idx],
+        }
     };
+    
+    FlowCoeffs coeffs_s =
+    {
+        {
+            d_neighbours.south.h0[idx],
+            d_neighbours.south.h1x[idx],
+            d_neighbours.south.h1y[idx],
+        },
+        {
+            d_neighbours.south.qx0[idx],
+            d_neighbours.south.qx1x[idx],
+            d_neighbours.south.qx1y[idx],
+        },
+        {
+            d_neighbours.south.qy0[idx],
+            d_neighbours.south.qy1x[idx],
+            d_neighbours.south.qy1y[idx],
+        }
+    };
+    
+    FlowCoeffs coeffs_w =
+    {
+        {
+            d_neighbours.west.h0[idx],
+            d_neighbours.west.h1x[idx],
+            d_neighbours.west.h1y[idx],
+        },
+        {
+            d_neighbours.west.qx0[idx],
+            d_neighbours.west.qx1x[idx],
+            d_neighbours.west.qx1y[idx],
+        },
+        {
+            d_neighbours.west.qy0[idx],
+            d_neighbours.west.qy1x[idx],
+            d_neighbours.west.qy1y[idx],
+        }
+    };
+
+    PlanarCoefficients z_planar   = { d_assem_sol_load.z0[idx],   d_assem_sol_load.z1x[idx],   d_assem_sol_load.z1y[idx] };
+    PlanarCoefficients z_planar_n = { d_neighbours.north.z0[idx], d_neighbours.north.z1x[idx], d_neighbours.north.z1y[idx] };
+    PlanarCoefficients z_planar_e = { d_neighbours.east.z0[idx],  d_neighbours.east.z1x[idx],  d_neighbours.east.z1y[idx] };
+    PlanarCoefficients z_planar_s = { d_neighbours.south.z0[idx], d_neighbours.south.z1x[idx], d_neighbours.south.z1y[idx] };
+    PlanarCoefficients z_planar_w = { d_neighbours.west.z0[idx],  d_neighbours.west.z1x[idx],  d_neighbours.west.z1y[idx] };
 
     // LFVs from neighbour cells
-    real z_n_pos = eval_loc_face_val_dg2(d_neighbours.north.z0[idx], d_neighbours.north.z1x[idx], d_neighbours.north.z1y[idx], basis_n);
-    real z_e_pos = eval_loc_face_val_dg2(d_neighbours.east.z0[idx],  d_neighbours.east.z1x[idx],  d_neighbours.east.z1y[idx],  basis_e);
-    real z_s_neg = eval_loc_face_val_dg2(d_neighbours.south.z0[idx], d_neighbours.south.z1x[idx], d_neighbours.south.z1y[idx], basis_s);
-    real z_w_neg = eval_loc_face_val_dg2(d_neighbours.west.z0[idx],  d_neighbours.west.z1x[idx],  d_neighbours.west.z1y[idx],  basis_w);
+    real z_n_pos = eval_loc_face_val_dg2(z_planar_n, basis_n);
+    real z_e_pos = eval_loc_face_val_dg2(z_planar_e, basis_e);
+    real z_s_neg = eval_loc_face_val_dg2(z_planar_s, basis_s);
+    real z_w_neg = eval_loc_face_val_dg2(z_planar_w, basis_w);
 
     // LFVs of local cell
-    real z_n_neg = eval_loc_face_val_dg2(d_assem_sol_load.z0[idx], d_assem_sol_load.z1x[idx], d_assem_sol_load.z1y[idx], basis_n_loc);
-    real z_e_neg = eval_loc_face_val_dg2(d_assem_sol_load.z0[idx], d_assem_sol_load.z1x[idx], d_assem_sol_load.z1y[idx], basis_e_loc);
-    real z_s_pos = eval_loc_face_val_dg2(d_assem_sol_load.z0[idx], d_assem_sol_load.z1x[idx], d_assem_sol_load.z1y[idx], basis_s_loc);
-    real z_w_pos = eval_loc_face_val_dg2(d_assem_sol_load.z0[idx], d_assem_sol_load.z1x[idx], d_assem_sol_load.z1y[idx], basis_w_loc);
+    real z_n_neg = eval_loc_face_val_dg2(z_planar, basis_n_loc);
+    real z_e_neg = eval_loc_face_val_dg2(z_planar, basis_e_loc);
+    real z_s_pos = eval_loc_face_val_dg2(z_planar, basis_s_loc);
+    real z_w_pos = eval_loc_face_val_dg2(z_planar, basis_w_loc);
 
     real z_inter_n = max(z_n_neg, z_n_pos);
     real z_inter_e = max(z_e_neg, z_e_pos);
@@ -297,15 +323,15 @@ void dg2_update
     real& qy1x = d_assem_sol_store.qy1x[idx];
     real& qy1y = d_assem_sol_store.qy1y[idx];
 
-    h0   = (rkdg2) ? C(0.5) * (coeffs.h0   + h0  ) : coeffs.h0  ;
-    h1x  = (rkdg2) ? C(0.5) * (coeffs.h1x  + h1x ) : coeffs.h1x ;
-    h1y  = (rkdg2) ? C(0.5) * (coeffs.h1y  + h1y ) : coeffs.h1y ;
-    qx0  = (rkdg2) ? C(0.5) * (coeffs.qx0  + qx0 ) : coeffs.qx0 ;
-    qx1x = (rkdg2) ? C(0.5) * (coeffs.qx1x + qx1x) : coeffs.qx1x;
-    qx1y = (rkdg2) ? C(0.5) * (coeffs.qx1y + qx1y) : coeffs.qx1y;
-    qy0  = (rkdg2) ? C(0.5) * (coeffs.qy0  + qy0 ) : coeffs.qy0 ;
-    qy1x = (rkdg2) ? C(0.5) * (coeffs.qy1x + qy1x) : coeffs.qy1x;
-    qy1y = (rkdg2) ? C(0.5) * (coeffs.qy1y + qy1y) : coeffs.qy1y;
+    h0   = (rkdg2) ? C(0.5) * (coeffs.h._0   + h0  ) : coeffs.h._0  ;
+    h1x  = (rkdg2) ? C(0.5) * (coeffs.h._1x  + h1x ) : coeffs.h._1x ;
+    h1y  = (rkdg2) ? C(0.5) * (coeffs.h._1y  + h1y ) : coeffs.h._1y ;
+    qx0  = (rkdg2) ? C(0.5) * (coeffs.qx._0  + qx0 ) : coeffs.qx._0 ;
+    qx1x = (rkdg2) ? C(0.5) * (coeffs.qx._1x + qx1x) : coeffs.qx._1x;
+    qx1y = (rkdg2) ? C(0.5) * (coeffs.qx._1y + qx1y) : coeffs.qx._1y;
+    qy0  = (rkdg2) ? C(0.5) * (coeffs.qy._0  + qy0 ) : coeffs.qy._0 ;
+    qy1x = (rkdg2) ? C(0.5) * (coeffs.qy._1x + qy1x) : coeffs.qy._1x;
+    qy1y = (rkdg2) ? C(0.5) * (coeffs.qy._1y + qy1y) : coeffs.qy._1y;
     
     const bool below_depth = (h0 < solver_params.tol_h);
 

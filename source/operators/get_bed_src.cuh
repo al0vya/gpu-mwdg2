@@ -65,24 +65,8 @@ FlowCoeffs get_bed_src_x
 
 	FlowCoeffs Sbx = {};
 
-	Sbx.qx0  = -C(2.0) * sqrt(C(3.0)) * g * h0x_star * z1x_star / dx_loc;
-	Sbx.qx1x = -C(2.0) * sqrt(C(3.0)) * g * h1x_star * z1x_star / dx_loc;
-	
-	if (false)//idx == 65536)
-	{
-		printf("z_star_e: %f\n", z_star_e);
-		printf("z_star_w: %f\n", z_star_w);
-		printf("z_inter_e: %f\n", z_inter_e);
-		printf("z_inter_w: %f\n", z_inter_w);
-		printf("eta_e_neg: %f\n", eta_e_neg);
-		printf("eta_w_pos: %f\n", eta_w_pos);
-		printf("z1x_star: %f\n", z1x_star);
-		printf("h0x_star: %f\n", h0x_star);
-		printf("h1x_star: %f\n", h1x_star);
-		printf("Sbx.qx0: %f\n", Sbx.qx0);
-		printf("Sbx.qx1x: %f\n", Sbx.qx1x);
-		printf("\n");
-	}
+	Sbx.qx._0  = -C(2.0) * sqrt(C(3.0)) * g * h0x_star * z1x_star / dx_loc;
+	Sbx.qx._1x = -C(2.0) * sqrt(C(3.0)) * g * h1x_star * z1x_star / dx_loc;
 	
 	return Sbx;
 }
@@ -108,8 +92,8 @@ FlowCoeffs get_bed_src_y
 
 	FlowCoeffs Sby = {};
 
-	Sby.qy0  = -C(2.0) * sqrt( C(3.0) ) * g * h0y_star * z1y_star / dy_loc;
-	Sby.qy1y = -C(2.0) * sqrt( C(3.0) ) * g * h1y_star * z1y_star / dy_loc;
+	Sby.qy._0  = -C(2.0) * sqrt( C(3.0) ) * g * h0y_star * z1y_star / dy_loc;
+	Sby.qy._1y = -C(2.0) * sqrt( C(3.0) ) * g * h1y_star * z1y_star / dy_loc;
 
 	return Sby;
 }

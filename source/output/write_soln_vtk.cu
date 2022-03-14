@@ -104,10 +104,10 @@ __host__ void write_soln_vtk
 		fprintf
 		(
 			fp,
-			"%" NUM_FIG NUM_FRMT " %" NUM_FIG NUM_FRMT " %" NUM_FIG NUM_FRMT "\n"
-			"%" NUM_FIG NUM_FRMT " %" NUM_FIG NUM_FRMT " %" NUM_FIG NUM_FRMT "\n"
-			"%" NUM_FIG NUM_FRMT " %" NUM_FIG NUM_FRMT " %" NUM_FIG NUM_FRMT "\n"
-			"%" NUM_FIG NUM_FRMT " %" NUM_FIG NUM_FRMT " %" NUM_FIG NUM_FRMT "\n",
+			"%" NUM_FRMT " %" NUM_FRMT " %" NUM_FRMT "\n"
+			"%" NUM_FRMT " %" NUM_FRMT " %" NUM_FRMT "\n"
+			"%" NUM_FRMT " %" NUM_FRMT " %" NUM_FRMT "\n"
+			"%" NUM_FRMT " %" NUM_FRMT " %" NUM_FRMT "\n",
 			points.ll_x, points.ll_y, C(1.0),
 			points.ul_x, points.ul_y, C(1.0),
 			points.lr_x, points.lr_y, C(1.0),
@@ -143,7 +143,7 @@ __host__ void write_soln_vtk
 
 	for (int i = 0; i < d_assem_sol.length; i++)
 	{
-		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", dt[i] );
+		fprintf( fp, "%" NUM_FRMT "\n", dt[i] );
 	}
 	
 	fprintf
@@ -155,7 +155,7 @@ __host__ void write_soln_vtk
 
 	for (int i = 0; i < d_assem_sol.length; i++)
 	{
-		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", h[i] );
+		fprintf( fp, "%" NUM_FRMT "\n", h[i] );
 	}
 	
 	fprintf
@@ -169,7 +169,7 @@ __host__ void write_soln_vtk
 	{
 		real vx = (h[i] < solver_params.tol_h) ? C(0.0) : qx[i] / h[i];
 		
-		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", qx[i]);
+		fprintf( fp, "%" NUM_FRMT "\n", qx[i]);
 	}
 
 	fprintf
@@ -183,7 +183,7 @@ __host__ void write_soln_vtk
 	{
 		real vy = (h[i] < solver_params.tol_h) ? C(0.0) : qy[i] / h[i];
 		
-		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", qy[i]);
+		fprintf( fp, "%" NUM_FRMT "\n", qy[i]);
 	}
 
 	fprintf
@@ -195,7 +195,7 @@ __host__ void write_soln_vtk
 
 	for (int i = 0; i < d_assem_sol.length; i++)
 	{
-		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", z[i] );
+		fprintf( fp, "%" NUM_FRMT "\n", z[i] );
 	}
 	
 	fprintf
@@ -207,7 +207,7 @@ __host__ void write_soln_vtk
 
 	for (int i = 0; i < d_assem_sol.length; i++)
 	{
-		fprintf( fp, "%" NUM_FIG NUM_FRMT "\n", h[i] + z[i] );
+		fprintf( fp, "%" NUM_FRMT "\n", h[i] + z[i] );
 	}
 
 	fclose(fp);
