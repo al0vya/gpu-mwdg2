@@ -1,3 +1,5 @@
+import os
+import sys
 import numpy             as np
 import pandas            as pd
 import matplotlib.pyplot as plt
@@ -72,6 +74,8 @@ def project_and_write_raster(
         ymin,
         cellsize
     ):
+        print("Projecting and writing raster field:", filename)
+        
         raster = projection(
             nrows=nrows,
             ncols=ncols,
@@ -149,8 +153,14 @@ def bed(x, y):
     return z
             
 def main():
-    ncols    =  128 + 1
-    nrows    =  128  + 1
+    start_file_exists = os.path.exists("25-blocks.start")
+    dem_file_exists   = os.path.exists("25-blocks.dem")
+    
+    if start_file_exists and dem_file_exists:
+        sys.exit("All input raster files already exist, exiting raster file generation.")
+    
+    ncols    =  1790 + 1
+    nrows    =  180 + 1
     xmin     = -6.75
     ymin     = -1.80
     cellsize =  0.02
@@ -161,35 +171,45 @@ def main():
     bed_data   = np.full(shape=(nrows, ncols), fill_value=-9999, dtype=float)
     start_data = np.full(shape=(nrows, ncols), fill_value=0,     dtype=float)
     
-    for j, y_ in enumerate(y):
-        for i, x_ in enumerate(x):
-            z = bed(x_, y_)
-            
-            bed_data[j, i]   = z
-            start_data[j, i] = max(0, 0.011 - z) if x_ >= 0 else max(0, 0.011 - z)
-            
-    check_nodal_data(nodal_data=bed_data,   nrows=nrows, ncols=ncols)
-    check_nodal_data(nodal_data=start_data, nrows=nrows, ncols=ncols)
+    print("Computing 25 blocks input raster fields...")
     
-    project_and_write_raster(
-        nodal_data=bed_data,
-        filename="25-blocks.dem",
-        nrows=nrows,
-        ncols=ncols,
-        xmin=xmin,
-        ymin=ymin,
-        cellsize=cellsize
-    )
-    
-    project_and_write_raster(
-        nodal_data=start_data,
-        filename="25-blocks.start",
-        nrows=nrows,
-        ncols=ncols,
-        xmin=xmin,
-        ymin=ymin,
-        cellsize=cellsize
-    )
+    if not dem_file_exists:
+        for j, y_ in enumerate(y):
+            for i, x_ in enumerate(x):
+                bed_data[j, i] = bed(x_, y_)
+                
+        check_nodal_data(nodal_data=bed_data,   nrows=nrows, ncols=ncols)
+        
+        project_and_write_raster(
+            nodal_data=bed_data,
+            filename="25-blocks.dem",
+            nrows=nrows,
+            ncols=ncols,
+            xmin=xmin,
+            ymin=ymin,
+            cellsize=cellsize
+        )
+    else:
+        print("Not computing or writing 25-blocks.dem because it already exists.")
+        
+    if not start_file_exists:
+        for j, y_ in enumerate(y):
+            for i, x_ in enumerate(x):
+                start_data[j, i] = max( 0, 0.011 - bed_data[j, i] ) if x_ >= 0 else max( 0, 0.4 - bed_data[j, i] )
+                
+        check_nodal_data(nodal_data=start_data, nrows=nrows, ncols=ncols)
+        
+        project_and_write_raster(
+            nodal_data=start_data,
+            filename="25-blocks.start",
+            nrows=nrows,
+            ncols=ncols,
+            xmin=xmin,
+            ymin=ymin,
+            cellsize=cellsize
+        )
+    else:
+        print("Not computing or writing 25-blocks.start because it already exists.")
             
 if __name__ == "__main__":
     main()

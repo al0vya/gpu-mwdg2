@@ -672,7 +672,8 @@ int main
 					sim_params,
 					solver_params,
 					dx_finest,
-					dy_finest
+					dy_finest,
+					maxes.h
 				);
 			}
 
@@ -754,6 +755,12 @@ int main
 			
 			if (solver_params.limitslopes)
 			{
+				maxes.h = get_max_from_array
+				(
+					d_buf_assem_sol.h0, 
+					d_buf_assem_sol.length
+				);
+				
 				limit_slopes<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 				(
 					d_buf_assem_sol,
@@ -761,7 +768,8 @@ int main
 					sim_params,
 					solver_params,
 					dx_finest,
-					dy_finest
+					dy_finest,
+					maxes.h
 				);
 			}
 

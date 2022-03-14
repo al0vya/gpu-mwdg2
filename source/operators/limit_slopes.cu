@@ -8,7 +8,8 @@ void limit_slopes
     SimulationParams  sim_params,
     SolverParams      solver_params,
     real              dx_finest,
-    real              dy_finest
+    real              dy_finest,
+    real              max_h
 )
 {
 	
@@ -214,14 +215,26 @@ void limit_slopes
                 tol_Krivo
             );
 
-            d_assem_sol.h1x[idx] = eta_limited._1x - z._1x;
-            d_assem_sol.h1y[idx] = eta_limited._1y - z._1y;
+            const bool above_max_h_x = ( C(0.3) * max_h < min( coeffs.h._0, min(coeffs_e.h._0, coeffs_w.h._0) ) );
+            const bool above_max_h_y = ( C(0.3) * max_h < min( coeffs.h._0, min(coeffs_n.h._0, coeffs_s.h._0) ) );
+
+            real& h1x = d_assem_sol.h1x[idx];
+            real& h1y = d_assem_sol.h1y[idx];
             
-            d_assem_sol.qx1x[idx] = qx_limited._1x;
-            d_assem_sol.qx1y[idx] = qx_limited._1y;
+            real& qx1x = d_assem_sol.qx1x[idx];
+            real& qx1y = d_assem_sol.qx1y[idx];
             
-            d_assem_sol.qy1x[idx] = qy_limited._1x;
-            d_assem_sol.qy1y[idx] = qy_limited._1y;
+            real& qy1x = d_assem_sol.qy1x[idx];
+            real& qy1y = d_assem_sol.qy1y[idx];
+
+            h1x = (above_max_h_x) ? eta_limited._1x - z._1x : h1x;
+            h1y = (above_max_h_y) ? eta_limited._1y - z._1y : h1y;
+            
+            qx1x = (above_max_h_x) ? qx_limited._1x : qx1x;
+            qx1y = (above_max_h_y) ? qx_limited._1y : qx1y;
+            
+            qy1x = (above_max_h_x) ? qy_limited._1x : qy1x;
+            qy1y = (above_max_h_y) ? qy_limited._1y : qy1y;
         }
     }
 }

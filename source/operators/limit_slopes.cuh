@@ -20,5 +20,6 @@ void limit_slopes
     SimulationParams  sim_params,
     SolverParams      solver_params,
     real              dx_finest,
-    real              dy_finest
+    real              dy_finest,
+    real              max_h
 );

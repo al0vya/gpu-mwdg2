@@ -74,7 +74,7 @@ class SimulationConicalIsland:
             epsilon,
             solver
         ):
-            print("Running simulation, eps =", str(epsilon), ", solver:", solver)
+            print("Running simulation, eps = " + str(epsilon) + ", solver: " + solver)
             
             with open("conical-island.par", 'w') as fp:
                 params = (
@@ -93,6 +93,7 @@ class SimulationConicalIsland:
                     "massint     0.1\n" +
                     "sim_time    20\n" +
                     "solver      %s\n" +
+                    "limitslopes on\n" +
                     "cumulative  on\n" +
                     "wall_height 1"
                 ) % (epsilon, solver)
@@ -179,9 +180,9 @@ class SimulationConicalIsland:
                     ( self.results[solver][0]["simtime"] ).iloc[-1]
                 )
                 
+                ax.set_xlim(xlim)
                 ax.set_xlabel(r"$t \, (s)$")
                 ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
-                ax.set_xlim(xlim)
                 ax.legend()
                 fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
                 ax.clear()
@@ -189,6 +190,8 @@ class SimulationConicalIsland:
                 plt.close()
         
 if __name__ == "__main__":
+    print("Writing stage file...")
+    
     with open("conical-island.stage", 'w') as fp:
         stages = (
             "4\n" +
@@ -202,4 +205,4 @@ if __name__ == "__main__":
     
     subprocess.run( ["python", "raster.py"] )
     
-    SimulationConicalIsland( [0, 1e-4, 1e-3], ["hw", "mw"] ).plot( ExperimentalDataConicalIsland() )
+    SimulationConicalIsland( [0, 1e-4, 1e-3], ["mw"] ).plot( ExperimentalDataConicalIsland() )
