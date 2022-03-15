@@ -21,7 +21,7 @@ real read_keyword_real
 		exit(-1);
 	}
 
-	real value = C(5.0);
+	real value = C(0.0);
 
 	char keyword_buf[128] = {'\0'};
 	char line_buf   [255] = {'\0'};

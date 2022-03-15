@@ -93,7 +93,7 @@ class Simulation25Blocks:
             
             for solver in self.solvers:
                 for epsilon in epsilons:
-                    #self.run(epsilon)
+                    self.run(epsilon, solver)
                     
                     time_dataframe = pd.read_csv(self.runtime_file)
                     
@@ -152,6 +152,8 @@ class Simulation25Blocks:
                     "massint     0.01\n" +
                     "saveint     1\n" +
                     "sim_time    10\n" +
+                    "limitslopes on\n" +
+                    "tol_Krivo   10\n" +
                     "cumulative  on\n" +
                     "raster_out  on\n" +
                     "solver      %s\n" +
@@ -277,4 +279,4 @@ class Simulation25Blocks:
 if __name__ == "__main__":
     subprocess.run( ["python", "raster.py"] )
     
-    Simulation25Blocks( [0, 1e-4, 1e-3], ["hw", "mw"] ).plot( ExperimentalData25Blocks() )
+    Simulation25Blocks( [0, 1e-4, 1e-3], ["mw"] ).plot( ExperimentalData25Blocks() )

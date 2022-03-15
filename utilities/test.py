@@ -10,12 +10,13 @@ def EXIT_HELP():
         "    EPSILON     : [error threshold]\n" +
         "    MAX_REF_LVL : [maximum refinment level]\n" +
         "\n" +
-        " - python test.py run <MODE> <SOLVER> <TEST_CASE> <EPSILON> <MAX_REF_LVL> <SAVE_INT> (runs a single in-built test cases)\n" +
+        " - python test.py run <MODE> <SOLVER> <TEST_CASE> <EPSILON> <MAX_REF_LVL> <SAVE_INT> <PLOT_TYPE> (runs a single in-built test cases)\n" +
         "    MODE        : [debug,release]\n" +
         "    SOLVER      : [hw,mw]\n" +
         "    EPSILON     : [error threshold]\n" +
         "    MAX_REF_LVL : [maximum refinment level]\n" +
         "    SAVE_INT    : [interval in seconds that solution data are saved]\n" +
+        "    PLOT_TYPE   : [cont,surf]\n" +
         "\n" +
         " - python test.py planar <MODE> <SOLVER> <TEST_CASE_DIR> <PHYS_QUANTITY> <INTERVAL> (plots planar solution)\n" +
         "    MODE          : [debug,release]\n" +
@@ -74,9 +75,12 @@ def get_filenames_natural_order(path):
 ####################################
 ####################################
 
-def clear_jpg_files(path):
+def clear_files(
+    path,
+    file_extension
+):
     for filename in os.listdir(path):
-        if filename.endswith(".jpg"):
+        if filename.endswith("." + file_extension):
             os.remove( os.path.join(path, filename) )
 
 def set_path(
@@ -265,7 +269,7 @@ class Limits:
             qy = []
             z  = []
             
-            for interval in range(intervals):
+            for interval in range(intervals + 1):
                 h_file  = "depths-" +      str(interval) + ".csv"
                 qx_file = "discharge_x-" + str(interval) + ".csv"
                 qy_file = "discharge_y-" + str(interval) + ".csv"
@@ -313,19 +317,28 @@ def plot_surface(
     plt.close()
 
 def plot_contours(
-    X, 
-    Y, 
-    Z, 
-    ylabel, 
-    test_number, 
-    path, 
-    quantity, 
-    interval, 
+    X,
+    Y,
+    Z,
+    zlim,
+    ylabel,
+    test_number,
+    path,
+    quantity,
+    interval,
     test_name
 ):
+    num_levels = 10
+    dZ = ( zlim[1] - zlim[0] ) / num_levels
+    
+    Z_levels = [ zlim[0] + dZ * n for n in range(num_levels) ]
+    
+    # ensure no array of zeroes because levels in contour plot must be increasing
+    Z_levels = Z_levels if ( Z_levels[1] - Z_levels[0] ) > 0 else num_levels
+    
     fig, ax = plt.subplots()
     
-    contourset = ax.contourf(X, Y, Z)
+    contourset = ax.contourf(X, Y, Z, levels=Z_levels)
     ax.set_xlabel("x (m)")
     ax.set_ylabel("y (m)")
     
@@ -407,26 +420,27 @@ class RowMajorSolution:
         plot_surface(self.X, self.Y, self.qy, (limits.qy_min, limits.qy_max), "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy", self.interval, test_name)
 
     def plot_contours(
-        self, 
+        self,
+        limits,
         test_number=0, 
         test_name="ad-hoc"
     ):
         print("Plotting flow solution and topography for test %s..." % test_name)
         
-        plot_contours(self.X, self.Y, self.h,  "$h  \, (m)$",          test_number, self.savepath, "h",  self.interval, test_name)
-        plot_contours(self.X, self.Y, self.qx, "$q_x \, (m^2s^{-1})$", test_number, self.savepath, "qx", self.interval, test_name)
-        plot_contours(self.X, self.Y, self.qy, "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy", self.interval, test_name)
-        plot_contours(self.X, self.Y, self.z,  "$z  \, (m)$",          test_number, self.savepath, "z",  self.interval, test_name)
+        plot_contours(self.X, self.Y, self.h,  (limits.h_min,  limits.h_max),  "$h  \, (m)$",          test_number, self.savepath, "h",  self.interval, test_name)
+        plot_contours(self.X, self.Y, self.qx, (limits.qx_min, limits.qx_max), "$q_x \, (m^2s^{-1})$", test_number, self.savepath, "qx", self.interval, test_name)
+        plot_contours(self.X, self.Y, self.qy, (limits.qy_min, limits.qy_max), "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy", self.interval, test_name)
+        plot_contours(self.X, self.Y, self.z,  (limits.z_min,  limits.z_max),  "$z  \, (m)$",          test_number, self.savepath, "z",  self.interval, test_name)
         
     def plot_soln(
         self,
+        plot_type,
         limits=None,
         test_number=0,
-        test_name="ad-hoc",
-        plot_type="cont"
+        test_name="ad-hoc"
     ):
         if plot_type == "cont":
-            self.plot_contours(test_number, test_name)
+            self.plot_contours(limits, test_number, test_name)
         elif plot_type == "surf":
             self.plot_surfaces(limits, test_number, test_name)
         else:
@@ -569,6 +583,8 @@ class Test:
             "row_major   %s\n" +
             "c_prop      %s\n" +
             "cumulative  %s\n" +
+            "limitslopes off\n" +
+            "tol_Krivo   1\n" +
             "vtk         %s") % (
                 self.test_case, 
                 self.max_ref_lvl, 
@@ -588,7 +604,8 @@ class Test:
     def run_test(
         self,
         solver_file,
-        results
+        results,
+        plot_type
     ):
         self.set_params()
 
@@ -601,7 +618,8 @@ class Test:
                 RowMajorSolution(self.mode, interval).plot_soln(
                     limits=Limits(self.intervals, results),
                     test_number=self.test_case,
-                    test_name=self.test_name
+                    test_name=self.test_name,
+                    plot_type=plot_type
                 )
 
 def animate(path):
@@ -625,8 +643,8 @@ def animate(path):
                 images = []
 
 def run():
-    if len(sys.argv) > 7:
-        dummy, action, mode, solver, test_case, epsilon, max_ref_lvl, saveint = sys.argv
+    if len(sys.argv) > 8:
+        dummy, action, mode, solver, test_case, epsilon, max_ref_lvl, saveint, plot_type = sys.argv
     
         if   mode == "debug":
             path = os.path.join("..", "out", "build", "x64-Debug")
@@ -644,7 +662,7 @@ def run():
     solver_file = os.path.join(path, "gpu-mwdg2.exe")
     results     = os.path.join(path, "test", "results")
     
-    clear_jpg_files(results)
+    clear_files(results, "jpg")
     
     c_prop_tests = [1, 2, 3, 4, 19, 20, 21]
     
@@ -659,14 +677,15 @@ def run():
         results,
         input_file,
         mode
-    ).run_test(solver_file, results)
+    ).run_test(solver_file, results, plot_type)
     
     animate(results)
-    clear_jpg_files(results)
+    clear_files(results, "jpg")
+    clear_files(results, "csv")
     
 def run_tests():
-    if len(sys.argv) > 5:
-        dummy, action, mode, solver, epsilon, max_ref_lvl = sys.argv
+    if len(sys.argv) > 6:
+        dummy, action, mode, solver, epsilon, max_ref_lvl, plot_type = sys.argv
     
         if   mode == "debug":
             path = os.path.join("..", "out", "build", "x64-Debug")
@@ -684,7 +703,7 @@ def run_tests():
     solver_file = os.path.join(path, "gpu-mwdg2.exe")
     results     = os.path.join(path, "test", "results")
     
-    clear_jpg_files(results)
+    clear_files(results, "jpg")
     
     tests = []
     
@@ -706,7 +725,9 @@ def run_tests():
             results,
             input_file,
             mode
-        ).run_test(solver_file, results)
+        ).run_test(solver_file, results, plot_type)
+        
+    clear_files(results, "csv")
 
 def plot_soln_planar():
     if len(sys.argv) > 6:

@@ -40,5 +40,10 @@ SolverParams read_solver_params
     read_keyword_str(input_filename, "limitslopes", 11, solvertype_buf);
     solver_params.limitslopes = ( !strncmp(solvertype_buf, "on", 2) );
 
+	if (solver_params.limitslopes)
+	{
+		solver_params.tol_Krivo = read_keyword_real(input_filename, "tol_Krivo", 9);
+	}
+
 	return solver_params;
 }
