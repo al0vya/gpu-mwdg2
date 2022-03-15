@@ -165,7 +165,7 @@ void limit_slopes
             LegendreBasis basis_s = get_leg_basis(h_idx, h_idx_s, level_s, solver_params.L, x, y, dx_loc, dy_loc, dx_finest, dy_finest, SOUTH);
             LegendreBasis basis_w = get_leg_basis(h_idx, h_idx_w, level_w, solver_params.L, x, y, dx_loc, dy_loc, dx_finest, dy_finest, WEST);
             
-            real tol_Krivo = C(10.0);
+            real tol_Krivo = C(1.0);
 
             Slopes eta_limited = get_limited_slopes
             (
