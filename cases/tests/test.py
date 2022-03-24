@@ -4,32 +4,27 @@ import sys
 def EXIT_HELP():
     help_message = (
         "This tool is used in the command line as follows:\n\n" +
-        " - python test.py test <MODE> <SOLVER> <EPSILON> <MAX_REF_LVL> (runs all in-built test cases)\n" +
-        "    MODE        : [debug,release]\n" +
+        " - python test.py test <SOLVER> <EPSILON> <MAX_REF_LVL> (runs all in-built test cases)\n" +
         "    SOLVER      : [hw,mw]\n" +
         "    EPSILON     : [error threshold]\n" +
         "    MAX_REF_LVL : [maximum refinment level]\n" +
         "\n" +
-        " - python test.py run <MODE> <SOLVER> <TEST_CASE> <EPSILON> <MAX_REF_LVL> <SAVE_INT> <PLOT_TYPE> (runs a single in-built test cases)\n" +
-        "    MODE        : [debug,release]\n" +
+        " - python test.py run <SOLVER> <TEST_CASE> <EPSILON> <MAX_REF_LVL> <SAVE_INT> <PLOT_TYPE> (runs a single in-built test cases)\n" +
         "    SOLVER      : [hw,mw]\n" +
         "    EPSILON     : [error threshold]\n" +
         "    MAX_REF_LVL : [maximum refinment level]\n" +
         "    SAVE_INT    : [interval in seconds that solution data are saved]\n" +
         "    PLOT_TYPE   : [cont,surf]\n" +
         "\n" +
-        " - python test.py planar <MODE> <SOLVER> <TEST_CASE_DIR> <PHYS_QUANTITY> <INTERVAL> (plots planar solution)\n" +
-        "    MODE          : [debug,release]\n" +
+        " - python test.py planar <SOLVER> <TEST_CASE_DIR> <PHYS_QUANTITY> <INTERVAL> (plots planar solution)\n" +
         "    SOLVER        : [hw,mw]\n" +
         "    PHYS_QUANTITY : [h,eta,qx,qy,z]\n" +
         "    INTERVAL      : [interval]\n" +
         "\n" +
-        " - python test.py row_major <MODE> <PLOT_TYPE> (plots either solution surface or contours)\n" +
-        "    MODE      : [debug,release]\n" +
+        " - python test.py row_major <PLOT_TYPE> (plots either solution surface or contours)\n" +
         "    PLOT_TYPE : [cont,surf]\n" +
         "\n" +
-        " - python test.py c_prop <MODE> <SOLVER> (plots discharge errors)\n" +
-        "    MODE   : [debug,release]\n" +
+        " - python test.py c_prop <SOLVER> (plots discharge errors)\n" +
         "    SOLVER : [hw,mw]"
     )
 
@@ -82,19 +77,6 @@ def clear_files(
     for filename in os.listdir(path):
         if filename.endswith("." + file_extension):
             os.remove( os.path.join(path, filename) )
-
-def set_path(
-    mode,
-    testdir="test"
-):
-    if mode == "debug":
-        path = os.path.join(os.path.dirname(__file__), "..", "out", "build", "x64-Debug", testdir, "results")
-    elif mode == "release":
-        path = os.path.join(os.path.dirname(__file__), "..", "out", "build", "x64-Release", testdir, "results")
-    else:
-        EXIT_HELP()
-        
-    return path
 
 test_names = [
     "1D-c-prop-x-dir-wet",
@@ -149,14 +131,10 @@ save_intervals = [
 class PlanarSolution:
     def __init__(
         self,
-        mode,
         solver,
         interval,
-        testdir="test"
+        results
     ):
-        if mode != "debug" and mode != "release":
-            EXIT_HELP()
-            
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
             
@@ -164,33 +142,33 @@ class PlanarSolution:
         
         self.interval = interval
         
-        self.savepath = set_path(mode, testdir)
+        self.savepath = os.path.join(results, "planar-" + str(self.interval) + ".csv")
         
-        planar_data_file = "planar-" + str(self.interval) + ".csv"
+        print("Searching for data for PlanarSolution in path", self.savepath)
         
-        print("Searching for data for PlanarSolution in path",  os.path.join(self.savepath, planar_data_file) )
+        planar_dataframe = pd.read_csv(self.savepath)
         
-        self.lower_left_x = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["lower_left_x"].values
-        self.lower_left_y = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["lower_left_y"].values
+        self.lower_left_x = planar_dataframe["lower_left_x"].values
+        self.lower_left_y = planar_dataframe["lower_left_y"].values
         
-        self.upper_right_x = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["upper_right_x"].values
-        self.upper_right_y = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["upper_right_y"].values
+        self.upper_right_x = planar_dataframe["upper_right_x"].values
+        self.upper_right_y = planar_dataframe["upper_right_y"].values
         
-        self.h0   = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["h0"].values
-        self.h1x  = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["h1x"].values  if solver == "mw" else None
-        self.h1y  = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["h1y"].values  if solver == "mw" else None
+        self.h0   = planar_dataframe["h0"].values
+        self.h1x  = planar_dataframe["h1x"].values  if solver == "mw" else None
+        self.h1y  = planar_dataframe["h1y"].values  if solver == "mw" else None
         
-        self.qx0  = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["qx0"].values
-        self.qx1x = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["qx1x"].values if solver == "mw" else None
-        self.qx1y = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["qx1y"].values if solver == "mw" else None
+        self.qx0  = planar_dataframe["qx0"].values
+        self.qx1x = planar_dataframe["qx1x"].values if solver == "mw" else None
+        self.qx1y = planar_dataframe["qx1y"].values if solver == "mw" else None
         
-        self.qy0  = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["qy0"].values
-        self.qy1x = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["qy1x"].values if solver == "mw" else None
-        self.qy1y = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["qy1y"].values if solver == "mw" else None
+        self.qy0  = planar_dataframe["qy0"].values
+        self.qy1x = planar_dataframe["qy1x"].values if solver == "mw" else None
+        self.qy1y = planar_dataframe["qy1y"].values if solver == "mw" else None
         
-        self.z0   = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["z0"].values
-        self.z1x  = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["z1x"].values  if solver == "mw" else None
-        self.z1y  = pd.read_csv( os.path.join(self.savepath, planar_data_file) )["z1y"].values  if solver == "mw" else None
+        self.z0   = planar_dataframe["z0"].values
+        self.z1x  = planar_dataframe["z1x"].values  if solver == "mw" else None
+        self.z1y  = planar_dataframe["z1y"].values  if solver == "mw" else None
         
         self.num_cells = self.h0.size
         
@@ -354,13 +332,10 @@ def plot_contours(
 class RowMajorSolution:
     def __init__(
         self,
-        mode,
-        interval
+        interval,
+        results
     ):
-        if mode != "debug" and mode != "release":
-            EXIT_HELP()
-        
-        self.savepath = set_path(mode)
+        self.savepath = results
         self.interval = interval
         
         print("Searching for RowMajorSolution data in path", self.savepath)
@@ -439,7 +414,7 @@ class RowMajorSolution:
         test_number=0,
         test_name="ad-hoc"
     ):
-        if plot_type == "cont":
+        if   plot_type == "cont":
             self.plot_contours(limits, test_number, test_name)
         elif plot_type == "surf":
             self.plot_surfaces(limits, test_number, test_name)
@@ -450,35 +425,32 @@ class DischargeErrors:
     def __init__(
         self, 
         solver, 
-        mode
+        results
     ):
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
         
-        if mode != "debug" and mode != "release":
-            EXIT_HELP()
-        
         self.solver = solver;
     
-        self.savepath = set_path(mode)
+        self.savepath = results
         
         print("Searching for discharge error data in path", self.savepath)
         
         simtime_file = "simtime-vs-runtime.csv"
-        qx0_file      = "qx0-c-prop.csv"
-        qx1x_file     = "qx1x-c-prop.csv"
-        qx1y_file     = "qx1y-c-prop.csv"
-        qy0_file      = "qy0-c-prop.csv"
-        qy1x_file     = "qy1x-c-prop.csv"
-        qy1y_file     = "qy1y-c-prop.csv"
+        qx0_file     = "qx0-c-prop.csv"
+        qx1x_file    = "qx1x-c-prop.csv"
+        qx1y_file    = "qx1y-c-prop.csv"
+        qy0_file     = "qy0-c-prop.csv"
+        qy1x_file    = "qy1x-c-prop.csv"
+        qy1y_file    = "qy1y-c-prop.csv"
         
         self.simtime = pd.read_csv( os.path.join(self.savepath, simtime_file) )
-        qx0           = pd.read_csv( os.path.join(self.savepath, qx0_file),  header=None )
-        qx1x          = pd.read_csv( os.path.join(self.savepath, qx1x_file), header=None ) if solver == "mw" else None
-        qx1y          = pd.read_csv( os.path.join(self.savepath, qx1y_file), header=None ) if solver == "mw" else None
-        qy0           = pd.read_csv( os.path.join(self.savepath, qy0_file),  header=None )
-        qy1x          = pd.read_csv( os.path.join(self.savepath, qy1x_file), header=None ) if solver == "mw" else None
-        qy1y          = pd.read_csv( os.path.join(self.savepath, qy1y_file), header=None ) if solver == "mw" else None
+        qx0          = pd.read_csv( os.path.join(self.savepath, qx0_file),  header=None )
+        qx1x         = pd.read_csv( os.path.join(self.savepath, qx1x_file), header=None ) if solver == "mw" else None
+        qx1y         = pd.read_csv( os.path.join(self.savepath, qx1y_file), header=None ) if solver == "mw" else None
+        qy0          = pd.read_csv( os.path.join(self.savepath, qy0_file),  header=None )
+        qy1x         = pd.read_csv( os.path.join(self.savepath, qy1x_file), header=None ) if solver == "mw" else None
+        qy1y         = pd.read_csv( os.path.join(self.savepath, qy1y_file), header=None ) if solver == "mw" else None
         
         self.qx0_max  = qx0.abs().max(axis=1)
         self.qx1x_max = qx1x.abs().max(axis=1) if solver == "mw" else None
@@ -489,7 +461,6 @@ class DischargeErrors:
 
     def plot_errors(
         self, 
-        test_number=0, 
         test_name="ad-hoc"
     ):
 
@@ -515,11 +486,11 @@ class DischargeErrors:
         plt.ylabel("Maximum error")
         plt.xlabel("Simulation time (s)")
 
-        filename = str(test_number) + "-c-prop-" + test_name
+        filename = "c-prop-" + test_name
 
         plt.savefig(os.path.join(self.savepath, filename), bbox_inches="tight")
         
-        plt.clf()
+        plt.close()
 
 class Test:
     def __init__(
@@ -531,14 +502,9 @@ class Test:
         test_name, 
         solver, 
         c_prop_tests,
-        results, 
-        input_file,
-        mode
+        results
     ):
         if solver != "hw" and solver != "mw":
-            EXIT_HELP()
-        
-        if mode != "debug" and mode != "release":
             EXIT_HELP()
         
         self.test_case   = test_case
@@ -559,9 +525,8 @@ class Test:
             self.c_prop     = "off"
             self.cumulative = "off"
 
+        self.input_file = "inputs.par"
         self.results    = results
-        self.input_file = input_file
-        self.mode       = mode
         self.intervals  = int(save_intervals[self.test_case - 1] / self.saveint)
 
     def set_params(
@@ -603,20 +568,20 @@ class Test:
 
     def run_test(
         self,
-        solver_file,
-        results,
         plot_type
     ):
         self.set_params()
 
-        subprocess.run( [solver_file, self.input_file] )
+        subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), self.input_file] )
 
         if self.c_prop == "on":
-            DischargeErrors(self.solver, self.mode).plot_errors(self.test_case, self.test_name)
+            DischargeErrors(self.solver, self.results).plot_errors(self.test_name)
         else:
+            limits=Limits(self.intervals, self.results)
+            
             for interval in range(1, self.intervals + 1):
-                RowMajorSolution(self.mode, interval).plot_soln(
-                    limits=Limits(self.intervals, results),
+                RowMajorSolution(interval, self.results).plot_soln(
+                    limits=limits,
                     test_number=self.test_case,
                     test_name=self.test_name,
                     plot_type=plot_type
@@ -643,24 +608,15 @@ def animate(path):
                 images = []
 
 def run():
-    if len(sys.argv) > 8:
-        dummy, action, mode, solver, test_case, epsilon, max_ref_lvl, saveint, plot_type = sys.argv
-    
-        if   mode == "debug":
-            path = os.path.join("..", "out", "build", "x64-Debug")
-        elif mode == "release":
-            path = os.path.join("..", "out", "build", "x64-Release")
-        else:
-            EXIT_HELP()
-            
+    if len(sys.argv) > 7:
+        dummy, action, solver, test_case, epsilon, max_ref_lvl, saveint, plot_type = sys.argv
+        
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
     else:
         EXIT_HELP()
 
-    input_file  = os.path.join(path, "test", "inputs.par")
-    solver_file = os.path.join(path, "gpu-mwdg2.exe")
-    results     = os.path.join(path, "test", "results")
+    results = "results"
     
     clear_files(results, "jpg")
     
@@ -674,34 +630,25 @@ def run():
         test_names[int(test_case) - 1],
         solver,
         c_prop_tests,
-        results,
-        input_file,
-        mode
-    ).run_test(solver_file, results, plot_type)
+        results
+    ).run_test(plot_type)
     
     animate(results)
     clear_files(results, "jpg")
     clear_files(results, "csv")
     
 def run_tests():
-    if len(sys.argv) > 6:
-        dummy, action, mode, solver, epsilon, max_ref_lvl, plot_type = sys.argv
+    print("Attempting to run tests specified in tests.txt, checking input parameters...")
     
-        if   mode == "debug":
-            path = os.path.join("..", "out", "build", "x64-Debug")
-        elif mode == "release":
-            path = os.path.join("..", "out", "build", "x64-Release")
-        else:
-            EXIT_HELP()
-            
+    if len(sys.argv) > 5:
+        dummy, action, solver, epsilon, max_ref_lvl, plot_type = sys.argv
+        
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
     else:
         EXIT_HELP()
 
-    input_file  = os.path.join(path, "test", "inputs.par")
-    solver_file = os.path.join(path, "gpu-mwdg2.exe")
-    results     = os.path.join(path, "test", "results")
+    results = "results"
     
     clear_files(results, "jpg")
     
@@ -722,34 +669,32 @@ def run_tests():
             test_names[test - 1],
             solver,
             c_prop_tests,
-            results,
-            input_file,
-            mode
-        ).run_test(solver_file, results, plot_type)
+            results
+        ).run_test(plot_type)
         
     clear_files(results, "csv")
 
 def plot_soln_planar():
-    if len(sys.argv) > 6:
-        dummy, action, mode, solver, testdir, quantity, interval = sys.argv
+    if len(sys.argv) > 5:
+        dummy, action, solver, results, quantity, interval = sys.argv
         
-        PlanarSolution(mode, solver, interval, testdir).plot_soln(quantity)
+        PlanarSolution(solver, interval, results).plot_soln(quantity)
     else:
         EXIT_HELP()
 
 def plot_soln_row_major():
-    if len(sys.argv) > 3:
-        dummy, action, mode, plot_type = sys.argv
+    if len(sys.argv) > 4:
+        dummy, action, interval, results, plot_type = sys.argv
         
-        RowMajorSolution(mode).plot_soln(plot_type)
+        RowMajorSolution(interval, results).plot_soln(plot_type)
     else:
         EXIT_HELP()
 
 def plot_c_prop():
     if len(sys.argv) > 3:
-        dummy, action, mode, solver = sys.argv
+        dummy, action, results, solver = sys.argv
         
-        DischargeErrors(solver, mode).plot_errors()
+        DischargeErrors(solver, results).plot_errors()
     else:
         EXIT_HELP()
 
