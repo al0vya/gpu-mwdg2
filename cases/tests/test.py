@@ -74,6 +74,8 @@ def clear_files(
     path,
     file_extension
 ):
+    print("Clearing %s files..." % file_extension)
+    
     for filename in os.listdir(path):
         if filename.endswith("." + file_extension):
             os.remove( os.path.join(path, filename) )
@@ -144,7 +146,7 @@ class PlanarSolution:
         
         self.savepath = os.path.join(results, "planar-" + str(self.interval) + ".csv")
         
-        print("Searching for data for PlanarSolution in path", self.savepath)
+        print("Searching for data for PlanarSolution in path:", self.savepath)
         
         planar_dataframe = pd.read_csv(self.savepath)
         
