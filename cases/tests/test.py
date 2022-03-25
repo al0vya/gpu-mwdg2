@@ -4,11 +4,12 @@ import sys
 def EXIT_HELP():
     help_message = (
         "This tool is used in the command line as follows:\n\n" +
-        " - python test.py test <SOLVER> <EPSILON> <MAX_REF_LVL> (runs all in-built test cases)\n" +
+        " - python test.py test <SOLVER> <EPSILON> <MAX_REF_LVL> <PLOT_TYPE> (runs all in-built test cases)\n" +
         "    SOLVER      : [hw,mw]\n" +
         "    EPSILON     : [error threshold]\n" +
         "    MAX_REF_LVL : [maximum refinment level]\n" +
-        "\n" +
+        "    PLOT_TYPE   : [cont,surf]\n" +
+            "\n" +
         " - python test.py run <SOLVER> <TEST_CASE> <EPSILON> <MAX_REF_LVL> <SAVE_INT> <PLOT_TYPE> (runs a single in-built test cases)\n" +
         "    SOLVER      : [hw,mw]\n" +
         "    EPSILON     : [error threshold]\n" +
@@ -546,7 +547,7 @@ class Test:
             "row_major   %s\n" +
             "c_prop      %s\n" +
             "cumulative  on\n" +
-            "limitslopes on\n" +
+            "limitslopes off\n" +
             "tol_Krivo   1\n" +
             "vtk         %s") % (
                 self.test_case, 

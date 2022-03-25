@@ -1,5 +1,5 @@
 test_case   21
-max_ref_lvl 8
+max_ref_lvl 7
 min_dt      0.5
 respath     results
 epsilon     1e-3
@@ -13,6 +13,6 @@ wall_height 0
 row_major   off
 c_prop      on
 cumulative  on
-limitslopes on
+limitslopes off
 tol_Krivo   1
 vtk         off
