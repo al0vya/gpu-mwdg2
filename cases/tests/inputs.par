@@ -1,4 +1,4 @@
-test_case   5
+test_case   6
 max_ref_lvl 7
 min_dt      0.5
 respath     results
@@ -12,7 +12,7 @@ solver      mw
 wall_height 0
 row_major   on
 c_prop      off
-cumulative  off
+cumulative  on
 limitslopes on
 tol_Krivo   1
 vtk         off

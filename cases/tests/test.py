@@ -146,8 +146,6 @@ class PlanarSolution:
         
         self.savepath = os.path.join(results, "planar-" + str(self.interval) + ".csv")
         
-        print("Searching for data for PlanarSolution in path:", self.savepath)
-        
         planar_dataframe = pd.read_csv(self.savepath)
         
         self.lower_left_x = planar_dataframe["lower_left_x"].values
@@ -432,7 +430,7 @@ class DischargeErrors:
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
         
-        self.solver = solver;
+        self.solver = solver
     
         self.savepath = results
         
@@ -520,12 +518,10 @@ class Test:
             self.row_major  = "off"
             self.vtk        = "off"
             self.c_prop     = "on"
-            self.cumulative = "on"
         else:
             self.row_major  = "on"
             self.vtk        = "off"
             self.c_prop     = "off"
-            self.cumulative = "off"
 
         self.input_file = "inputs.par"
         self.results    = results
@@ -549,8 +545,8 @@ class Test:
             "wall_height 0\n" +
             "row_major   %s\n" +
             "c_prop      %s\n" +
-            "cumulative  %s\n" +
-            "limitslopes off\n" +
+            "cumulative  on\n" +
+            "limitslopes on\n" +
             "tol_Krivo   1\n" +
             "vtk         %s") % (
                 self.test_case, 
@@ -561,7 +557,6 @@ class Test:
                 self.solver, 
                 self.row_major, 
                 self.c_prop, 
-                self.cumulative, 
                 self.vtk
             )
 
@@ -700,28 +695,28 @@ def plot_c_prop():
     else:
         EXIT_HELP()
 
-# from: https://stackoverflow.com/questions/12444716/how-do-i-set-the-figure-title-and-axes-labels-font-size-in-matplotlib
-params = {
-    "legend.fontsize" : "xx-large",
-    "axes.labelsize"  : "xx-large",
-    "axes.titlesize"  : "xx-large",
-    "xtick.labelsize" : "xx-large",
-    "ytick.labelsize" : "xx-large"
-}
-
-pylab.rcParams.update(params)
-
-action = sys.argv[1]
-
-if   action == "test":
-    run_tests()
-elif action == "run":
-    run()
-elif action == "planar":
-    plot_soln_planar()
-elif action == "row_major":
-    plot_soln_row_major()
-elif action == "c_prop":
-    plot_c_prop()
-else:
-    EXIT_HELP()
+if __name__ == "__main__":
+    params = {
+        "legend.fontsize" : "xx-large",
+        "axes.labelsize"  : "xx-large",
+        "axes.titlesize"  : "xx-large",
+        "xtick.labelsize" : "xx-large",
+        "ytick.labelsize" : "xx-large"
+    }
+    
+    pylab.rcParams.update(params)
+    
+    action = sys.argv[1]
+    
+    if   action == "test":
+        run_tests()
+    elif action == "run":
+        run()
+    elif action == "planar":
+        plot_soln_planar()
+    elif action == "row_major":
+        plot_soln_row_major()
+    elif action == "c_prop":
+        plot_c_prop()
+    else:
+        EXIT_HELP()
