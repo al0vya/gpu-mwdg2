@@ -118,8 +118,8 @@ sim_times = [
     2.5,  # wet dam break y dir
     1.3,  # dry dam break x dir
     1.3,  # dry dam break y dir
-    1.3,  # dry dam break wh fric x dir
-    1.3,  # dry dam break wh fric y dir
+    1.3,  # dry dam break w fric x dir
+    1.3,  # dry dam break w fric y dir
     10,   # wet building overtopping x dir
     10,   # wet building overtopping y dir
     10,   # dry building overtopping x dir
@@ -472,7 +472,8 @@ class DischargeErrors:
 
         plt.ticklabel_format(axis='x', style="sci")
         plt.xlim(xlim)
-        plt.yscale("log")
+        plt.ylim(0, 1e-10)
+        #plt.yscale("log")
         plt.legend()
         plt.ylabel("Maximum error")
         plt.xlabel("Simulation time (s)")

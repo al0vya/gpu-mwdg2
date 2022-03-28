@@ -178,6 +178,21 @@ class Simulation1DDambreak:
         fig, ax = plt.subplots()
         
         for solver in self.solvers:
+            all_speedups = []
+            
+            # to find speedup axis limits
+            for epsilon in self.epsilons:
+                for L in self.max_ref_lvls:
+                    interp_adaptive = scipy.interpolate.interp1d(
+                        self.results[solver][epsilon][L]["simtime"],
+                        self.results[solver][epsilon][L]["runtime"],
+                        fill_value="extrapolate"
+                    )
+                    
+                    interpolated_adaptive_runtime = interp_adaptive( self.results[solver][0][L]["simtime"] )
+                    
+                    all_speedups += (self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime).to_list()
+                
             for epsilon in self.epsilons:
                 if epsilon == 0: continue
                 
@@ -206,6 +221,7 @@ class Simulation1DDambreak:
                 ax.set_xlabel(r"$t \, (s)$")
                 ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
                 ax.set_xlim(xlim)
+                ax.set_ylim( 0, np.max(all_speedups) )
                 ax.legend()    
                 fig.savefig(os.path.join( "results", "runtimes-" + solver + "-eps-" + str(epsilon) ) + ".png", bbox_inches="tight")
                 ax.clear()
