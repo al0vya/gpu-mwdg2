@@ -6,6 +6,8 @@
 #include "SimulationParams.h"
 #include "SolverParams.h"
 
+#include "read_keyword_real.h"
+
 SimulationParams read_sim_params
 (
 	const int&              test_case,

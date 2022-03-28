@@ -10,11 +10,14 @@ def EXIT_HELP():
         "    MAX_REF_LVL : [maximum refinment level]\n" +
         "    PLOT_TYPE   : [cont,surf]\n" +
             "\n" +
-        " - python test.py run <SOLVER> <TEST_CASE> <EPSILON> <MAX_REF_LVL> <SAVE_INT> <PLOT_TYPE> (runs a single in-built test cases)\n" +
+        " - python test.py run <SIM_TIME> <SOLVER> <TEST_CASE> <EPSILON> <MAX_REF_LVL> <SAVE_INT> <MASS_INT> <PLOT_TYPE> (runs a single in-built test cases)\n" +
         "    SOLVER      : [hw,mw]\n" +
+        "    TEST_CASE   : [1-22 inclusive]\n" +
+        "    SIM_TIME    : [simulation time in seconds]\n" +
         "    EPSILON     : [error threshold]\n" +
         "    MAX_REF_LVL : [maximum refinment level]\n" +
         "    SAVE_INT    : [interval in seconds that solution data are saved]\n" +
+        "    MASS_INT    : [interval in seconds that simulation times are saved]\n" +
         "    PLOT_TYPE   : [cont,surf]\n" +
         "\n" +
         " - python test.py planar <SOLVER> <TEST_CASE_DIR> <PHYS_QUANTITY> <INTERVAL> (plots planar solution)\n" +
@@ -106,7 +109,7 @@ test_names = [
     "radial-dam-break"
 ]
 
-save_intervals = [
+sim_times = [
     1,    # 1D c prop x dir
     1,    # 1D c prop y dir
     1,    # 1D c prop x dir
@@ -135,8 +138,7 @@ class PlanarSolution:
     def __init__(
         self,
         solver,
-        interval,
-        results
+        interval
     ):
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
@@ -145,7 +147,7 @@ class PlanarSolution:
         
         self.interval = interval
         
-        self.savepath = os.path.join(results, "planar-" + str(self.interval) + ".csv")
+        self.savepath = os.path.join("results", "planar-" + str(self.interval) + ".csv")
         
         planar_dataframe = pd.read_csv(self.savepath)
         
@@ -240,8 +242,7 @@ class PlanarSolution:
 class Limits:
     def __init__(
             self,
-            intervals,
-            results
+            intervals
         ):
             h  = []
             qx = []
@@ -254,10 +255,10 @@ class Limits:
                 qy_file = "discharge_y-" + str(interval) + ".csv"
                 z_file  = "topo-" +        str(interval) + ".csv"
                 
-                h  += pd.read_csv( os.path.join(results, h_file ) )["results"].to_list()
-                qx += pd.read_csv( os.path.join(results, qx_file) )["results"].to_list()
-                qy += pd.read_csv( os.path.join(results, qy_file) )["results"].to_list()
-                z  += pd.read_csv( os.path.join(results, z_file ) )["results"].to_list()
+                h  += pd.read_csv( os.path.join("results", h_file ) )["results"].to_list()
+                qx += pd.read_csv( os.path.join("results", qx_file) )["results"].to_list()
+                qy += pd.read_csv( os.path.join("results", qy_file) )["results"].to_list()
+                z  += pd.read_csv( os.path.join("results", z_file ) )["results"].to_list()
                 
             self.h_max  = np.max(h)
             self.qx_max = np.max(qx)
@@ -276,7 +277,6 @@ def plot_surface(
     zlim,
     zlabel,
     test_number,
-    path,
     quantity,
     interval,
     test_name
@@ -291,7 +291,7 @@ def plot_surface(
     
     filename = test_name + "-surf-" + str(interval) + "-" + quantity + ".jpg" 
     
-    plt.savefig(os.path.join(path, filename), bbox_inches="tight")
+    plt.savefig(os.path.join("results", filename), bbox_inches="tight")
 
     plt.close()
 
@@ -302,7 +302,6 @@ def plot_contours(
     zlim,
     ylabel,
     test_number,
-    path,
     quantity,
     interval,
     test_name
@@ -326,20 +325,16 @@ def plot_contours(
     
     filename = test_name + "-cont-" + str(interval) + "-" + quantity + ".jpg"
 
-    plt.savefig(os.path.join(path, filename), bbox_inches="tight")
+    plt.savefig(os.path.join("results", filename), bbox_inches="tight")
     
     plt.close()
 
 class RowMajorSolution:
     def __init__(
         self,
-        interval,
-        results
+        interval
     ):
-        self.savepath = results
         self.interval = interval
-        
-        print("Searching for RowMajorSolution data in path", self.savepath)
         
         h_file  = "depths-" +      str(self.interval) + ".csv"
         qx_file = "discharge_x-" + str(self.interval) + ".csv"
@@ -349,7 +344,7 @@ class RowMajorSolution:
         # finest resolution mesh info
         mesh_info_file = "mesh_info.csv"
         
-        mesh_info = pd.read_csv( os.path.join(self.savepath, mesh_info_file) )
+        mesh_info = pd.read_csv( os.path.join("results", mesh_info_file) )
         
         # to access a dataframe with only one row
         # we use iloc, which stands for 'integer location'
@@ -378,10 +373,10 @@ class RowMajorSolution:
         
         self.X, self.Y = np.meshgrid(x, y)
         
-        self.h  = pd.read_csv( os.path.join(self.savepath, h_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
-        self.qx = pd.read_csv( os.path.join(self.savepath, qx_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
-        self.qy = pd.read_csv( os.path.join(self.savepath, qy_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
-        self.z  = pd.read_csv( os.path.join(self.savepath, z_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.h  = pd.read_csv( os.path.join("results", h_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.qx = pd.read_csv( os.path.join("results", qx_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.qy = pd.read_csv( os.path.join("results", qy_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.z  = pd.read_csv( os.path.join("results", z_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
 
     def plot_surfaces(
         self,
@@ -391,9 +386,9 @@ class RowMajorSolution:
     ):
         print("Plotting flow solution and topography for test %s..." % test_name)
 
-        plot_surface(self.X, self.Y, self.h,  (limits.h_min,  limits.h_max),  "$h \, (m)$",           test_number, self.savepath, "h",  self.interval, test_name)
-        plot_surface(self.X, self.Y, self.qx, (limits.qx_min, limits.qx_max), "$q_x \, (m^2s^{-1})$", test_number, self.savepath, "qx", self.interval, test_name)
-        plot_surface(self.X, self.Y, self.qy, (limits.qy_min, limits.qy_max), "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy", self.interval, test_name)
+        plot_surface(self.X, self.Y, self.h,  (limits.h_min,  limits.h_max),  "$h \, (m)$",           test_number, "h",  self.interval, test_name)
+        plot_surface(self.X, self.Y, self.qx, (limits.qx_min, limits.qx_max), "$q_x \, (m^2s^{-1})$", test_number, "qx", self.interval, test_name)
+        plot_surface(self.X, self.Y, self.qy, (limits.qy_min, limits.qy_max), "$q_y \, (m^2s^{-1})$", test_number, "qy", self.interval, test_name)
 
     def plot_contours(
         self,
@@ -403,10 +398,10 @@ class RowMajorSolution:
     ):
         print("Plotting flow solution and topography for test %s..." % test_name)
         
-        plot_contours(self.X, self.Y, self.h,  (limits.h_min,  limits.h_max),  "$h  \, (m)$",          test_number, self.savepath, "h",  self.interval, test_name)
-        plot_contours(self.X, self.Y, self.qx, (limits.qx_min, limits.qx_max), "$q_x \, (m^2s^{-1})$", test_number, self.savepath, "qx", self.interval, test_name)
-        plot_contours(self.X, self.Y, self.qy, (limits.qy_min, limits.qy_max), "$q_y \, (m^2s^{-1})$", test_number, self.savepath, "qy", self.interval, test_name)
-        plot_contours(self.X, self.Y, self.z,  (limits.z_min,  limits.z_max),  "$z  \, (m)$",          test_number, self.savepath, "z",  self.interval, test_name)
+        plot_contours(self.X, self.Y, self.h,  (limits.h_min,  limits.h_max),  "$h  \, (m)$",          test_number, "h",  self.interval, test_name)
+        plot_contours(self.X, self.Y, self.qx, (limits.qx_min, limits.qx_max), "$q_x \, (m^2s^{-1})$", test_number, "qx", self.interval, test_name)
+        plot_contours(self.X, self.Y, self.qy, (limits.qy_min, limits.qy_max), "$q_y \, (m^2s^{-1})$", test_number, "qy", self.interval, test_name)
+        plot_contours(self.X, self.Y, self.z,  (limits.z_min,  limits.z_max),  "$z  \, (m)$",          test_number, "z",  self.interval, test_name)
         
     def plot_soln(
         self,
@@ -425,17 +420,12 @@ class RowMajorSolution:
 class DischargeErrors:
     def __init__(
         self, 
-        solver, 
-        results
+        solver
     ):
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
         
         self.solver = solver
-    
-        self.savepath = results
-        
-        print("Searching for discharge error data in path", self.savepath)
         
         simtime_file = "simtime-vs-runtime.csv"
         qx0_file     = "qx0-c-prop.csv"
@@ -445,13 +435,13 @@ class DischargeErrors:
         qy1x_file    = "qy1x-c-prop.csv"
         qy1y_file    = "qy1y-c-prop.csv"
         
-        self.simtime = pd.read_csv( os.path.join(self.savepath, simtime_file) )
-        qx0          = pd.read_csv( os.path.join(self.savepath, qx0_file),  header=None )
-        qx1x         = pd.read_csv( os.path.join(self.savepath, qx1x_file), header=None ) if solver == "mw" else None
-        qx1y         = pd.read_csv( os.path.join(self.savepath, qx1y_file), header=None ) if solver == "mw" else None
-        qy0          = pd.read_csv( os.path.join(self.savepath, qy0_file),  header=None )
-        qy1x         = pd.read_csv( os.path.join(self.savepath, qy1x_file), header=None ) if solver == "mw" else None
-        qy1y         = pd.read_csv( os.path.join(self.savepath, qy1y_file), header=None ) if solver == "mw" else None
+        self.simtime = pd.read_csv( os.path.join("results", simtime_file) )
+        qx0          = pd.read_csv( os.path.join("results", qx0_file),  header=None )
+        qx1x         = pd.read_csv( os.path.join("results", qx1x_file), header=None ) if solver == "mw" else None
+        qx1y         = pd.read_csv( os.path.join("results", qx1y_file), header=None ) if solver == "mw" else None
+        qy0          = pd.read_csv( os.path.join("results", qy0_file),  header=None )
+        qy1x         = pd.read_csv( os.path.join("results", qy1x_file), header=None ) if solver == "mw" else None
+        qy1y         = pd.read_csv( os.path.join("results", qy1y_file), header=None ) if solver == "mw" else None
         
         self.qx0_max  = qx0.abs().max(axis=1)
         self.qx1x_max = qx1x.abs().max(axis=1) if solver == "mw" else None
@@ -489,7 +479,7 @@ class DischargeErrors:
 
         filename = "c-prop-" + test_name
 
-        plt.savefig(os.path.join(self.savepath, filename), bbox_inches="tight")
+        plt.savefig(os.path.join("results", filename), bbox_inches="tight")
         
         plt.close()
 
@@ -497,21 +487,24 @@ class Test:
     def __init__(
         self,
         test_case, 
+        sim_time, 
         max_ref_lvl, 
         epsilon, 
         saveint, 
+        massint, 
         test_name, 
         solver, 
-        c_prop_tests,
-        results
+        c_prop_tests
     ):
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
         
         self.test_case   = test_case
+        self.sim_time    = sim_time
         self.max_ref_lvl = max_ref_lvl
         self.epsilon     = epsilon
         self.saveint     = saveint 
+        self.massint     = massint
         self.test_name   = test_name
         self.solver      = solver
 
@@ -519,45 +512,50 @@ class Test:
             self.row_major  = "off"
             self.vtk        = "off"
             self.c_prop     = "on"
+            self.cumulative = "off"
         else:
             self.row_major  = "on"
             self.vtk        = "off"
             self.c_prop     = "off"
+            self.cumulative = "on"
 
         self.input_file = "inputs.par"
-        self.results    = results
-        self.intervals  = int(save_intervals[self.test_case - 1] / self.saveint)
+        self.intervals  = int(sim_times[self.test_case - 1] / self.saveint)
 
     def set_params(
         self
     ):
         params = (
             "test_case   %s\n" +
+            "sim_time    %s\n" +
             "max_ref_lvl %s\n" +
             "min_dt      0.5\n" +
-            "respath     %s\n" +
+            "respath     results\n" +
             "epsilon     %s\n" +
             "tol_h       1e-3\n" +
             "tol_q       0\n" +
             "tol_s       1e-9\n" +
             "g           9.80665\n" +
             "saveint     %s\n" +
+            "massint     %s\n" +
             "solver      %s\n" +
             "wall_height 0\n" +
             "row_major   %s\n" +
             "c_prop      %s\n" +
-            "cumulative  on\n" +
+            "cumulative  %s\n" +
             "limitslopes off\n" +
             "tol_Krivo   1\n" +
             "vtk         %s") % (
                 self.test_case, 
-                self.max_ref_lvl, 
-                self.results, 
+                self.sim_time, 
+                self.max_ref_lvl,
                 self.epsilon, 
                 self.saveint, 
+                self.massint, 
                 self.solver, 
                 self.row_major, 
                 self.c_prop, 
+                self.cumulative,
                 self.vtk
             )
 
@@ -569,16 +567,16 @@ class Test:
         plot_type
     ):
         self.set_params()
-
+        
         subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), self.input_file] )
 
         if self.c_prop == "on":
-            DischargeErrors(self.solver, self.results).plot_errors(self.test_name)
+            DischargeErrors(self.solver).plot_errors(self.test_name)
         else:
-            limits=Limits(self.intervals, self.results)
+            limits=Limits(self.intervals)
             
             for interval in range(1, self.intervals + 1):
-                RowMajorSolution(interval, self.results).plot_soln(
+                RowMajorSolution(interval).plot_soln(
                     limits=limits,
                     test_number=self.test_case,
                     test_name=self.test_name,
@@ -606,34 +604,31 @@ def animate(path):
                 images = []
 
 def run():
-    if len(sys.argv) > 7:
-        dummy, action, solver, test_case, epsilon, max_ref_lvl, saveint, plot_type = sys.argv
+    print("Attempting to run test...")
+    
+    if len(sys.argv) > 9:
+        dummy, action, solver, test_case, sim_time, epsilon, max_ref_lvl, saveint, massint, plot_type = sys.argv
         
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
     else:
-        EXIT_HELP()
-
-    results = "results"
-    
-    clear_files(results, "jpg")
+        EXIT_HELP()        
     
     c_prop_tests = [1, 2, 3, 4, 19, 20, 21]
     
     Test(
         int(test_case),
+        sim_time,
         max_ref_lvl,
         epsilon,
         float(saveint),
+        float(massint),
         test_names[int(test_case) - 1],
         solver,
-        c_prop_tests,
-        results
+        c_prop_tests
     ).run_test(plot_type)
     
-    animate(results)
-    clear_files(results, "jpg")
-    clear_files(results, "csv")
+    animate("results")
     
 def run_tests():
     print("Attempting to run tests specified in tests.txt, checking input parameters...")
@@ -645,11 +640,7 @@ def run_tests():
             EXIT_HELP()
     else:
         EXIT_HELP()
-
-    results = "results"
-    
-    clear_files(results, "jpg")
-    
+        
     tests = []
     
     with open("tests.txt", 'r') as fp:
@@ -658,25 +649,27 @@ def run_tests():
     
     c_prop_tests = [1, 2, 3, 4, 19, 20, 21]
     
+    # make interval very large because not saving simulation times
+    massint = 9999
+    
     for test in tests:
         Test(
             test,
+            sim_times[test - 1],
             max_ref_lvl,
             epsilon,
-            save_intervals[test - 1],
+            sim_times[test - 1],
+            massint,
             test_names[test - 1],
             solver,
-            c_prop_tests,
-            results
+            c_prop_tests
         ).run_test(plot_type)
-        
-    clear_files(results, "csv")
 
 def plot_soln_planar():
     if len(sys.argv) > 5:
         dummy, action, solver, results, quantity, interval = sys.argv
         
-        PlanarSolution(solver, interval, results).plot_soln(quantity)
+        PlanarSolution(solver, interval).plot_soln(quantity)
     else:
         EXIT_HELP()
 
@@ -684,7 +677,7 @@ def plot_soln_row_major():
     if len(sys.argv) > 4:
         dummy, action, interval, results, plot_type = sys.argv
         
-        RowMajorSolution(interval, results).plot_soln(plot_type)
+        RowMajorSolution(interval).plot_soln(plot_type)
     else:
         EXIT_HELP()
 
@@ -692,7 +685,7 @@ def plot_c_prop():
     if len(sys.argv) > 3:
         dummy, action, results, solver = sys.argv
         
-        DischargeErrors(solver, results).plot_errors()
+        DischargeErrors(solver).plot_errors()
     else:
         EXIT_HELP()
 
@@ -709,6 +702,9 @@ if __name__ == "__main__":
     
     action = sys.argv[1]
     
+    #clear_files("results", "csv")
+    #clear_files("results", "jpg")
+    
     if   action == "test":
         run_tests()
     elif action == "run":
@@ -720,4 +716,7 @@ if __name__ == "__main__":
     elif action == "c_prop":
         plot_c_prop()
     else:
-        EXIT_HELP()
+        EXIT_HELP
+        
+    #clear_files("results", "csv")
+    #clear_files("results", "jpg")

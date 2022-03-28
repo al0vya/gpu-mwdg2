@@ -128,7 +128,7 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-	    	sim_params.time = C(60.0);
+	    	sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
 	    	sim_params.manning = C(0.0);
 	    	break;
 	    case 5: // wet dam break
@@ -140,8 +140,8 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-	    	sim_params.time = C(2.5);
-	    	sim_params.manning = C(0.0);
+			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning = C(0.0);
 	    	break;
 	    case 7: // dry dam break
 	    case 8:
@@ -152,8 +152,8 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-	    	sim_params.time = C(1.3);
-	    	sim_params.manning = C(0.0);
+			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning = C(0.0);
 	    	break;
 	    case 9: // dry dam break w fric
 	    case 10:
@@ -164,8 +164,8 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-	    	sim_params.time = C(1.3);
-	    	sim_params.manning = C(0.02);
+			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning = C(0.02);
 	    	break;
 	    case 11: // building overtopping
 	    case 12:
@@ -178,8 +178,8 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-	    	sim_params.time = C(10.0);
-	    	sim_params.manning = C(0.02);
+			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning = C(0.02);
 	    	break;
 	    case 15: // triangle dam break
 	    case 16:
@@ -190,7 +190,7 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-	    	sim_params.time = C(29.6);
+	    	sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
 	    	sim_params.manning = C(0.0125);
 	    	break;
 	    case 17: // parabolic bowl, period "T" = 14.4 s
@@ -202,8 +202,8 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-			sim_params.time = C(27.0) * 4;
-	    	sim_params.manning = C(0.0);
+			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning = C(0.0);
 	    	break;
 	    case 19: // three cones
 	    	sim_params.xmin = C(10.0);
@@ -213,8 +213,8 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-	    	sim_params.time = C(100.0);
-	    	sim_params.manning = C(0.0);
+			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning = C(0.0);
 	    	break;
 	    case 20: // diff and non diff topo c prop
 	    case 21:
@@ -225,8 +225,8 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-	    	sim_params.time = C(100.0);
-	    	sim_params.manning = C(0.0);
+			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning = C(0.0);
 	    	break;
 	    case 22: // radial dam break
 	    	sim_params.xmin = C(-20.0);
@@ -236,8 +236,8 @@ SimulationParams read_sim_params
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
-	    	sim_params.time = C(3.5);
-	    	sim_params.manning = C(0.0);
+			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning = C(0.0);
 	    	break;
 	    default:
 	    	break;
