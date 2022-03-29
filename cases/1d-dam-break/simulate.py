@@ -194,8 +194,6 @@ class Simulation1DDambreak:
                     all_speedups += (self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime).to_list()
                 
             for epsilon in self.epsilons:
-                if epsilon == 0: continue
-                
                 for L in self.max_ref_lvls:
                     interp_adaptive = scipy.interpolate.interp1d(
                         self.results[solver][epsilon][L]["simtime"],
@@ -208,7 +206,7 @@ class Simulation1DDambreak:
                     ax.plot(
                         self.results[solver][0][L]["simtime"],
                         self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime,
-                        linewidth=2.5,
+                        linewidth=1    if epsilon == 0 else 2.5,
                         linestyle="--" if epsilon == 0 else "-",
                         label=r"$L = %s$" % L
                     )

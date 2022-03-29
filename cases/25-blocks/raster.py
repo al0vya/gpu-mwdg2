@@ -14,8 +14,10 @@ def check_nodal_data(
         
         X, Y = np.meshgrid(x, y)
         
-        fig, ax = plt.subplots()
-        ax.contourf(X, Y, nodal_data)
+        fig, ax    = plt.subplots()
+        contourset = ax.contourf(X, Y, nodal_data)
+        colorbar   = fig.colorbar(contourset)
+        
         plt.show()
         plt.close()
 

@@ -128,8 +128,9 @@ class Simulation2DDambreak:
                 ax.plot(
                     self.max_ref_lvls,
                     speedups,
-                    linewidth=2.5,
-                    linestyle="--" if epsilon == 0 else '-',
+                    marker=None    if epsilon == 0 else 'x',
+                    linewidth=1    if epsilon == 0 else 0.75,
+                    linestyle="-." if epsilon == 0 else '--',
                     label=label
                 )
             

@@ -52,7 +52,7 @@ class SimulationMonai:
             epsilon,
             solver
         ):
-            print("Running simulation, eps =", str(epsilon), ", solver:", solver)
+            print("Running simulation, eps = " + str(epsilon) + ", solver: " + solver)
             
             with open("monai.par", 'w') as fp:
                 params = (
@@ -110,7 +110,7 @@ class SimulationMonai:
 
                     ax.plot(
                         self.results[solver][epsilon]["simtime"],
-                        self.results[solver][epsilon]["gauge_data"],
+                        self.results[solver][epsilon]["gauge_data"] - 0.13535,
                         linewidth=2.5,
                         label=label
                     )
@@ -166,4 +166,13 @@ class SimulationMonai:
             plt.close()
         
 if __name__ == "__main__":
-    SimulationMonai( [0, 1e-4, 1e-3], ["hw", "mw"] ).plot( ExperimentalDataMonai() )
+    with open("monai.stage", 'w') as fp:
+        print("Preparing stage file...")
+        
+        fp.write("1\n4.521 1.696")
+    
+    subprocess.run( ["python", "inflow.py"] )
+    
+    subprocess.run( ["python", "raster.py"] )
+    
+    SimulationMonai( [0, 1e-4, 1e-3], ["hw"] ).plot( ExperimentalDataMonai() )

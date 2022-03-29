@@ -1,3 +1,7 @@
+# script to run generate the input raster files for Monai valley simulation
+# data obtained from https://nctr.pmel.noaa.gov/benchmark/Laboratory/Laboratory_MonaiValley/index.html
+
+import sys
 import pandas            as pd
 import numpy             as np
 import matplotlib.pyplot as plt
@@ -14,38 +18,6 @@ def remove_NODATA_values(
             for i, element in enumerate(row):
                 if ( (element - NODATA_value) < tol_0 ): nodal_data[j, i] = 100
 
-def init_water_depths(
-        bed_data,
-        nrows,
-        ncols,
-        cellsize
-    ):
-        x = [ i * cellsize for i in range(ncols) ]
-        y = [ j * cellsize for j in range(nrows) ]
-        
-        # dam as equation of straight line
-        x1 = 4481
-        y1 = 7344
-        
-        x2 = 4596
-        y2 = 7118
-        
-        slope = (y2 - y1) / (x2 - x1)
-        
-        intercept = y1 - slope * x1
-        
-        dam = lambda x : slope * x + intercept
-        
-        h = np.full(shape=(nrows, ncols), fill_value=0, dtype=float)
-        
-        eta = 100
-        
-        for j, y_ in enumerate(y):
-            for i, x_ in enumerate(x): 
-                if y_ <= dam(x_): h[j, i] = max( 0, eta - bed_data[j, i] )
-                    
-        return h
-
 def check_nodal_data(
         nodal_data,
         nrows,
@@ -56,8 +28,10 @@ def check_nodal_data(
         
         X, Y = np.meshgrid(x, y)
         
-        fig, ax = plt.subplots()
-        ax.contourf(X, Y, nodal_data)
+        fig, ax    = plt.subplots()
+        contourset = ax.contourf(X, Y, nodal_data)
+        colorbar   = fig.colorbar(contourset)
+        
         plt.show()
         plt.close()
 
@@ -133,39 +107,45 @@ def project_and_write_raster(
         )
    
 def main():
-        nrows = 501
-        ncols = 901
-        
-        bed_data = np.loadtxt(fname="bed-data.txt", usecols=2).reshape(ncols, nrows).transpose()
-        
-        remove_NODATA_values(nodal_data=bed_data, NODATA_value=-30)
-        
-        cellsize = 20
-        
-        h = init_water_depths(nrows=nrows, ncols=ncols, bed_data=bed_data, cellsize=cellsize)
-        
-        check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=bed_data)
-        check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=h)
-        
-        project_and_write_raster(
-            nrows=nrows,
-            ncols=ncols,
-            nodal_data=bed_data,
-            filename="malpasset.dem",
-            xmin=0,
-            ymin=0,
-            cellsize=cellsize
-        )
-        
-        project_and_write_raster(
-            nrows=nrows,
-            ncols=ncols,
-            nodal_data=h,
-            filename="malpasset.start",
-            xmin=0,
-            ymin=0,
-            cellsize=cellsize
-        )
+    print("Preparing input raster files...")
+    
+    nrows = 243 + 1
+    ncols = 392 + 1
+    
+    bed_data = np.loadtxt(fname="bed-data.txt", skiprows=1, usecols=2).reshape(ncols, nrows).transpose()
+    
+    # adjustment for datum
+    bed_data *= -1
+    bed_data +=  0.13535
+    
+    initial_depths = np.maximum(0.13535 - bed_data, 0)
+    
+    remove_NODATA_values(nodal_data=bed_data, NODATA_value=-30)
+    
+    cellsize = 0.014
+    
+    check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=bed_data)
+    check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=initial_depths)
+    
+    project_and_write_raster(
+        nrows=nrows,
+        ncols=ncols,
+        nodal_data=bed_data,
+        filename="monai.dem",
+        xmin=0,
+        ymin=0,
+        cellsize=cellsize
+    )
+    
+    project_and_write_raster(
+        nrows=nrows,
+        ncols=ncols,
+        nodal_data=initial_depths,
+        filename="monai.start",
+        xmin=0,
+        ymin=0,
+        cellsize=cellsize
+    )
     
 if __name__ == "__main__":
     main()
