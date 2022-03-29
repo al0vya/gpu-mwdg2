@@ -110,7 +110,7 @@ class SimulationMonai:
 
                     ax.plot(
                         self.results[solver][epsilon]["simtime"],
-                        self.results[solver][epsilon]["gauge_data"] - 0.13535,
+                        self.results[solver][epsilon]["gauge_data"],
                         linewidth=2.5,
                         label=label
                     )

@@ -1,0 +1,12 @@
+target_sources(
+	    gpu-mwdg2
+		PRIVATE
+		copy_finest_coefficients.cu
+		generate_all_morton_codes.cu
+		get_sorting_indices.cu
+		rev_z_order_act_idcs.cu
+		rev_z_order_assem_sol.cu
+		rev_z_order_reals.cu
+		sort_finest_scale_coeffs_z_order.cu
+		sort_neighbours_z_order.cu
+	)

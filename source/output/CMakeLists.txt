@@ -1,0 +1,20 @@
+target_sources(
+	    gpu-mwdg2
+		PRIVATE
+		append_reals_to_file.cu
+		project_assem_sol.cu
+		write_all_raster_maps.cu
+		write_bool_to_file.cu
+		write_c_prop_data.cu
+		write_cumu_sim_time.cpp
+		write_gauge_point_data.cu
+		write_int_to_file.cu
+		write_mesh_info.cpp
+		write_raster_file.cu
+		write_reals_to_file.cu
+		write_soln_planar.cu
+		write_soln_planar_dg2.cu
+		write_soln_planar_fv1.cu
+		write_soln_row_major.cu
+		write_soln_vtk.cu
+		)

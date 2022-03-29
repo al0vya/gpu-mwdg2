@@ -124,8 +124,8 @@ def main():
     
     cellsize = 0.014
     
-    check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=bed_data)
-    check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=initial_depths)
+    #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=bed_data)
+    #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=initial_depths)
     
     project_and_write_raster(
         nrows=nrows,

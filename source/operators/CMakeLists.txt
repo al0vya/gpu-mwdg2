@@ -1,0 +1,10 @@
+target_sources(
+	    gpu-mwdg2
+		PRIVATE
+		copy_to_buf_assem_sol.cu
+		dg2_update.cu
+		friction_implicit.cu
+		fv1_update.cu
+		get_dt_CFL.cu
+		limit_slopes.cu
+		)

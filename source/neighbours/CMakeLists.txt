@@ -1,0 +1,9 @@
+target_sources(
+	    gpu-mwdg2
+		PRIVATE
+		add_ghost_cells.cu
+		compaction.cu
+		find_neighbours.cu
+		get_compaction_flags.cu
+		load_soln_and_nghbr_coeffs.cu
+		)
