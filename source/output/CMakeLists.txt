@@ -17,4 +17,4 @@ target_sources(
 		write_soln_planar_fv1.cu
 		write_soln_row_major.cu
 		write_soln_vtk.cu
-		)
+	)

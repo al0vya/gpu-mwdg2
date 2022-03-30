@@ -25,4 +25,4 @@ target_sources(
 		reinsert_point_srcs.cu
 		traverse_tree_of_sig_details.cu
 		zero_details.cu
-		)
+	)

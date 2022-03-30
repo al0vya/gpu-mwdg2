@@ -18,11 +18,7 @@ void traverse_tree_of_sig_details
 
 	} shared;
 	
-	real     h_arr[4];
-	real     qx_arr[4];
-	real     qy_arr[4];
-	real     z_arr[4];
-	int      levels[4];
+	int levels[4];
 	
 	HierarchyIndex indices[4];
 
@@ -59,18 +55,9 @@ void traverse_tree_of_sig_details
 
 			if (!is_sig)
 			{				
-				real eta = d_scale_coeffs.eta0[h_idx];
-				real qx  = d_scale_coeffs.qx0[h_idx];
-				real qy  = d_scale_coeffs.qy0[h_idx];
-				real z   = d_scale_coeffs.z0[h_idx];
-
 				#pragma unroll
 				for (int i = 0; i < 4; i++)
 				{
-					h_arr[i]   = eta - z;
-					qx_arr[i]  = qx;
-					qy_arr[i]  = qy;
-					z_arr[i]   = z;
 					indices[i] = h_idx;
 					levels[i]  = level;
 				}
@@ -100,15 +87,6 @@ void traverse_tree_of_sig_details
 					#pragma unroll
 					for (int i = 0; i < 4; i++)
 					{
-						// disrupted ordering of coefficients to ensure cache hit for z, as z is used twice
-						// once to calculate h, and once when simply storing z
-						real eta = d_scale_coeffs.eta0[child_idx + i];
-						real z   = d_scale_coeffs.z0[child_idx + i];
-
-						h_arr[i]   = eta - z;
-						z_arr[i]   = z;
-						qx_arr[i]  = d_scale_coeffs.qx0[child_idx + i];
-						qy_arr[i]  = d_scale_coeffs.qy0[child_idx + i];
 						indices[i] = child_idx + i;
 						levels[i]  = level;
 					}

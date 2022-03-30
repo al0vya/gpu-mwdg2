@@ -166,13 +166,8 @@ class SimulationMonai:
             plt.close()
         
 if __name__ == "__main__":
-    with open("monai.stage", 'w') as fp:
-        print("Preparing stage file...")
-        
-        fp.write("1\n4.521 1.696")
-    
+    subprocess.run( ["python", "stage.py" ] )
     subprocess.run( ["python", "inflow.py"] )
-    
     subprocess.run( ["python", "raster.py"] )
     
     SimulationMonai( [0, 1e-4, 1e-3], ["hw"] ).plot( ExperimentalDataMonai() )

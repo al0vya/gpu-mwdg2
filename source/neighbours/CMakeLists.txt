@@ -6,4 +6,4 @@ target_sources(
 		find_neighbours.cu
 		get_compaction_flags.cu
 		load_soln_and_nghbr_coeffs.cu
-		)
+	)

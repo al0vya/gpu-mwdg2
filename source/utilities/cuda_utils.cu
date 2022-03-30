@@ -1,20 +1,24 @@
 #include "cuda_utils.cuh"
 
+__host__
 cudaError_t sync()
 {
 	return cudaDeviceSynchronize();
 }
 
+__host__
 cudaError_t peek()
 {
 	return cudaPeekAtLastError();
 }
 
+__host__
 cudaError_t reset()
 {
 	return cudaDeviceReset();
 }
 
+__host__
 cudaError_t copy
 (
 	void*  dst,
@@ -33,6 +37,7 @@ cudaError_t copy
 	return error;
 }
 
+__host__
 cudaError_t copy_async
 (
 	void*  dst,
@@ -51,7 +56,7 @@ cudaError_t copy_async
 	return error;
 }
 
-__host__ __device__
+__host__
 void* malloc_device
 (
 	size_t bytes
@@ -68,7 +73,7 @@ void* malloc_device
 	return ptr;
 }
 
-__host__ __device__
+__host__
 void* malloc_pinned
 (
 	size_t bytes
@@ -85,7 +90,7 @@ void* malloc_pinned
 	return ptr;
 }
 
-__host__ __device__
+__host__
 cudaError_t free_device
 (
 	void* ptr
@@ -94,7 +99,7 @@ cudaError_t free_device
 	return (nullptr != ptr) ? cudaFree(ptr) : cudaSuccess;
 }
 
-__host__ __device__
+__host__
 cudaError_t free_pinned
 (
 	void* ptr

@@ -15,4 +15,5 @@ if __name__ == "__main__":
         
         fp.write(str(timeseries_len) + " seconds\n")
         
-        [fp.write( str( entry[1] ) + " " + str( entry[0] ) + "\n") for entry in inflow_timeseries]
+        for entry in inflow_timeseries:
+            fp.write(str( entry[1] ) + " " + str( entry[0] ) + "\n")

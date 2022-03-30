@@ -38,5 +38,5 @@ real topo_c_prop_1D(real x_or_y_int)
 		z_int = 0;
 	}
 	
-	return x_or_y_int < 19.21 ? 3 : 0;
+	return z_int;
 }

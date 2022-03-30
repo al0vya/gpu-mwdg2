@@ -14,6 +14,8 @@ project(proj-gpu-mwdg2)
 
 add_executable(gpu-mwdg2)
 
+add_compile_definitions(_USE_TRACER=0)
+
 if (CMAKE_CUDA_COMPILER)
 	add_subdirectory(source)
 	add_subdirectory(source/input)
@@ -25,17 +27,17 @@ if (CMAKE_CUDA_COMPILER)
 	add_subdirectory(source/zorder)	
 endif()
 
- target_include_directories(
-     gpu-mwdg2
-	 PRIVATE
-	 source/classes
-	 source/input
-	 source/mra
-	 source/neighbours
-	 source/operators
-	 source/output
-	 source/tests
-	 source/types
-	 source/utilities
-	 source/zorder
-	 )
+target_include_directories(
+        gpu-mwdg2
+        PRIVATE
+        source/classes
+        source/input
+        source/mra
+        source/neighbours
+        source/operators
+        source/output
+        source/tests
+        source/types
+        source/utilities
+        source/zorder
+    )
