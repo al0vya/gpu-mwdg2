@@ -2,9 +2,9 @@
 
 #include "cuda_utils.cuh"
 
-#include "nvtx3/nvToolsExt.h"
-
 #if _USE_TRACER == 1
+
+#include "nvtx3/nvToolsExt.h"
 
 typedef struct Tracer
 {
