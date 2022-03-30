@@ -14,7 +14,8 @@ project(proj-gpu-mwdg2)
 
 add_executable(gpu-mwdg2)
 
-add_compile_definitions(_USE_TRACER=0)
+add_compile_definitions(_USE_TRACER=1)
+add_compile_definitions(_USE_DOUBLES=1)
 
 if (CMAKE_CUDA_COMPILER)
 	add_subdirectory(source)
