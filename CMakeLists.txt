@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
 include(CheckLanguage)
 
@@ -14,8 +14,7 @@ project(proj-gpu-mwdg2)
 
 add_executable(gpu-mwdg2)
 
-add_compile_definitions(_USE_TRACER=0)
-add_compile_definitions(_USE_DOUBLES=1)
+include(options.cmake)
 
 if (CMAKE_CUDA_COMPILER)
 	add_subdirectory(source)
@@ -25,7 +24,7 @@ if (CMAKE_CUDA_COMPILER)
 	add_subdirectory(source/operators)
 	add_subdirectory(source/output)
 	add_subdirectory(source/utilities)
-	add_subdirectory(source/zorder)	
+	add_subdirectory(source/zorder)
 endif()
 
 target_include_directories(

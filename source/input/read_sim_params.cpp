@@ -206,18 +206,29 @@ SimulationParams read_sim_params
 			sim_params.manning = C(0.0);
 	    	break;
 	    case 19: // three cones
-	    	sim_params.xmin = C(10.0);
+	    	sim_params.xmin = C(0.0);
 	    	sim_params.xmax = C(70.0);
-	    	sim_params.ymin = C(-10.0);
-	    	sim_params.ymax = C(50.0);
+	    	sim_params.ymin = C(0.0);
+	    	sim_params.ymax = C(30.0);
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);
 			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
 			sim_params.manning = C(0.0);
 	    	break;
-	    case 20: // diff and non diff topo c prop
-	    case 21:
+	    case 20: // three cones dam break
+	    	sim_params.xmin = C(0.0);
+	    	sim_params.xmax = C(70.0);
+	    	sim_params.ymin = C(0.0);
+	    	sim_params.ymax = C(30.0);
+	    	sim_params.xsz  = mesh_dim;
+	    	sim_params.ysz  = mesh_dim;
+	    	sim_params.g    = C(9.80665);
+			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning = C(0.018);
+	    	break;
+	    case 21: // diff and non diff topo c prop
+	    case 22:
 	    	sim_params.xmin = C(0.0);
 	    	sim_params.xmax = C(75.0);
 	    	sim_params.ymin = C(0.0);
@@ -228,7 +239,7 @@ SimulationParams read_sim_params
 			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
 			sim_params.manning = C(0.0);
 	    	break;
-	    case 22: // radial dam break
+	    case 23: // radial dam break
 	    	sim_params.xmin = C(-20.0);
 	    	sim_params.xmax = C( 20.0);
 	    	sim_params.ymin = C(-20.0);

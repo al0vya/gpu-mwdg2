@@ -10,7 +10,7 @@ def EXIT_HELP():
         "    MAX_REF_LVL : [maximum refinment level]\n" +
         "    PLOT_TYPE   : [cont,surf]\n" +
             "\n" +
-        " - python test.py run <SIM_TIME> <SOLVER> <TEST_CASE> <EPSILON> <MAX_REF_LVL> <SAVE_INT> <MASS_INT> <PLOT_TYPE> (runs a single in-built test cases)\n" +
+        " - python test.py run <SOLVER> <TEST_CASE> <SIM_TIME> <EPSILON> <MAX_REF_LVL> <SAVE_INT> <MASS_INT> <PLOT_TYPE> (runs a single in-built test cases)\n" +
         "    SOLVER      : [hw,mw]\n" +
         "    TEST_CASE   : [1-22 inclusive]\n" +
         "    SIM_TIME    : [simulation time in seconds]\n" +
@@ -104,10 +104,13 @@ test_names = [
     "parabolic-bowl-x-dir",
     "parabolic-bowl-y-dir",
     "three-cones",
+    "three-cones-dam-break",
     "differentiable-blocks",
     "non-differentiable-blocks",
     "radial-dam-break"
 ]
+
+c_prop_tests = [1, 2, 3, 4, 19, 21, 22]
 
 sim_times = [
     1,    # 1D c prop x dir
@@ -128,7 +131,8 @@ sim_times = [
     29.6, # triangular dam break y dir
     108,  # parabolic bowl x dir
     108,  # parabolic bowl y dir
-    1,    # three cones
+    100,  # three cones
+    30,   # three cones dam break
     1,    # differentiable blocks
     1,    # non-differentiable blocks
     3.5   # radial dam break
@@ -306,7 +310,7 @@ def plot_contours(
     interval,
     test_name
 ):
-    num_levels = 10
+    num_levels = 20
     dZ = ( zlim[1] - zlim[0] ) / num_levels
     
     Z_levels = [ zlim[0] + dZ * n for n in range(num_levels) ]
@@ -494,8 +498,7 @@ class Test:
         saveint, 
         massint, 
         test_name, 
-        solver, 
-        c_prop_tests
+        solver
     ):
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
@@ -613,9 +616,7 @@ def run():
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
     else:
-        EXIT_HELP()        
-    
-    c_prop_tests = [1, 2, 3, 4, 19, 20, 21]
+        EXIT_HELP()
     
     Test(
         int(test_case),
@@ -625,8 +626,7 @@ def run():
         float(saveint),
         float(massint),
         test_names[int(test_case) - 1],
-        solver,
-        c_prop_tests
+        solver
     ).run_test(plot_type)
     
     animate("results")
@@ -662,8 +662,7 @@ def run_tests():
             sim_times[test - 1],
             massint,
             test_names[test - 1],
-            solver,
-            c_prop_tests
+            solver
         ).run_test(plot_type)
 
 def plot_soln_planar():

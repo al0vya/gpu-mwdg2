@@ -15,8 +15,6 @@ typedef struct Tracer
     
     ~Tracer()
     {
-        printf("I am a tracer\n");
-        
         CHECK_CUDA_ERROR( peek() );
         CHECK_CUDA_ERROR( sync() );
 

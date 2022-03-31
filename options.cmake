@@ -1,0 +1,2 @@
+add_compile_definitions(_USE_TRACER=0)
+add_compile_definitions(_USE_DOUBLES=1)

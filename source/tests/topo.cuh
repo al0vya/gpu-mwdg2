@@ -54,12 +54,14 @@ real topo
 	    	z_int = topo_parabolic_bowl(y_int);
 	    	break;
 	    case 19:
-	    	z_int = topo_three_cones(x_int, y_int);
-	    	break;
 	    case 20:
-	    	z_int = topo_diff(x_int, y_int);
+	    	// three cones c prop and dam break
+			z_int = topo_three_cones(x_int, y_int);
 	    	break;
 	    case 21:
+	    	z_int = topo_diff(x_int, y_int);
+	    	break;
+	    case 22:
 	    	z_int = topo_non_diff(x_int, y_int);
 	    	break;
 	    default:

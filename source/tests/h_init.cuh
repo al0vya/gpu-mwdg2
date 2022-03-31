@@ -56,15 +56,18 @@ real h_init
 	    	h_int = h_init_parabolic_bowl(y_int, z_int);
 	    	break;
 	    case 19: // three cones
-	    	h_int = C(0.875) - z_int;
+	    	h_int = C(1.0) - z_int;
 	    	break;
-	    case 20: // differential geometry
+	    case 20: // three cones dam break
+	    	h_int = ( x_int < C(16.0) ) ? max( (C(1.875) - z_int), C(0.0) ) : C(0.0);
+	    	break;
+	    case 21: // differential geometry
 	    	h_int = C(1.95) - z_int;
 	    	break;
-	    case 21: // non-differential geometry
+	    case 22: // non-differential geometry
 	    	h_int = C(1.78) - z_int;
 	    	break;
-	    case 22: // radial dam break
+	    case 23: // radial dam break
 	    	h_int = h_init_radial(x_int, y_int);
 	    	break;
 	    default:

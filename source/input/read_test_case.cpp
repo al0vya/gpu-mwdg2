@@ -30,7 +30,7 @@ int read_test_case(const char* input_file)
 	
 	printf("Test case: %d\n", test_case);
 
-	const int max_test_case = 22;
+	const int max_test_case = 23;
 
 	if (test_case > max_test_case || test_case < 0)
 	{
