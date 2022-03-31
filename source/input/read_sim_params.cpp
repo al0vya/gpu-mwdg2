@@ -20,7 +20,7 @@ SimulationParams read_sim_params
 	    	char rasterroot[64]   = {'\0'};
 	    	char dem_filename[64] = {'\0'};
 	    
-	    	real cell_size = C(0.0);
+	    	real cellsize = C(0.0);
 	    
 	    	FILE* fp = fopen(input_filename, "r");
 	    
@@ -46,75 +46,17 @@ SimulationParams read_sim_params
 	    
 	    	strcpy(dem_filename, rasterroot);
 	    	strcat(dem_filename, ".dem");
-	    
-	    	fp = fopen(dem_filename, "r");
-	    
-	    	if (NULL == fp)
-	    	{
-	    		fprintf(stderr, "Error opening DEM file for reading study area dimensions.\n");
-	    		exit(-1);
-	    	}
-	    
-	    	fscanf(fp, "%s %d", buf, &sim_params.xsz);
-	    	fscanf(fp, "%s %d", buf, &sim_params.ysz);
-	    	fscanf(fp, "%s %" NUM_FRMT, buf, &sim_params.xmin);
-	    	fscanf(fp, "%s %" NUM_FRMT, buf, &sim_params.ymin);
-	    	fscanf(fp, "%s %" NUM_FRMT, buf, &cell_size);
-	    
-	    	fclose(fp);
-	    
-	    	sim_params.xmax = sim_params.xmin + sim_params.xsz * cell_size;
-	    	sim_params.ymax = sim_params.ymin + sim_params.ysz * cell_size;
-	    
-	    	fp = fopen(input_filename, "r");
-	    
-	    	if (NULL == fp)
-	    	{
-	    		fprintf(stderr, "Error opening input file for reading simulation parameters.\n");
-	    		exit(-1);
-	    	}
-	    
-	    	while ( strncmp(buf, "g", 1) )
-	    	{
-	    		if ( NULL == fgets( str, sizeof(str), fp) )
-	    		{
-	    			fprintf(stderr, "Error reading input file for gravity constant.\n");
-	    			fclose(fp);
-	    			exit(-1);
-	    		}
-	    
-	    		sscanf(str, "%s %" NUM_FRMT, buf, &sim_params.g);
-	    	}
-	    
-	    	rewind(fp);
-	    
-	    	while ( strncmp(buf, "sim_time", 8) )
-	    	{
-	    		if ( NULL == fgets( str, sizeof(str), fp) )
-	    		{
-	    			fprintf(stderr, "Error reading input file for simulation time.\n");
-	    			fclose(fp);
-	    			exit(-1);
-	    		}
-	    
-	    		sscanf(str, "%s %" NUM_FRMT, buf, &sim_params.time);
-	    	}
-	    
-	    	rewind(fp);
-	    
-	    	while ( strncmp(buf, "fpfric", 6) )
-	    	{
-	    		if ( NULL == fgets( str, sizeof(str), fp) )
-	    		{
-	    			fprintf(stderr, "Error reading input file for Manning coefficient.\n");
-	    			fclose(fp);
-	    			exit(-1);
-	    		}
-	    
-	    		sscanf(str, "%s %" NUM_FRMT, buf, &sim_params.manning);
-	    	}
-	    
-	    	fclose(fp);
+
+			sim_params.xsz     = read_keyword_int (dem_filename, "ncols", 5);
+			sim_params.ysz     = read_keyword_int (dem_filename, "nrows", 5);
+			sim_params.xmin    = read_keyword_real(dem_filename, "xllcorner", 9);
+			sim_params.ymin    = read_keyword_real(dem_filename, "yllcorner", 9);
+			cellsize           = read_keyword_real(dem_filename, "cellsize", 8);
+	    	sim_params.xmax    = sim_params.xmin + sim_params.xsz * cellsize;
+	    	sim_params.ymax    = sim_params.ymin + sim_params.ysz * cellsize;
+			sim_params.g       = read_keyword_real(input_filename, "g", 1);
+			sim_params.time    = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning = read_keyword_real(input_filename, "fpfric", 6);
 	    }
 	    	break;
 	    case 1: // c prop
