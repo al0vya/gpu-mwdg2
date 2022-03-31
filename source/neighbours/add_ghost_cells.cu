@@ -3,14 +3,14 @@
 __global__
 void add_ghost_cells
 (
-	AssembledSolution    d_assem_sol,
-	Neighbours           d_neighbours,
-	SolverParams     solver_params,
-	SimulationParams sim_params,
-	Boundaries           boundaries,
-	real                 dt,
-	real                 dx_finest,
-	int                  test_case
+	AssembledSolution d_assem_sol,
+	Neighbours        d_neighbours,
+	SolverParams      solver_params,
+	SimulationParams  sim_params,
+	Boundaries        boundaries,
+	real              dt,
+	real              dx_finest,
+	int               test_case
 )
 {
 	HierarchyIndex idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -66,7 +66,7 @@ void add_ghost_cells
 	{
 		d_neighbours.north.h0[idx]  = d_assem_sol.h0[idx];
 		d_neighbours.north.qx0[idx] = d_assem_sol.qx0[idx];
-		d_neighbours.north.qy0[idx] = (test_case == 0) ? C(0.0) : d_assem_sol.qy0[idx];
+		d_neighbours.north.qy0[idx] = (test_case == 0 || test_case == 20) ? C(0.0) : d_assem_sol.qy0[idx];
 		d_neighbours.north.z0[idx]  = d_assem_sol.z0[idx];
 		
 		if (mwdg2)
@@ -160,7 +160,7 @@ void add_ghost_cells
 	if (d_neighbours.east.act_idcs[idx] == -1)
 	{
 		d_neighbours.east.h0[idx]  = d_assem_sol.h0[idx];
-		d_neighbours.east.qx0[idx] = (test_case == 0) ? C(0.0) : d_assem_sol.qx0[idx];
+		d_neighbours.east.qx0[idx] = (test_case == 0 || test_case == 20) ? C(0.0) : d_assem_sol.qx0[idx];
 		d_neighbours.east.qy0[idx] = d_assem_sol.qy0[idx];
 		d_neighbours.east.z0[idx]  = d_assem_sol.z0[idx];
 		
@@ -256,7 +256,7 @@ void add_ghost_cells
 	{
 		d_neighbours.south.h0[idx]  = d_assem_sol.h0[idx];
 		d_neighbours.south.qx0[idx] = d_assem_sol.qx0[idx];
-		d_neighbours.south.qy0[idx] = (test_case == 0 || test_case == 16) ? C(0.0) : d_assem_sol.qy0[idx];
+		d_neighbours.south.qy0[idx] = (test_case == 0 || test_case == 20 || test_case == 16) ? C(0.0) : d_assem_sol.qy0[idx];
 		d_neighbours.south.z0[idx]  = d_assem_sol.z0[idx];
 		
 		if (mwdg2)
@@ -350,7 +350,7 @@ void add_ghost_cells
 	if (d_neighbours.west.act_idcs[idx] == -1)
 	{
 		d_neighbours.west.h0[idx]  = d_assem_sol.h0[idx];
-		d_neighbours.west.qx0[idx] = (test_case == 0 || test_case == 15) ? C(0.0) : d_assem_sol.qx0[idx];
+		d_neighbours.west.qx0[idx] = (test_case == 0 || test_case == 20 || test_case == 15) ? C(0.0) : d_assem_sol.qx0[idx];
 		d_neighbours.west.qy0[idx] = d_assem_sol.qy0[idx];
 		d_neighbours.west.z0[idx]  = d_assem_sol.z0[idx];
 		

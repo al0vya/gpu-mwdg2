@@ -15,12 +15,12 @@
 __global__
 void add_ghost_cells
 (
-	AssembledSolution    d_assem_sol,
-	Neighbours           d_neighbours,
-	SolverParams     solver_params,
-	SimulationParams sim_params,
-	Boundaries           boundaries,
-	real                 dt,
-	real                 dx_finest,
-	int                  test_case
+	AssembledSolution d_assem_sol,
+	Neighbours        d_neighbours,
+	SolverParams      solver_params,
+	SimulationParams  sim_params,
+	Boundaries        boundaries,
+	real              dt,
+	real              dx_finest,
+	int               test_case
 );

@@ -113,10 +113,10 @@ test_names = [
 c_prop_tests = [1, 2, 3, 4, 19, 21, 22]
 
 sim_times = [
-    1,    # 1D c prop x dir
-    1,    # 1D c prop y dir
-    1,    # 1D c prop x dir
-    1,    # 1D c prop y dir
+    80,   # 1D c prop x dir
+    80,   # 1D c prop y dir
+    80,   # 1D c prop x dir
+    80,   # 1D c prop y dir
     2.5,  # wet dam break x dir
     2.5,  # wet dam break y dir
     1.3,  # dry dam break x dir
@@ -129,12 +129,12 @@ sim_times = [
     10,   # dry building overtopping y dir
     29.6, # triangular dam break x dir
     29.6, # triangular dam break y dir
-    108,  # parabolic bowl x dir
-    108,  # parabolic bowl y dir
-    100,  # three cones
+    21.6, # parabolic bowl x dir
+    21.6, # parabolic bowl y dir
+    80,   # three cones
     30,   # three cones dam break
-    1,    # differentiable blocks
-    1,    # non-differentiable blocks
+    80,   # differentiable blocks
+    80,   # non-differentiable blocks
     3.5   # radial dam break
 ]
 
@@ -345,13 +345,8 @@ class RowMajorSolution:
         qy_file = "discharge_y-" + str(self.interval) + ".csv"
         z_file  = "topo-" +        str(self.interval) + ".csv"
         
-        # finest resolution mesh info
-        mesh_info_file = "mesh_info.csv"
+        mesh_info = pd.read_csv( os.path.join("results", "mesh_info.csv") )
         
-        mesh_info = pd.read_csv( os.path.join("results", mesh_info_file) )
-        
-        # to access a dataframe with only one row
-        # we use iloc, which stands for 'integer location'
         mesh_dim = int(mesh_info.iloc[0][r"mesh_dim"])
         xsz      = int(mesh_info.iloc[0][r"xsz"])
         ysz      = int(mesh_info.iloc[0][r"ysz"])
@@ -524,7 +519,7 @@ class Test:
             self.cumulative = "on"
 
         self.input_file = "inputs.par"
-        self.intervals  = int(sim_times[self.test_case - 1] / self.saveint)
+        self.intervals  = int(self.sim_time / self.saveint)
 
     def set_params(
         self
@@ -618,18 +613,22 @@ def run():
     else:
         EXIT_HELP()
     
+    clear_files("results", "jpg")
+    
     Test(
-        int(test_case),
-        sim_time,
-        max_ref_lvl,
-        epsilon,
-        float(saveint),
-        float(massint),
-        test_names[int(test_case) - 1],
-        solver
+        test_case=int(test_case),
+        sim_time=float(sim_time),
+        max_ref_lvl=int(max_ref_lvl),
+        epsilon=float(epsilon),
+        saveint=float(saveint),
+        massint=float(massint),
+        test_name=test_names[int(test_case) - 1],
+        solver=solver
     ).run_test(plot_type)
     
     animate("results")
+    
+    clear_files("results", "jpg")
     
 def run_tests():
     print("Attempting to run tests specified in tests.txt, checking input parameters...")
@@ -647,22 +646,20 @@ def run_tests():
     with open("tests.txt", 'r') as fp:
         tests = fp.readlines()
         tests = [int( test.rstrip() ) for test in tests]
-    
-    c_prop_tests = [1, 2, 3, 4, 19, 20, 21]
-    
+   
     # make interval very large because not saving simulation times
     massint = 9999
     
     for test in tests:
         Test(
-            test,
-            sim_times[test - 1],
-            max_ref_lvl,
-            epsilon,
-            sim_times[test - 1],
-            massint,
-            test_names[test - 1],
-            solver
+            test_case=int(test),
+            sim_time=sim_times[test - 1],
+            max_ref_lvl=int(max_ref_lvl),
+            epsilon=float(epsilon),
+            saveint=sim_times[test - 1] / 80 if test in c_prop_tests else sim_times[test - 1],
+            massint=float(massint),
+            test_name=test_names[test - 1],
+            solver=solver
         ).run_test(plot_type)
 
 def plot_soln_planar():
