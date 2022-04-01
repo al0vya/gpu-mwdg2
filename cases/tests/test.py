@@ -110,7 +110,7 @@ test_names = [
     "radial-dam-break"
 ]
 
-c_prop_tests = [1, 2, 3, 4, 19, 21, 22]
+c_prop_tests = [1, 2, 3, 4, 21, 22]
 
 sim_times = [
     80,   # 1D c prop x dir
@@ -313,7 +313,7 @@ def plot_contours(
     num_levels = 20
     dZ = ( zlim[1] - zlim[0] ) / num_levels
     
-    Z_levels = [ zlim[0] + dZ * n for n in range(num_levels) ]
+    Z_levels = [ zlim[0] + dZ * n for n in range(num_levels + 1) ]
     
     # ensure no array of zeroes because levels in contour plot must be increasing
     Z_levels = Z_levels if ( Z_levels[1] - Z_levels[0] ) > 0 else num_levels
@@ -409,6 +409,16 @@ class RowMajorSolution:
         test_number=0,
         test_name="ad-hoc"
     ):
+        params = {
+            "legend.fontsize" : "xx-large",
+            "axes.labelsize"  : "xx-large",
+            "axes.titlesize"  : "xx-large",
+            "xtick.labelsize" : "xx-large",
+            "ytick.labelsize" : "xx-large"
+        }
+        
+        plt.rcParams.update(params)
+        
         if   plot_type == "cont":
             self.plot_contours(limits, test_number, test_name)
         elif plot_type == "surf":
@@ -453,10 +463,19 @@ class DischargeErrors:
         self, 
         test_name="ad-hoc"
     ):
-
+        params = {
+            "legend.fontsize" : "large",
+            "axes.labelsize"  : "xx-large",
+            "axes.titlesize"  : "xx-large",
+            "xtick.labelsize" : "xx-large",
+            "ytick.labelsize" : "xx-large"
+        }
+        
+        plt.rcParams.update(params)
+        
         print("Plotting maximum discharge errors for test %s..." % test_name)
 
-        plt.figure()
+        fig, ax = plt.subplots( figsize=(5, 2) )
         
         plt.scatter(self.simtime["simtime"], self.qx0_max,  label='$q^0_x$', marker='x')
         plt.scatter(self.simtime["simtime"], self.qy0_max,  label='$q^0_y$', marker='x')
@@ -687,15 +706,6 @@ def plot_c_prop():
         EXIT_HELP()
 
 if __name__ == "__main__":
-    params = {
-        "legend.fontsize" : "xx-large",
-        "axes.labelsize"  : "xx-large",
-        "axes.titlesize"  : "xx-large",
-        "xtick.labelsize" : "xx-large",
-        "ytick.labelsize" : "xx-large"
-    }
-    
-    pylab.rcParams.update(params)
     
     action = sys.argv[1]
     

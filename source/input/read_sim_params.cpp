@@ -147,11 +147,11 @@ SimulationParams read_sim_params
 			sim_params.time = read_keyword_real(input_filename, "sim_time", 8);
 			sim_params.manning = C(0.0);
 	    	break;
-	    case 19: // three cones
-	    	sim_params.xmin = C(0.0);
-	    	sim_params.xmax = C(70.0);
-	    	sim_params.ymin = C(0.0);
-	    	sim_params.ymax = C(30.0);
+	    case 19: // three cones c prop
+	    	sim_params.xmin = C( 10.0);
+	    	sim_params.xmax = C( 70.0);
+	    	sim_params.ymin = C(-10.0);
+	    	sim_params.ymax = C( 50.0);
 	    	sim_params.xsz  = mesh_dim;
 	    	sim_params.ysz  = mesh_dim;
 	    	sim_params.g    = C(9.80665);

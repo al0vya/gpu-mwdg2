@@ -180,6 +180,6 @@ if __name__ == "__main__":
     
     if solver != "hw" and solver != "mw": EXIT_HELP()
     
-    #run_c_prop_tests()
+    run_c_prop_tests()
     
-    SimulationThreeConesDamBreak( solver, [0, 1e-3] ).plot()
+    #SimulationThreeConesDamBreak( solver, [0, 1e-3] ).plot()
