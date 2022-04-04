@@ -1,0 +1,1 @@
+matlab -nosplash -nodesktop -r "plot_bathy; writematrix(z, 'bathymetry'); exit"

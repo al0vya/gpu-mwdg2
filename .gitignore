@@ -380,3 +380,5 @@ out/build/x64-Release/
 *.vl
 *.gif
 *.jpg
+*.mat
+*.exe
