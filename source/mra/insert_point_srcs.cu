@@ -19,7 +19,7 @@ void insert_point_srcs
 
 	if (src_type == HFIX || src_type == HVAR)
 	{
-		d_assem_sol.h0[h_idx] = point_sources.d_srcs[idx];
+		d_assem_sol.h0[h_idx] = point_sources.d_srcs[idx] - d_assem_sol.z0[idx];
 	}
 	else if (src_type == QFIX || src_type == QVAR)
 	{

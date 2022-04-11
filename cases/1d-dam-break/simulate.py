@@ -64,12 +64,15 @@ def calc_h_exact(xdam, x, Lx, h_left, h_right, t):
     return hex
 
 class Simulation1DDambreak:
-    def __init__(self, solvers):
+    def __init__(
+        self,
+        solvers
+    ):
         self.solvers      = solvers
         self.results      = {}
         self.epsilons     = [0, 1e-4, 1e-3, 1e-2]
         self.fields       = ["simtime", "runtime"]
-        self.max_ref_lvls = [8, 9]#, 10, 11]
+        self.max_ref_lvls = [8, 9, 10]#, 11]
         
         for solver in self.solvers:
             self.results[solver] = {}
@@ -91,7 +94,8 @@ class Simulation1DDambreak:
                     sim_time=2.5,
                     epsilon=epsilon,
                     L=8,
-                    saveint=2.5
+                    saveint=2.5,
+                    limiter="off"
                 )
                 
                 verification_depths = self.get_verification_depths()
@@ -108,7 +112,8 @@ class Simulation1DDambreak:
                         sim_time=40,
                         epsilon=epsilon,
                         L=L,
-                        saveint=40
+                        saveint=40,
+                        limiter="on"
                     )
                     
                     results_dataframe = pd.read_csv( os.path.join("results", "simtime-vs-runtime.csv") )
@@ -128,10 +133,12 @@ class Simulation1DDambreak:
         
         dx = (xmax - xmin) / mesh_dim
         
-        x = [ xmin + i * dx for i in range(mesh_dim + 1) ]
+        x = [ xmin + i * dx for i in range(mesh_dim) ]
+        
+        x[-1] += dx
         
         beg = int( (mesh_dim / 2) * mesh_dim )
-        end = int( (mesh_dim / 2) * mesh_dim + mesh_dim + 1)
+        end = int( (mesh_dim / 2) * mesh_dim + mesh_dim)
         
         depths = depths_frame[beg:end]
         
@@ -143,8 +150,11 @@ class Simulation1DDambreak:
         sim_time,
         epsilon,
         L,
-        saveint
+        saveint,
+        limiter
     ):
+        print("Running simulation, L = " + str(L) + ", eps = " + str(epsilon) + ", solver: " + solver)
+            
         test_script = os.path.join("..", "tests", "test.py")
         
         # using test.py to run simulations
@@ -160,19 +170,15 @@ class Simulation1DDambreak:
                 str(L),            # MAX_REF_LVL
                 str(saveint),      # SAVE_INT
                 str(sim_time/100), # MASS_INT
-                "surf"             # PLOT_TYPE
+                "surf",            # PLOT_TYPE
+                limiter            # SLOPE_LIMITER
             ]
         )
         
-    def plot(self):
-        my_rc_params = {
-            "legend.fontsize" : "large",
-            "axes.labelsize"  : "xx-large",
-            "axes.titlesize"  : "xx-large",
-            "xtick.labelsize" : "xx-large",
-            "ytick.labelsize" : "xx-large",
-        }
-        
+    def plot_speedups(
+        self,
+        my_rc_params
+    ):
         plt.rcParams.update(my_rc_params)
         
         fig, ax = plt.subplots()
@@ -194,6 +200,8 @@ class Simulation1DDambreak:
                     all_speedups += (self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime).to_list()
                 
             for epsilon in self.epsilons:
+                if epsilon == 0: continue
+                
                 for L in self.max_ref_lvls:
                     interp_adaptive = scipy.interpolate.interp1d(
                         self.results[solver][epsilon][L]["simtime"],
@@ -206,14 +214,20 @@ class Simulation1DDambreak:
                     ax.plot(
                         self.results[solver][0][L]["simtime"],
                         self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime,
-                        linewidth=1    if epsilon == 0 else 2.5,
-                        linestyle="--" if epsilon == 0 else "-",
                         label=r"$L = %s$" % L
                     )
                     
-                xlim = (
-                    self.results[solver][0][L]["simtime"].iloc[0],
-                    self.results[solver][0][L]["simtime"].iloc[-1]
+                xmin = self.results[solver][0][L]["simtime"].iloc[0]
+                xmax = self.results[solver][0][L]["simtime"].iloc[-1]
+                
+                xlim = (xmin, xmax)
+                
+                ax.plot(
+                    [xmin, xmax],
+                    [1, 1],
+                    linewidth=1,
+                    linestyle="-.",
+                    label="breakeven"
                 )
                 
                 ax.set_xlabel(r"$t \, (s)$")
@@ -224,6 +238,16 @@ class Simulation1DDambreak:
                 fig.savefig(os.path.join( "results", "runtimes-" + solver + "-eps-" + str(epsilon) ) + ".png", bbox_inches="tight")
                 ax.clear()
                 
+        plt.close()
+        
+    def plot_verification_depths(
+        self,
+        my_rc_params
+    ):
+        plt.rcParams.update(my_rc_params)
+        
+        fig, ax = plt.subplots()
+        
         for solver in self.solvers:
             for epsilon in self.epsilons:
                 if epsilon == 0:
@@ -235,7 +259,11 @@ class Simulation1DDambreak:
                 elif np.isclose(epsilon, 1e-4):
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
                 
-                ax.plot(self.results["x"], self.results[solver][epsilon]["depths"], label=label)
+                ax.plot(
+                    self.results["x"],
+                    self.results[solver][epsilon]["depths"],
+                    label=label
+                )
             
         t       = 2.5
         Lx      = 50
@@ -243,9 +271,15 @@ class Simulation1DDambreak:
         h_left  = 6
         h_right = 2
         
-        exact = [ calc_h_exact(xdam, cell, Lx, h_left, h_right, t) for cell in self.results["x"] ]
+        exact = [ calc_h_exact(xdam, x, Lx, h_left, h_right, t) for x in self.results["x"] ]
         
-        ax.plot(self.results["x"], exact, label="Exact solution")
+        ax.plot(
+            self.results["x"],
+            exact,
+            label="Exact solution",
+            color='k',
+            linewidth=1
+        )
         
         xlim = ( self.results["x"][0], self.results["x"][-1] )
         
@@ -257,5 +291,18 @@ class Simulation1DDambreak:
         
         plt.close()
         
+    def plot(self):
+        my_rc_params = {
+            "legend.fontsize" : "large",
+            "axes.labelsize"  : "xx-large",
+            "axes.titlesize"  : "xx-large",
+            "xtick.labelsize" : "xx-large",
+            "ytick.labelsize" : "xx-large",
+        }
+        
+        self.plot_speedups(my_rc_params)
+        
+        self.plot_verification_depths(my_rc_params)
+        
 if __name__ == "__main__":
-    Simulation1DDambreak( ["hw"] ).plot()
+    Simulation1DDambreak( ["mw"] ).plot()

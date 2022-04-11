@@ -1,6 +1,6 @@
 test_case   5
-sim_time    40
-max_ref_lvl 9
+sim_time    40.0
+max_ref_lvl 10
 min_dt      0.5
 respath     results
 epsilon     0.01
@@ -10,11 +10,11 @@ tol_s       1e-9
 g           9.80665
 saveint     40.0
 massint     0.4
-solver      hw
+solver      mw
 wall_height 0
 row_major   on
 c_prop      off
 cumulative  on
-limitslopes off
-tol_Krivo   1
+limitslopes on
+tol_Krivo   10
 vtk         off

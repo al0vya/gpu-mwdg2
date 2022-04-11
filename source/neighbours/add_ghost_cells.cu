@@ -143,7 +143,7 @@ void add_ghost_cells
 				boundaries.north.bdytype == HVAR
 			)
 			{
-				d_neighbours.north.h0[idx] = boundaries.north.inlet;
+				d_neighbours.north.h0[idx] = boundaries.north.inlet - d_assem_sol.z0[idx];
 			}
 			else if
 			(
@@ -238,7 +238,7 @@ void add_ghost_cells
 				boundaries.east.bdytype == HVAR
 			)
 			{
-				d_neighbours.east.h0[idx] = boundaries.east.inlet;
+				d_neighbours.east.h0[idx] = boundaries.east.inlet - d_assem_sol.z0[idx];
 			}
 			else if
 			(
@@ -333,7 +333,7 @@ void add_ghost_cells
 				boundaries.south.bdytype == HVAR
 			)
 			{
-				d_neighbours.south.h0[idx] = boundaries.south.inlet;
+				d_neighbours.south.h0[idx] = boundaries.south.inlet - d_assem_sol.z0[idx];
 			}
 			else if
 			(
@@ -439,7 +439,7 @@ void add_ghost_cells
 				
 				twodoubles outputs = non_reflective_wave(boundaries.west.inlet, dt, dx_finest, hp, up, hb, ub, sim_params.g);
 
-				d_neighbours.west.h0[idx]  = outputs.hb;
+				d_neighbours.west.h0[idx]  = outputs.hb - d_assem_sol.z0[idx];
 				d_neighbours.west.qx0[idx] = outputs.hb * outputs.ub;
 			}
 			else if

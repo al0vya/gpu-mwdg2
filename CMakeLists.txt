@@ -16,16 +16,7 @@ add_executable(gpu-mwdg2)
 
 include(options.cmake)
 
-if (CMAKE_CUDA_COMPILER)
-	add_subdirectory(source)
-	add_subdirectory(source/input)
-	add_subdirectory(source/mra)
-	add_subdirectory(source/neighbours)
-	add_subdirectory(source/operators)
-	add_subdirectory(source/output)
-	add_subdirectory(source/utilities)
-	add_subdirectory(source/zorder)
-endif()
+add_subdirectory(source)
 
 target_include_directories(
         gpu-mwdg2

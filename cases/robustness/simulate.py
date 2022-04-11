@@ -19,7 +19,19 @@ def run_c_prop_tests():
         
     test_script = os.path.join("..", "tests", "test.py")
     
-    subprocess.run( ["python", test_script, "test", solver, "1e-3", "7", "surf"] )
+    subprocess.run(
+        [
+            "python",
+            test_script, # test.py
+            "test",      # ACTION
+            solver,      # SOLVER
+            "1e-3",      # EPSILON
+            "7",         # MAX_REF_LVL
+            "surf",      # PLOT_TYPE
+            "off"        # SLOPE_LIMITER
+        ]
+    )
+    
     subprocess.run( ["matlab", "-nosplash", "-nodesktop", "-r", "\"main; exit\""] )
     
 class SimulationThreeConesDamBreak:
@@ -38,11 +50,23 @@ class SimulationThreeConesDamBreak:
             for interval in self.intervals:
                 self.results[epsilon][interval] = {}
         
-        mesh_info = pd.read_csv( os.path.join("results", "mesh_info.csv") )
+        # runs for speedups
+        for epsilon in self.epsilons:
+            self.run(
+                solver=solver,
+                epsilon=epsilon
+            )
+            
+            mesh_info = pd.read_csv( os.path.join("results", "mesh_info.csv") )
+            
+            mesh_dim = int(mesh_info.iloc[0][r"mesh_dim"])
+            
+            self.results[epsilon]["0 s"]  = np.loadtxt(fname=os.path.join("results", "depths-0.csv"), skiprows=1).reshape(mesh_dim, mesh_dim)
+            self.results[epsilon]["6 s"]  = np.loadtxt(fname=os.path.join("results", "depths-1.csv"), skiprows=1).reshape(mesh_dim, mesh_dim)
+            self.results[epsilon]["12 s"] = np.loadtxt(fname=os.path.join("results", "depths-2.csv"), skiprows=1).reshape(mesh_dim, mesh_dim)
         
-        mesh_dim = int(mesh_info.iloc[0][r"mesh_dim"])
-        xsz      = int(mesh_info.iloc[0][r"xsz"])
-        ysz      = int(mesh_info.iloc[0][r"ysz"])
+        xsz = int(mesh_info.iloc[0][r"xsz"])
+        ysz = int(mesh_info.iloc[0][r"ysz"])
         
         xmin = mesh_info.iloc[0]["xmin"]
         xmax = mesh_info.iloc[0]["xmax"]
@@ -66,17 +90,6 @@ class SimulationThreeConesDamBreak:
         y = np.linspace(ymin, ymax, ysz)
         
         self.X, self.Y = np.meshgrid(x, y)
-        
-        # runs for speedups
-        for epsilon in self.epsilons:
-            self.run(
-                solver=solver,
-                epsilon=epsilon
-            )
-            
-            self.results[epsilon]["0 s"]  = np.loadtxt(fname=os.path.join("results", "depths-0.csv"), skiprows=1).reshape(mesh_dim, mesh_dim)
-            self.results[epsilon]["6 s"]  = np.loadtxt(fname=os.path.join("results", "depths-1.csv"), skiprows=1).reshape(mesh_dim, mesh_dim)
-            self.results[epsilon]["12 s"] = np.loadtxt(fname=os.path.join("results", "depths-2.csv"), skiprows=1).reshape(mesh_dim, mesh_dim)
                 
     def run(
         self,
@@ -98,7 +111,8 @@ class SimulationThreeConesDamBreak:
                 "8",          # MAX_REF_LVL
                 "6",          # SAVE_INT
                 "12",         # MASS_INT
-                "cont"        # PLOT_TYPE
+                "cont",       # PLOT_TYPE
+                "off"         # SLOPE_LIMITER
             ]
         )
     
@@ -182,4 +196,4 @@ if __name__ == "__main__":
     
     run_c_prop_tests()
     
-    #SimulationThreeConesDamBreak( solver, [0, 1e-3] ).plot()
+    SimulationThreeConesDamBreak( solver, [0, 1e-3] ).plot()

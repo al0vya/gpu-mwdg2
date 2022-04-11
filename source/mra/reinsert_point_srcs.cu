@@ -20,7 +20,7 @@ void reinsert_point_srcs
 
 	if (src_type == HFIX || src_type == HVAR)
 	{
-		d_scale_coeffs.eta0[h_idx] = point_sources.d_srcs[idx] + d_scale_coeffs.z0[h_idx];
+		d_scale_coeffs.eta0[h_idx] = point_sources.d_srcs[idx];
 	}
 	else if (src_type == QFIX || src_type == QVAR)
 	{

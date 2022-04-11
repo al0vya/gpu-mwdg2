@@ -94,6 +94,7 @@ class SimulationConicalIsland:
                     "sim_time    20\n" +
                     "solver      %s\n" +
                     "limitslopes on\n" +
+                    "tol_Krivo   10\n" +
                     "cumulative  on\n" +
                     "wall_height 1"
                 ) % (epsilon, solver)
@@ -102,107 +103,110 @@ class SimulationConicalIsland:
             
             subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), "conical-island.par"] )
             
-    def plot(
-            self,
-            exp_data
-        ):
-            T = 6
-            
-            my_rc_params = {
-                "legend.fontsize" : "xx-large",
-                "axes.labelsize"  : "xx-large",
-                "axes.titlesize"  : "xx-large",
-                "xtick.labelsize" : "xx-large",
-                "ytick.labelsize" : "xx-large"
-            }
-            
-            plt.rcParams.update(my_rc_params)
-            
-            print("Plotting stage data...")
-            
-            fig, ax = plt.subplots()
-            
-            for stage in self.stages:
-                for solver in self.solvers:
-                    for epsilon in self.epsilons:
-                        if epsilon == 0:
-                            label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
-                        elif np.isclose(epsilon, 1e-3):
-                            label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
-                        elif np.isclose(epsilon, 1e-4):
-                            label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
-                        
-                        ax.plot(
-                            self.results[solver][epsilon]["simtime"] + T,
-                            self.results[solver][epsilon]["gauge_data"][stage] - self.results[solver][epsilon]["gauge_data"][stage][0],
-                            linewidth=2.5,
-                            label=label 
-                        )
-                    
-                ax.scatter(
-                    exp_data.data["time"]      [stage],
-                    exp_data.data["gauge_data"][stage],
-                    facecolor="None",
-                    edgecolor="black",
-                    label="Experimental"
-                )
-                
-                ax.set_xlabel(r"$t \, (s)$")
-                ax.set_ylabel(r"Free surface elevation $(m)$")
-                ax.set_xlim(6, 20)
-                ax.legend()
-                fig.savefig(os.path.join("results", "stage-" + stage), bbox_inches="tight")
-                ax.clear()
-            
-            print("Plotting speedups...")
-            
+    def plot_exp_data(
+        self,
+        my_rc_params,
+        exp_data,
+    ):
+        T = 6
+        
+        plt.rcParams.update(my_rc_params)
+        
+        fig, ax = plt.subplots()
+        
+        for stage in self.stages:
             for solver in self.solvers:
                 for epsilon in self.epsilons:
-                    runtime_ratio = self.results[solver][0]["runtime"] / self.results[solver][epsilon]["runtime"]
-                    
                     if epsilon == 0:
-                        label = "break-even"
+                        label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
                     elif np.isclose(epsilon, 1e-3):
                         label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
                     elif np.isclose(epsilon, 1e-4):
                         label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
                     
                     ax.plot(
-                        self.results[solver][epsilon]["simtime"],
-                        runtime_ratio,
+                        self.results[solver][epsilon]["simtime"] + T,
+                        self.results[solver][epsilon]["gauge_data"][stage] - self.results[solver][epsilon]["gauge_data"][stage][0],
                         linewidth=2.5,
-                        linestyle="--" if epsilon == 0 else "-",
-                        label=label
+                        label=label 
                     )
                 
-                xlim = (
-                    ( self.results[solver][0]["simtime"] ).iloc[0],
-                    ( self.results[solver][0]["simtime"] ).iloc[-1]
+            ax.scatter(
+                exp_data.data["time"]      [stage],
+                exp_data.data["gauge_data"][stage],
+                facecolor="None",
+                edgecolor="black",
+                label="Experimental"
+            )
+            
+            ax.set_xlabel(r"$t \, (s)$")
+            ax.set_ylabel(r"Free surface elevation $(m)$")
+            ax.set_xlim(6, 20)
+            ax.legend()
+            fig.savefig(os.path.join("results", "stage-" + stage), bbox_inches="tight")
+            ax.clear()
+            
+        plt.close()
+        
+    def plot_speedups(
+        self,
+        my_rc_params
+    ):
+        plt.rcParams.update(my_rc_params)
+        
+        fig, ax = plt.subplots()
+        
+        for solver in self.solvers:
+            for epsilon in self.epsilons:
+                runtime_ratio = self.results[solver][0]["runtime"] / self.results[solver][epsilon]["runtime"]
+                
+                if epsilon == 0:
+                    label = "break-even"
+                elif np.isclose(epsilon, 1e-3):
+                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                elif np.isclose(epsilon, 1e-4):
+                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
+                
+                ax.plot(
+                    self.results[solver][epsilon]["simtime"],
+                    runtime_ratio,
+                    linewidth=2.5,
+                    linestyle="--" if epsilon == 0 else "-",
+                    label=label
                 )
-                
-                ax.set_xlim(xlim)
-                ax.set_xlabel(r"$t \, (s)$")
-                ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
-                ax.legend()
-                fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
-                ax.clear()
-                
-                plt.close()
+            
+            xlim = (
+                ( self.results[solver][0]["simtime"] ).iloc[0],
+                ( self.results[solver][0]["simtime"] ).iloc[-1]
+            )
+            
+            ax.set_xlim(xlim)
+            ax.set_xlabel(r"$t \, (s)$")
+            ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
+            ax.legend()
+            fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
+            ax.clear()
+            
+        plt.close()
+        
+    def plot(
+        self,
+        exp_data
+    ):
+        my_rc_params = {
+            "legend.fontsize" : "large",
+            "axes.labelsize"  : "xx-large",
+            "axes.titlesize"  : "xx-large",
+            "xtick.labelsize" : "xx-large",
+            "ytick.labelsize" : "xx-large"
+        }
+        
+        self.plot_exp_data(my_rc_params, exp_data)
+        
+        self.plot_speedups(my_rc_params)
         
 if __name__ == "__main__":
-    print("Writing stage file...")
-    
-    with open("conical-island.stage", 'w') as fp:
-        stages = (
-            "4\n" +
-            "9.36  13.8\n" +
-            "10.36 13.8\n" +
-            "12.96 11.22\n" +
-            "15.56 13.8"
-        )
-        
-        fp.write(stages)
-    
+    subprocess.run( ["python", "stage.py" ] )
     subprocess.run( ["python", "raster.py"] )
     
     SimulationConicalIsland( [0, 1e-4, 1e-3], ["mw"] ).plot( ExperimentalDataConicalIsland() )

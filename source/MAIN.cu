@@ -942,13 +942,16 @@ int main
 		// --------------------------------------------- //
 		// --------------------------------------------- //
 
-		compression = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
+		if (steps++ % 10000 == 0)
+		{
+			compression = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
 
-		//printf
-		(
-			"Elements: %d, compression: %f%%, time step: %.15f, steps: %d, sim time: %f\n", 
-			d_assem_sol.length, compression, dt, ++steps, time_now
-		);
+			printf
+			(
+				"Elements: %d, compression: %f%%, time step: %.15f, steps: %d, sim time: %f\n",
+				d_assem_sol.length, compression, dt, steps, time_now
+			);
+		}
 		
  		first_t_step = false;
 	}

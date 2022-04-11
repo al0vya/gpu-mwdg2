@@ -4,21 +4,23 @@ import sys
 def EXIT_HELP():
     help_message = (
         "This tool is used in the command line as follows:\n\n" +
-        " - python test.py test <SOLVER> <EPSILON> <MAX_REF_LVL> <PLOT_TYPE> (runs all in-built test cases)\n" +
-        "    SOLVER      : [hw,mw]\n" +
-        "    EPSILON     : [error threshold]\n" +
-        "    MAX_REF_LVL : [maximum refinment level]\n" +
-        "    PLOT_TYPE   : [cont,surf]\n" +
+        " - python test.py test <SOLVER> <EPSILON> <MAX_REF_LVL> <PLOT_TYPE> <SLOPE_LIMITER> (runs all in-built test cases)\n" +
+        "    SOLVER        : [hw,mw]\n" +
+        "    EPSILON       : [error threshold]\n" +
+        "    MAX_REF_LVL   : [maximum refinment level]\n" +
+        "    PLOT_TYPE     : [cont,surf]\n" +
+        "    SLOPE_LIMITER : [on,off]\n" +
             "\n" +
-        " - python test.py run <SOLVER> <TEST_CASE> <SIM_TIME> <EPSILON> <MAX_REF_LVL> <SAVE_INT> <MASS_INT> <PLOT_TYPE> (runs a single in-built test cases)\n" +
-        "    SOLVER      : [hw,mw]\n" +
-        "    TEST_CASE   : [1-22 inclusive]\n" +
-        "    SIM_TIME    : [simulation time in seconds]\n" +
-        "    EPSILON     : [error threshold]\n" +
-        "    MAX_REF_LVL : [maximum refinment level]\n" +
-        "    SAVE_INT    : [interval in seconds that solution data are saved]\n" +
-        "    MASS_INT    : [interval in seconds that simulation times are saved]\n" +
-        "    PLOT_TYPE   : [cont,surf]\n" +
+        " - python test.py run <SOLVER> <TEST_CASE> <SIM_TIME> <EPSILON> <MAX_REF_LVL> <SAVE_INT> <MASS_INT> <PLOT_TYPE> <SLOPE_LIMITER> (runs a single in-built test cases)\n" +
+        "    SOLVER        : [hw,mw]\n" +
+        "    TEST_CASE     : [1-23 inclusive]\n" +
+        "    SIM_TIME      : [simulation time in seconds]\n" +
+        "    EPSILON       : [error threshold]\n" +
+        "    MAX_REF_LVL   : [maximum refinment level]\n" +
+        "    SAVE_INT      : [interval in seconds that solution data are saved]\n" +
+        "    MASS_INT      : [interval in seconds that simulation times are saved]\n" +
+        "    PLOT_TYPE     : [cont,surf]\n" +
+        "    SLOPE_LIMITER : [on,off]\n" +
         "\n" +
         " - python test.py planar <SOLVER> <TEST_CASE_DIR> <PHYS_QUANTITY> <INTERVAL> (plots planar solution)\n" +
         "    SOLVER        : [hw,mw]\n" +
@@ -110,7 +112,7 @@ test_names = [
     "radial-dam-break"
 ]
 
-c_prop_tests = [1, 2, 3, 4, 21, 22]
+c_prop_tests = [1, 2, 3, 4, 19, 21, 22]
 
 sim_times = [
     80,   # 1D c prop x dir
@@ -492,9 +494,9 @@ class DischargeErrors:
         plt.xlim(xlim)
         plt.ylim(0, 1e-10)
         #plt.yscale("log")
-        plt.legend()
+        plt.legend(ncol=3)
         plt.ylabel("Maximum error")
-        plt.xlabel("Simulation time (s)")
+        plt.xlabel(r"$t \, (s)$")
 
         filename = "c-prop-" + test_name
 
@@ -512,7 +514,8 @@ class Test:
         saveint, 
         massint, 
         test_name, 
-        solver
+        solver,
+        limiter
     ):
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
@@ -525,6 +528,7 @@ class Test:
         self.massint     = massint
         self.test_name   = test_name
         self.solver      = solver
+        self.limiter     = limiter
 
         if self.test_case in c_prop_tests:
             self.row_major  = "off"
@@ -561,8 +565,8 @@ class Test:
             "row_major   %s\n" +
             "c_prop      %s\n" +
             "cumulative  %s\n" +
-            "limitslopes off\n" +
-            "tol_Krivo   1\n" +
+            "limitslopes %s\n" +
+            "tol_Krivo   10\n" +
             "vtk         %s") % (
                 self.test_case, 
                 self.sim_time, 
@@ -574,6 +578,7 @@ class Test:
                 self.row_major, 
                 self.c_prop, 
                 self.cumulative,
+                self.limiter,
                 self.vtk
             )
 
@@ -624,8 +629,8 @@ def animate(path):
 def run():
     print("Attempting to run test...")
     
-    if len(sys.argv) > 9:
-        dummy, action, solver, test_case, sim_time, epsilon, max_ref_lvl, saveint, massint, plot_type = sys.argv
+    if len(sys.argv) > 10:
+        dummy, action, solver, test_case, sim_time, epsilon, max_ref_lvl, saveint, massint, plot_type, limiter = sys.argv
         
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
@@ -642,7 +647,8 @@ def run():
         saveint=float(saveint),
         massint=float(massint),
         test_name=test_names[int(test_case) - 1],
-        solver=solver
+        solver=solver,
+        limiter=limiter
     ).run_test(plot_type)
     
     animate("results")
@@ -652,8 +658,8 @@ def run():
 def run_tests():
     print("Attempting to run tests specified in tests.txt, checking input parameters...")
     
-    if len(sys.argv) > 5:
-        dummy, action, solver, epsilon, max_ref_lvl, plot_type = sys.argv
+    if len(sys.argv) > 6:
+        dummy, action, solver, epsilon, max_ref_lvl, plot_type, limiter = sys.argv
         
         if solver != "hw" and solver != "mw":
             EXIT_HELP()
@@ -678,7 +684,8 @@ def run_tests():
             saveint=sim_times[test - 1] / 80 if test in c_prop_tests else sim_times[test - 1],
             massint=float(massint),
             test_name=test_names[test - 1],
-            solver=solver
+            solver=solver,
+            limiter=limiter
         ).run_test(plot_type)
 
 def plot_soln_planar():

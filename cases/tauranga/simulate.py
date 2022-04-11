@@ -4,7 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.interpolate 
 
-def load_all_gauge_time_series_data():
+def load_experimental_gauge_timeseries():
+    print("Loading experimental timeseries...")
+    
     port_data  = np.loadtxt( fname=os.path.join("input-data", "port_data.txt" ) )
     tide_gauge = np.loadtxt( fname=os.path.join("input-data", "tide_gauge.txt") )
     
@@ -180,7 +182,7 @@ def write_bathymetry(
     np.savetxt(
         fname="tauranga.dem",
         X=np.flipud(bathymetry),
-        fmt="%.15f",
+        fmt="%.8f",
         header=header,
         comments=""
     )
@@ -235,20 +237,18 @@ def write_stage_file():
         
         fp.write(stages)
         
-def write_all_input_files():
+def find_datum():
     print("Loading bathymetry file...")
     
     bathymetry = np.loadtxt(fname=os.path.join("input-data", "bathymetry.csv"), delimiter=",")
     
     NODATA_mask = (bathymetry + 9999 <= 1e-10) == 0
     
-    nrows, ncols = bathymetry.shape
-    
-    gauges = load_all_gauge_time_series_data()
+    gauges = load_experimental_gauge_timeseries()
     
     print("Finding datum...")
     
-    datum = find_min_arrays(
+    return find_min_arrays(
         bathymetry * NODATA_mask, # remove -9999 when finding datum
         gauges["A_Beacon"]["tsunami"],
         gauges["A_Beacon"]["total"],
@@ -263,8 +263,17 @@ def write_all_input_files():
         gauges["Moturiki"]["total"],
         gauges["Moturiki"]["tidal"],
     )
+
+def write_all_input_files():
+    datum = find_datum()
     
     print("Adjusting for datum in bathymetry data...")
+    
+    bathymetry = np.loadtxt(fname=os.path.join("input-data", "bathymetry.csv"), delimiter=",")
+    
+    NODATA_mask = (bathymetry + 9999 <= 1e-10) == 0
+    
+    nrows, ncols = bathymetry.shape
     
     write_bathymetry(
         bathymetry=( bathymetry - (NODATA_mask * datum) ), # adjust datum only for non-NODATA_values
@@ -282,6 +291,8 @@ def write_all_input_files():
         timeseries_name=timeseries_name
     )
     
+    gauges = load_experimental_gauge_timeseries()
+    
     write_bdy_file(
         time=gauges["A_Beacon"]["time"],
         series=( gauges["A_Beacon"]["total"] - datum ),
@@ -290,5 +301,55 @@ def write_all_input_files():
     
     write_stage_file()
 
+def load_computed_gauge_timeseries():
+    print("Loading computed gauges timeseries...")
+    
+    gauges = np.loadtxt(fname=os.path.join("results", "stage.wd"), skiprows=1, delimiter=",")
+    
+    datum = find_datum()
+    
+    return {
+        "time"          : gauges[:,0] / 3600, # get into hours
+        "A_Beacon"      : gauges[:,1] + datum,
+        "Tug_Harbour"   : gauges[:,2] + datum,
+        "Sulphur_Point" : gauges[:,3] + datum,
+        "Moturiki"      : gauges[:,4] + datum
+    }
+
+def compare_timeseries(
+    computed_gauges,
+    experimental_gauges,
+    name
+):
+    fig, ax = plt.subplots()
+    
+    ax.plot(
+        computed_gauges["time"],
+        computed_gauges[name],
+        experimental_gauges[name]["time"],
+        experimental_gauges[name]["total"]
+    )
+    
+    plt.setp(
+        ax,
+        title=name,
+        xlim=( computed_gauges["time"][0], computed_gauges["time"][-1] ),
+        xlabel=r"$t \, (hr)$",
+        ylabel=r"$h + z \, (m)$"
+    )
+    
+    fig.savefig(os.path.join("results", name), bbox_inches="tight")
+    
+    plt.close()
+    
+def compare_all_timeseries():
+    computed_gauges     = load_computed_gauge_timeseries()
+    experimental_gauges = load_experimental_gauge_timeseries()
+    
+    compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="A_Beacon")
+    compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="Tug_Harbour")
+    compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="Sulphur_Point")
+    compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="Moturiki")
+
 if __name__ == "__main__":
-    write_all_input_files()
+    compare_all_timeseries()
