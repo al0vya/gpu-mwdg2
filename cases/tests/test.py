@@ -115,10 +115,10 @@ test_names = [
 c_prop_tests = [1, 2, 3, 4, 19, 21, 22]
 
 sim_times = [
-    80,   # 1D c prop x dir
-    80,   # 1D c prop y dir
-    80,   # 1D c prop x dir
-    80,   # 1D c prop y dir
+    100,  # 1D c prop x dir
+    100,  # 1D c prop y dir
+    100,  # 1D c prop x dir
+    100,  # 1D c prop y dir
     2.5,  # wet dam break x dir
     2.5,  # wet dam break y dir
     1.3,  # dry dam break x dir
@@ -133,10 +133,10 @@ sim_times = [
     29.6, # triangular dam break y dir
     21.6, # parabolic bowl x dir
     21.6, # parabolic bowl y dir
-    80,   # three cones
+    100,  # three cones
     30,   # three cones dam break
-    80,   # differentiable blocks
-    80,   # non-differentiable blocks
+    100,  # differentiable blocks
+    100,  # non-differentiable blocks
     3.5   # radial dam break
 ]
 
@@ -551,7 +551,7 @@ class Test:
             "test_case   %s\n" +
             "sim_time    %s\n" +
             "max_ref_lvl %s\n" +
-            "min_dt      0.5\n" +
+            "min_dt      1\n" +
             "respath     results\n" +
             "epsilon     %s\n" +
             "tol_h       1e-3\n" +
@@ -566,7 +566,7 @@ class Test:
             "c_prop      %s\n" +
             "cumulative  %s\n" +
             "limitslopes %s\n" +
-            "tol_Krivo   10\n" +
+            "tol_Krivo   1\n" +
             "vtk         %s") % (
                 self.test_case, 
                 self.sim_time, 
@@ -681,7 +681,7 @@ def run_tests():
             sim_time=sim_times[test - 1],
             max_ref_lvl=int(max_ref_lvl),
             epsilon=float(epsilon),
-            saveint=sim_times[test - 1] / 80 if test in c_prop_tests else sim_times[test - 1],
+            saveint=sim_times[test - 1] / 100 if test in c_prop_tests else sim_times[test - 1],
             massint=float(massint),
             test_name=test_names[test - 1],
             solver=solver,

@@ -155,13 +155,6 @@ def conical_island_raster_fields(x, y, x1, y1):
     return {"h" : h_2D, "qx" : qx_2D, "z" : z_2D}
 
 def main():
-    start_file_exists   = os.path.exists("conical-island.start")
-    startQx_file_exists = os.path.exists("conical-island.start.Qx")
-    dem_file_exists     = os.path.exists("conical-island.dem")
-    
-    if start_file_exists and startQx_file_exists and dem_file_exists:
-        sys.exit("All input raster files already exist, exiting raster file generation.")
-    
     xmin = -5
     xmax = 26
     
@@ -186,44 +179,35 @@ def main():
     check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["qx"])
     check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["z"])
     
-    if start_file_exists:
-        print("Not writing conical-island.start because it already exists.")
-    else:
-        project_and_write_raster(
-            nrows=nrows,
-            ncols=ncols,
-            nodal_data=raster_fields["h"],
-            filename="conical-island.start",
-            xmin=xmin,
-            ymin=ymin,
-            cellsize=cellsize
-        )
+    project_and_write_raster(
+        nrows=nrows,
+        ncols=ncols,
+        nodal_data=raster_fields["h"],
+        filename="conical-island.start",
+        xmin=xmin,
+        ymin=ymin,
+        cellsize=cellsize
+    )
     
-    if startQx_file_exists:
-        print("Not writing conical-island.start.Qx because it already exists.")
-    else:
-        project_and_write_raster(
-            nrows=nrows,
-            ncols=ncols,
-            nodal_data=raster_fields["qx"],
-            filename="conical-island.start.Qx",
-            xmin=xmin,
-            ymin=ymin,
-            cellsize=cellsize
-        )
+    project_and_write_raster(
+        nrows=nrows,
+        ncols=ncols,
+        nodal_data=raster_fields["qx"],
+        filename="conical-island.start.Qx",
+        xmin=xmin,
+        ymin=ymin,
+        cellsize=cellsize
+    )
     
-    if dem_file_exists:
-        print("Not writing conical-island.dem because it already exists.")
-    else:
-        project_and_write_raster(
-            nrows=nrows,
-            ncols=ncols,
-            nodal_data=raster_fields["z"],
-            filename="conical-island.dem",
-            xmin=xmin,
-            ymin=ymin,
-            cellsize=cellsize
-        )
+    project_and_write_raster(
+        nrows=nrows,
+        ncols=ncols,
+        nodal_data=raster_fields["z"],
+        filename="conical-island.dem",
+        xmin=xmin,
+        ymin=ymin,
+        cellsize=cellsize
+    )
 
 if __name__ == "__main__":
     main()

@@ -20,7 +20,7 @@ class ExperimentalDataConicalIsland:
         
         for col, stage in enumerate(self.stages):
             cols = [2 * col, 2 * col + 1]
-            experimental_dataframe = pd.read_excel("experimental.xls", header=None, skiprows=2, usecols=cols)
+            experimental_dataframe = pd.read_excel("experimental.xls", header=None, skiprows=2, usecols=cols, engine="openpyxl")
             
             self.data["time"]      [stage] = experimental_dataframe.iloc[:,0]
             self.data["gauge_data"][stage] = experimental_dataframe.iloc[:,1]

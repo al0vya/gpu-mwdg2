@@ -15,20 +15,6 @@ project(proj-gpu-mwdg2)
 add_executable(gpu-mwdg2)
 
 include(options.cmake)
+include(include.cmake)
 
 add_subdirectory(source)
-
-target_include_directories(
-        gpu-mwdg2
-        PRIVATE
-        source/classes
-        source/input
-        source/mra
-        source/neighbours
-        source/operators
-        source/output
-        source/tests
-        source/types
-        source/utilities
-        source/zorder
-    )

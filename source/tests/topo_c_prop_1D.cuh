@@ -38,5 +38,5 @@ real topo_c_prop_1D(real x_or_y_int)
 		z_int = 0;
 	}
 	
-	return z_int;
+	return C(10.0) * z_int;
 }

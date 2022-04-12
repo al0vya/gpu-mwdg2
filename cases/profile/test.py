@@ -55,6 +55,8 @@ def verify(
     epsilon,
     solver
 ):
+    print( "Running simulation, solver: " + solver + ", eps = " + str(epsilon) )
+    
     write_par_file(epsilon, solver)
     
     subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), "profile.par"] )
