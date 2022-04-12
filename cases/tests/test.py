@@ -250,22 +250,18 @@ class Limits:
             self,
             intervals
         ):
-            h  = []
-            qx = []
-            qy = []
-            z  = []
+            print("Computing solution limits...")
             
-            for interval in range(intervals + 1):
-                h_file  = "depths-" +      str(interval) + ".csv"
-                qx_file = "discharge_x-" + str(interval) + ".csv"
-                qy_file = "discharge_y-" + str(interval) + ".csv"
-                z_file  = "topo-" +        str(interval) + ".csv"
-                
-                h  += pd.read_csv( os.path.join("results", h_file ) )["results"].to_list()
-                qx += pd.read_csv( os.path.join("results", qx_file) )["results"].to_list()
-                qy += pd.read_csv( os.path.join("results", qy_file) )["results"].to_list()
-                z  += pd.read_csv( os.path.join("results", z_file ) )["results"].to_list()
-                
+            h_file  = "depths-0.csv"
+            qx_file = "discharge_x-0.csv"
+            qy_file = "discharge_y-0.csv"
+            z_file  = "topo-0.csv"
+            
+            h  = pd.read_csv( os.path.join("results", h_file ) )["results"]
+            qx = pd.read_csv( os.path.join("results", qx_file) )["results"]
+            qy = pd.read_csv( os.path.join("results", qy_file) )["results"]
+            z  = pd.read_csv( os.path.join("results", z_file ) )["results"]
+            
             self.h_max  = np.max(h)
             self.qx_max = np.max(qx)
             self.qy_max = np.max(qy)
@@ -275,6 +271,27 @@ class Limits:
             self.qx_min = np.min(qx)
             self.qy_min = np.min(qy)
             self.z_min  = np.min(z)
+            
+            for interval in range(intervals + 1):
+                h_file  = "depths-"      + str(interval) + ".csv"
+                qx_file = "discharge_x-" + str(interval) + ".csv"
+                qy_file = "discharge_y-" + str(interval) + ".csv"
+                z_file  = "topo-"        + str(interval) + ".csv"
+                
+                h  = pd.read_csv( os.path.join("results", h_file ) )["results"]
+                qx = pd.read_csv( os.path.join("results", qx_file) )["results"]
+                qy = pd.read_csv( os.path.join("results", qy_file) )["results"]
+                z  = pd.read_csv( os.path.join("results", z_file ) )["results"]
+                
+                self.h_max  = np.max( [ self.h_max,  np.max(h)  ] ) 
+                self.qx_max = np.max( [ self.qx_max, np.max(qx) ] )
+                self.qy_max = np.max( [ self.qy_max, np.max(qy) ] )
+                self.z_max  = np.max( [ self.z_max,  np.max(z)  ] )
+                
+                self.h_min  = np.min( [ self.h_min,  np.min(h)  ] )
+                self.qx_min = np.min( [ self.qx_min, np.min(qx) ] )
+                self.qy_min = np.min( [ self.qy_min, np.min(qy) ] )
+                self.z_min  = np.min( [ self.z_min,  np.min(z)  ] )
 
 def plot_surface(
     X,
@@ -566,7 +583,7 @@ class Test:
             "c_prop      %s\n" +
             "cumulative  %s\n" +
             "limitslopes %s\n" +
-            "tol_Krivo   1\n" +
+            "tol_Krivo   10\n" +
             "vtk         %s") % (
                 self.test_case, 
                 self.sim_time, 
