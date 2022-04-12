@@ -26,7 +26,7 @@ def run_c_prop_tests():
             "test",      # ACTION
             solver,      # SOLVER
             "1e-3",      # EPSILON
-            "7",         # MAX_REF_LVL
+            "8",         # MAX_REF_LVL
             "surf",      # PLOT_TYPE
             "off"        # SLOPE_LIMITER
         ]

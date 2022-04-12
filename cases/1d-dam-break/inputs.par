@@ -1,7 +1,7 @@
 test_case   5
 sim_time    40.0
-max_ref_lvl 11
-min_dt      0.5
+max_ref_lvl 9
+min_dt      1
 respath     results
 epsilon     0.0
 tol_h       1e-3

@@ -942,7 +942,7 @@ int main
 		// --------------------------------------------- //
 		// --------------------------------------------- //
 
-		if (steps++ % 1 == 0)
+		if (steps++ % 10000 == 0)
 		{
 			compression = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
 
