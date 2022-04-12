@@ -9,7 +9,7 @@ tol_q       0
 tol_s       1e-9
 g           9.80665
 saveint     1.0
-massint     10.0
+massint     40.0
 solver      mw
 wall_height 0
 row_major   on

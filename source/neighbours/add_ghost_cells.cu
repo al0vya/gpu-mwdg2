@@ -89,16 +89,16 @@ void add_ghost_cells
 				{
 					if (!flow_NS && !flow_EW)
 					{
-						d_assem_sol.h1x[idx]  = C(0.0);
-						d_assem_sol.qx1x[idx] = C(0.0);
-						d_assem_sol.qy1x[idx] = C(0.0);
-						d_assem_sol.z1x[idx]  = C(0.0);
+						d_assem_sol.h1y[idx]  = C(0.0);
+						d_assem_sol.qx1y[idx] = C(0.0);
+						d_assem_sol.qy1y[idx] = C(0.0);
+						d_assem_sol.z1y[idx]  = C(0.0);
 					}
 
-					d_assem_sol.h1y[idx]  = C(0.0);
-					d_assem_sol.qx1y[idx] = C(0.0);
-					d_assem_sol.qy1y[idx] = C(0.0);
-					d_assem_sol.z1y[idx]  = C(0.0);
+					d_assem_sol.h1x[idx]  = C(0.0);
+					d_assem_sol.qx1x[idx] = C(0.0);
+					d_assem_sol.qy1x[idx] = C(0.0);
+					d_assem_sol.z1x[idx]  = C(0.0);
 
 					d_neighbours.north.h1x[idx]  = C(0.0);
 					d_neighbours.north.qx1x[idx] = C(0.0);
@@ -206,11 +206,6 @@ void add_ghost_cells
 						d_assem_sol.z1x[idx]  = C(0.0);
 					}
 					
-					d_assem_sol.h1x[idx]  = C(0.0);
-					d_assem_sol.qx1x[idx] = C(0.0);
-					d_assem_sol.qy1x[idx] = C(0.0);
-					d_assem_sol.z1x[idx]  = C(0.0);
-
 					d_assem_sol.h1y[idx]  = C(0.0);
 					d_assem_sol.qx1y[idx] = C(0.0);
 					d_assem_sol.qy1y[idx] = C(0.0);
@@ -290,16 +285,16 @@ void add_ghost_cells
 				{
 					if (!flow_NS && !flow_EW)
 					{
-						d_assem_sol.h1x[idx]  = C(0.0);
-						d_assem_sol.qx1x[idx] = C(0.0);
-						d_assem_sol.qy1x[idx] = C(0.0);
-						d_assem_sol.z1x[idx]  = C(0.0);
+						d_assem_sol.h1y[idx]  = C(0.0);
+						d_assem_sol.qx1y[idx] = C(0.0);
+						d_assem_sol.qy1y[idx] = C(0.0);
+						d_assem_sol.z1y[idx]  = C(0.0);
 					}
 					
-					d_assem_sol.h1y[idx]  = C(0.0);
-					d_assem_sol.qx1y[idx] = C(0.0);
-					d_assem_sol.qy1y[idx] = C(0.0);
-					d_assem_sol.z1y[idx]  = C(0.0);
+					d_assem_sol.h1x[idx]  = C(0.0);
+					d_assem_sol.qx1x[idx] = C(0.0);
+					d_assem_sol.qy1x[idx] = C(0.0);
+					d_assem_sol.z1x[idx]  = C(0.0);
 
 					d_neighbours.south.h1x[idx]  = C(0.0);
 					d_neighbours.south.qx1x[idx] = C(0.0);
