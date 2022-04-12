@@ -87,10 +87,13 @@ void add_ghost_cells
 			{
 				if ( flow_NS || (!flow_NS && !flow_EW) )
 				{
-					d_assem_sol.h1x[idx]  = C(0.0);
-					d_assem_sol.qx1x[idx] = C(0.0);
-					d_assem_sol.qy1x[idx] = C(0.0);
-					d_assem_sol.z1x[idx]  = C(0.0);
+					if (!flow_NS && !flow_EW)
+					{
+						d_assem_sol.h1x[idx]  = C(0.0);
+						d_assem_sol.qx1x[idx] = C(0.0);
+						d_assem_sol.qy1x[idx] = C(0.0);
+						d_assem_sol.z1x[idx]  = C(0.0);
+					}
 
 					d_assem_sol.h1y[idx]  = C(0.0);
 					d_assem_sol.qx1y[idx] = C(0.0);
@@ -195,6 +198,14 @@ void add_ghost_cells
 
 				if ( flow_EW || (!flow_NS && !flow_EW) )
 				{
+					if (!flow_NS && !flow_EW)
+					{
+						d_assem_sol.h1x[idx]  = C(0.0);
+						d_assem_sol.qx1x[idx] = C(0.0);
+						d_assem_sol.qy1x[idx] = C(0.0);
+						d_assem_sol.z1x[idx]  = C(0.0);
+					}
+					
 					d_assem_sol.h1x[idx]  = C(0.0);
 					d_assem_sol.qx1x[idx] = C(0.0);
 					d_assem_sol.qy1x[idx] = C(0.0);
@@ -277,11 +288,14 @@ void add_ghost_cells
 			{
 				if ( flow_NS || (!flow_NS && !flow_EW) )
 				{
-					d_assem_sol.h1x[idx]  = C(0.0);
-					d_assem_sol.qx1x[idx] = C(0.0);
-					d_assem_sol.qy1x[idx] = C(0.0);
-					d_assem_sol.z1x[idx]  = C(0.0);
-
+					if (!flow_NS && !flow_EW)
+					{
+						d_assem_sol.h1x[idx]  = C(0.0);
+						d_assem_sol.qx1x[idx] = C(0.0);
+						d_assem_sol.qy1x[idx] = C(0.0);
+						d_assem_sol.z1x[idx]  = C(0.0);
+					}
+					
 					d_assem_sol.h1y[idx]  = C(0.0);
 					d_assem_sol.qx1y[idx] = C(0.0);
 					d_assem_sol.qy1y[idx] = C(0.0);
@@ -385,10 +399,13 @@ void add_ghost_cells
 
 				if ( flow_EW || (!flow_NS && !flow_EW) )
 				{
-					d_assem_sol.h1x[idx]  = C(0.0);
-					d_assem_sol.qx1x[idx] = C(0.0);
-					d_assem_sol.qy1x[idx] = C(0.0);
-					d_assem_sol.z1x[idx]  = C(0.0);
+					if (!flow_NS && !flow_EW)
+					{
+						d_assem_sol.h1x[idx]  = C(0.0);
+						d_assem_sol.qx1x[idx] = C(0.0);
+						d_assem_sol.qy1x[idx] = C(0.0);
+						d_assem_sol.z1x[idx]  = C(0.0);
+					}
 
 					d_assem_sol.h1y[idx]  = C(0.0);
 					d_assem_sol.qx1y[idx] = C(0.0);
