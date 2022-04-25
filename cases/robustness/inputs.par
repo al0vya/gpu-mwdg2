@@ -10,11 +10,11 @@ tol_s       1e-9
 g           9.80665
 saveint     6.0
 massint     12.0
-solver      mw
+solver      hw
 wall_height 0
 row_major   on
 c_prop      off
 cumulative  on
 limitslopes off
-tol_Krivo   1
+tol_Krivo   10
 vtk         off
