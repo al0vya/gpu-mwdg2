@@ -125,16 +125,78 @@ class SimulationThreeConesDamBreak:
                 "off"         # SLOPE_LIMITER
             ]
         )
-    
-    def plot(self):
-        params = {
-            "legend.fontsize" : "large",
-            "axes.labelsize"  : "large",
-            "axes.titlesize"  : "large",
-            "xtick.labelsize" : "large",
-            "ytick.labelsize" : "large"
-        }
+
+    def plot_depths(
+        self,
+        params
+    ):
+        plt.rcParams.update(params)
         
+        size = 100
+        
+        fig, axs = plt.subplots(
+            nrows=7,
+            ncols=2,
+            gridspec_kw={"height_ratios" : [size, 1, size, 1, size, 1, size/15]},
+            figsize=(10,10)
+        )
+        
+        plt.setp( axs, ylabel=(r"$y \, (m)$"), xlabel=(r"$x \, (m)$") )
+        
+        all_h = []
+        
+        for epsilon in self.epsilons:
+            for interval in self.intervals:
+                all_h += self.results[epsilon][interval].tolist()
+        
+        min_h = np.min(all_h)
+        max_h = np.max(all_h)
+        
+        levels = 20
+        
+        dh = (max_h - min_h) / levels
+        
+        h_levels = [ min_h + dh * i for i in range(levels + 1) ]
+        
+        contourset_u0  = axs[0, 0].contourf(self.X, self.Y, self.results[0]["0 s"],     levels=levels) # for legend without negative depth
+        contourset_u6  = axs[2, 0].contourf(self.X, self.Y, self.results[0]["6 s"],     levels=h_levels)
+        contourset_u12 = axs[4, 0].contourf(self.X, self.Y, self.results[0]["12 s"],    levels=h_levels)
+        contourset_a0  = axs[0, 1].contourf(self.X, self.Y, self.results[1e-3]["0 s"],  levels=h_levels)
+        contourset_a6  = axs[2, 1].contourf(self.X, self.Y, self.results[1e-3]["6 s"],  levels=h_levels)
+        contourset_a12 = axs[4, 1].contourf(self.X, self.Y, self.results[1e-3]["12 s"], levels=h_levels)
+        
+        axs[0, 0].set_title("GPU-DG2"     if solver == "mw" else "GPU-FV1")
+        axs[0, 1].set_title( ("GPU-MWDG2, " if solver == "mw" else "GPU-HWFV1, ") + r"$L = 8, \, \epsilon = 10^{-3}$" )
+        
+        # get axis layout (subplots) of the figure
+        gs = axs[0, 0].get_gridspec()
+        
+        # remove bottom row subplots (axes)
+        for ax in axs[1, 0:]: ax.remove()
+        for ax in axs[3, 0:]: ax.remove()
+        for ax in axs[5, 0:]: ax.remove()
+        for ax in axs[6, 0:]: ax.remove()
+        
+        # add subplots for time stamps via set_title
+        ax_0s   = fig.add_subplot(gs[1, 0:]); ax_0s.axis("off");  ax_0s.set_title(r"$t = 0 \, s$")
+        ax_6s   = fig.add_subplot(gs[3, 0:]); ax_6s.axis("off");  ax_6s.set_title(r"$t = 6 \, s$")
+        ax_12s  = fig.add_subplot(gs[5, 0:]); ax_12s.axis("off"); ax_12s.set_title(r"$t = 12 \, s$")
+        
+        # add a single subplot for the bottom row subplots
+        ax_cbar = fig.add_subplot(gs[6, 0:]); 
+        
+        colorbar = fig.colorbar(contourset_u0, cax=ax_cbar, orientation="horizontal")#, aspect=100)
+        colorbar.ax.set_xlabel(r"$h \, (m)$")
+        
+        fig.tight_layout(h_pad=0)
+        
+        plt.savefig(os.path.join("results", "three-humps-depth-contours.svg"), bbox_inches="tight")
+        plt.close()
+    
+    def plot_errors(
+        self,
+        params
+    ):
         plt.rcParams.update(params)
         
         size = 100
@@ -198,6 +260,19 @@ class SimulationThreeConesDamBreak:
         fig.tight_layout(h_pad=0)
         
         plt.savefig(os.path.join("results", "three-humps-error-contours.svg"), bbox_inches="tight")
+        plt.close()
+        
+    def plot(self):
+        my_rc_params = {
+            "legend.fontsize" : "large",
+            "axes.labelsize"  : "large",
+            "axes.titlesize"  : "large",
+            "xtick.labelsize" : "large",
+            "ytick.labelsize" : "large"
+        }
+        
+        self.plot_depths(my_rc_params)
+        self.plot_errors(my_rc_params)
         
 if __name__ == "__main__":
     if len(sys.argv) < 2: EXIT_HELP()

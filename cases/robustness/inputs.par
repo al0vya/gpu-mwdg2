@@ -10,7 +10,7 @@ tol_s       1e-9
 g           9.80665
 saveint     6.0
 massint     12.0
-solver      hw
+solver      mw
 wall_height 0
 row_major   on
 c_prop      off
