@@ -106,8 +106,8 @@ void write_soln_planar_dg2
 				LegendreBasis leg_basis =
 				{
 					C(1.0),
-					sqrt( C(3.0) ) * ( C(2.0) * x_unit - C(1.0) ),
-					sqrt( C(3.0) ) * ( C(2.0) * y_unit - C(1.0) )
+					sqrt( C(3.0) ) * x_unit,
+					sqrt( C(3.0) ) * y_unit
 				};
 
 				FlowVector U = coeffs.local_face_val(leg_basis);

@@ -3,7 +3,7 @@ sim_time    3.5
 max_ref_lvl 8
 min_dt      1
 respath     results
-epsilon     0.001
+epsilon     0.01
 tol_h       1e-3
 tol_q       0
 tol_s       1e-9
