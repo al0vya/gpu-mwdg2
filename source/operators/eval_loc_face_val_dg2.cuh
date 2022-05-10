@@ -4,7 +4,7 @@
 #include "PlanarCoefficients.h"
 #include "LegendreBasis.h"
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real eval_loc_face_val_dg2
 (
 	const PlanarCoefficients& s,

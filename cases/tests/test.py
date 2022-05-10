@@ -27,7 +27,7 @@ def EXIT_HELP():
         "    PHYS_QUANTITY : [h,eta,qx,qy,z]\n" +
         "    INTERVAL      : [interval]\n" +
         "\n" +
-        " - python test.py row_major <PLOT_TYPE> (plots either solution surface or contours)\n" +
+        " - python test.py planar <PLOT_TYPE> (plots either solution surface or contours)\n" +
         "    PLOT_TYPE : [cont,surf]\n" +
         "\n" +
         " - python test.py c_prop <SOLVER> (plots discharge errors)\n" +
@@ -548,12 +548,12 @@ class Test:
         self.limiter     = limiter
 
         if self.test_case in c_prop_tests:
-            self.row_major  = "off"
+            self.planar  = "off"
             self.vtk        = "off"
             self.c_prop     = "on"
             self.cumulative = "off"
         else:
-            self.row_major  = "on"
+            self.planar  = "on"
             self.vtk        = "off"
             self.c_prop     = "off"
             self.cumulative = "on"
@@ -579,7 +579,7 @@ class Test:
             "massint     %s\n" +
             "solver      %s\n" +
             "wall_height 0\n" +
-            "row_major   %s\n" +
+            "planar   %s\n" +
             "c_prop      %s\n" +
             "cumulative  %s\n" +
             "limitslopes %s\n" +
@@ -592,7 +592,7 @@ class Test:
                 self.saveint, 
                 self.massint, 
                 self.solver, 
-                self.row_major, 
+                self.planar, 
                 self.c_prop, 
                 self.cumulative,
                 self.limiter,
@@ -713,7 +713,7 @@ def plot_soln_planar():
     else:
         EXIT_HELP()
 
-def plot_soln_row_major():
+def plot_soln_planar():
     if len(sys.argv) > 4:
         dummy, action, interval, results, plot_type = sys.argv
         
@@ -742,8 +742,8 @@ if __name__ == "__main__":
         run()
     elif action == "planar":
         plot_soln_planar()
-    elif action == "row_major":
-        plot_soln_row_major()
+    elif action == "planar":
+        plot_soln_planar()
     elif action == "c_prop":
         plot_c_prop()
     else:

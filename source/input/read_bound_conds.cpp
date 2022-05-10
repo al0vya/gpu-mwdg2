@@ -16,8 +16,8 @@ Depths1D read_bound_conds(const int& test_case)
 		break;
 	case 5: case 6:   // wet dam break
 	case 11: case 12: // wet overtopping
-		bcs.hl = C(6.0);
-		bcs.hr = C(2.0);
+		bcs.hl = C(2.0);
+		bcs.hr = C(6.0);
 		break;
 	case 7:  case 8:  // dry dam break
 	case 9:  case 10: // dry dam break with fric

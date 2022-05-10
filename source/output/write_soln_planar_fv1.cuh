@@ -12,7 +12,9 @@
 #include "SaveInterval.h"
 #include "FinestGrid.h"
 
-#include "compact.cuh"
+#include "write_reals_to_file.cuh"
+#include "get_i_index.cuh"
+#include "get_j_index.cuh"
 #include "get_lvl_idx.cuh"
 
 void write_soln_planar_fv1

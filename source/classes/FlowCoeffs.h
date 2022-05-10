@@ -11,7 +11,7 @@ typedef struct FlowCoeffs
 	PlanarCoefficients qx;
 	PlanarCoefficients qy;
 
-	__device__
+	__host__ __device__
 	FlowVector local_face_val(const LegendreBasis& basis)
 	{
 		return

@@ -11,34 +11,15 @@ void write_soln_planar_dg2
 	const SaveInterval&      saveint
 )
 {
-    char fullpath[255] = {'\0'};
+    const int mesh_dim = 1 << (solver_params.L);
 
-	sprintf(fullpath, "%s%s%d%s", respath, "planar-", saveint.count - 1, ".csv");
+	const int num_finest_cells = mesh_dim * mesh_dim;
 
-	FILE* fp = fopen(fullpath, "w");
+	real* h  = new real[num_finest_cells];
+	real* qx = new real[num_finest_cells];
+	real* qy = new real[num_finest_cells];
+	real* z  = new real[num_finest_cells];
 
-	if (NULL == fp)
-	{
-		fprintf(stderr, "Error writing planar data file, file: %s, line: %d.\n", __FILE__, __LINE__);
-		exit(-1);
-	}
-
-	printf("Writing planar data.\n");
-
-	fprintf
-	(
-		fp,
-		"lower_left_x,"
-		"lower_left_y,"
-		"upper_right_x,"
-		"upper_right_y,"
-		"h0,h1x,h1y,"
-		"qx0,qx1x,qx1y,"
-		"qy0,qy1x,qy1y,"
-		"z0,z1x,z1y"
-		"\n"
-	);
-	
 	real*           h0       = new real[d_assem_sol.length];
 	real*           h1x      = new real[d_assem_sol.length];
 	real*           h1y      = new real[d_assem_sol.length];
@@ -73,64 +54,95 @@ void write_soln_planar_dg2
 	copy(act_idcs, d_assem_sol.act_idcs, bytes_act_idcs);
 	copy(levels,   d_assem_sol.levels,   bytes_levels);
 
-	for (int i = 0; i < d_assem_sol.length; i++)
+	for (int element = 0; element < d_assem_sol.length; element++)
 	{
-		HierarchyIndex act_idx  = act_idcs[i];
-		int            level    = levels[i];
+		int level = levels[element];
 
-		MortonCode code = act_idx - get_lvl_idx(level);
+		MortonCode code = act_idcs[element] - get_lvl_idx(level);
 
-		real local_cell_size_x = dx_finest * ( 1 << (solver_params.L - level) );
-		real local_cell_size_y = dy_finest * ( 1 << (solver_params.L - level) );
+		code <<= 2 * (solver_params.L - level);
 
-		Coordinate x = compact(code);
-		Coordinate y = compact(code >> 1);
+		Coordinate i = get_i_index(code);
+		Coordinate j = get_j_index(code);
 
-		real x_centre = x * local_cell_size_x + local_cell_size_x / C(2.0);
-		real y_centre = y * local_cell_size_y + local_cell_size_y / C(2.0);
+		int side_len = 1 << (solver_params.L - level);
 
-		Points points =
+		real dx_unit = C(2.0) / side_len;
+
+		FlowCoeffs coeffs =
 		{
-			sim_params.xmin + x * local_cell_size_x,       // lower left  x
-			sim_params.ymin + y * local_cell_size_y,       // lower left  y
-			C(0.0),                                        // upper left  x
-			C(0.0),                                        // upper left  y
-			C(0.0),                                        // lower right x
-			C(0.0),                                        // lower right y
-			sim_params.xmin + (x + 1) * local_cell_size_x, // upper right x
-			sim_params.ymin + (y + 1) * local_cell_size_y  // upper right y
+			{
+				h0[element],
+				h1x[element],
+				h1y[element]
+			},
+			{
+				qx0[element],
+				qx1x[element],
+				qx1y[element]
+			},
+			{
+				qy0[element],
+				qy1x[element],
+				qy1y[element]
+			}
 		};
 
-		fprintf
-		(
-		    fp,
-			"%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-			"%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-			"%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-			"%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-		    "%" NUM_FRMT ","
-		    "%" NUM_FRMT
-			"\n",
-			points.ll_x,
-			points.ll_y,
-			points.ur_x,
-			points.ur_y,
-			h0 [i],  h1x[i],  h1y[i],
-			qx0[i], qx1x[i], qx1y[i],
-			qy0[i], qy1x[i], qy1y[i],
-			z0 [i],  z1x[i],  z1y[i]
-		);
+		PlanarCoefficients z_planar =
+		{
+			z0[element],
+			z1x[element],
+			z1y[element]
+		};
+
+		for (int j_loc = 0; j_loc < side_len; j_loc++)
+		{
+			real y_unit = C(-1.0) + j_loc * dx_unit + dx_unit / C(2.0);
+
+			for (int i_loc = 0; i_loc < side_len; i_loc++)
+			{
+				real x_unit = C(-1.0) + i_loc * dx_unit + dx_unit / C(2.0);
+				
+				LegendreBasis leg_basis =
+				{
+					C(1.0),
+					sqrt( C(3.0) ) * ( C(2.0) * x_unit - C(1.0) ),
+					sqrt( C(3.0) ) * ( C(2.0) * y_unit - C(1.0) )
+				};
+
+				FlowVector U = coeffs.local_face_val(leg_basis);
+
+				real z_local_face_val = eval_loc_face_val_dg2(z_planar, leg_basis);
+
+				int idx = (mesh_dim) * (j + j_loc) + (i + i_loc);
+
+				h[idx]  = U.h;
+				qx[idx] = U.qx;
+				qy[idx] = U.qy;
+				z[idx]  = z_local_face_val;
+			}
+		}
 	}
+
+	char depths[64]      = {'\0'};
+	char discharge_x[64] = {'\0'};
+	char discharge_y[64] = {'\0'};
+	char topo[64]        = {'\0'}; 
+	
+	sprintf(depths,      "%s%d", "depths-",      saveint.count - 1);
+	sprintf(discharge_x, "%s%d", "discharge_x-", saveint.count - 1);
+	sprintf(discharge_y, "%s%d", "discharge_y-", saveint.count - 1);
+	sprintf(topo,        "%s%d", "topo-",        saveint.count - 1);
+
+	write_reals_to_file(depths,      respath, h,  num_finest_cells);
+	write_reals_to_file(discharge_x, respath, qx, num_finest_cells);
+	write_reals_to_file(discharge_y, respath, qy, num_finest_cells);
+	write_reals_to_file(topo,        respath, z,  num_finest_cells);
+
+	delete[] h;
+	delete[] qx;
+	delete[] qy;
+	delete[] z;
 
 	delete[] h0;
 	delete[] h1x;

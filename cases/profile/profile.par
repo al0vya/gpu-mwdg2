@@ -12,7 +12,9 @@ tol_h       1e-3
 tol_q       0
 tol_s       1e-9
 g           9.80665
+saveint     0.1
 massint     0.1
+planar      on
 sim_time    22.5
 solver      mw
 cumulative  on
