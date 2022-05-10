@@ -21,17 +21,7 @@ def EXIT_HELP():
         "    MASS_INT      : [interval in seconds that simulation times are saved]\n" +
         "    PLOT_TYPE     : [cont,surf]\n" +
         "    SLOPE_LIMITER : [on,off]\n" +
-        "\n" +
-        " - python test.py planar <SOLVER> <TEST_CASE_DIR> <PHYS_QUANTITY> <INTERVAL> (plots planar solution)\n" +
-        "    SOLVER        : [hw,mw]\n" +
-        "    PHYS_QUANTITY : [h,eta,qx,qy,z]\n" +
-        "    INTERVAL      : [interval]\n" +
-        "\n" +
-        " - python test.py planar <PLOT_TYPE> (plots either solution surface or contours)\n" +
-        "    PLOT_TYPE : [cont,surf]\n" +
-        "\n" +
-        " - python test.py c_prop <SOLVER> (plots discharge errors)\n" +
-        "    SOLVER : [hw,mw]"
+        "\n"
     )
 
     sys.exit(help_message)
@@ -139,111 +129,6 @@ sim_times = [
     100,  # non-differentiable blocks
     3.5   # radial dam break
 ]
-
-class PlanarSolution:
-    def __init__(
-        self,
-        solver,
-        interval
-    ):
-        if solver != "hw" and solver != "mw":
-            EXIT_HELP()
-            
-        self.solver = solver
-        
-        self.interval = interval
-        
-        self.savepath = os.path.join("results", "planar-" + str(self.interval) + ".csv")
-        
-        planar_dataframe = pd.read_csv(self.savepath)
-        
-        self.lower_left_x = planar_dataframe["lower_left_x"].values
-        self.lower_left_y = planar_dataframe["lower_left_y"].values
-        
-        self.upper_right_x = planar_dataframe["upper_right_x"].values
-        self.upper_right_y = planar_dataframe["upper_right_y"].values
-        
-        self.h0   = planar_dataframe["h0"].values
-        self.h1x  = planar_dataframe["h1x"].values  if solver == "mw" else None
-        self.h1y  = planar_dataframe["h1y"].values  if solver == "mw" else None
-        
-        self.qx0  = planar_dataframe["qx0"].values
-        self.qx1x = planar_dataframe["qx1x"].values if solver == "mw" else None
-        self.qx1y = planar_dataframe["qx1y"].values if solver == "mw" else None
-        
-        self.qy0  = planar_dataframe["qy0"].values
-        self.qy1x = planar_dataframe["qy1x"].values if solver == "mw" else None
-        self.qy1y = planar_dataframe["qy1y"].values if solver == "mw" else None
-        
-        self.z0   = planar_dataframe["z0"].values
-        self.z1x  = planar_dataframe["z1x"].values  if solver == "mw" else None
-        self.z1y  = planar_dataframe["z1y"].values  if solver == "mw" else None
-        
-        self.num_cells = self.h0.size
-        
-        self.fig, self.ax = plt.subplots( subplot_kw={"projection" : "3d"} )
-    
-    def plot_soln(
-        self,
-        quantity
-    ):
-        print("Plotting planar solution...")
-
-        S = None
-        
-        for cell in range(self.num_cells):
-            print("Cell", cell + 1, "of", self.num_cells)
-            
-            x = [ self.lower_left_x[cell], self.upper_right_x[cell] ]
-            y = [ self.lower_left_y[cell], self.upper_right_y[cell] ]
-            
-            X, Y = np.meshgrid(x, y)
-            
-            upper_left_h   = self.h0[cell]  - np.sqrt(3) * self.h1x[cell]  + np.sqrt(3) * self.h1y[cell]  if self.solver == "mw" else self.h0[cell]
-            upper_right_h  = self.h0[cell]  + np.sqrt(3) * self.h1x[cell]  + np.sqrt(3) * self.h1y[cell]  if self.solver == "mw" else self.h0[cell]
-            lower_left_h   = self.h0[cell]  - np.sqrt(3) * self.h1x[cell]  - np.sqrt(3) * self.h1y[cell]  if self.solver == "mw" else self.h0[cell]
-            lower_right_h  = self.h0[cell]  + np.sqrt(3) * self.h1x[cell]  - np.sqrt(3) * self.h1y[cell]  if self.solver == "mw" else self.h0[cell]
-            
-            upper_left_qx  = self.qx0[cell] - np.sqrt(3) * self.qx1x[cell] + np.sqrt(3) * self.qx1y[cell] if self.solver == "mw" else self.qx0[cell]
-            upper_right_qx = self.qx0[cell] + np.sqrt(3) * self.qx1x[cell] + np.sqrt(3) * self.qx1y[cell] if self.solver == "mw" else self.qx0[cell]
-            lower_left_qx  = self.qx0[cell] - np.sqrt(3) * self.qx1x[cell] - np.sqrt(3) * self.qx1y[cell] if self.solver == "mw" else self.qx0[cell]
-            lower_right_qx = self.qx0[cell] + np.sqrt(3) * self.qx1x[cell] - np.sqrt(3) * self.qx1y[cell] if self.solver == "mw" else self.qx0[cell]
-            
-            upper_left_qy  = self.qy0[cell] - np.sqrt(3) * self.qy1x[cell] + np.sqrt(3) * self.qy1y[cell] if self.solver == "mw" else self.qy0[cell]
-            upper_right_qy = self.qy0[cell] + np.sqrt(3) * self.qy1x[cell] + np.sqrt(3) * self.qy1y[cell] if self.solver == "mw" else self.qy0[cell]
-            lower_left_qy  = self.qy0[cell] - np.sqrt(3) * self.qy1x[cell] - np.sqrt(3) * self.qy1y[cell] if self.solver == "mw" else self.qy0[cell]
-            lower_right_qy = self.qy0[cell] + np.sqrt(3) * self.qy1x[cell] - np.sqrt(3) * self.qy1y[cell] if self.solver == "mw" else self.qy0[cell]
-            
-            upper_left_z   = self.z0[cell]  - np.sqrt(3) * self.z1x[cell]  + np.sqrt(3) * self.z1y[cell]  if self.solver == "mw" else self.z0[cell]
-            upper_right_z  = self.z0[cell]  + np.sqrt(3) * self.z1x[cell]  + np.sqrt(3) * self.z1y[cell]  if self.solver == "mw" else self.z0[cell]
-            lower_left_z   = self.z0[cell]  - np.sqrt(3) * self.z1x[cell]  - np.sqrt(3) * self.z1y[cell]  if self.solver == "mw" else self.z0[cell]
-            lower_right_z  = self.z0[cell]  + np.sqrt(3) * self.z1x[cell]  - np.sqrt(3) * self.z1y[cell]  if self.solver == "mw" else self.z0[cell]
-            
-            H  = np.asarray( [ [lower_left_h,  lower_right_h ], [upper_left_h,  upper_right_h ] ] )
-            QX = np.asarray( [ [lower_left_qx, lower_right_qx], [upper_left_qx, upper_right_qx] ] )
-            QY = np.asarray( [ [lower_left_qy, lower_right_qy], [upper_left_qy, upper_right_qy] ] )
-            Z  = np.asarray( [ [lower_left_z,  lower_right_z ], [upper_left_z,  upper_right_z ] ] )
-            
-            if   quantity == 'h':
-                S = H
-            elif quantity == "eta":
-                S = H + Z
-            elif quantity == "qx":
-                S = QX
-            elif quantity == "qy":
-                S = QY
-            elif quantity == 'z':
-                S = Z
-            else:
-                EXIT_HELP()
-            
-            self.ax.plot_surface(X, Y, S, color="#599DEE", rcount=1, ccount=1, shade=False, edgecolors='k', linewidth=0.25)
-            
-        elev = 29   if quantity != 'h' else 52
-        azim = -120 if quantity != 'h' else 40
-        
-        self.ax.view_init(elev, azim)
-        plt.savefig(os.path.join(self.savepath, "planar-soln-" + str(self.interval) + ".svg"), bbox_inches="tight")
 
 class Limits:
     def __init__(
@@ -705,30 +590,6 @@ def run_tests():
             limiter=limiter
         ).run_test(plot_type)
 
-def plot_soln_planar():
-    if len(sys.argv) > 5:
-        dummy, action, solver, results, quantity, interval = sys.argv
-        
-        PlanarSolution(solver, interval).plot_soln(quantity)
-    else:
-        EXIT_HELP()
-
-def plot_soln_planar():
-    if len(sys.argv) > 4:
-        dummy, action, interval, results, plot_type = sys.argv
-        
-        RowMajorSolution(interval).plot_soln(plot_type)
-    else:
-        EXIT_HELP()
-
-def plot_c_prop():
-    if len(sys.argv) > 3:
-        dummy, action, results, solver = sys.argv
-        
-        DischargeErrors(solver).plot_errors()
-    else:
-        EXIT_HELP()
-
 if __name__ == "__main__":
     
     action = sys.argv[1]
@@ -740,12 +601,6 @@ if __name__ == "__main__":
         run_tests()
     elif action == "run":
         run()
-    elif action == "planar":
-        plot_soln_planar()
-    elif action == "planar":
-        plot_soln_planar()
-    elif action == "c_prop":
-        plot_c_prop()
     else:
         EXIT_HELP
         

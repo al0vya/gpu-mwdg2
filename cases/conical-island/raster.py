@@ -175,9 +175,9 @@ def main():
     
     print("Showing raster fields for checking, close the plots to continue.")
     
-    check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["h"])
-    check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["qx"])
-    check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["z"])
+    #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["h"])
+    #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["qx"])
+    #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["z"])
     
     project_and_write_raster(
         nrows=nrows,
