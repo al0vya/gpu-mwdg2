@@ -922,18 +922,14 @@ int main
 			(
 				respath,
 				mesh_dim,
-				d_sig_details,
-				d_scale_coeffs,
-				d_buf_assem_sol,
 				solver_params,
 				plot_params,
-				d_rev_z_order,
-				d_indices,
-				d_assem_sol,
 				d_plot_assem_sol,
 				p_finest_grid,
 				gauge_points,
 				time_now,
+				dx_finest,
+				dy_finest,
 				first_t_step
 			);
 		}

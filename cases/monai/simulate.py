@@ -45,7 +45,12 @@ class SimulationMonai:
                     
                     self.results[solver][epsilon]["simtime"]    = time_dataframe["simtime"]
                     self.results[solver][epsilon]["runtime"]    = time_dataframe["runtime"]
-                    self.results[solver][epsilon]["gauge_data"] = pd.read_csv(self.stage_file)["stage1"]
+                    self.results[solver][epsilon]["gauge_data"] = pd.read_csv(
+                        self.stage_file,
+                        skiprows=7,
+                        delimiter=" ",
+                        header=None
+                    ).iloc[:,1]
             
     def run(
             self,

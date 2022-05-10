@@ -64,7 +64,7 @@ class SimulationConicalIsland:
                     self.results[solver][epsilon]["simtime"] = time_dataframe["simtime"]
                     self.results[solver][epsilon]["runtime"] = time_dataframe["runtime"]
                     
-                    stage_dataframe = pd.read_csv(self.stage_file)
+                    stage_dataframe = pd.read_csv(self.stage_file, skiprows=10, delimiter=" ", header=None)
                     
                     for i, stage in enumerate(self.stages):
                         self.results[solver][epsilon]["gauge_data"][stage] = stage_dataframe.iloc[:,i+1]
@@ -93,7 +93,7 @@ class SimulationConicalIsland:
                     "massint     0.1\n" +
                     "sim_time    20\n" +
                     "solver      %s\n" +
-                    "limitslopes on\n" +
+                    "limitslopes off\n" +
                     "tol_Krivo   10\n" +
                     "cumulative  on\n" +
                     "wall_height 1"
@@ -209,4 +209,4 @@ if __name__ == "__main__":
     subprocess.run( ["python", "stage.py" ] )
     subprocess.run( ["python", "raster.py"] )
     
-    SimulationConicalIsland( [0, 1e-4, 1e-3], ["mw"] ).plot( ExperimentalDataConicalIsland() )
+    SimulationConicalIsland( [0, 1e-4, 1e-3], ["hw"] ).plot( ExperimentalDataConicalIsland() )

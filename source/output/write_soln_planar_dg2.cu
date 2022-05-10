@@ -67,7 +67,7 @@ void write_soln_planar_dg2
 
 		int side_len = 1 << (solver_params.L - level);
 
-		real dx_unit = C(2.0) / side_len;
+		real dx_unit = C(1.0) / side_len;
 
 		FlowCoeffs coeffs =
 		{
@@ -97,17 +97,17 @@ void write_soln_planar_dg2
 
 		for (int j_loc = 0; j_loc < side_len; j_loc++)
 		{
-			real y_unit = C(-1.0) + j_loc * dx_unit + dx_unit / C(2.0);
+			real y_unit = j_loc * dx_unit + dx_unit / C(2.0);
 
 			for (int i_loc = 0; i_loc < side_len; i_loc++)
 			{
-				real x_unit = C(-1.0) + i_loc * dx_unit + dx_unit / C(2.0);
+				real x_unit = i_loc * dx_unit + dx_unit / C(2.0);
 				
 				LegendreBasis leg_basis =
 				{
 					C(1.0),
-					sqrt( C(3.0) ) * x_unit,
-					sqrt( C(3.0) ) * y_unit
+					sqrt( C(3.0) ) * ( C(2.0) * x_unit - C(1.0) ),
+					sqrt( C(3.0) ) * ( C(2.0) * y_unit - C(1.0) )
 				};
 
 				FlowVector U = coeffs.local_face_val(leg_basis);
