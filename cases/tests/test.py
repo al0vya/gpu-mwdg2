@@ -433,12 +433,12 @@ class Test:
         self.limiter     = limiter
 
         if self.test_case in c_prop_tests:
-            self.planar  = "off"
+            self.planar     = "off"
             self.vtk        = "off"
             self.c_prop     = "on"
             self.cumulative = "off"
         else:
-            self.planar  = "on"
+            self.planar     = "on"
             self.vtk        = "off"
             self.c_prop     = "off"
             self.cumulative = "on"
@@ -464,7 +464,7 @@ class Test:
             "massint     %s\n" +
             "solver      %s\n" +
             "wall_height 0\n" +
-            "planar   %s\n" +
+            "planar      %s\n" +
             "c_prop      %s\n" +
             "cumulative  %s\n" +
             "limitslopes %s\n" +

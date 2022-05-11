@@ -106,6 +106,8 @@ class SimulationThreeConesDamBreak:
         solver,
         epsilon
     ):
+        print( "Running simulation, solver: " + solver + ", epsilon = " + str(epsilon) )
+        
         test_script = os.path.join("..", "tests", "test.py")
         
         # using test.py to run simulations

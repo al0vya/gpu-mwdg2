@@ -267,6 +267,8 @@ def find_datum():
 def write_all_input_files():
     datum = find_datum()
     
+    print(datum)
+    
     print("Adjusting for datum in bathymetry data...")
     
     bathymetry = np.loadtxt(fname=os.path.join("input-data", "bathymetry.csv"), delimiter=",")
@@ -304,7 +306,7 @@ def write_all_input_files():
 def load_computed_gauge_timeseries():
     print("Loading computed gauges timeseries...")
     
-    gauges = np.loadtxt(fname=os.path.join("results", "stage.wd"), skiprows=1, delimiter=",")
+    gauges = np.loadtxt(fname=os.path.join("results", "saved-stage.wd"), skiprows=1, delimiter=",")
     
     datum = find_datum()
     
@@ -321,19 +323,32 @@ def compare_timeseries(
     experimental_gauges,
     name
 ):
+    elevations = {
+        "A_Beacon"      : 15.423466,
+        "Tug_Harbour"   : 25.295409,
+        "Sulphur_Point" : 25.272322,
+        "Moturiki"      : 34.403634
+    }
+    
     fig, ax = plt.subplots()
     
     ax.plot(
         computed_gauges["time"],
-        computed_gauges[name],
+        computed_gauges[name] + elevations[name],
         experimental_gauges[name]["time"],
         experimental_gauges[name]["total"]
+    )
+    
+    ylim = (
+        np.min( experimental_gauges[name]["total"] ),
+        np.max( experimental_gauges[name]["total"] )
     )
     
     plt.setp(
         ax,
         title=name,
         xlim=( computed_gauges["time"][0], computed_gauges["time"][-1] ),
+        ylim=ylim,
         xlabel=r"$t \, (hr)$",
         ylabel=r"$h + z \, (m)$"
     )
@@ -352,4 +367,5 @@ def compare_all_timeseries():
     compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="Moturiki")
 
 if __name__ == "__main__":
+    #write_all_input_files()
     compare_all_timeseries()

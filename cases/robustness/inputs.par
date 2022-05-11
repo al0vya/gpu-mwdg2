@@ -12,7 +12,7 @@ saveint     6.0
 massint     12.0
 solver      mw
 wall_height 0
-row_major   on
+planar      on
 c_prop      off
 cumulative  on
 limitslopes off
