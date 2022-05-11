@@ -1,8 +1,18 @@
 import os
 import sys
+import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.interpolate 
+
+def EXIT_HELP():
+    help_message = (
+        "Use this tool as follows:\n" +
+        "python simulate.py preprocess\n" +
+        "python simulate.py postprocess\n" +
+        "python simulate.py simulate <SOLVER> <EPSILON>"
+    )
+    
+    sys.exit(help_message)
 
 def load_experimental_gauge_timeseries():
     print("Loading experimental timeseries...")
@@ -165,7 +175,7 @@ def write_bathymetry(
     nrows,
     ncols
 ):
-    print("Preparing dem file...")
+    print("Preparing DEM file...")
     
     header = (
         "ncols        %s\n" +
@@ -180,7 +190,7 @@ def write_bathymetry(
     )
     
     np.savetxt(
-        fname="tauranga.dem",
+        fname="tauranga-20m.dem",
         X=np.flipud(bathymetry),
         fmt="%.8f",
         header=header,
@@ -189,15 +199,15 @@ def write_bathymetry(
     
 def write_bci_file(
     ncols,
-    dy,
+    cellsize,
     timeseries_name
 ):
     print("Preparing bci file...")
     
-    ymax = ncols * dy
+    xmax = ncols * cellsize
     
     with open("tauranga.bci", 'w') as fp:
-        fp.write( "N 0 %s HVAR %s" % (ymax, timeseries_name) )
+        fp.write( "N 0 40960 HVAR %s" % (xmax, timeseries_name) )
         
 def write_bdy_file(
     time,
@@ -283,13 +293,13 @@ def write_all_input_files():
         ncols=ncols
     )
     
-    dx = dy = 10
+    cellsize = 10
     
     timeseries_name = "INLET"
     
     write_bci_file(
         ncols=ncols,
-        dy=dy,
+        cellsize=cellsize,
         timeseries_name=timeseries_name
     )
     
@@ -306,7 +316,7 @@ def write_all_input_files():
 def load_computed_gauge_timeseries():
     print("Loading computed gauges timeseries...")
     
-    gauges = np.loadtxt(fname=os.path.join("results", "saved-stage.wd"), skiprows=1, delimiter=",")
+    gauges = np.loadtxt(fname=os.path.join("results", "saved-stage-mwdg2.wd"), skiprows=11, delimiter=" ")
     
     datum = find_datum()
     
@@ -366,6 +376,68 @@ def compare_all_timeseries():
     compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="Sulphur_Point")
     compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="Moturiki")
 
+def write_parameter_file(
+    epsilon,
+    solver,
+    filename
+):
+    params = (
+        "test_case   0\n" +
+        "max_ref_lvl 11\n" +
+        "min_dt      1\n" +
+        "respath     results\n" +
+        "epsilon     %s\n" +
+        "fpfric      0.01\n" +
+        "rasterroot  tauranga\n" +
+        "bcifile     tauranga.bci\n" +
+        "bdyfile     tauranga.bdy\n" +
+        "stagefile   tauranga.stage\n" +
+        "tol_h       1e-3\n" +
+        "tol_q       0\n" +
+        "tol_s       1e-9\n" +
+        "limitslopes on\n" +
+        "tol_Krivo   10\n" +
+        "g           9.80665\n" +
+        "saveint     3600\n" +
+        "massint     500\n" +
+        "sim_time    144000\n" +
+        "solver      %s\n" +
+        "cumulative  on\n" +
+        "raster_out  on\n" +
+        "wall_height 420"
+    ) % (
+        epsilon,
+        solver
+    )
+    
+    with open(filename, 'w') as fp:
+        fp.write(params)
+
+def run_simulation():
+    if len(sys.argv) < 4: EXIT_HELP()
+    
+    dummy, option, solver, epsilon = sys.argv
+    
+    parameter_filename = "tauranga.par"
+    
+    write_parameter_file(
+        epsilon=epsilon,
+        solver=solver,
+        filename=parameter_filename
+    )
+    
+    subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), parameter_filename] )
+
 if __name__ == "__main__":
-    #write_all_input_files()
-    compare_all_timeseries()
+    if len(sys.argv) < 2: EXIT_HELP()
+    
+    option = sys.argv[1]
+    
+    if   option == "preprocess":
+        write_all_input_files()
+    elif option == "postprocess":
+        compare_all_timeseries()
+    elif option == "simulate":
+        run_simulation()
+    else:
+        EXIT_HELP()
