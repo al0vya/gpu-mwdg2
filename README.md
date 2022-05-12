@@ -90,14 +90,14 @@ In addition to this `.par` file, four other files are needed for this example te
 To run simulations of the example test case do the following steps:
 
 1. Copy the model executable to `gpu-mwdg2\cases`
-2. Start a command prompt at `gpu-mwdg2\cases\conical-island`
-3. Create a folder called `results`
+2. Navigate to `gpu-mwdg2\cases\conical-island`
+3. Make a folder called `results`
 4. Create a `.par` file (`conical-island.par`, copy the example above)
-5. Create the raster files (`conical-island.dem`, `conical-island.start`, `conical-island.start.Qx`) by running `python raster.py`
-6. Create the stage file (`conical-island.stage`, content shown below)
-7. Run `..\gpu-mwdg2.exe conical-island.par` to start running the simulation
+5. Write the stage file (`conical-island.stage`, content shown below)
+6. Generate the raster files (`conical-island.dem`, `conical-island.start`, `conical-island.start.Qx`) by running `python raster.py` in a command prompt
+7. Run `..\gpu-mwdg2.exe conical-island.par`in a command prompt to start running the simulation
 
-The stage file should read as:
+The stage file should be written as:
 
 ```
 4
