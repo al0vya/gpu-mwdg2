@@ -27,11 +27,11 @@ To use this model you need to have an NVIDIA GPU and the [CUDA Toolkit](https://
 
 ## Running simulations using the model
 
-In addition to the built executable, several other files are needed when running simulations using the model. To understand which files are needed, consider the following example.
+In addition to the built executable, several input files are typically needed when running simulations using the model. To understand which input files are needed, consider the following example.
 
 ### Running a simulation for an example test case
 
-To run simulations for this example test case (Section 3.1.2 of [Kesserwani and Sharifian, 2020](https://www.sciencedirect.com/science/article/pii/S0309170820303079)), the following files are needed:
+To run simulations for this example test case (Section 3.1.2 of [Kesserwani and Sharifian, 2020](https://www.sciencedirect.com/science/article/pii/S0309170820303079)), the following input files are needed:
 
 - `conical-island.par`: text file containing all the desired parameters for running a simulation
 - `conical-island.start`: [raster file](https://support.geocue.com/ascii-raster-files-asc/) describing the initial depth
@@ -48,6 +48,8 @@ To run simulations of the example test case do the following steps:
 5. Write the stage file (`conical-island.stage`, content shown below)
 6. Generate the raster files (`conical-island.dem`, `conical-island.start`, `conical-island.start.Qx`) by running `python raster.py` in a command prompt
 7. Run `..\gpu-mwdg2.exe conical-island.par`in a command prompt to start running the simulation
+
+(Alternatively, open a command prompt at `gpu-mwdg2\cases\conical-island` and run `python simulate.py`. This will preprocess all the necessary input files, run several simulations and postprocess the results. `simulate.py` scripts are available for a few test cases in the `gpu-mwdg2\cases` folder.)
 
 Doing steps 1 to 6 will give the following folder tree:
 
