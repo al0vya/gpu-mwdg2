@@ -11,13 +11,19 @@ To use this model you need to have an NVIDIA GPU and the [CUDA Toolkit](https://
 
 ## Building the model executable
 
-The model is built using CMake in Visual Studio 2019: building on Linux using CMake has not been documented yet. To build the model, open the folder `gpu-mwdg2` in Visual Studio and go to toolbar at the top. In the toolbar, select either the `x64-Debug` or `x64-Release` option from the dropdown menu. After selecting an option, from the toolbar click `Build > Rebuild All`.
+### Building on Windows
+
+Open the folder `gpu-mwdg2` in Visual Studio and go to toolbar at the top. In the toolbar, select either the `x64-Debug` or `x64-Release` option from the dropdown menu. After selecting an option, from the toolbar click `Build > Rebuild All`. If the `x64-Debug` option was selected, the built executable may be located in `gpu-mwdg2\out\build\x64-Debug` (`gpu-mwdg2\out\build\x64-Release` if `x64-Release` was selected).
+
+### Building on Linux
+
+In the command line within the `gpu-mwdg2` directory, run `cmake -S . -B build` followed by `cmake --build build`. The built executable will be located in `gpu-mwdg2/build`.
 
 ## Running simulations using the model
 
-If the `x64-Debug` option was selected, the built executable will be located in `gpu-mwdg2\out\build\x64-Debug` (`gpu-mwdg2\out\build\x64-Release` if `x64-Release` was selected). Go to the appropriate folder and make another folder. This folder will hold all the files necessary to run the model. Inside this folder, make a `results` folder and a `.par` file.
+To run simulations using the model, make a `results` directory and a `.par` file (described below).
 
-### Description of parameter (`.par`) file needed to run simulations
+### Description of parameter (`.par`) file
 
 A `.par` file is a text file containing all of the parameters needed to run a simulation. The parameters and what function they serve are described in the table below. Many of the parameters are identical to [the ones](https://www.seamlesswave.com/Merewether1-1.html) used to run simulations using [LISFLOOD 8.0](https://www.seamlesswave.com/LISFLOOD8.0.html).
 
@@ -56,7 +62,7 @@ Below is a `.par` file created to run simulations for the conical island test ca
 test_case   0
 max_ref_lvl 10
 min_dt      1
-respath     .\results
+respath     results
 epsilon     1e-3
 fpfric      0.01
 rasterroot  conical-island
@@ -74,48 +80,16 @@ sim_time    22.5
 solver      mw
 wall_height 0.5
 ```
-In addition to this `.par` file, four other files are needed:
+In addition to this `.par` file, four other files are needed for this example test case:
 
 - `conical-island.start`: [raster file](https://support.geocue.com/ascii-raster-files-asc/) describing the initial depth
 - `conical-island.start.Qx`: raster file describing the initial discharge in the x-direction
 - `conical-island.dem`: DEM file describing the topography
-- `conical-island.stage`: text file containing the coordinates of stages where hydrographs are recorded
+- `conical-island.stage`: text file containing the coordinates of stages where simulated time series of the water depth is recorded
 
-Assuming that the `.par` file is called `conical-island.par` and is located inside a folder called `conical-island`, and that the model executable was built using the `x64-Release` option, there is the following folder tree:
+Copy the model executable to `gpu-mwdg2\cases`, start a command prompt at `gpu-mwdg2\cases\conical-island`, create a folder called `results` and finally run `..\gpu-mwdg2.exe conical-island.par` to start running the simulation. Before doing so however, the additional files (`conical-island.start`, `conical-island.stage`, etc) need to be created.
 
-```
-gpu-mwdg2
-|
-| ...
-|
-- out
-  |
-  - build
-    |
-    | ...
-    |
-    - x64-Release
-      |
-      | ...
-      |
-      - gpu-mwdg2.exe
-      - conical-island
-        |
-        - results
-          |
-          | ...
-          |
-        - conical-island.start
-        - conical-island.start.Qx
-        - conical-island.dem
-        - conical-island.stage
-```
-
-Start a command prompt at `gpu-mwdg2\out\build\x64-Release\conical-island`, type in `..\gpu-mwdg2.exe conical-island.par` and press enter to start running the simulation. Before doing so however, the additional files (`conical-island.start`, `conical-island.stage`, etc) need to be created.
-
-To create the raster files, go to `gpu-mwdg2\cases\conical-island`, copy the file `raster.py` to `gpu-mwdg2\out\build\x64-Release\conical-island` and in the command prompt enter and run `python raster.py`.
-
-The stage file (`conical-island.stage`) should read as:
+To create the raster files, in the command prompt run `python raster.py`, while the stage file (`conical-island.stage`) should read as:
 
 ```
 4
@@ -125,7 +99,7 @@ The stage file (`conical-island.stage`) should read as:
 15.56 13.8
 ```
 
-These kinds of files are frequently needed to run simulations for real world test cases.
+These kinds of files are frequently needed to run simulations of real world test cases.
 
 ### Running automated simulations
 
@@ -133,9 +107,7 @@ In addition to creating files before running simulations (preprocessing), plotti
 
 In the `gpu-mwdg2\cases` folder there are folders for a few commonly-used test cases with scripts that automatically preprocess files, run simulations and postprocess results.
 
-For example, to run simulations for the conical island test case, copy the folder `gpu-mwdg2\cases\conical-island` to `gpu-mwdg2\out\build\x64-Release`, open a command prompt in `gpu-mwdg2\out\build\x64-Release\conical-island`, create a folder called `results` and then run `python simulate.py`.
-
-The `simulate.py` script will create all the necessary files for running the simulation, run the simulation and plot the results in `results` as `.png` files:
+For example, to run simulations for the conical island test case, simply run `python simulate.py` in the command. The `simulate.py` script will create all the necessary files for running the simulation, run the simulation and plot the results in `results` as `.png` files:
 
 - `runtimes-hw`
 - `runtimes-mw`
