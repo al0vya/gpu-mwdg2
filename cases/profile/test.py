@@ -61,7 +61,7 @@ def verify(
     
     subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), "profile.par"] )
     
-    depths_computed = np.loadtxt(fname=os.path.join("results", "stage.wd"), skiprows=1, usecols=1, delimiter=',')
+    depths_computed = np.loadtxt(fname=os.path.join("results", "stage.wd"), skiprows=7, usecols=1, delimiter=' ')
     
     return verify_depths(epsilon, solver, depths_computed)
     
@@ -100,7 +100,7 @@ def main():
     subprocess.run( [ "python", os.path.join(monai_dir, "raster.py") ] )
     
     if option == "fast":
-        print("Code " + verify(epsilon=1e-3, solver="hw") + " fast verification.\n") 
+        print("Code " + verify(epsilon=1e-3, solver="hw") + " fast verification.\n")
     elif option == "slow":
         verification = verify_all()
         

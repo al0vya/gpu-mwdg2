@@ -708,20 +708,23 @@ int main
 			//CHECK_CUDA_ERROR(peek());
 			//CHECK_CUDA_ERROR(sync());
 			
-			for_nghbrs = true;
+			if ( solver_params.epsilon > C(0.0) )
+			{
+				for_nghbrs = true;
 
-			encoding_all
-			(
-				d_scale_coeffs,
-				d_details,
-				d_norm_details,
-				d_sig_details,
-				d_preflagged_details,
-				maxes,
-				solver_params,
-				for_nghbrs
-			);
-
+				encoding_all
+				(
+					d_scale_coeffs,
+					d_details,
+					d_norm_details,
+					d_sig_details,
+					d_preflagged_details,
+					maxes,
+					solver_params,
+					for_nghbrs
+				);
+			}
+			
 			//CHECK_CUDA_ERROR(peek());
 			//CHECK_CUDA_ERROR(sync());
 
@@ -953,7 +956,15 @@ int main
 	}
 
 	end = clock();
+	
+	compression = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
 
+	printf
+	(
+		"Elements: %d, compression: %f%%, time step: %.15f, steps: %d, sim time: %f\n",
+		d_assem_sol.length, compression, dt, steps, time_now
+	);
+	
 	run_time = (real)(end - start) / CLOCKS_PER_SEC;
 	
 	printf("Loop time: %f s\n", run_time);
