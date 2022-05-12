@@ -1,9 +1,9 @@
 test_case   23
 sim_time    3.5
-max_ref_lvl 8
+max_ref_lvl 9
 min_dt      1
 respath     results
-epsilon     0.01
+epsilon     1e-3
 tol_h       1e-3
 tol_q       0
 tol_s       1e-9
@@ -12,9 +12,9 @@ saveint     3.5
 massint     3.5
 solver      mw
 wall_height 0
-planar   on
+planar      off
 c_prop      off
-cumulative  on
+cumulative  off
 limitslopes off
 tol_Krivo   10
 vtk         off
