@@ -14,6 +14,8 @@ project(proj-gpu-mwdg2)
 
 add_executable(gpu-mwdg2)
 
+set_property(TARGET gpu-mwdg2 PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+
 include(options.cmake)
 include(include.cmake)
 

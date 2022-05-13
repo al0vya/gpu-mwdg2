@@ -4,9 +4,9 @@
 
 typedef struct ChildScaleCoefficients
 {
-	ScaleChildren eta;
-	ScaleChildren qx;
-	ScaleChildren qy;
-	ScaleChildren z;
+	ScaleChildrenHW eta;
+	ScaleChildrenHW qx;
+	ScaleChildrenHW qy;
+	ScaleChildrenHW z;
 
 } ChildScaleCoefficients;

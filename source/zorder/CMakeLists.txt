@@ -1,9 +1,17 @@
 target_sources(
 	    gpu-mwdg2
 		PRIVATE
+		compact.cu
 		copy_finest_coefficients.cu
+		dilate.cu
+		generate_morton_code.cu
 		generate_all_morton_codes.cu
+		get_i_index.cu
+		get_j_index.cu
 		get_sorting_indices.cu
+		get_spatial_coord.cu
+		get_x_coord.cu
+		get_y_coord.cu
 		rev_z_order_act_idcs.cu
 		rev_z_order_assem_sol.cu
 		rev_z_order_reals.cu
