@@ -3,18 +3,10 @@ target_sources(
 		PRIVATE
 		decoding.cu
 		decoding_all.cu
-		decode_scale_children.cu
-		decode_scale_coefficients.cu
-		decode_scale_coeffs.cu
-		encoding_all.cu
 		encode_and_thresh_flow.cu
 		encode_and_thresh_topo.cu
-		encode_details.cu
-		encode_scale.cu
-		encode_scale_coefficients.cu
-		encode_scale_coeffs.cu
+		encoding_all.cu
 		extra_significance.cu
-		get_child_details.cu
 		get_max_from_array.cu
 		get_max_scale_coeffs.cu
 		get_modal_values.cu
@@ -24,9 +16,6 @@ target_sources(
 		init_nodal_values.cu
 		init_sig_details.cu
 		insert_point_srcs.cu
-		load_details.cu
-		load_parent_scale_coefficients.cu
-		load_parent_scale_coeffs.cu
 		modal_projections.cu
 		preflag_details.cu
 		preflag_topo.cu
@@ -34,9 +23,6 @@ target_sources(
 		refine_high_wall.cu
 		reinsert_assem_sol.cu
 		reinsert_point_srcs.cu
-		store_details.cu
-		store_scale_coefficients.cu
-		store_scale_coeffs.cu
 		traverse_tree_of_sig_details.cu
 		zero_details.cu
 	)

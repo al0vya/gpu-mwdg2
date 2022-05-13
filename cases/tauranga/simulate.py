@@ -316,7 +316,7 @@ def write_all_input_files():
 def load_computed_gauge_timeseries():
     print("Loading computed gauges timeseries...")
     
-    gauges = np.loadtxt(fname=os.path.join("results", "stage.wd"), skiprows=11, delimiter=" ")
+    gauges = np.loadtxt(fname=os.path.join("results", "saved-stage-mwdg2.wd"), skiprows=11, delimiter=" ")
     
     datum = find_datum()
     

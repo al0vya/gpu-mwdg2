@@ -4,6 +4,7 @@
 	#define M_BAR C(1.5)
 #endif // !M_BAR
 
+
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 

@@ -1,22 +1,10 @@
 target_sources(
 	    gpu-mwdg2
 		PRIVATE
-		apply_friction.cu
 		copy_to_buf_assem_sol.cu
 		dg2_update.cu
-		eval_loc_face_val_dg2.cu
-		flux_HLL.cu
 		friction_implicit.cu
 		fv1_update.cu
-		get_bed_src.cu
 		get_dt_CFL.cu
-		get_leg_basis.cu
-		get_limited_slopes.cu
-		get_x_face_coord.cu
-		get_x_face_unit.cu
-		get_y_face_coord.cu
-		get_y_face_unit.cu
 		limit_slopes.cu
-		minmod.cu
-		non_reflective_wave.cu
 	)
