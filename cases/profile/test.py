@@ -6,9 +6,10 @@ import matplotlib.pyplot as plt
 
 def write_par_file(
     epsilon,
-    solver
+    solver,
+    input_file
 ):
-    with open("profile.par", 'w') as fp:
+    with open(input_file, 'w') as fp:
         params = (
             "test_case   0\n" +
             "max_ref_lvl 9\n" +
@@ -33,6 +34,42 @@ def write_par_file(
         
         fp.write(params)
 
+def plot_depths(
+    depths_verified,
+    depths_computed,
+    filename
+):
+    exp_data = np.loadtxt(fname="experimental.txt", skiprows=1, delimiter=',')
+    
+    t_exp      = exp_data[:,0]
+    depths_exp = exp_data[:,1]
+    
+    N_points_verified = len(depths_verified)
+    N_points_computed = len(depths_computed)
+    
+    t_min = 0
+    t_max = 22.5
+    
+    dt_verified = (t_max - t_min) / N_points_verified
+    dt_computed = (t_max - t_min) / N_points_computed
+    
+    t_verified = [ t_min + dt_verified * i for i in range(N_points_verified) ]
+    t_computed = [ t_min + dt_computed * i for i in range(N_points_computed) ]
+    
+    fig, ax = plt.subplots()
+    
+    ax.plot(t_verified, depths_verified, label="verified")
+    ax.plot(t_computed, depths_computed, label="computed")
+    ax.plot(t_exp,      depths_exp,      label="experimental")
+    
+    plt.setp(ax,
+        xlim=(t_min, t_max),
+        xlabel=r"$t \, (s)$",
+        ylabel=r"$h + z \, (m)$"
+    )
+    
+    fig.savefig(fname=os.path.join("results", filename), bbox_inches="tight")
+    
 def verify_depths(
     epsilon,
     solver,
@@ -41,11 +78,24 @@ def verify_depths(
     filename = ""
     
     if epsilon == 0:
-        filename = "stage-fv1.txt"   if solver == "hw" else "stage-dg2.txt"
+        solver_text = "fv1"   if solver == "hw" else "dg2"
     else:
-        filename = "stage-hwfv1.txt" if solver == "hw" else "stage-mwdg2.txt"
+        solver_text = "hwfv1" if solver == "hw" else "mwdg2"
     
-    depths_verified = np.loadtxt(fname=filename, skiprows=1, usecols=1, delimiter=',')
+    verification_filename = "stage-" + solver_text + ".txt"
+    
+    depths_verified = np.loadtxt(
+        fname=verification_filename,
+        skiprows=1,
+        usecols=1,
+        delimiter=','
+    )
+    
+    plot_depths(
+        depths_verified=depths_verified,
+        depths_computed=depths_computed,
+        filename=solver_text
+    )
     
     error = np.abs(depths_computed - depths_verified).mean()
     
@@ -57,9 +107,15 @@ def verify(
 ):
     print( "Running simulation, solver: " + solver + ", eps = " + str(epsilon) )
     
-    write_par_file(epsilon, solver)
+    input_file = "test.par"
     
-    subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), "profile.par"] )
+    write_par_file(
+        epsilon=epsilon,
+        solver=solver,
+        input_file=input_file
+    )
+    
+    subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), input_file] )
     
     depths_computed = np.loadtxt(fname=os.path.join("results", "stage.wd"), skiprows=7, usecols=1, delimiter=' ')
     
@@ -83,11 +139,14 @@ def verify_all():
     
     return verification
     
+def EXIT_HELP():
+    help_message = ("Use this tool as:\n" + "python test.py <OPTION>, OPTION={fast|slow} to perform either fast or slow verification.\n")
+    
+    sys.exit(help_message)
+
 def main():
-    if len(sys.argv) < 2:
-        help_message = ("Use this tool as:\n" + "python test.py <OPTION>, OPTION={fast|slow} to perform either fast or slow verification.\n")
-        
-        sys.exit(help_message)
+    if len(sys.argv) != 2:
+        EXIT_HELP()
     
     dummy, option = sys.argv
     
@@ -98,6 +157,8 @@ def main():
     subprocess.run( [ "python", os.path.join(monai_dir, "stage.py" ) ] )
     subprocess.run( [ "python", os.path.join(monai_dir, "inflow.py") ] )
     subprocess.run( [ "python", os.path.join(monai_dir, "raster.py") ] )
+    
+    print(option)
     
     if option == "fast":
         print("Code " + verify(epsilon=1e-3, solver="hw") + " fast verification.\n")
@@ -116,7 +177,7 @@ def main():
         
         print(results)
     else:
-        sys.exit(help_message)
+        EXIT_HELP()
         
 if __name__ == "__main__":
     main()

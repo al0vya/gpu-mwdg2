@@ -14,6 +14,6 @@ tol_s       1e-9
 g           9.80665
 massint     0.1
 sim_time    22.5
-solver      hw
+solver      mw
 cumulative  on
 wall_height 0.5

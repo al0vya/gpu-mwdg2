@@ -15,7 +15,7 @@ def EXIT_HELP():
 
 def run_c_prop_tests():
     with open("tests.txt", 'w') as fp:
-        fp.write("19\n21\n22")
+        fp.write("19")
         
     test_script = os.path.join("..", "tests", "test.py")
     
@@ -33,16 +33,6 @@ def run_c_prop_tests():
     )
     
     subprocess.run( ["matlab", "-nosplash", "-nodesktop", "-r", "\"main; exit\""] )
-    
-def remove_nans_and_infs(array):
-    nan_locations = np.isnan(array)
-    inf_locations = np.isinf(array)
-    
-    removal_locations = np.logical_or(nan_locations, inf_locations)
-    
-    array[removal_locations] = 0
-    
-    return array
 
 class SimulationThreeConesDamBreak:
     def __init__(
@@ -231,9 +221,9 @@ class SimulationThreeConesDamBreak:
         
         error_levels = [ min_error + d_error * i for i in range(levels + 1) ]
         
-        err_0  = remove_nans_and_infs( np.abs( self.results[0]["0 s"]  - self.results[1e-3]["0 s"]  ) )
-        err_6  = remove_nans_and_infs( np.abs( self.results[0]["6 s"]  - self.results[1e-3]["6 s"]  ) )
-        err_12 = remove_nans_and_infs( np.abs( self.results[0]["12 s"] - self.results[1e-3]["12 s"] ) )
+        err_0  = np.abs( self.results[0]["0 s"]  - self.results[1e-3]["0 s"]  )
+        err_6  = np.abs( self.results[0]["6 s"]  - self.results[1e-3]["6 s"]  )
+        err_12 = np.abs( self.results[0]["12 s"] - self.results[1e-3]["12 s"] )
         
         contourset_0  = axs[0].contourf(self.X, self.Y, err_0,  levels=error_levels) # for legend without negative depth
         contourset_6  = axs[2].contourf(self.X, self.Y, err_6,  levels=error_levels)

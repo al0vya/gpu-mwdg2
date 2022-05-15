@@ -4,6 +4,8 @@
 
 #include "CHECK_CUDA_ERROR.cuh"
 
+#include "cstdio"
+
 __host__
 cudaError_t sync();
 
