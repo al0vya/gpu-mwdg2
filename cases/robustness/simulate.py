@@ -225,6 +225,11 @@ class SimulationThreeConesDamBreak:
         err_6  = np.abs( self.results[0]["6 s"]  - self.results[1e-3]["6 s"]  )
         err_12 = np.abs( self.results[0]["12 s"] - self.results[1e-3]["12 s"] )
         
+        with open(os.path.join("results", "errors.txt"), 'w') as fp:
+            fp.write( "0  s %s\n" % err_0.mean() )
+            fp.write( "6  s %s\n" % err_6.mean() )
+            fp.write( "12 s %s\n" % err_12.mean() )
+        
         contourset_0  = axs[0].contourf(self.X, self.Y, err_0,  levels=error_levels) # for legend without negative depth
         contourset_6  = axs[2].contourf(self.X, self.Y, err_6,  levels=error_levels)
         contourset_12 = axs[4].contourf(self.X, self.Y, err_12, levels=error_levels)
@@ -273,6 +278,6 @@ if __name__ == "__main__":
     
     if solver != "hw" and solver != "mw": EXIT_HELP()
     
-    #run_c_prop_tests()
+    run_c_prop_tests()
     
     SimulationThreeConesDamBreak( solver, [0, 1e-3] ).plot()

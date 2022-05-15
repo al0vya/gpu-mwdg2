@@ -17,10 +17,10 @@ class Simulation2DDambreak:
         self.max_ref_lvls = [8]#, 9, 10, 11]
         
         for solver in self.solvers:
-            self.results[solver] = {}
+            self.results[solver]          = {}
+            self.results[solver]["depth"] = {}
             for epsilon in self.epsilons:
-                self.results[solver][epsilon]          = {}
-                self.results[solver][epsilon]["depth"] = {}
+                self.results[solver][epsilon] = {}
                 for L in self.max_ref_lvls:
                     self.results[solver][epsilon][L] = {}
                     for field in self.fields:
