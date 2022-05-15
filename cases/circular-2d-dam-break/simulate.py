@@ -167,11 +167,12 @@ class Simulation2DDambreak:
                 elif np.isclose(epsilon, 1e-4):
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
                 
-                ax.plot(
-                    self.results["x"],
-                    self.results[solver][epsilon]["depths"],
-                    label=label
-                )
+                if epsilon == 0 or np.isclose(epsilon, 1e-3):
+                    ax.plot(
+                        self.results["x"],
+                        self.results[solver][epsilon]["depths"],
+                        label=label
+                    )
             
         xlim = ( self.results["x"][0], self.results["x"][-1] )
         

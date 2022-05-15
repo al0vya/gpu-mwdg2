@@ -72,7 +72,7 @@ class Simulation1DDambreak:
         self.results      = {}
         self.epsilons     = [0, 1e-4, 1e-3, 1e-2]
         self.fields       = ["simtime", "runtime"]
-        self.max_ref_lvls = [8, 9, 10, 11]
+        self.max_ref_lvls = [8]#, 9, 10, 11]
         
         for solver in self.solvers:
             self.results[solver] = {}
@@ -259,11 +259,12 @@ class Simulation1DDambreak:
                 elif np.isclose(epsilon, 1e-4):
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
                 
-                ax.plot(
-                    self.results["x"],
-                    self.results[solver][epsilon]["depths"],
-                    label=label
-                )
+                if epsilon == 0 or np.isclose(epsilon, 1e-3):
+                    ax.plot(
+                        self.results["x"],
+                        self.results[solver][epsilon]["depths"],
+                        label=label
+                    )
             
         t       = 2.5
         Lx      = 50
