@@ -164,91 +164,22 @@ class Simulation25Blocks:
                 
             subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), "25-blocks.par"] )
             
-    def plot(
-            self,
-            exp_data
-        ):
-            my_rc_params = {
-                "legend.fontsize" : "large",
-                "axes.labelsize"  : "xx-large",
-                "axes.titlesize"  : "xx-large",
-                "xtick.labelsize" : "xx-large",
-                "ytick.labelsize" : "xx-large"
-            }
-            
-            plt.rcParams.update(my_rc_params)
-            
-            x = [self.xmin + i * self.cellsize for i in self.i_range]
-            
-            print("Plotting depths and velocities...")
-            
-            fig, ax = plt.subplots()
-            
-            for interval in self.intervals:
-                for solver in self.solvers:
-                    for epsilon in self.epsilons:
-                        if epsilon == 0:
-                            label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
-                        elif np.isclose(epsilon, 1e-3):
-                            label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
-                        elif np.isclose(epsilon, 1e-4):
-                            label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
-                        
-                        ax.plot(
-                            x,
-                            self.results[solver][epsilon][interval]["depth"],
-                            label=label
-                        )
-                
-                ax.scatter(
-                    exp_data.data[interval]["depth"].iloc[:][0],
-                    exp_data.data[interval]["depth"].iloc[:][1],
-                    label="Experimental",
-                    color="black"
-                )
-                
-                ax.set_xlabel("$x \, (m)$")
-                ax.set_ylabel("$Depth \, (m)$")
-                ax.set_xlim(4, 8)
-                ax.legend()
-                fig.savefig(os.path.join("results", "depth-" + str(interval) ), bbox_inches="tight" )
-                ax.clear()
-                
-                for solver in self.solvers:
-                    for epsilon in self.epsilons:
-                        if epsilon == 0:
-                            label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
-                        elif np.isclose(epsilon, 1e-3):
-                            label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
-                        elif np.isclose(epsilon, 1e-4):
-                            label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
-                        
-                        ax.plot(
-                            x,
-                            self.results[solver][epsilon][interval]["velocity"],
-                            label=label
-                        )
-                
-                ax.scatter(
-                    exp_data.data[interval]["velocity"].iloc[:][0],
-                    exp_data.data[interval]["velocity"].iloc[:][1],
-                    label="Experimental",
-                    color="black"
-                )
-                
-                ax.set_xlabel("$x \, (m)$")
-                ax.set_ylabel("$Velocity \, (ms^{-1})$")
-                ax.set_xlim(4, 8)
-                ax.legend()
-                fig.savefig(os.path.join("results", "velocity-" + str(interval) ), bbox_inches="tight")
-                ax.clear()
-            
-            print("Plotting speedups...")
-            
+    def plot_exp_data(
+        self,
+        my_rc_params,
+        exp_data
+    ):
+        print("Plotting depths and velocities...")
+        
+        plt.rcParams.update(my_rc_params)
+        
+        x = [self.xmin + i * self.cellsize for i in self.i_range]
+        
+        fig, ax = plt.subplots()
+        
+        for interval in self.intervals:
             for solver in self.solvers:
                 for epsilon in self.epsilons:
-                    runtime_ratio = self.results[solver][ self.epsilons[0] ]["runtime"] / self.results[solver][epsilon]["runtime"]
-                    
                     if epsilon == 0:
                         label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
                     elif np.isclose(epsilon, 1e-3):
@@ -257,25 +188,113 @@ class Simulation25Blocks:
                         label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
                     
                     ax.plot(
-                        self.results[solver][epsilon]["simtime"],
-                        runtime_ratio,
+                        x,
+                        self.results[solver][epsilon][interval]["depth"],
                         label=label
                     )
-                
-                xlim = (
-                    np.min( self.results[solver][ self.epsilons[0] ]["simtime"] ),
-                    np.max( self.results[solver][ self.epsilons[0] ]["simtime"] )
-                )
-                
-                ax.set_xlim(xlim)
-                ax.set_xlabel(r"$t \, (s)$")
-                ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
-                ax.legend()
-                fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
-                ax.clear()
             
-            plt.close()
+            ax.scatter(
+                exp_data.data[interval]["depth"].iloc[:][0],
+                exp_data.data[interval]["depth"].iloc[:][1],
+                label="Experimental",
+                color="black"
+            )
+            
+            ax.set_xlabel("$x \, (m)$")
+            ax.set_ylabel("$Depth \, (m)$")
+            ax.set_xlim(4, 8)
+            ax.legend()
+            fig.savefig(os.path.join("results", "depth-" + str(interval) ), bbox_inches="tight" )
+            ax.clear()
+            
+            for solver in self.solvers:
+                for epsilon in self.epsilons:
+                    if epsilon == 0:
+                        label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
+                    elif np.isclose(epsilon, 1e-3):
+                        label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                    elif np.isclose(epsilon, 1e-4):
+                        label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
+                    
+                    ax.plot(
+                        x,
+                        self.results[solver][epsilon][interval]["velocity"],
+                        label=label
+                    )
+            
+            ax.scatter(
+                exp_data.data[interval]["velocity"].iloc[:][0],
+                exp_data.data[interval]["velocity"].iloc[:][1],
+                label="Experimental",
+                color="black"
+            )
+            
+            ax.set_xlabel("$x \, (m)$")
+            ax.set_ylabel("$Velocity \, (ms^{-1})$")
+            ax.set_xlim(4, 8)
+            ax.legend()
+            fig.savefig(os.path.join("results", "velocity-" + str(interval) ), bbox_inches="tight")
+            ax.clear()
+            
+        plt.close()
         
+    def plot_speedups(
+        self,
+        my_rc_params
+    ):
+        print("Plotting speedups...")
+        
+        plt.rcParams.update(my_rc_params)
+        
+        fig, ax = plt.subplots()
+        
+        for solver in self.solvers:
+            for epsilon in self.epsilons:
+                runtime_ratio = self.results[solver][ self.epsilons[0] ]["runtime"] / self.results[solver][epsilon]["runtime"]
+                
+                if epsilon == 0:
+                    label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
+                elif np.isclose(epsilon, 1e-3):
+                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                elif np.isclose(epsilon, 1e-4):
+                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
+                
+                ax.plot(
+                    self.results[solver][epsilon]["simtime"],
+                    runtime_ratio,
+                    label=label
+                )
+            
+            xlim = (
+                np.min( self.results[solver][ self.epsilons[0] ]["simtime"] ),
+                np.max( self.results[solver][ self.epsilons[0] ]["simtime"] )
+            )
+            
+            ax.set_xlim(xlim)
+            ax.set_xlabel(r"$t \, (s)$")
+            ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
+            ax.legend()
+            fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
+            ax.clear()
+        
+        plt.close()
+        
+    def plot(
+        self,
+        exp_data
+    ):
+        my_rc_params = {
+            "legend.fontsize" : "large",
+            "axes.labelsize"  : "xx-large",
+            "axes.titlesize"  : "xx-large",
+            "xtick.labelsize" : "xx-large",
+            "ytick.labelsize" : "xx-large"
+        }
+        
+        self.plot_exp_data(my_rc_params, exp_data)
+        self.plot_speedups(my_rc_params)
+        
+    
 if __name__ == "__main__":
     subprocess.run( ["python", "raster.py"] )
     

@@ -48,8 +48,8 @@ Slopes get_limited_slopes
 	// ------ //
 	// STEP 4 //
 	// ------ //
-	const real norm_x = max( abs(u._0 - u_w._0), abs(u_e._0 - u._0) );
-	const real norm_y = max( abs(u._0 - u_s._0), abs(u_n._0 - u._0) );
+	const real norm_x = max( abs(u._0 - u._1x), abs(u._0 + u._1x) );
+	const real norm_y = max( abs(u._0 - u._1y), abs(u._0 + u._1y) );
 
 	// ------ //
 	// STEP 5 //
@@ -70,8 +70,8 @@ Slopes get_limited_slopes
 	const real u1y_limited = (max(DS_n, DS_s) < tol_Krivo) ? u._1y : minmod
 	(
 		u._1y,
-		(u._0 - u_s._0) / sqrt( C(3.0) ),
-		(u_n._0 - u._0) / sqrt( C(3.0) )
+		(u._0 - u_s._0),
+		(u_n._0 - u._0)
 	);
 
 	return { u1x_limited, u1y_limited };

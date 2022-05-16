@@ -165,8 +165,6 @@ void limit_slopes
             LegendreBasis basis_s = get_leg_basis(h_idx, h_idx_s, level_s, solver_params.L, x, y, dx_loc, dy_loc, dx_finest, dy_finest, SOUTH);
             LegendreBasis basis_w = get_leg_basis(h_idx, h_idx_w, level_w, solver_params.L, x, y, dx_loc, dy_loc, dx_finest, dy_finest, WEST);
             
-            real tol_Krivo = C(1.0);
-
             Slopes eta_limited = get_limited_slopes
             (
                 eta,
@@ -180,7 +178,7 @@ void limit_slopes
                 basis_w,
                 dx_finest,
                 dy_finest,
-                tol_Krivo
+                solver_params.tol_Krivo
             );
 
             Slopes qx_limited = get_limited_slopes
@@ -196,7 +194,7 @@ void limit_slopes
                 basis_w,
                 dx_finest,
                 dy_finest,
-                tol_Krivo
+                solver_params.tol_Krivo
             );
 
             Slopes qy_limited = get_limited_slopes
@@ -212,11 +210,11 @@ void limit_slopes
                 basis_w,
                 dx_finest,
                 dy_finest,
-                tol_Krivo
+                solver_params.tol_Krivo
             );
 
-            const bool above_h_min_limiter_x = ( C(0.01) * max_h < min( coeffs.h._0, min(coeffs_e.h._0, coeffs_w.h._0) ) );
-            const bool above_h_min_limiter_y = ( C(0.01) * max_h < min( coeffs.h._0, min(coeffs_n.h._0, coeffs_s.h._0) ) );
+            const bool above_h_min_limiter_x = ( C(0.05) * max_h < min( coeffs.h._0, min(coeffs_e.h._0, coeffs_w.h._0) ) );
+            const bool above_h_min_limiter_y = ( C(0.05) * max_h < min( coeffs.h._0, min(coeffs_n.h._0, coeffs_s.h._0) ) );
 
             real& h1x = d_assem_sol.h1x[idx];
             real& h1y = d_assem_sol.h1y[idx];

@@ -15,6 +15,6 @@ wall_height 0
 planar      on
 c_prop      off
 cumulative  on
-limitslopes off
+limitslopes on
 tol_Krivo   10
 vtk         off

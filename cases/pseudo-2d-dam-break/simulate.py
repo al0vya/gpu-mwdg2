@@ -95,7 +95,7 @@ class Simulation1DDambreak:
                     epsilon=epsilon,
                     L=8,
                     saveint=2.5,
-                    limiter="off"
+                    limiter="on"
                 )
                 
                 verification_depths = self.get_verification_depths()
@@ -113,7 +113,7 @@ class Simulation1DDambreak:
                         epsilon=epsilon,
                         L=L,
                         saveint=40,
-                        limiter="on"
+                        limiter="off"
                     )'''
                     
                     results_dataframe = pd.read_csv( os.path.join("results", "simtime-vs-runtime.csv") )

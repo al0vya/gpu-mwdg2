@@ -8,7 +8,6 @@ def EXIT_HELP():
     help_message = (
         "Use this tool as follows:\n" +
         "python simulate.py preprocess\n" +
-        "python simulate.py postprocess\n" +
         "python simulate.py simulate <SOLVER> <EPSILON>"
     )
     
@@ -313,98 +312,37 @@ def write_all_input_files():
     
     write_stage_file()
 
-def load_computed_gauge_timeseries():
-    print("Loading computed gauges timeseries...")
-    
-    gauges = np.loadtxt(fname=os.path.join("results", "saved-stage-mwdg2.wd"), skiprows=11, delimiter=" ")
-    
-    datum = find_datum()
-    
-    return {
-        "time"          : gauges[:,0] / 3600, # get into hours
-        "A_Beacon"      : gauges[:,1] + datum,
-        "Tug_Harbour"   : gauges[:,2] + datum,
-        "Sulphur_Point" : gauges[:,3] + datum,
-        "Moturiki"      : gauges[:,4] + datum
-    }
-
-def compare_timeseries(
-    computed_gauges,
-    experimental_gauges,
-    name
-):
-    elevations = {
-        "A_Beacon"      : 15.423466,
-        "Tug_Harbour"   : 25.295409,
-        "Sulphur_Point" : 25.272322,
-        "Moturiki"      : 34.403634
-    }
-    
-    fig, ax = plt.subplots()
-    
-    ax.plot(
-        computed_gauges["time"],
-        computed_gauges[name] + elevations[name],
-        experimental_gauges[name]["time"],
-        experimental_gauges[name]["total"]
-    )
-    
-    ylim = (
-        np.min( experimental_gauges[name]["total"] ),
-        np.max( experimental_gauges[name]["total"] )
-    )
-    
-    plt.setp(
-        ax,
-        title=name,
-        xlim=( computed_gauges["time"][0], computed_gauges["time"][-1] ),
-        ylim=ylim,
-        xlabel=r"$t \, (hr)$",
-        ylabel=r"$h + z \, (m)$"
-    )
-    
-    fig.savefig(os.path.join("results", name), bbox_inches="tight")
-    
-    plt.close()
-    
-def compare_all_timeseries():
-    computed_gauges     = load_computed_gauge_timeseries()
-    experimental_gauges = load_experimental_gauge_timeseries()
-    
-    compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="A_Beacon")
-    compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="Tug_Harbour")
-    compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="Sulphur_Point")
-    compare_timeseries(computed_gauges=computed_gauges, experimental_gauges=experimental_gauges, name="Moturiki")
-
 def write_parameter_file(
     epsilon,
     solver,
     filename
 ):
     params = (
-        "test_case   0\n" +
-        "max_ref_lvl 11\n" +
-        "min_dt      1\n" +
-        "respath     results\n" +
-        "epsilon     %s\n" +
-        "fpfric      0.01\n" +
-        "rasterroot  tauranga\n" +
-        "bcifile     tauranga.bci\n" +
-        "bdyfile     tauranga.bdy\n" +
-        "stagefile   tauranga.stage\n" +
-        "tol_h       1e-3\n" +
-        "tol_q       0\n" +
-        "tol_s       1e-9\n" +
-        "limitslopes on\n" +
-        "tol_Krivo   10\n" +
-        "g           9.80665\n" +
-        "saveint     3600\n" +
-        "massint     500\n" +
-        "sim_time    144000\n" +
-        "solver      %s\n" +
-        "cumulative  on\n" +
-        "raster_out  on\n" +
-        "wall_height 420"
+        "test_case     0\n" +
+        "max_ref_lvl   11\n" +
+        "min_dt        1\n" +
+        "respath       results\n" +
+        "epsilon       %s\n" +
+        "fpfric        0.01\n" +
+        "rasterroot    tauranga\n" +
+        "bcifile       tauranga.bci\n" +
+        "bdyfile       tauranga.bdy\n" +
+        "stagefile     tauranga.stage\n" +
+        "tol_h         1e-3\n" +
+        "tol_q         0\n" +
+        "tol_s         1e-9\n" +
+        "limitslopes   off\n" +
+        "tol_Krivo     10\n" +
+        "g             9.80665\n" +
+        "saveint       3600\n" +
+        "massint       500\n" +
+        "sim_time      144000\n" +
+        "solver        %s\n" +
+        "cumulative    on\n" +
+        "vtk           off\n" +
+        "raster_out    on\n" +
+        "voutput_stage on\n" +
+        "wall_height   420"
     ) % (
         epsilon,
         solver
@@ -435,8 +373,6 @@ if __name__ == "__main__":
     
     if   option == "preprocess":
         write_all_input_files()
-    elif option == "postprocess":
-        compare_all_timeseries()
     elif option == "simulate":
         run_simulation()
     else:

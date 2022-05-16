@@ -100,7 +100,7 @@ class Simulation2DDambreak:
                 str(saveint),  # SAVE_INT
                 str(sim_time), # MASS_INT
                 "surf",        # PLOT_TYPE
-                "off"          # SLOPE_LIMITER
+                "on"           # SLOPE_LIMITER
             ]
         )
         
