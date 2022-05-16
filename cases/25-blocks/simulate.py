@@ -153,7 +153,7 @@ class Simulation25Blocks:
                     "saveint     1\n" +
                     "sim_time    10\n" +
                     "limitslopes on\n" +
-                    "tol_Krivo   10\n" +
+                    "tol_Krivo   1\n" +
                     "cumulative  on\n" +
                     "raster_out  on\n" +
                     "solver      %s\n" +

@@ -5,6 +5,15 @@ import numpy             as np
 import pandas            as pd
 import matplotlib.pyplot as plt
 
+class Reference:
+    def __init__(
+        self
+    ):
+        reference_data = np.loadtxt(fname="reference.txt", skiprows=2, usecols=(0,1), delimiter='\t')
+        
+        self.x      = reference_data[:,0]
+        self.depths = reference_data[:,1]
+        
 class Simulation2DDambreak:
     def __init__(
         self,
@@ -150,7 +159,8 @@ class Simulation2DDambreak:
     
     def plot_verification_depths(
         self,
-        my_rc_params
+        my_rc_params,
+        reference
     ):
         plt.rcParams.update(my_rc_params)
         
@@ -174,6 +184,12 @@ class Simulation2DDambreak:
                         label=label
                     )
             
+        ax.plot(
+            reference.x,
+            reference.depths,
+            label="Reference"
+        )
+        
         xlim = ( self.results["x"][0], self.results["x"][-1] )
         
         ax.set_xlabel(r"$x \, (m)$")
@@ -184,7 +200,10 @@ class Simulation2DDambreak:
         
         plt.close()
         
-    def plot(self):
+    def plot(
+        self,
+        reference
+    ):
         my_rc_params = {
             "legend.fontsize" : "large",
             "axes.labelsize"  : "xx-large",
@@ -195,7 +214,7 @@ class Simulation2DDambreak:
         
         self.plot_speedups(my_rc_params)
         
-        self.plot_verification_depths(my_rc_params)
+        self.plot_verification_depths(my_rc_params, reference)
         
 if __name__ == "__main__":
-    Simulation2DDambreak( ["mw"] ).plot()
+    Simulation2DDambreak( ["mw"] ).plot( Reference() )
