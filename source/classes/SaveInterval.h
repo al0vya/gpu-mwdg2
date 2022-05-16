@@ -5,7 +5,7 @@
 typedef struct SaveInterval
 {
 	const real interval;
-	int        count = 0;
+	int        count;
 
 	bool save(real time_now)
 	{

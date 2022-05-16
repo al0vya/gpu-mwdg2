@@ -36,5 +36,5 @@ SaveInterval read_save_interval
 		sscanf(str, "%s %" NUM_FRMT, buf, &interval);
 	}
 
-	return { interval };
+	return { interval, 0 };
 }

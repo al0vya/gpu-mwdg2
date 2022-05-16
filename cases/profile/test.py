@@ -70,6 +70,8 @@ def plot_depths(
     
     fig.savefig(fname=os.path.join("results", filename), bbox_inches="tight")
     
+    plt.close()
+    
 def verify_depths(
     epsilon,
     solver,
