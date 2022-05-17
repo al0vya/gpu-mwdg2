@@ -60,7 +60,7 @@ void write_soln_planar_fv1
 				h[idx]  = h0 [element];
 				qx[idx] = qx0[element];
 				qy[idx] = qy0[element];
-				z[idx]  = z0[element];
+				z[idx]  = z0 [element];
 			}
 		}
 	}

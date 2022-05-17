@@ -14,5 +14,6 @@ typedef struct SimulationParams
 	real       g;
 	real       time;
 	real       manning;
+	bool       is_monai = false;
 
 } SimulationParams;

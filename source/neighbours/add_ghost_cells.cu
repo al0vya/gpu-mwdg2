@@ -441,19 +441,20 @@ void add_ghost_cells
 			{
 				d_neighbours.west.h0[idx] = boundaries.west.inlet - d_assem_sol.z0[idx];
 				
-				/*
-				// monai test case
-				real hp  = d_assem_sol.h0[idx];
-				real qxp = d_assem_sol.qx0[idx];
-				real up  = (hp > solver_params.tol_h) ? qxp / hp : C(0.0);
+				if (sim_params.is_monai)
+				{
+					real hp  = d_assem_sol.h0[idx];
+					real qxp = d_assem_sol.qx0[idx];
+					real up  = (hp > solver_params.tol_h) ? qxp / hp : C(0.0);
 
-				real hb = C(0.13535);
-				real ub = C(0.0);
-				
-				twodoubles outputs = non_reflective_wave(boundaries.west.inlet, dt, dx_finest, hp, up, hb, ub, sim_params.g);
+					real hb = C(0.13535);
+					real ub = C(0.0);
 
-				d_neighbours.west.h0[idx]  = outputs.hb - d_assem_sol.z0[idx];
-				d_neighbours.west.qx0[idx] = outputs.hb * outputs.ub;*/
+					twodoubles outputs = non_reflective_wave(boundaries.west.inlet, dt, dx_finest, hp, up, hb, ub, sim_params.g);
+
+					d_neighbours.west.h0[idx]  = outputs.hb - d_assem_sol.z0[idx];
+					d_neighbours.west.qx0[idx] = outputs.hb * outputs.ub;
+				}
 			}
 			else if
 			(
