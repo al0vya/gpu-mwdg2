@@ -364,16 +364,21 @@ def run_simulation():
         filename=parameter_filename
     )
     
+    executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
+    
     subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), parameter_filename] )
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) < 2: EXIT_HELP()
-    
-    option = sys.argv[1]
-    
-    if   option == "preprocess":
-        write_all_input_files()
-    elif option == "simulate":
-        run_simulation()
-    else:
-        EXIT_HELP()
+        
+        option = sys.argv[1]
+        
+        if   option == "preprocess":
+            write_all_input_files()
+        elif option == "simulate":
+            run_simulation()
+        else:
+            EXIT_HELP()
+
+if __name__ == "__main__":
+    main()

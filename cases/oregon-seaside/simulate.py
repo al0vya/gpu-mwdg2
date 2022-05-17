@@ -4,6 +4,15 @@ import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
 
+def EXIT_HELP():
+    help_message = (
+        "Use this tool as follows:\n" +
+        "python simulate.py preprocess\n" +
+        "python simulate.py simulate <SOLVER> <EPSILON>"
+    )
+    
+    sys.exit(help_message)
+
 def write_bci_file(
     ymin,
     nrows,
@@ -202,9 +211,74 @@ def write_all_input_files():
     )
     
     write_stage_file()
+
+def write_parameter_file(
+    epsilon,
+    solver,
+    filename
+):
+    params = (
+        "test_case     0\n" +
+        "max_ref_lvl   12\n" +
+        "min_dt        1\n" +
+        "respath       results\n" +
+        "epsilon       %s\n" +
+        "fpfric        0.01\n" +
+        "rasterroot    oregon-seaside\n" +
+        "bcifile       oregon-seaside.bci\n" +
+        "bdyfile       oregon-seaside.bdy\n" +
+        "stagefile     oregon-seaside.stage\n" +
+        "tol_h         1e-3\n" +
+        "tol_q         0\n" +
+        "tol_s         1e-9\n" +
+        "limitslopes   off\n" +
+        "tol_Krivo     10\n" +
+        "g             9.80665\n" +
+        "saveint       4\n" +
+        "massint       0.4\n" +
+        "sim_time      40\n" +
+        "solver        %s\n" +
+        "cumulative    on\n" +
+        "vtk           off\n" +
+        "raster_out    on\n" +
+        "voutput_stage on\n" +
+        "wall_height   2.5"
+    ) % (
+        epsilon,
+        solver
+    )
+    
+    with open(filename, 'w') as fp:
+        fp.write(params)
+
+def run_simulation():
+    if len(sys.argv) < 4: EXIT_HELP()
+    
+    dummy, option, solver, epsilon = sys.argv
+    
+    parameter_filename = "oregon-seaside.par"
+    
+    write_parameter_file(
+        epsilon=epsilon,
+        solver=solver,
+        filename=parameter_filename
+    )
+    
+    executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
+    
+    subprocess.run( [os.path.join("..", executable), parameter_filename] )
     
 def main():
-    write_all_input_files()
+    if len(sys.argv) < 2: EXIT_HELP()
+    
+    option = sys.argv[1]
+    
+    if   option == "preprocess":
+        write_all_input_files()
+    elif option == "simulate":
+        run_simulation()
+    else:
+        EXIT_HELP()
 
 if __name__ == "__main__":
     main()
