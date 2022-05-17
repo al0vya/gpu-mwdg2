@@ -265,7 +265,7 @@ def write_parameter_file(
         "respath       results\n" +
         "epsilon       %s\n" +
         "fpfric        0.01\n" +
-        "rasterroot    oregon-seaside\n" +
+        "rasterroot    oregon-seaside-0p02m\n" +
         "bcifile       oregon-seaside.bci\n" +
         "bdyfile       oregon-seaside.bdy\n" +
         "stagefile     oregon-seaside.stage\n" +
