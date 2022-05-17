@@ -98,7 +98,7 @@ def check_raster_file(
     fig.savefig(os.path.join("results", filename + ".png"), bbox_inches="tight")
     
     plt.close()
-    
+
 def write_raster_file(
     raster,
     xmin,
@@ -143,18 +143,36 @@ def write_raster_file(
         comments=""
     )
 
+def downscale_raster(
+    raster
+):
+    nrows, ncols = raster.shape
+    
+    # don't consider the last row/column if odd number of rows/columns
+    x_lim = None if ncols % 2 == 0 else -1
+    y_lim = None if nrows % 2 == 0 else -1
+    
+    top_left     = raster[ :y_lim:2,  :x_lim:2]
+    top_right    = raster[ :y_lim:2, 1:x_lim:2]
+    bottom_left  = raster[1:y_lim:2,  :x_lim:2]
+    bottom_right = raster[1:y_lim:2, 1:x_lim:2]
+    
+    return (top_left + top_right + bottom_left + bottom_right) / 4
+    
 def write_stage_file():
     print("Preparing stage file...")
     
+    stages = (
+        "5\n"
+        "18.618  0.000\n" + # W3
+        "33.721 -0.588\n" + # B1
+        "35.176 -0.406\n" + # B4
+        "36.635 -0.229\n" + # B6
+        "40.668  0.269\n"   # B9
+    )
+    
     with open("oregon-seaside.stage", 'w') as fp:
-        stages = (
-            "5\n"
-            "18.618  0.000\n" + # W3
-            "33.721 -0.588\n" + # B1
-            "35.176 -0.406\n" + # B4
-            "36.635 -0.229\n" + # B6
-            "40.668  0.269\n"   # B9
-        )
+        fp.write(stages)
 
 def write_all_input_files():
     print("Loading DEM...")
@@ -163,9 +181,11 @@ def write_all_input_files():
     
     datum = bathymetry.min()
     
-    adjusted_bathymetry = bathymetry - datum
+    adjusted_bathymetry            = bathymetry - datum
+    adjusted_bathymetry_downscaled = downscale_raster(adjusted_bathymetry)
     
-    initial_depths = ( (0.97 - adjusted_bathymetry) > 0) * (0.97 - adjusted_bathymetry)
+    initial_depths            = ( (0.97 - adjusted_bathymetry)            > 0) * (0.97 - adjusted_bathymetry)
+    initial_depths_downscaled = ( (0.97 - adjusted_bathymetry_downscaled) > 0) * (0.97 - adjusted_bathymetry_downscaled)
     
     nrows, ncols = bathymetry.shape
     
@@ -194,6 +214,27 @@ def write_all_input_files():
         nrows=nrows,
         ncols=ncols,
         filename="oregon-seaside-0p01m.start"
+    )
+    
+    # at 0.02 m resolution instead of 0.01 m
+    write_raster_file(
+        raster=adjusted_bathymetry_downscaled,
+        xmin=xmin,
+        ymin=ymin,
+        cellsize=2*cellsize,
+        nrows=int(nrows/2),
+        ncols=int(ncols/2),
+        filename="oregon-seaside-0p02m.dem"
+    )
+    
+    write_raster_file(
+        raster=initial_depths_downscaled,
+        xmin=xmin,
+        ymin=ymin,
+        cellsize=2*cellsize,
+        nrows=int(nrows/2),
+        ncols=int(ncols/2),
+        filename="oregon-seaside-0p02m.start"
     )
     
     timeseries_name = "INLET"
