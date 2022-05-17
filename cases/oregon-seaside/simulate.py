@@ -4,6 +4,19 @@ import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
 
+def write_bci_file(
+    ymin,
+    nrows,
+    cellsize,
+    timeseries_name
+):
+    print("Preparing bci file...")
+    
+    ymax = ymin + nrows * cellsize
+    
+    with open("oregon-seaside.bci", 'w') as fp:
+        fp.write( "W %s %s HVAR %s" % (ymin, ymax, timeseries_name) )
+    
 def write_bdy_file(
     timeseries_name,
     datum
@@ -14,7 +27,10 @@ def write_bdy_file(
     
     fig, ax = plt.subplots()
     
-    ax.plot(boundary_timeseries[:,0], boundary_timeseries[:,1])
+    ax.plot(
+        boundary_timeseries[:,0],
+        boundary_timeseries[:,1] - datum
+    )
     
     plt.setp(
         ax,
@@ -30,7 +46,7 @@ def write_bdy_file(
     
     timeseries_len = boundary_timeseries.shape[0]
     
-    with open("seaside-oregon.bdy", 'w') as fp:
+    with open("oregon-seaside.bdy", 'w') as fp:
         header = (
             "%s\n" +
             "%s seconds\n"
@@ -43,18 +59,16 @@ def write_bdy_file(
         
         for entry in boundary_timeseries:
             fp.write(str(entry[1] - datum) + " " + str( entry[0] ) + "\n")
-    
-def write_dem_file(
-    bathymetry,
-    datum,
+
+def check_raster_file(
+    raster,
     xmin,
     ymin,
     cellsize,
     nrows,
-    ncols
+    ncols,
+    filename
 ):
-    print("Preparing DEM file...")
-    
     fig, ax = plt.subplots()
     
     y = [ ymin + j * cellsize for j in range(nrows) ]
@@ -62,9 +76,7 @@ def write_dem_file(
     
     x, y = np.meshgrid(x, y)
     
-    adjusted_bathymetry = bathymetry - datum
-    
-    contourset = ax.contourf(x, y, adjusted_bathymetry)
+    contourset = ax.contourf(x, y, raster)
     
     fig.colorbar(contourset)
     
@@ -74,9 +86,30 @@ def write_dem_file(
         ylabel=r"$y \, (m)$"
     )
     
-    fig.savefig(os.path.join("results", "bathymetry.png"), bbox_inches="tight")
+    fig.savefig(os.path.join("results", filename + ".png"), bbox_inches="tight")
     
     plt.close()
+    
+def write_raster_file(
+    raster,
+    xmin,
+    ymin,
+    cellsize,
+    nrows,
+    ncols,
+    filename
+):
+    print("Preparing raster file: %s..." % filename)
+    
+    check_raster_file(
+        raster=raster,
+        xmin=xmin,
+        ymin=ymin,
+        cellsize=cellsize,
+        nrows=nrows,
+        ncols=ncols,
+        filename=filename
+    )
     
     header = (
         "ncols        %s\n" +
@@ -94,26 +127,25 @@ def write_dem_file(
     )
     
     np.savetxt(
-        fname="seaside-oregon-0.01m.dem",
-        X=np.flipud(adjusted_bathymetry),
+        fname=filename,
+        X=np.flipud(raster),
         fmt="%.8f",
         header=header,
         comments=""
     )
 
-def write_bci_file(
-    ymin,
-    nrows,
-    cellsize,
-    timeseries_name
-):
-    print("Preparing bci file...")
+def write_stage_file():
+    print("Preparing stage file...")
     
-    ymax = ymin + nrows * cellsize
-    
-    with open("seaside-oregon.bci", 'w') as fp:
-        fp.write( "W %s %s HVAR %s" % (ymin, ymax, timeseries_name) )
-    
+    with open("oregon-seaside.stage", 'w') as fp:
+        stages = (
+            "5\n"
+            "18.618  0.000\n" + # W3
+            "33.721 -0.588\n" + # B1
+            "35.176 -0.406\n" + # B4
+            "36.635 -0.229\n" + # B6
+            "40.668  0.269\n"   # B9
+        )
 
 def write_all_input_files():
     print("Loading DEM...")
@@ -121,6 +153,10 @@ def write_all_input_files():
     bathymetry = np.loadtxt( fname=os.path.join("input-data", "bathymetry.csv"), delimiter="," );
     
     datum = bathymetry.min()
+    
+    adjusted_bathymetry = bathymetry - datum
+    
+    initial_depths = ( (0.97 - adjusted_bathymetry) > 0) * (0.97 - adjusted_bathymetry)
     
     nrows, ncols = bathymetry.shape
     
@@ -131,14 +167,24 @@ def write_all_input_files():
     xmin =   0.0120010375976563 - cellsize / 2
     ymin = -13.2609996795654    - cellsize / 2
     
-    write_dem_file(
-        bathymetry=bathymetry,
-        datum=datum,
+    write_raster_file(
+        raster=adjusted_bathymetry,
         xmin=xmin,
         ymin=ymin,
         cellsize=cellsize,
         nrows=nrows,
-        ncols=ncols
+        ncols=ncols,
+        filename="oregon-seaside-0p01m.dem"
+    )
+    
+    write_raster_file(
+        raster=initial_depths,
+        xmin=xmin,
+        ymin=ymin,
+        cellsize=cellsize,
+        nrows=nrows,
+        ncols=ncols,
+        filename="oregon-seaside-0p01m.start"
     )
     
     timeseries_name = "INLET"
@@ -154,6 +200,8 @@ def write_all_input_files():
         cellsize=cellsize,
         timeseries_name=timeseries_name
     )
+    
+    write_stage_file()
     
 def main():
     write_all_input_files()

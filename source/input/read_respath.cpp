@@ -41,7 +41,7 @@ void read_respath
 	{
 		if (buf2[i] == '\0')
 		{
-			respath[i]     = '\\';
+			respath[i]     = '/';
 			respath[i + 1] = '\0';
 			return;
 		}

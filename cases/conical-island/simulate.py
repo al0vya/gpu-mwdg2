@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 import numpy             as np
 import pandas            as pd
@@ -76,7 +77,9 @@ class SimulationConicalIsland:
         ):
             print("Running simulation, eps = " + str(epsilon) + ", solver: " + solver)
             
-            with open("conical-island.par", 'w') as fp:
+            input_file = "conical-island.par"
+            
+            with open(input_file, 'w') as fp:
                 params = (
                     "test_case   0\n" +
                     "max_ref_lvl 10\n" +
@@ -101,8 +104,10 @@ class SimulationConicalIsland:
                 
                 fp.write(params)
             
-            subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), "conical-island.par"] )
+            executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
             
+            subprocess.run( [os.path.join("..", executable), input_file] )
+        
     def plot_exp_data(
         self,
         my_rc_params,

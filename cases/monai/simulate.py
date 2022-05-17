@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 import numpy             as np
 import pandas            as pd
@@ -59,7 +60,9 @@ class SimulationMonai:
         ):
             print("Running simulation, eps = " + str(epsilon) + ", solver: " + solver)
             
-            with open("monai.par", 'w') as fp:
+            input_file = "monai.par"
+            
+            with open(input_file, 'w') as fp:
                 params = (
                     "test_case   0\n" +
                     "max_ref_lvl 9\n" +
@@ -86,7 +89,9 @@ class SimulationMonai:
                 
                 fp.write(params)
             
-            subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), "monai.par"] )
+            executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
+            
+            subprocess.run( [os.path.join("..", executable), input_file] )
             
     def plot_exp_data(
         self,

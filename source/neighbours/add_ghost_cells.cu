@@ -439,8 +439,9 @@ void add_ghost_cells
 				boundaries.west.bdytype == HVAR
 			)
 			{
-				//d_neighbours.west.h0[idx] = boundaries.west.inlet;
+				d_neighbours.west.h0[idx] = boundaries.west.inlet - d_assem_sol.z0[idx];
 				
+				/*
 				// monai test case
 				real hp  = d_assem_sol.h0[idx];
 				real qxp = d_assem_sol.qx0[idx];
@@ -452,7 +453,7 @@ void add_ghost_cells
 				twodoubles outputs = non_reflective_wave(boundaries.west.inlet, dt, dx_finest, hp, up, hb, ub, sim_params.g);
 
 				d_neighbours.west.h0[idx]  = outputs.hb - d_assem_sol.z0[idx];
-				d_neighbours.west.qx0[idx] = outputs.hb * outputs.ub;
+				d_neighbours.west.qx0[idx] = outputs.hb * outputs.ub;*/
 			}
 			else if
 			(

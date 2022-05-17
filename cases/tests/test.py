@@ -493,8 +493,10 @@ class Test:
     ):
         self.set_params()
         
-        subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), self.input_file] )
-
+        executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
+        
+        subprocess.run( [os.path.join("..", executable), self.input_file] )
+        
         if self.c_prop == "on":
             DischargeErrors(self.solver).plot_errors(self.test_name)
         else:

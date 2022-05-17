@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 import pandas            as pd
 import numpy             as np
@@ -136,7 +137,9 @@ class Simulation25Blocks:
         ):
             print("Running simulation, eps = " + str(epsilon) + ", solver: " + solver)
             
-            with open("25-blocks.par", 'w') as fp:
+            input_file = "25-blocks.par"
+            
+            with open(input_file, 'w') as fp:
                 params = (
                     "test_case   0\n" +
                     "max_ref_lvl 11\n" +
@@ -162,7 +165,9 @@ class Simulation25Blocks:
                 
                 fp.write(params)
                 
-            subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), "25-blocks.par"] )
+            executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
+            
+            subprocess.run( [os.path.join("..", executable), input_file] )
             
     def plot_exp_data(
         self,
