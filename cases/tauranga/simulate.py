@@ -370,15 +370,15 @@ def run_simulation():
 
 def main():
     if len(sys.argv) < 2: EXIT_HELP()
-        
-        option = sys.argv[1]
-        
-        if   option == "preprocess":
-            write_all_input_files()
-        elif option == "simulate":
-            run_simulation()
-        else:
-            EXIT_HELP()
+    
+    option = sys.argv[1]
+    
+    if   option == "preprocess":
+        write_all_input_files()
+    elif option == "simulate":
+        run_simulation()
+    else:
+        EXIT_HELP()
 
 if __name__ == "__main__":
     main()
