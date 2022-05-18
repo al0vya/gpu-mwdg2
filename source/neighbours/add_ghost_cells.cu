@@ -146,7 +146,8 @@ void add_ghost_cells
 				boundaries.north.bdytype == HVAR
 			)
 			{
-				d_neighbours.north.h0[idx] = boundaries.north.inlet - d_assem_sol.z0[idx];
+				d_assem_sol.h0[idx]        = boundaries.north.inlet - d_assem_sol.z0[idx];
+				d_neighbours.north.h0[idx] = d_assem_sol.h0[idx];
 			}
 			else if
 			(
@@ -244,7 +245,8 @@ void add_ghost_cells
 				boundaries.east.bdytype == HVAR
 			)
 			{
-				d_neighbours.east.h0[idx] = boundaries.east.inlet - d_assem_sol.z0[idx];
+				d_assem_sol.h0[idx]       = boundaries.east.inlet - d_assem_sol.z0[idx];
+				d_neighbours.east.h0[idx] = d_assem_sol.h0[idx];
 			}
 			else if
 			(
@@ -342,7 +344,8 @@ void add_ghost_cells
 				boundaries.south.bdytype == HVAR
 			)
 			{
-				d_neighbours.south.h0[idx] = boundaries.south.inlet - d_assem_sol.z0[idx];
+				d_assem_sol.h0[idx]        = boundaries.south.inlet - d_assem_sol.z0[idx];
+				d_neighbours.south.h0[idx] = d_assem_sol.h0[idx];
 			}
 			else if
 			(
@@ -439,7 +442,8 @@ void add_ghost_cells
 				boundaries.west.bdytype == HVAR
 			)
 			{
-				d_neighbours.west.h0[idx] = boundaries.west.inlet - d_assem_sol.z0[idx];
+				d_assem_sol.h0[idx]       = boundaries.west.inlet - d_assem_sol.z0[idx];
+				d_neighbours.west.h0[idx] = d_assem_sol.h0[idx];
 				
 				if (sim_params.is_monai)
 				{
