@@ -163,7 +163,8 @@ def write_stage_file():
     print("Preparing stage file...")
     
     stages = (
-        "5\n"
+        "6\n" +
+        " 5.000  0.000\n" + # boundary cell
         "18.618  0.000\n" + # W3
         "33.721 -0.588\n" + # B1
         "35.176 -0.406\n" + # B4
