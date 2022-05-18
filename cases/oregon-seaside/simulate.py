@@ -249,7 +249,7 @@ def write_parameter_file(
         "min_dt        1\n" +
         "respath       results\n" +
         "epsilon       %s\n" +
-        "fpfric        0.01\n" +
+        "fpfric        0.025\n" + # from "A comparison of a two-dimensional depth-averaged flow model ... for predicting tsunami ..."
         "rasterroot    oregon-seaside-0p01m\n" +
         "bcifile       oregon-seaside.bci\n" +
         "bdyfile       oregon-seaside.bdy\n" +
