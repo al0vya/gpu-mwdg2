@@ -38,7 +38,7 @@ def write_bdy_file(
     
     ax.plot(
         boundary_timeseries[:,0],
-        boundary_timeseries[:,1] - datum
+        0.97 + boundary_timeseries[:,1] - datum
     )
     
     plt.setp(
@@ -67,7 +67,7 @@ def write_bdy_file(
         fp.write(header)
         
         for entry in boundary_timeseries:
-            fp.write(str(entry[1] - datum) + " " + str( entry[0] ) + "\n")
+            fp.write(str(0.97 + entry[1] - datum) + " " + str( entry[0] ) + "\n")
 
 def check_raster_file(
     raster,
@@ -181,11 +181,9 @@ def write_all_input_files():
     
     datum = bathymetry.min()
     
-    adjusted_bathymetry            = bathymetry - datum
-    adjusted_bathymetry_downscaled = downscale_raster(adjusted_bathymetry)
+    adjusted_bathymetry = bathymetry - datum
     
-    initial_depths            = ( (0.97 - adjusted_bathymetry)            > 0) * (0.97 - adjusted_bathymetry)
-    initial_depths_downscaled = ( (0.97 - adjusted_bathymetry_downscaled) > 0) * (0.97 - adjusted_bathymetry_downscaled)
+    initial_depths = ( (0.97 - adjusted_bathymetry) > 0 ) * (0.97 - adjusted_bathymetry)
     
     nrows, ncols = bathymetry.shape
     
@@ -193,48 +191,32 @@ def write_all_input_files():
     cellsize = 0.01
     
     # numerical values obtained by checking the first item of the x and y arrays after running input-data/plot_bathy.m
-    xmin =   0.0120010375976563 - cellsize / 2
-    ymin = -13.2609996795654    - cellsize / 2
+    xmin =   0.012 - cellsize / 2
+    ymin = -13.260 - cellsize / 2
+    
+    # remove western cells because inlet wave forced at x = 5 m
+    western_cells_to_trim = int( ( 5 - (xmin) ) / cellsize )
+    
+    xmin = 5
     
     write_raster_file(
-        raster=adjusted_bathymetry,
+        raster=adjusted_bathymetry[:,western_cells_to_trim:],
         xmin=xmin,
         ymin=ymin,
         cellsize=cellsize,
         nrows=nrows,
-        ncols=ncols,
+        ncols=ncols-western_cells_to_trim,
         filename="oregon-seaside-0p01m.dem"
     )
     
     write_raster_file(
-        raster=initial_depths,
+        raster=initial_depths[:,western_cells_to_trim:],
         xmin=xmin,
         ymin=ymin,
         cellsize=cellsize,
         nrows=nrows,
-        ncols=ncols,
+        ncols=ncols-western_cells_to_trim,
         filename="oregon-seaside-0p01m.start"
-    )
-    
-    # at 0.02 m resolution instead of 0.01 m
-    write_raster_file(
-        raster=adjusted_bathymetry_downscaled,
-        xmin=xmin,
-        ymin=ymin,
-        cellsize=2*cellsize,
-        nrows=int(nrows/2),
-        ncols=int(ncols/2),
-        filename="oregon-seaside-0p02m.dem"
-    )
-    
-    write_raster_file(
-        raster=initial_depths_downscaled,
-        xmin=xmin,
-        ymin=ymin,
-        cellsize=2*cellsize,
-        nrows=int(nrows/2),
-        ncols=int(ncols/2),
-        filename="oregon-seaside-0p02m.start"
     )
     
     timeseries_name = "INLET"
@@ -265,7 +247,7 @@ def write_parameter_file(
         "respath       results\n" +
         "epsilon       %s\n" +
         "fpfric        0.01\n" +
-        "rasterroot    oregon-seaside-0p02m\n" +
+        "rasterroot    oregon-seaside-0p01m\n" +
         "bcifile       oregon-seaside.bci\n" +
         "bdyfile       oregon-seaside.bdy\n" +
         "stagefile     oregon-seaside.stage\n" +
