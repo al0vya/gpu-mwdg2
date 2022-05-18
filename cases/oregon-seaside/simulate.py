@@ -181,6 +181,8 @@ def write_all_input_files():
     
     datum = bathymetry.min()
     
+    print( "Datum: " + str(datum) )
+    
     adjusted_bathymetry = bathymetry - datum
     
     initial_depths = ( (0.97 - adjusted_bathymetry) > 0 ) * (0.97 - adjusted_bathymetry)
@@ -290,7 +292,128 @@ def run_simulation():
     executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
     
     subprocess.run( [os.path.join("..", executable), parameter_filename] )
+
+def load_experimental_gauge_timeseries():
+    experimental_gauges = {}
     
+    experimental_gauges["W3"] = {}
+    experimental_gauges["B1"] = {}
+    experimental_gauges["B4"] = {}
+    experimental_gauges["B6"] = {}
+    experimental_gauges["B9"] = {}
+    
+    wavegage = np.loadtxt(fname="Wavegage.txt", skiprows=1)
+    
+    experimental_gauges["W3"]["time"]    = wavegage[:,0]
+    experimental_gauges["W3"]["history"] = wavegage[:,5]
+    
+    return experimental_gauges
+
+def load_computed_gauge_timeseries(
+    stagefile
+):
+    print("Loading computed gauges timeseries: %s..." % stagefile)
+    
+    gauges = np.loadtxt(os.path.join("results", stagefile), skiprows=11, delimiter=" ")
+    
+    datum = -0.00202286243437291
+    
+    return {
+        "time" : gauges[:,0],
+        "W3"   : gauges[:,1] + datum,
+        "B1"   : gauges[:,2] + datum,
+        "B4"   : gauges[:,3] + datum,
+        "B6"   : gauges[:,4] + datum,
+        "B9"   : gauges[:,5] + datum
+    }
+    
+def read_stage_elevations(
+    stagefile
+):
+    header = []
+    
+    with open(os.path.join("results", stagefile), 'r') as fp:
+        for i, line in enumerate(fp):
+            if i > 2:
+                header.append(line)
+                
+            if i > 7:
+                break
+    
+    return {
+        "W3" : float( header[0].split()[3] ),
+        "B1" : float( header[1].split()[3] ),
+        "B4" : float( header[2].split()[3] ),
+        "B6" : float( header[3].split()[3] ),
+        "B9" : float( header[4].split()[3] )
+    }
+
+def compare_timeseries_stage(
+    stagefiles,
+    experimental_gauges,
+    name
+):
+    my_rc_params = {
+        "legend.fontsize" : "large",
+        "axes.labelsize"  : "large",
+        "axes.titlesize"  : "large",
+        "xtick.labelsize" : "large",
+        "ytick.labelsize" : "large"
+    }
+    
+    plt.rcParams.update(my_rc_params)
+    
+    fig, ax = plt.subplots()
+    
+    for stagefile in stagefiles:
+        elevations      = read_stage_elevations(stagefile)
+        computed_gauges = load_computed_gauge_timeseries(stagefile)
+        
+        ax.plot(
+            computed_gauges["time"],
+            computed_gauges[name] + elevations[name] - 0.97,
+            label=stagefile
+        )
+    
+    ax.plot(
+        experimental_gauges[name]["time"],
+        experimental_gauges[name]["history"],
+        label="experimental"
+    )
+    
+    ylim = (
+        np.min( experimental_gauges[name]["history"] ),
+        np.max( experimental_gauges[name]["history"] )
+    )
+    
+    plt.setp(
+        ax,
+        title=name,
+        xlim=( computed_gauges["time"][0], computed_gauges["time"][-1] ),
+        ylim=ylim,
+        xlabel=r"$t \, (hr)$",
+        ylabel=r"$h + z \, (m)$"
+    )
+    
+    plt.legend()
+    
+    fig.savefig(name, bbox_inches="tight")
+    
+    plt.close()
+    
+def compare_timeseries_all_stages():
+    stagefiles = [
+        #"stage-hwfv1-1e-3.wd",
+        "stage-mwdg2-1e-3.wd"
+        ]
+     
+    experimental_gauges = load_experimental_gauge_timeseries()
+    
+    compare_timeseries_stage(stagefiles=stagefiles, experimental_gauges=experimental_gauges, name="W3")
+    #compare_timeseries_stage(stagefiles=stagefiles, experimental_gauges=experimental_gauges, name="")
+    #compare_timeseries_stage(stagefiles=stagefiles, experimental_gauges=experimental_gauges, name="")
+    #compare_timeseries_stage(stagefiles=stagefiles, experimental_gauges=experimental_gauges, name="")
+
 def main():
     if len(sys.argv) < 2: EXIT_HELP()
     
@@ -300,6 +423,8 @@ def main():
         write_all_input_files()
     elif option == "simulate":
         run_simulation()
+    elif option == "postprocess":
+        compare_timeseries_all_stages()
     else:
         EXIT_HELP()
 
