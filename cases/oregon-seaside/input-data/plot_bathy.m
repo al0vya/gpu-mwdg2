@@ -42,15 +42,15 @@ y=y;
 
 %% plot the data
 
-pcolor(x,y,z)
-shading interp
-text(0,-2,0.5,['WAVEMAKER'],'VerticalAlignment','cap','HorizontalAlignment','center','Rotation',90,'FontSize',10,'Color','w')
-ylabel({'Longshore Location (m)'})
-xlabel('Cross-shore Location from Wavemaker (m)')
-colormap(jet)
-colorbar
-axis equal
-axis tight
-view(0,90)
-
-print -djpeg100 bathy.jpg 
+%pcolor(x,y,z)
+%shading interp
+%text(0,-2,0.5,['WAVEMAKER'],'VerticalAlignment','cap','HorizontalAlignment','center','Rotation',90,'FontSize',10,'Color','w')
+%ylabel({'Longshore Location (m)'})
+%xlabel('Cross-shore Location from Wavemaker (m)')
+%colormap(jet)
+%colorbar
+%axis equal
+%axis tight
+%view(0,90)
+%
+%print -djpeg100 bathy.jpg 
