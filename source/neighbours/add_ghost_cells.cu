@@ -156,7 +156,8 @@ void add_ghost_cells
 				boundaries.north.bdytype == QVAR
 			)
 			{
-				d_neighbours.north.h0[idx] = boundaries.north.q_src(dt, dx_finest);
+				d_assem_sol.h0[idx]        = boundaries.north.q_src(dt, dx_finest);
+				d_neighbours.north.h0[idx] = d_assem_sol.h0[idx]
 			}
 		}
 	}
@@ -255,7 +256,8 @@ void add_ghost_cells
 				boundaries.east.bdytype == QVAR
 			)
 			{
-				d_neighbours.east.h0[idx] = boundaries.east.q_src(dt, dx_finest);
+				d_assem_sol.h0[idx]       = boundaries.east.q_src(dt, dx_finest);
+				d_neighbours.east.h0[idx] = d_assem_sol.h0[idx]
 			}
 		}
 	}
@@ -354,7 +356,8 @@ void add_ghost_cells
 				boundaries.south.bdytype == QVAR
 			)
 			{
-				d_neighbours.south.h0[idx] = boundaries.south.q_src(dt, dx_finest);
+				d_assem_sol.h0[idx]        = boundaries.south.q_src(dt, dx_finest);
+				d_neighbours.south.h0[idx] = d_assem_sol.h0[idx]
 			}
 		}
 	}
@@ -422,6 +425,7 @@ void add_ghost_cells
 				}
 			}	
 		}
+		
 		bound  = ( boundaries.west.bound(y) );
 		border = ( x == 0 );
 
@@ -467,7 +471,8 @@ void add_ghost_cells
 				boundaries.west.bdytype == QVAR
 			)
 			{
-				d_neighbours.west.h0[idx] = boundaries.west.q_src(dt, dx_finest);
+				d_assem_sol.h0[idx]       = boundaries.west.q_src(dt, dx_finest);
+				d_neighbours.west.h0[idx] = d_assem_sol.h0[idx]
 			}
 		}
 	}
