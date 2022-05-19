@@ -339,15 +339,16 @@ def read_stage_elevations(
             if i > 2:
                 header.append(line)
                 
-            if i > 7:
+            if i > 8:
                 break
     
     return {
-        "W3" : float( header[0].split()[3] ),
-        "B1" : float( header[1].split()[3] ),
-        "B4" : float( header[2].split()[3] ),
-        "B6" : float( header[3].split()[3] ),
-        "B9" : float( header[4].split()[3] )
+        "BD" : float( header[0].split()[3] ),
+        "W3" : float( header[1].split()[3] ),
+        "B1" : float( header[2].split()[3] ),
+        "B4" : float( header[3].split()[3] ),
+        "B6" : float( header[4].split()[3] ),
+        "B9" : float( header[5].split()[3] )
     }
 
 def compare_timeseries_stage(
