@@ -203,6 +203,8 @@ class Simulation1DDambreak:
                 if epsilon == 0: continue
                 
                 for L in self.max_ref_lvls:
+                    
+                    
                     interp_adaptive = scipy.interpolate.interp1d(
                         self.results[solver][epsilon][L]["simtime"],
                         self.results[solver][epsilon][L]["runtime"],
@@ -250,22 +252,30 @@ class Simulation1DDambreak:
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
-                if epsilon == 0:
-                    label = ("GPU-DG2"   if solver == "mw" else "GPU-FV1")
-                elif np.isclose(epsilon, 1e-2):
-                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-2}$"
-                elif np.isclose(epsilon, 1e-3):
-                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
-                elif np.isclose(epsilon, 1e-4):
-                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
-                
                 if epsilon == 0 or np.isclose(epsilon, 1e-3):
+                    if epsilon == 0:
+                        label = ("GPU-DG2"   if solver == "mw" else "GPU-FV1")
+                        color = "#E50059"
+                    elif np.isclose(epsilon, 1e-3):
+                        label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                        color = "#7FED00"
+                    
                     ax.plot(
                         self.results["x"],
                         self.results[solver][epsilon]["depths"],
-                        label=label
+                        label=label,
+                        linewidth=2,
+                        color=color
                     )
-            
+        
+        ax.plot(
+            self.results["x"],
+            self.results[solver][epsilon]["depths"],
+            label="CPU-MWDG2" + r", $\epsilon = 10^{-3}$",
+            linewidth=2,
+            color="#FF9400"
+        )
+        
         t       = 2.5
         Lx      = 50
         xdam    = Lx/2

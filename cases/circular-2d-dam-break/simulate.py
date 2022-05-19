@@ -124,12 +124,16 @@ class Simulation2DDambreak:
             for epsilon in self.epsilons:
                 if epsilon == 0:
                     label = "breakeven"
+                    color = 'k'
                 elif np.isclose(epsilon, 1e-2):
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-2}$"
+                    color = "#BB00BB"
                 elif np.isclose(epsilon, 1e-3):
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                    color = "#EA0047"
                 elif np.isclose(epsilon, 1e-4):
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
+                    color = "#580AC0"
                 
                 speedups = [
                     self.results[solver][0][L]["runtime"] / self.results[solver][epsilon][L]["runtime"]
@@ -142,7 +146,8 @@ class Simulation2DDambreak:
                     marker=None    if epsilon == 0 else 'x',
                     linewidth=1    if epsilon == 0 else 0.75,
                     linestyle="-." if epsilon == 0 else '--',
-                    label=label
+                    label=label,
+                    color=color
                 )
             
             xlim = ( self.max_ref_lvls[0], self.max_ref_lvls[-1] )
@@ -182,6 +187,15 @@ class Simulation2DDambreak:
                         linewidth=2,
                         color=color
                     )
+                    
+        ax.plot(
+            reference.x,
+            reference.depths,
+            label="CPU-MWDG2" + r", $\epsilon = 10^{-3}$",
+            linewidth=2,
+            color="#FF9400"
+        )
+        
         ax.scatter(
             reference.x[::4],
             reference.depths[::4],
@@ -189,14 +203,6 @@ class Simulation2DDambreak:
             marker='o',
             edgecolors= '#0869BA',
             facecolors='None'
-        )
-        
-        ax.plot(
-            reference.x,
-            reference.depths,
-            label="CPU-MWDG2",
-            linewidth=2,
-            color="#FF9400"
         )
         
         xlim = ( self.results["x"][0], self.results["x"][-1] )
