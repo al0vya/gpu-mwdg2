@@ -72,7 +72,7 @@ class Simulation1DDambreak:
         self.results      = {}
         self.epsilons     = [0, 1e-4, 1e-3, 1e-2]
         self.fields       = ["simtime", "runtime"]
-        self.max_ref_lvls = [8]#, 9, 10, 11]
+        self.max_ref_lvls = [8, 9, 10, 11]
         
         for solver in self.solvers:
             self.results[solver] = {}
@@ -107,14 +107,14 @@ class Simulation1DDambreak:
         for solver in self.solvers:
             for epsilon in self.epsilons:
                 for L in self.max_ref_lvls:
-                    '''self.run(
+                    self.run(
                         solver=solver,
                         sim_time=40,
                         epsilon=epsilon,
                         L=L,
                         saveint=40,
                         limiter="off"
-                    )'''
+                    )
                     
                     results_dataframe = pd.read_csv( os.path.join("results", "simtime-vs-runtime.csv") )
                     
@@ -203,7 +203,14 @@ class Simulation1DDambreak:
                 if epsilon == 0: continue
                 
                 for L in self.max_ref_lvls:
-                    
+                    if   L == 8:
+                        color = "#F0C200"
+                    elif L == 9:
+                        color = "#FA9400"
+                    elif L == 10:
+                        color = "#E04000"
+                    elif L == 11:
+                        color = "#FA001A"
                     
                     interp_adaptive = scipy.interpolate.interp1d(
                         self.results[solver][epsilon][L]["simtime"],
@@ -216,7 +223,8 @@ class Simulation1DDambreak:
                     ax.plot(
                         self.results[solver][0][L]["simtime"],
                         self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime,
-                        label=r"$L = %s$" % L
+                        label=(r"$L = %s$" % L) if np.isclose(epsilon, 1e-4) else None,
+                        color=color
                     )
                     
                 xmin = self.results[solver][0][L]["simtime"].iloc[0]
@@ -229,7 +237,8 @@ class Simulation1DDambreak:
                     [1, 1],
                     linewidth=1,
                     linestyle="-.",
-                    label="breakeven"
+                    label="breakeven",
+                    color='k'
                 )
                 
                 ax.set_xlabel(r"$t \, (s)$")
