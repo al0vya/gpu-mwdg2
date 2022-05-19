@@ -321,11 +321,12 @@ def load_computed_gauge_timeseries(
     
     return {
         "time" : gauges[:,0],
-        "W3"   : gauges[:,1] + datum,
-        "B1"   : gauges[:,2] + datum,
-        "B4"   : gauges[:,3] + datum,
-        "B6"   : gauges[:,4] + datum,
-        "B9"   : gauges[:,5] + datum
+        "BD"   : gauges[:,1] + datum,
+        "W3"   : gauges[:,2] + datum,
+        "B1"   : gauges[:,3] + datum,
+        "B4"   : gauges[:,4] + datum,
+        "B6"   : gauges[:,5] + datum,
+        "B9"   : gauges[:,6] + datum
     }
     
 def read_stage_elevations(
