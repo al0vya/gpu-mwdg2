@@ -478,18 +478,48 @@ def load_computed_gauge_timeseries(
 ):
     print("Loading computed gauges timeseries: %s..." % stagefile)
     
-    gauges = np.loadtxt(os.path.join("results", stagefile), skiprows=12, delimiter=" ")
+    gauges = np.loadtxt(os.path.join("results", stagefile), skiprows=42, delimiter=" ")
     
     datum = -0.00202286243437291
     
     return {
         "time" : gauges[:,0],
-        "BD"   : gauges[:,1] + datum,
-        "W3"   : gauges[:,2] + datum,
-        "B1"   : gauges[:,3] + datum,
-        "B4"   : gauges[:,4] + datum,
-        "B6"   : gauges[:,5] + datum,
-        "B9"   : gauges[:,6] + datum
+        "BD"   : gauges[:,1]  + datum,
+        "W1"   : gauges[:,2]  + datum,
+        "W2"   : gauges[:,3]  + datum,
+        "W3"   : gauges[:,4]  + datum,
+        "W4"   : gauges[:,5]  + datum,
+        "A1"   : gauges[:,6]  + datum,
+        "A2"   : gauges[:,7]  + datum,
+        "A3"   : gauges[:,8]  + datum,
+        "A4"   : gauges[:,9]  + datum,
+        "A5"   : gauges[:,10] + datum,
+        "A6"   : gauges[:,11] + datum,
+        "A7"   : gauges[:,12] + datum,
+        "A8"   : gauges[:,13] + datum,
+        "A9"   : gauges[:,14] + datum,
+        "B1"   : gauges[:,15] + datum,
+        "B2"   : gauges[:,16] + datum,
+        "B3"   : gauges[:,17] + datum,
+        "B4"   : gauges[:,18] + datum,
+        "B5"   : gauges[:,19] + datum,
+        "B6"   : gauges[:,20] + datum,
+        "B7"   : gauges[:,21] + datum,
+        "B8"   : gauges[:,22] + datum,
+        "B9"   : gauges[:,23] + datum,
+        "C1"   : gauges[:,24] + datum,
+        "C2"   : gauges[:,25] + datum,
+        "C3"   : gauges[:,26] + datum,
+        "C4"   : gauges[:,27] + datum,
+        "C5"   : gauges[:,28] + datum,
+        "C6"   : gauges[:,29] + datum,
+        "C7"   : gauges[:,30] + datum,
+        "C8"   : gauges[:,31] + datum,
+        "C9"   : gauges[:,32] + datum,
+        "D1"   : gauges[:,33] + datum,
+        "D2"   : gauges[:,34] + datum,
+        "D3"   : gauges[:,35] + datum,
+        "D4"   : gauges[:,36] + datum,
     }
     
 def read_stage_elevations(
@@ -506,16 +536,16 @@ def read_stage_elevations(
                 break
     
     return {
-        "BD" : float( header[0].split()[3] ),
-        "W1" : float( header[1].split()[3] ),
-        "W2" : float( header[2].split()[3] ),
-        "W3" : float( header[3].split()[3] ),
-        "W4" : float( header[4].split()[3] ),
-        "A1" : float( header[5].split()[3] ),
-        "A2" : float( header[6].split()[3] ),
-        "A3" : float( header[7].split()[3] ),
-        "A4" : float( header[8].split()[3] ),
-        "A5" : float( header[9].split()[3] ),
+        "BD" : float( header[0 ].split()[3] ),
+        "W1" : float( header[1 ].split()[3] ),
+        "W2" : float( header[2 ].split()[3] ),
+        "W3" : float( header[3 ].split()[3] ),
+        "W4" : float( header[4 ].split()[3] ),
+        "A1" : float( header[5 ].split()[3] ),
+        "A2" : float( header[6 ].split()[3] ),
+        "A3" : float( header[7 ].split()[3] ),
+        "A4" : float( header[8 ].split()[3] ),
+        "A5" : float( header[9 ].split()[3] ),
         "A6" : float( header[10].split()[3] ),
         "A7" : float( header[11].split()[3] ),
         "A8" : float( header[12].split()[3] ),
@@ -549,6 +579,8 @@ def compare_timeseries_stage(
     experimental_gauges,
     name
 ):
+    print("Comparing timeseries at gauge %s" % name)
+    
     my_rc_params = {
         "legend.fontsize" : "large",
         "axes.labelsize"  : "large",
@@ -586,7 +618,7 @@ def compare_timeseries_stage(
         ax,
         title=name,
         xlim=( computed_gauges["time"][0], computed_gauges["time"][-1] ),
-        ylim=ylim,
+        #ylim=ylim,
         xlabel=r"$t \, (hr)$",
         ylabel=r"$h + z \, (m)$"
     )
