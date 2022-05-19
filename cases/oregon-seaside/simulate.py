@@ -315,7 +315,7 @@ def load_computed_gauge_timeseries(
 ):
     print("Loading computed gauges timeseries: %s..." % stagefile)
     
-    gauges = np.loadtxt(os.path.join("results", stagefile), skiprows=11, delimiter=" ")
+    gauges = np.loadtxt(os.path.join("results", stagefile), skiprows=12, delimiter=" ")
     
     datum = -0.00202286243437291
     
