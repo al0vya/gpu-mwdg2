@@ -237,7 +237,7 @@ class Simulation1DDambreak:
                     [1, 1],
                     linewidth=1,
                     linestyle="-.",
-                    label="breakeven",
+                    label="breakeven" if np.isclose(epsilon, 1e-4) else None,
                     color='k'
                 )
                 
