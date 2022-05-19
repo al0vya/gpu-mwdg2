@@ -290,13 +290,10 @@ def write_parameter_file(
         "limitslopes   off\n" +
         "tol_Krivo     10\n" +
         "g             9.80665\n" +
-        "saveint       4\n" +
-        "massint       0.4\n" +
-        "sim_time      40\n" +
+        "massint       0.2\n" +
+        "sim_time      39.7\n" +
         "solver        %s\n" +
         "cumulative    on\n" +
-        "vtk           off\n" +
-        "raster_out    on\n" +
         "voutput_stage on\n" +
         "wall_height   2.5"
     ) % (
@@ -484,42 +481,42 @@ def load_computed_gauge_timeseries(
     
     return {
         "time" : gauges[:,0],
-        "BD"   : gauges[:,1]  + datum,
-        "W1"   : gauges[:,2]  + datum,
-        "W2"   : gauges[:,3]  + datum,
-        "W3"   : gauges[:,4]  + datum,
-        "W4"   : gauges[:,5]  + datum,
-        "A1"   : gauges[:,6]  + datum,
-        "A2"   : gauges[:,7]  + datum,
-        "A3"   : gauges[:,8]  + datum,
-        "A4"   : gauges[:,9]  + datum,
-        "A5"   : gauges[:,10] + datum,
-        "A6"   : gauges[:,11] + datum,
-        "A7"   : gauges[:,12] + datum,
-        "A8"   : gauges[:,13] + datum,
-        "A9"   : gauges[:,14] + datum,
-        "B1"   : gauges[:,15] + datum,
-        "B2"   : gauges[:,16] + datum,
-        "B3"   : gauges[:,17] + datum,
-        "B4"   : gauges[:,18] + datum,
-        "B5"   : gauges[:,19] + datum,
-        "B6"   : gauges[:,20] + datum,
-        "B7"   : gauges[:,21] + datum,
-        "B8"   : gauges[:,22] + datum,
-        "B9"   : gauges[:,23] + datum,
-        "C1"   : gauges[:,24] + datum,
-        "C2"   : gauges[:,25] + datum,
-        "C3"   : gauges[:,26] + datum,
-        "C4"   : gauges[:,27] + datum,
-        "C5"   : gauges[:,28] + datum,
-        "C6"   : gauges[:,29] + datum,
-        "C7"   : gauges[:,30] + datum,
-        "C8"   : gauges[:,31] + datum,
-        "C9"   : gauges[:,32] + datum,
-        "D1"   : gauges[:,33] + datum,
-        "D2"   : gauges[:,34] + datum,
-        "D3"   : gauges[:,35] + datum,
-        "D4"   : gauges[:,36] + datum,
+        "BD"   : gauges[:,1],
+        "W1"   : gauges[:,2],
+        "W2"   : gauges[:,3],
+        "W3"   : gauges[:,4],
+        "W4"   : gauges[:,5],
+        "A1"   : gauges[:,6],
+        "A2"   : gauges[:,7],
+        "A3"   : gauges[:,8],
+        "A4"   : gauges[:,9],
+        "A5"   : gauges[:,10],
+        "A6"   : gauges[:,11],
+        "A7"   : gauges[:,12],
+        "A8"   : gauges[:,13],
+        "A9"   : gauges[:,14],
+        "B1"   : gauges[:,15],
+        "B2"   : gauges[:,16],
+        "B3"   : gauges[:,17],
+        "B4"   : gauges[:,18],
+        "B5"   : gauges[:,19],
+        "B6"   : gauges[:,20],
+        "B7"   : gauges[:,21],
+        "B8"   : gauges[:,22],
+        "B9"   : gauges[:,23],
+        "C1"   : gauges[:,24],
+        "C2"   : gauges[:,25],
+        "C3"   : gauges[:,26],
+        "C4"   : gauges[:,27],
+        "C5"   : gauges[:,28],
+        "C6"   : gauges[:,29],
+        "C7"   : gauges[:,30],
+        "C8"   : gauges[:,31],
+        "C9"   : gauges[:,32],
+        "D1"   : gauges[:,33],
+        "D2"   : gauges[:,34],
+        "D3"   : gauges[:,35],
+        "D4"   : gauges[:,36],
     }
     
 def read_stage_elevations(
@@ -599,7 +596,7 @@ def compare_timeseries_stage(
         
         ax.plot(
             computed_gauges["time"],
-            computed_gauges[name] + elevations[name] - 0.97,
+            computed_gauges[name],
             label=stagefile
         )
     
@@ -617,7 +614,7 @@ def compare_timeseries_stage(
     plt.setp(
         ax,
         title=name,
-        xlim=( computed_gauges["time"][0], computed_gauges["time"][-1] ),
+        xlim=(0,40),
         #ylim=ylim,
         xlabel=r"$t \, (hr)$",
         ylabel=r"$h + z \, (m)$"
@@ -631,8 +628,9 @@ def compare_timeseries_stage(
     
 def compare_timeseries_all_stages():
     stagefiles = [
-        #"stage-hwfv1-1e-3.wd",
-        "stage.wd"
+        "stage-hwfv1-1e-3.wd",
+        "stage-mwdg2-1e-3.wd"
+        #"stage.wd"
     ]
      
     experimental_gauges = load_experimental_gauge_timeseries()
