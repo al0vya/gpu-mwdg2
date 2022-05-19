@@ -121,7 +121,10 @@ typedef struct PointSources
 	}
 	
 	__device__ __forceinline__
-	real q_src(const real& dt, const real& dx, const int idx) { return this->d_srcs[idx] * dt / dx; }
+	real q_src(const real& dt, const real& dx, const int idx)
+	{
+		return this->d_srcs[idx] * dt / dx;
+	}
 
 	int read_num_point_srcs
 	(
