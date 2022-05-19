@@ -405,8 +405,8 @@ def compare_timeseries_stage(
 def compare_timeseries_all_stages():
     stagefiles = [
         #"stage-hwfv1-1e-3.wd",
-        "stage-mwdg2-1e-3.wd"
-        ]
+        "stage.wd"
+    ]
      
     experimental_gauges = load_experimental_gauge_timeseries()
     
