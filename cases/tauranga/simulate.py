@@ -286,14 +286,18 @@ def write_all_input_files():
     
     NODATA_mask = (bathymetry + 9999 <= 1e-10) == 0
     
-    nrows, ncols = bathymetry.shape
+    # same number of rows as csv file
+    nrows = bathymetry.shape[0]
+    
+    # but 4096 cols to allow L = 12
+    ncols = 4096
     
     cellsize = 10
     
     write_bathymetry(
-        bathymetry=( bathymetry - (NODATA_mask * datum) )[:,:4096], # adjust datum only for non-NODATA_values
+        bathymetry=( bathymetry - (NODATA_mask * datum) )[:,:ncols], # adjust datum only for non-NODATA_values
         nrows=nrows,
-        ncols=4096, # 4096 cells to allow L = 12
+        ncols=ncols,
         cellsize=cellsize
     )
     
