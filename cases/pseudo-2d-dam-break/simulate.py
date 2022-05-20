@@ -279,7 +279,7 @@ class Simulation1DDambreak:
         
         ax.plot(
             self.results["x"],
-            self.results[solver][epsilon]["depths"],
+            self.results[solver][0]["depths"],
             label="CPU-MWDG2" + r", $\epsilon = 10^{-3}$",
             linewidth=2,
             color="#FF9400"
