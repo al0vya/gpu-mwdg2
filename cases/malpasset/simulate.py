@@ -54,7 +54,7 @@ class SimulationMalpasset:
                     "test_case   0\n" +
                     "max_ref_lvl 10\n" +
                     "min_dt      1\n" +
-                    "respath     .\\results\n" +
+                    "respath     results\n" +
                     "epsilon     %s\n" +
                     "fpfric      0.033\n" +
                     "rasterroot  malpasset\n" +

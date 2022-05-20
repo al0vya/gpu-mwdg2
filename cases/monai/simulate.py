@@ -67,7 +67,7 @@ class SimulationMonai:
                     "test_case   0\n" +
                     "max_ref_lvl 9\n" +
                     "min_dt      1\n" +
-                    "respath     .\\results\n" +
+                    "respath     results\n" +
                     "epsilon     %s\n" +
                     "fpfric      0.01\n" +
                     "rasterroot  monai\n" +
