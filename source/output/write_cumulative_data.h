@@ -9,10 +9,12 @@
 
 #include "real.h"
 
-void write_cumu_sim_time
+void write_cumulative_data
 (
 	const clock_t start,
-	const real    time_now,
+	const real&   time_now,
+	const real&   dt,
+	const int&    num_cells,
 	const char*   respath,
 	const bool    first_t_step
 );

@@ -13,7 +13,7 @@ class SimulationMalpasset:
             self.fields       = ["simtime", "runtime", "arrival_time"]
             self.stages       = [ _ for _ in range(1,10) ]
             self.stage_file   = os.path.join("results", "stage.wd")
-            self.runtime_file = os.path.join("results", "simtime-vs-runtime.csv")
+            self.runtime_file = os.path.join("results", "cumulative-data.csv")
             self.results      = {}
             
             for config in self.configs:

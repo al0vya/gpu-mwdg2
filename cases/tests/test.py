@@ -340,7 +340,7 @@ class DischargeErrors:
         
         self.solver = solver
         
-        simtime_file = "simtime-vs-runtime.csv"
+        simtime_file = "cumulative-data.csv"
         qx0_file     = "qx0-c-prop.csv"
         qx1x_file    = "qx1x-c-prop.csv"
         qx1y_file    = "qx1y-c-prop.csv"

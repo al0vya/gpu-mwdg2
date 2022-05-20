@@ -3,7 +3,7 @@
 #include "SolverParams.h"
 #include "AssembledSolution.h"
 
-#include "write_cumu_sim_time.h"
+#include "write_cumulative_data.h"
 
 #include "append_reals_to_file.cuh"
 
@@ -15,5 +15,7 @@ void write_c_prop_data
 	const SolverParams&      solver_params,
 	const AssembledSolution& d_assem_sol,
 	const real&              time_now,
+	const real&              dt,
+	const int&               num_cells,
 	const bool&              first_t_step
 );

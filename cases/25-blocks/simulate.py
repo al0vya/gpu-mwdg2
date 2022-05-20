@@ -59,7 +59,7 @@ class Simulation25Blocks:
             
             self.xmin         = xmin
             self.cellsize     = cellsize
-            self.runtime_file = os.path.join("results", "simtime-vs-runtime.csv")
+            self.runtime_file = os.path.join("results", "cumulative-data.csv")
             self.epsilons     = epsilons
             self.solvers      = solvers
             self.flow_vars    = ("depth", "velocity")

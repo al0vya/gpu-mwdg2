@@ -116,7 +116,7 @@ class Simulation1DDambreak:
                         limiter="off"
                     )
                     
-                    results_dataframe = pd.read_csv( os.path.join("results", "simtime-vs-runtime.csv") )
+                    results_dataframe = pd.read_csv( os.path.join("results", "cumulative-data.csv") )
                     
                     self.results[solver][epsilon][L]["simtime"] = results_dataframe["simtime"]
                     self.results[solver][epsilon][L]["runtime"] = results_dataframe["runtime"]

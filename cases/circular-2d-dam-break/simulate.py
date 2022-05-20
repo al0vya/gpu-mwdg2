@@ -55,7 +55,7 @@ class Simulation2DDambreak:
                         self.results["x"]                       = verification_depths["x"]
                         self.results[solver][epsilon]["depths"] = verification_depths["depths"]
                     
-                    results_dataframe = pd.read_csv( os.path.join("results", "simtime-vs-runtime.csv") )
+                    results_dataframe = pd.read_csv( os.path.join("results", "cumulative-data.csv") )
                     
                     self.results[solver][epsilon][L]["runtime"] = results_dataframe["runtime"].iloc[-1]
                     
