@@ -1,5 +1,3 @@
-# automatically run circular dam break simulations and plot results
-
 import os
 import subprocess
 import numpy             as np
@@ -24,7 +22,7 @@ class Simulation2DDambreak:
         self.results      = {}
         self.epsilons     = [0, 1e-4, 1e-3, 1e-2]
         self.fields       = ["simtime", "runtime"]
-        self.max_ref_lvls = [8]#, 9, 10, 11]
+        self.max_ref_lvls = [8, 9, 10, 11]
         
         for solver in self.solvers:
             self.results[solver]          = {}

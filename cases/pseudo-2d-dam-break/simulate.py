@@ -1,5 +1,3 @@
-# automatically run pseudo 2d dam break simulations and plot results
-
 import os
 import sys
 import subprocess
@@ -74,7 +72,7 @@ class Simulation1DDambreak:
         self.results      = {}
         self.epsilons     = [0, 1e-4, 1e-3, 1e-2]
         self.fields       = ["simtime", "runtime"]
-        self.max_ref_lvls = [8]#, 9, 10, 11]
+        self.max_ref_lvls = [8, 9, 10, 11]
         
         for solver in self.solvers:
             self.results[solver] = {}
@@ -109,14 +107,14 @@ class Simulation1DDambreak:
         for solver in self.solvers:
             for epsilon in self.epsilons:
                 for L in self.max_ref_lvls:
-                    '''self.run(
+                    self.run(
                         solver=solver,
                         sim_time=40,
                         epsilon=epsilon,
                         L=L,
                         saveint=40,
                         limiter="off"
-                    )'''
+                    )
                     
                     results_dataframe = pd.read_csv( os.path.join("results", "simtime-vs-runtime.csv") )
                     
