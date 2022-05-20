@@ -373,7 +373,7 @@ def run_simulation():
     
     executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
     
-    subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), parameter_filename] )
+    subprocess.run( [os.path.join("..", executable), parameter_filename] )
 
 def main():
     if len(sys.argv) < 2: EXIT_HELP()
