@@ -1,3 +1,5 @@
+# automatically run pseudo 2d dam break simulations and plot results
+
 import os
 import sys
 import subprocess

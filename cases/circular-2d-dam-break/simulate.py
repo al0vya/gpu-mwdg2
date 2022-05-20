@@ -1,3 +1,5 @@
+# automatically run circular dam break simulations and plot results
+
 import os
 import subprocess
 import numpy             as np
