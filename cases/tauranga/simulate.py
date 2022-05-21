@@ -8,7 +8,7 @@ def EXIT_HELP():
     help_message = (
         "Use this tool as follows:\n" +
         "python simulate.py preprocess\n" +
-        "python simulate.py simulate <SOLVER> <EPSILON>"
+        "python simulate.py simulate <SOLVER> <EPSILON> <RESULTS_DIRECTORY>"
     )
     
     sys.exit(help_message)
@@ -172,7 +172,8 @@ def find_min_arrays(*arrays):
 def write_bathymetry(
     bathymetry,
     nrows,
-    ncols
+    ncols,
+    cellsize
 ):
     print("Preparing DEM file...")
     
@@ -181,15 +182,16 @@ def write_bathymetry(
         "nrows        %s\n" +
         "xllcorner    0\n" +
         "yllcorner    0\n" +
-        "cellsize     10\n" +
+        "cellsize     %s\n" +
         "NODATA_value -9999"
     ) % (
         ncols,
-        nrows
+        nrows,
+        cellsize
     )
     
     np.savetxt(
-        fname="tauranga-20m.dem",
+        fname="tauranga-10m.dem",
         X=np.flipud(bathymetry),
         fmt="%.8f",
         header=header,
@@ -206,7 +208,7 @@ def write_bci_file(
     xmax = ncols * cellsize
     
     with open("tauranga.bci", 'w') as fp:
-        fp.write( "N 0 40960 HVAR %s" % (xmax, timeseries_name) )
+        fp.write( "N 0 %s HVAR %s" % (xmax, timeseries_name) )
         
 def write_bdy_file(
     time,
@@ -284,15 +286,20 @@ def write_all_input_files():
     
     NODATA_mask = (bathymetry + 9999 <= 1e-10) == 0
     
-    nrows, ncols = bathymetry.shape
+    # same number of rows as csv file
+    nrows = bathymetry.shape[0]
     
-    write_bathymetry(
-        bathymetry=( bathymetry - (NODATA_mask * datum) ), # adjust datum only for non-NODATA_values
-        nrows=nrows,
-        ncols=ncols
-    )
+    # but 4096 cols to allow L = 12
+    ncols = 4096
     
     cellsize = 10
+    
+    write_bathymetry(
+        bathymetry=( bathymetry - (NODATA_mask * datum) )[:,:ncols], # adjust datum only for non-NODATA_values
+        nrows=nrows,
+        ncols=ncols,
+        cellsize=cellsize
+    )
     
     timeseries_name = "INLET"
     
@@ -315,35 +322,34 @@ def write_all_input_files():
 def write_parameter_file(
     epsilon,
     solver,
-    filename
+    filename,
+    results_dir
 ):
     params = (
         "test_case     0\n" +
-        "max_ref_lvl   11\n" +
+        "max_ref_lvl   12\n" +
         "min_dt        1\n" +
-        "respath       results\n" +
+        "respath       %s\n" +
         "epsilon       %s\n" +
         "fpfric        0.01\n" +
-        "rasterroot    tauranga\n" +
+        "rasterroot    tauranga-10m\n" +
         "bcifile       tauranga.bci\n" +
         "bdyfile       tauranga.bdy\n" +
         "stagefile     tauranga.stage\n" +
         "tol_h         1e-3\n" +
         "tol_q         0\n" +
         "tol_s         1e-9\n" +
-        "limitslopes   off\n" +
+        "limitslopes   on\n" +
         "tol_Krivo     10\n" +
         "g             9.80665\n" +
-        "saveint       3600\n" +
         "massint       500\n" +
         "sim_time      144000\n" +
         "solver        %s\n" +
         "cumulative    on\n" +
-        "vtk           off\n" +
-        "raster_out    on\n" +
         "voutput_stage on\n" +
         "wall_height   420"
     ) % (
+        results_dir,
         epsilon,
         solver
     )
@@ -352,21 +358,22 @@ def write_parameter_file(
         fp.write(params)
 
 def run_simulation():
-    if len(sys.argv) < 4: EXIT_HELP()
+    if len(sys.argv) != 5: EXIT_HELP()
     
-    dummy, option, solver, epsilon = sys.argv
+    dummy, option, solver, epsilon, results_dir = sys.argv
     
     parameter_filename = "tauranga.par"
     
     write_parameter_file(
         epsilon=epsilon,
         solver=solver,
-        filename=parameter_filename
+        filename=parameter_filename,
+        results_dir=results_dir
     )
     
     executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
     
-    subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), parameter_filename] )
+    subprocess.run( [os.path.join("..", executable), parameter_filename] )
 
 def main():
     if len(sys.argv) < 2: EXIT_HELP()

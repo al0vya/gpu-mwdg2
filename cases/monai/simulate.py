@@ -26,7 +26,7 @@ class SimulationMonai:
             self.epsilons     = epsilons
             self.fields       = ["simtime", "runtime", "gauge_data"]
             self.stage_file   = os.path.join("results", "stage.wd")
-            self.runtime_file = os.path.join("results", "simtime-vs-runtime.csv")
+            self.runtime_file = os.path.join("results", "cumulative-data.csv")
             self.results      = {}
             
             for solver in self.solvers:
@@ -67,7 +67,7 @@ class SimulationMonai:
                     "test_case   0\n" +
                     "max_ref_lvl 9\n" +
                     "min_dt      1\n" +
-                    "respath     .\\results\n" +
+                    "respath     results\n" +
                     "epsilon     %s\n" +
                     "fpfric      0.01\n" +
                     "rasterroot  monai\n" +

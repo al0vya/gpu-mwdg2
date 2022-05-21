@@ -59,7 +59,7 @@ class Simulation25Blocks:
             
             self.xmin         = xmin
             self.cellsize     = cellsize
-            self.runtime_file = os.path.join("results", "simtime-vs-runtime.csv")
+            self.runtime_file = os.path.join("results", "cumulative-data.csv")
             self.epsilons     = epsilons
             self.solvers      = solvers
             self.flow_vars    = ("depth", "velocity")
@@ -144,7 +144,7 @@ class Simulation25Blocks:
                     "test_case   0\n" +
                     "max_ref_lvl 11\n" +
                     "min_dt      1\n" +
-                    "respath     .\\results\n" +
+                    "respath     results\n" +
                     "epsilon     %s\n" +
                     "fpfric      0.01\n" +
                     "rasterroot  25-blocks\n" +

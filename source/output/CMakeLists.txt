@@ -6,7 +6,7 @@ target_sources(
 		write_all_raster_maps.cu
 		write_bool_to_file.cu
 		write_c_prop_data.cu
-		write_cumu_sim_time.cpp
+		write_cumulative_data.cpp
 		write_gauge_point_data.cu
 		write_int_to_file.cu
 		write_mesh_info.cpp

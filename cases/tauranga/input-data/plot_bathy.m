@@ -105,21 +105,21 @@ SP   = [3.200e4, 1.347e4];
 Mot  = [3.005e4, 1.610e4];
 ADCP = [2.925e4, 1.466e4];
 
-pcolor(x,y,z)
-shading interp
-xlabel('Longshore Coordinate (m)')
-ylabel('Cross-shore Coordinate (m)')
-colormap(jet)
-colorbar
-axis equal
-axis tight
-caxis([-25 35])
-view(0,90)
-
-hold on
-
-plot(AB(1),   AB(2),   'w*')
-plot(Tug(1),  Tug(2),  'w*')
-plot(SP(1),   SP(2),   'w*')
-plot(Mot(1),  Mot(2),  'w*')
-plot(ADCP(1), ADCP(2), 'ws')
+%pcolor(x,y,z)
+%shading interp
+%xlabel('Longshore Coordinate (m)')
+%ylabel('Cross-shore Coordinate (m)')
+%colormap(jet)
+%colorbar
+%axis equal
+%axis tight
+%caxis([-25 35])
+%view(0,90)
+%
+%hold on
+%
+%plot(AB(1),   AB(2),   'w*')
+%plot(Tug(1),  Tug(2),  'w*')
+%plot(SP(1),   SP(2),   'w*')
+%plot(Mot(1),  Mot(2),  'w*')
+%plot(ADCP(1), ADCP(2), 'ws')

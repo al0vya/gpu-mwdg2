@@ -890,6 +890,8 @@ int main
 					solver_params,
 					d_assem_sol,
 					time_now,
+					dt,
+					d_assem_sol.length,
 					first_t_step
 				);
 			}
@@ -899,10 +901,12 @@ int main
 		{
 			if (plot_params.cumulative)
 			{
-			    write_cumu_sim_time
+			    write_cumulative_data
 			    (
 			        start,
 			        time_now,
+					dt,
+					d_assem_sol.length,
 			        respath,
 			        first_t_step
 			    );

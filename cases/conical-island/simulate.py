@@ -42,7 +42,7 @@ class SimulationConicalIsland:
             # "Laboratory experiments of tsunami runup on a circular island"
             self.stages       = [ "#" + str(i) for i in [6, 9, 16, 22] ] 
             self.stage_file   = os.path.join("results", "stage.wd")
-            self.runtime_file = os.path.join("results", "simtime-vs-runtime.csv")
+            self.runtime_file = os.path.join("results", "cumulative-data.csv")
             self.results      = {}
             
             for solver in self.solvers:
@@ -84,7 +84,7 @@ class SimulationConicalIsland:
                     "test_case   0\n" +
                     "max_ref_lvl 10\n" +
                     "min_dt      1\n" +
-                    "respath     .\\results\n" +
+                    "respath     results\n" +
                     "epsilon     %s\n" +
                     "fpfric      0.0\n" +
                     "rasterroot  conical-island\n" +
