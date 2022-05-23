@@ -155,8 +155,9 @@ class SimulationMonai:
                 ax.plot(
                     self.results[solver][epsilon]["simtime"],
                     runtime_ratio,
-                    linewidth=2.5,
-                    linestyle="--" if epsilon == 0 else "-",
+                    linewidth=1    if epsilon == 0 else 2
+                    linestyle="-." if epsilon == 0 else "-",
+                    color='k'      if epsilon == 0 else None
                     label=label
                 )
             

@@ -214,6 +214,7 @@ class Simulation1DDambreak:
                     ax.plot(
                         self.results[solver][0][L]["simtime"],
                         self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime,
+                        linewidth=2,
                         label=r"$L = %s$" % L
                     )
                     
@@ -227,7 +228,8 @@ class Simulation1DDambreak:
                     [1, 1],
                     linewidth=1,
                     linestyle="-.",
-                    label="breakeven"
+                    label="breakeven",
+                    color='k'
                 )
                 
                 ax.set_xlabel(r"$t \, (s)$")
