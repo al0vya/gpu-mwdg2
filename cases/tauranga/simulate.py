@@ -339,7 +339,7 @@ def write_parameter_file(
         "tol_h         1e-3\n" +
         "tol_q         0\n" +
         "tol_s         1e-9\n" +
-        "limitslopes   on\n" +
+        "limitslopes   off\n" +
         "tol_Krivo     10\n" +
         "g             9.80665\n" +
         "massint       500\n" +
