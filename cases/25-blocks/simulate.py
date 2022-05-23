@@ -267,9 +267,9 @@ class Simulation25Blocks:
                 ax.plot(
                     self.results[solver][epsilon]["simtime"],
                     runtime_ratio,
-                    linewidth=1    if epsilon == 0 else 2
+                    linewidth=1    if epsilon == 0 else 2,
                     linestyle="-." if epsilon == 0 else "-",
-                    color='k'      if epsilon == 0 else None
+                    color='k'      if epsilon == 0 else None,
                     label=label
                 )
             
