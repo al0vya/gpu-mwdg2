@@ -348,54 +348,12 @@ void dg2_update
 
     if (!below_depth)
     {
-        real ux_G1_x = ( (h0 - h1x) >= solver_params.tol_h ) ? (qx0 - qx1x) / (h0 - h1x) : C(0.0);
-        real ux_G1_y = ( (h0 - h1y) >= solver_params.tol_h ) ? (qx0 - qx1y) / (h0 - h1y) : C(0.0);
-        real ux_G2_x = ( (h0 + h1x) >= solver_params.tol_h ) ? (qx0 + qx1x) / (h0 + h1x) : C(0.0);
-        real ux_G2_y = ( (h0 + h1y) >= solver_params.tol_h ) ? (qx0 + qx1y) / (h0 + h1y) : C(0.0);
+        real ux = qx0 / h0;
+        real uy = qy0 / h0;
         
-        real uy_G1_x = ( (h0 - h1x) >= solver_params.tol_h ) ? (qy0 - qy1x) / (h0 - h1x) : C(0.0);
-        real uy_G1_y = ( (h0 - h1y) >= solver_params.tol_h ) ? (qy0 - qy1y) / (h0 - h1y) : C(0.0);
-        real uy_G2_x = ( (h0 + h1x) >= solver_params.tol_h ) ? (qy0 + qy1x) / (h0 + h1x) : C(0.0);
-        real uy_G2_y = ( (h0 + h1y) >= solver_params.tol_h ) ? (qy0 + qy1y) / (h0 + h1y) : C(0.0);
-        
-        real dt_x_G1_x = solver_params.CFL * dx_loc / ( abs(ux_G1_x) + sqrt( sim_params.g * (h0 - h1x) ) );
-        real dt_x_G1_y = solver_params.CFL * dx_loc / ( abs(ux_G1_y) + sqrt( sim_params.g * (h0 - h1y) ) );
-        real dt_x_G2_x = solver_params.CFL * dx_loc / ( abs(ux_G2_x) + sqrt( sim_params.g * (h0 + h1x) ) );
-        real dt_x_G2_y = solver_params.CFL * dx_loc / ( abs(ux_G2_y) + sqrt( sim_params.g * (h0 + h1y) ) );
-        
-        real dt_y_G1_x = solver_params.CFL * dy_loc / ( abs(uy_G1_x) + sqrt( sim_params.g * (h0 - h1x) ) );
-        real dt_y_G1_y = solver_params.CFL * dy_loc / ( abs(uy_G1_y) + sqrt( sim_params.g * (h0 - h1y) ) );
-        real dt_y_G2_x = solver_params.CFL * dy_loc / ( abs(uy_G2_x) + sqrt( sim_params.g * (h0 + h1x) ) );
-        real dt_y_G2_y = solver_params.CFL * dy_loc / ( abs(uy_G2_y) + sqrt( sim_params.g * (h0 + h1y) ) );
-        
-        d_dt_CFL[idx] = min
-        (
-            min
-            (
-                min
-                (
-                    dt_x_G1_x,
-                    dt_x_G1_y
-                ),
-                min
-                (
-                    dt_x_G2_x,
-                    dt_x_G2_y
-                )
-            ),
-            min
-            (
-                min
-                (
-                    dt_y_G1_x,
-                    dt_y_G1_y
-                ),
-                min
-                (
-                    dt_y_G2_x,
-                    dt_y_G2_y
-                )
-            )
-        );
+        real dt_x = solver_params.CFL * dx_loc / ( abs(ux) + sqrt(sim_params.g * h0) );
+        real dt_y = solver_params.CFL * dy_loc / ( abs(uy) + sqrt(sim_params.g * h0) );
+
+        d_dt_CFL[idx] = min(dt_x, dt_y);
     }
 }

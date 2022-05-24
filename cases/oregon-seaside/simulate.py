@@ -576,7 +576,7 @@ def compare_timeseries_stage(
     experimental_gauges,
     name
 ):
-    print("Comparing timeseries at gauge %s..." % name)
+    print("Comparing timeseries at gauge %s" % name)
     
     my_rc_params = {
         "legend.fontsize" : "large",
