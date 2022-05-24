@@ -331,7 +331,7 @@ def write_parameter_file(
         "min_dt        1\n" +
         "respath       %s\n" +
         "epsilon       %s\n" +
-        "fpfric        0.01\n" +
+        "fpfric        0.025\n" +
         "rasterroot    tauranga-10m\n" +
         "bcifile       tauranga.bci\n" +
         "bdyfile       tauranga.bdy\n" +
