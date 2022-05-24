@@ -336,7 +336,7 @@ def write_parameter_file(
         "bcifile       tauranga.bci\n" +
         "bdyfile       tauranga.bdy\n" +
         "stagefile     tauranga.stage\n" +
-        "tol_h         1e-3\n" +
+        "tol_h         1e-2\n" +
         "tol_q         0\n" +
         "tol_s         1e-9\n" +
         "limitslopes   off\n" +
