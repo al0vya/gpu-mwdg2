@@ -81,7 +81,7 @@ class SimulationMonai:
                     "massint     0.1\n" +
                     "sim_time    22.5\n" +
                     "solver      %s\n" +
-                    "limitslopes on\n" +
+                    "limitslopes off\n" +
                     "tol_Krivo   10\n" +
                     "cumulative  on\n" +
                     "wall_height 0.5"
@@ -155,8 +155,9 @@ class SimulationMonai:
                 ax.plot(
                     self.results[solver][epsilon]["simtime"],
                     runtime_ratio,
-                    linewidth=2.5,
-                    linestyle="--" if epsilon == 0 else "-",
+                    linewidth=1    if epsilon == 0 else 2,
+                    linestyle="-." if epsilon == 0 else "-",
+                    color='k'      if epsilon == 0 else None,
                     label=label
                 )
             

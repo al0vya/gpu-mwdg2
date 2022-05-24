@@ -223,8 +223,13 @@ class Simulation1DDambreak:
                     ax.plot(
                         self.results[solver][0][L]["simtime"],
                         self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime,
+<<<<<<< HEAD
                         label=(r"$L = %s$" % L) if np.isclose(epsilon, 1e-4) else None,
                         color=color
+=======
+                        linewidth=2,
+                        label=r"$L = %s$" % L
+>>>>>>> 957ee4d3ecd4a69573e95ac786653ee4a01f2ac4
                     )
                     
                 xmin = self.results[solver][0][L]["simtime"].iloc[0]
@@ -237,7 +242,11 @@ class Simulation1DDambreak:
                     [1, 1],
                     linewidth=1,
                     linestyle="-.",
+<<<<<<< HEAD
                     label="breakeven" if np.isclose(epsilon, 1e-4) else None,
+=======
+                    label="breakeven",
+>>>>>>> 957ee4d3ecd4a69573e95ac786653ee4a01f2ac4
                     color='k'
                 )
                 

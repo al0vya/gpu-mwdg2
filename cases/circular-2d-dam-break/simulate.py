@@ -145,9 +145,15 @@ class Simulation2DDambreak:
                     speedups,
                     marker=None    if epsilon == 0 else 'x',
                     linewidth=1    if epsilon == 0 else 0.75,
+<<<<<<< HEAD
                     linestyle="-." if epsilon == 0 else '--',
                     label=label,
                     color=color
+=======
+                    linestyle="-." if epsilon == 0 else '-.',
+                    color='k'      if epsilon == 0 else None,
+                    label=label
+>>>>>>> 957ee4d3ecd4a69573e95ac786653ee4a01f2ac4
                 )
             
             xlim = ( self.max_ref_lvls[0], self.max_ref_lvls[-1] )
@@ -155,6 +161,7 @@ class Simulation2DDambreak:
             ax.set_xlabel(r"$L$")
             ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
             ax.set_xlim(xlim)
+            ax.xaxis.get_major_locator().set_params(integer=True)
             ax.legend()
             fig.savefig(os.path.join("results", "runtimes-" + solver + ".png"), bbox_inches="tight")
             ax.clear()
