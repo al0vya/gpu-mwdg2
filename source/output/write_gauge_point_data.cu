@@ -31,16 +31,19 @@ void write_gauge_point_data
 		copy(p_finest_grid.qy, d_plot_assem_sol.qy0, bytes);
 	}
 
-	char fullpath_h[255] = {"\0"};
-	char fullpath_v[255] = {"\0"};
+	char fullpath_h[255]  = {"\0"};
+	char fullpath_vx[255] = {"\0"};
+	char fullpath_vy[255] = {"\0"};
 
-	sprintf(fullpath_h, "%s%s", respath, "stage.wd");
-	sprintf(fullpath_v, "%s%s", respath, "stage.vl");
+	sprintf(fullpath_h,  "%s%s", respath, "stage.wd");
+	sprintf(fullpath_vx, "%s%s", respath, "stage.vx");
+	sprintf(fullpath_vy, "%s%s", respath, "stage.vy");
 	
-	FILE* fp_h = fopen(fullpath_h, (first_t_step) ? "w" : "a");
-	FILE* fp_v = fopen(fullpath_v, (first_t_step) ? "w" : "a");
+	FILE* fp_h  = fopen(fullpath_h,  (first_t_step) ? "w" : "a");
+	FILE* fp_vx = fopen(fullpath_vx, (first_t_step) ? "w" : "a");
+	FILE* fp_vy = fopen(fullpath_vy, (first_t_step) ? "w" : "a");
 
-	if (nullptr == fp_h || nullptr == fp_v)
+	if (nullptr == fp_h || nullptr == fp_vx || nullptr == fp_vy)
 	{
 		fprintf(stderr, "Error opening stage results file, file: %s, line: %d.\n", __FILE__, __LINE__);
 		exit(-1);
@@ -78,8 +81,11 @@ void write_gauge_point_data
 		
 		if (plot_params.voutput_stage)
 		{
-		    fprintf(fp_v, "Stage output, velocity (m/s).\n\n");
-		    fprintf(fp_v, "Stage information (stage,x,y,elev):\n");
+		    fprintf(fp_vx, "Stage output, x velocity (m/s).\n\n");
+		    fprintf(fp_vx, "Stage information (stage,x,y,elev):\n");
+		   
+			fprintf(fp_vy, "Stage output, y velocity (m/s).\n\n");
+		    fprintf(fp_vy, "Stage information (stage,x,y,elev):\n");
 		    
 		    for (int point = 0; point < gauge_points.num_points; point++)
 		    {
@@ -90,7 +96,21 @@ void write_gauge_point_data
 		    
 		    	fprintf
 		    	(
-		    		fp_v,
+		    		fp_vx,
+		    		"%d"           // stage point number
+		    		" %" NUM_FRMT  // x coordinate
+		    		" %" NUM_FRMT  // y coordinate
+		    		" %" NUM_FRMT  // elevation (z) 
+		    		"\n",
+		    		point + 1,
+		    		i * dx_finest + dx_finest / C(2.0),
+		    		j * dy_finest + dy_finest / C(2.0),
+		    		p_finest_grid.z[idx]
+		    	);
+
+				fprintf
+		    	(
+		    		fp_vy,
 		    		"%d"           // stage point number
 		    		" %" NUM_FRMT  // x coordinate
 		    		" %" NUM_FRMT  // y coordinate
@@ -103,8 +123,11 @@ void write_gauge_point_data
 		    	);
 		    }
 		    
-		    fprintf(fp_v, "\nOutput, velocities:\n");
-		    fprintf(fp_v, "Time; stages 1 to %d\n", gauge_points.num_points);
+		    fprintf(fp_vx, "\nOutput, x velocities:\n");
+		    fprintf(fp_vx, "Time; stages 1 to %d\n", gauge_points.num_points);
+			
+			fprintf(fp_vy, "\nOutput, y velocities:\n");
+		    fprintf(fp_vy, "Time; stages 1 to %d\n", gauge_points.num_points);
 		}
 	}
 
@@ -112,7 +135,8 @@ void write_gauge_point_data
 
 	if (plot_params.voutput_stage)
 	{
-		fprintf(fp_v, "%" NUM_FRMT " ", time_now);
+		fprintf(fp_vx, "%" NUM_FRMT " ", time_now);
+		fprintf(fp_vy, "%" NUM_FRMT " ", time_now);
 	}
 
 	for (int point = 0; point < gauge_points.num_points; point++)
@@ -136,15 +160,22 @@ void write_gauge_point_data
 			real vx = (p_finest_grid.h[idx] < solver_params.tol_h) ? C(0.0) : p_finest_grid.qx[idx] / p_finest_grid.h[idx];
 			real vy = (p_finest_grid.h[idx] < solver_params.tol_h) ? C(0.0) : p_finest_grid.qy[idx] / p_finest_grid.h[idx];
 
-			real speed = sqrt(vx * vx + vy * vy);
-
 			fprintf
 			(
-				fp_v,
+				fp_vx,
 				( (point + 1) == gauge_points.num_points )
 				? "%" NUM_FRMT
 				: "%" NUM_FRMT " ",
-				speed
+				vx
+			);
+
+			fprintf
+			(
+				fp_vy,
+				( (point + 1) == gauge_points.num_points )
+				? "%" NUM_FRMT
+				: "%" NUM_FRMT " ",
+				vy
 			);
 		}
 	}
@@ -153,9 +184,11 @@ void write_gauge_point_data
 	
 	if (plot_params.voutput_stage)
 	{
-		fprintf(fp_v, "\n");
+		fprintf(fp_vx, "\n");
+		fprintf(fp_vy, "\n");
 	}
 
 	fclose(fp_h);
-	fclose(fp_v);
+	fclose(fp_vx);
+	fclose(fp_vy);
 }
