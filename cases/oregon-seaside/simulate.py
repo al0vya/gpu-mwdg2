@@ -8,7 +8,7 @@ def EXIT_HELP():
     help_message = (
         "Use this tool as follows:\n" +
         "python simulate.py preprocess\n" +
-        "python simulate.py simulate <SOLVER> <EPSILON>"
+        "python simulate.py simulate <SOLVER> <EPSILON> <RESULTS_DIRECTORY>"
     )
     
     sys.exit(help_message)
@@ -271,13 +271,14 @@ def write_all_input_files():
 def write_parameter_file(
     epsilon,
     solver,
+    results_dir,
     filename
 ):
     params = (
         "test_case     0\n" +
         "max_ref_lvl   12\n" +
         "min_dt        1\n" +
-        "respath       results\n" +
+        "respath       %s\n" +
         "epsilon       %s\n" +
         "fpfric        0.025\n" + # from "A comparison of a two-dimensional depth-averaged flow model ... for predicting tsunami ..."
         "rasterroot    oregon-seaside-0p01m\n" +
@@ -297,6 +298,7 @@ def write_parameter_file(
         "voutput_stage on\n" +
         "wall_height   2.5"
     ) % (
+        results_dir,
         epsilon,
         solver
     )
@@ -305,15 +307,16 @@ def write_parameter_file(
         fp.write(params)
 
 def run_simulation():
-    if len(sys.argv) < 4: EXIT_HELP()
+    if len(sys.argv) != 5: EXIT_HELP()
     
-    dummy, option, solver, epsilon = sys.argv
+    dummy, option, solver, epsilon, results_dir = sys.argv
     
     parameter_filename = "oregon-seaside.par"
     
     write_parameter_file(
         epsilon=epsilon,
         solver=solver,
+        results_dir=results_dir,
         filename=parameter_filename
     )
     
