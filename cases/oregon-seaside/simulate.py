@@ -36,9 +36,15 @@ def write_bdy_file(
     
     fig, ax = plt.subplots()
     
+    wave_amplitude_original     = 0.51
+    wave_amplitude_calibrated   = 0.60
+    scale_factor_wave_amplitude = wave_amplitude_calibrated / wave_amplitude_original
+    
+    bdy_inlet = scale_factor_wave_amplitude * (0.97 + boundary_timeseries[:,1] - datum)
+    
     ax.plot(
         boundary_timeseries[:,0],
-        0.97 + boundary_timeseries[:,1] - datum
+        bdy_inlet
     )
     
     plt.setp(
@@ -66,8 +72,8 @@ def write_bdy_file(
         
         fp.write(header)
         
-        for entry in boundary_timeseries:
-            fp.write(str(0.97 + entry[1] - datum) + " " + str( entry[0] ) + "\n")
+        for time, inlet in zip(boundary_timeseries[:,0], bdy_inlet):
+            fp.write(str(inlet) + " " + str(time) + "\n")
 
 def check_raster_file(
     raster,
