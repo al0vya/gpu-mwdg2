@@ -473,7 +473,7 @@ void add_ghost_cells
 				    d_neighbours.west.h0[idx] = d_assem_sol.h0[idx];
 					
 					// wavemaker speed based on bc2amr.f from https://zenodo.org/record/1419317
-					real s = C(0.6) * exp( -C(0.25) * ( time_now - C(14.75) * ( time_now - C(14.75) ) )
+					real s = C(0.6) * exp( -C(0.25) * ( time_now - C(14.75) * ( time_now - C(14.75) ) );
 					
 					real v0 = (d_assem_sol.h0[idx] > solver_params.tol_h) ? d_assem_sol.qx0[idx] / d_assem_sol.h0[idx] : C(0.0);
 					
