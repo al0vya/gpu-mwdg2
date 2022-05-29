@@ -47,17 +47,18 @@ SimulationParams read_sim_params
 	    	strcpy(dem_filename, rasterroot);
 	    	strcat(dem_filename, ".dem");
 
-			sim_params.xsz      = read_keyword_int (dem_filename, "ncols", 5);
-			sim_params.ysz      = read_keyword_int (dem_filename, "nrows", 5);
-			sim_params.xmin     = read_keyword_real(dem_filename, "xllcorner", 9);
-			sim_params.ymin     = read_keyword_real(dem_filename, "yllcorner", 9);
-			cellsize            = read_keyword_real(dem_filename, "cellsize", 8);
-	    	sim_params.xmax     = sim_params.xmin + sim_params.xsz * cellsize;
-	    	sim_params.ymax     = sim_params.ymin + sim_params.ysz * cellsize;
-			sim_params.g        = read_keyword_real(input_filename, "g", 1);
-			sim_params.time     = read_keyword_real(input_filename, "sim_time", 8);
-			sim_params.manning  = read_keyword_real(input_filename, "fpfric", 6);
-			sim_params.is_monai = !strncmp("monai", rasterroot, 5);
+			sim_params.xsz       = read_keyword_int (dem_filename, "ncols", 5);
+			sim_params.ysz       = read_keyword_int (dem_filename, "nrows", 5);
+			sim_params.xmin      = read_keyword_real(dem_filename, "xllcorner", 9);
+			sim_params.ymin      = read_keyword_real(dem_filename, "yllcorner", 9);
+			cellsize             = read_keyword_real(dem_filename, "cellsize", 8);
+	    	sim_params.xmax      = sim_params.xmin + sim_params.xsz * cellsize;
+	    	sim_params.ymax      = sim_params.ymin + sim_params.ysz * cellsize;
+			sim_params.g         = read_keyword_real(input_filename, "g", 1);
+			sim_params.time      = read_keyword_real(input_filename, "sim_time", 8);
+			sim_params.manning   = read_keyword_real(input_filename, "fpfric", 6);
+			sim_params.is_monai  = !strncmp("monai", rasterroot, 5);
+			sim_params.is_oregon = !strncmp("oregon-seaside", rasterroot, 14);
 	    }
 	    	break;
 	    case 1: // c prop
