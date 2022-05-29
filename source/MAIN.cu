@@ -747,6 +747,7 @@ int main
 				solver_params,
 				sim_params,
 				boundaries,
+				time_now,
 				dt,
 				dx_finest,
 				test_case
