@@ -196,4 +196,4 @@ if __name__ == "__main__":
     subprocess.run( ["python", "inflow.py"] )
     subprocess.run( ["python", "raster.py"] )
     
-    SimulationMonai( [0, 1e-4, 1e-3], ["mw"] ).plot( ExperimentalDataMonai() )
+    SimulationMonai( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalDataMonai() )

@@ -306,4 +306,4 @@ class Simulation25Blocks:
 if __name__ == "__main__":
     subprocess.run( ["python", "raster.py"] )
     
-    Simulation25Blocks( [0, 1e-4, 1e-3], ["mw"] ).plot( ExperimentalData25Blocks() )
+    Simulation25Blocks( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalData25Blocks() )
