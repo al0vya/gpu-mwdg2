@@ -348,7 +348,7 @@ def write_all_input_files():
         filename="oregon-seaside-0p01m.dem"
     )
     
-    '''write_raster_file(
+    write_raster_file(
         raster=initial_depths[:,western_cells_to_trim:],
         xmin=xmin,
         ymin=ymin,
@@ -372,7 +372,7 @@ def write_all_input_files():
         timeseries_name=timeseries_name
     )
     
-    write_stage_file()'''
+    write_stage_file()
 
 def write_parameter_file(
     epsilon,
