@@ -157,7 +157,7 @@ class SimulationThreeConesDamBreak:
         contourset_a6  = axs[2, 1].contourf(self.X, self.Y, self.results[1e-3]["6 s"],  levels=h_levels)
         contourset_a12 = axs[4, 1].contourf(self.X, self.Y, self.results[1e-3]["12 s"], levels=h_levels)
         
-        axs[0, 0].set_title("GPU-DG2"     if solver == "mw" else "GPU-FV1")
+        axs[0, 0].set_title(  "GPU-DG2"     if solver == "mw" else "GPU-FV1")
         axs[0, 1].set_title( ("GPU-MWDG2, " if solver == "mw" else "GPU-HWFV1, ") + r"$L = 8, \, \epsilon = 10^{-3}$" )
         
         # get axis layout (subplots) of the figure

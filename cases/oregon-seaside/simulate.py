@@ -84,22 +84,122 @@ def check_raster_file(
     ncols,
     filename
 ):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots( figsize=(6,4) )
     
     y = [ ymin + j * cellsize for j in range(nrows) ]
     x = [ xmin + i * cellsize for i in range(ncols) ]
     
+    aspect = ( y[-1] - y[0] ) / ( x[-1] - x[0] )
+    
     x, y = np.meshgrid(x, y)
     
-    contourset = ax.contourf(x, y, raster)
+    contourset = ax.contourf(x, y, raster, levels=30)
     
-    fig.colorbar(contourset)
+    fig.colorbar(
+        contourset,
+        orientation="horizontal",
+        label=r"$m$"
+    )
+    
+    gauges_A = [
+        (33.611, -3.193),
+        (34.103, -3.194),
+        (34.534, -3.184),
+        (35.040, -3.181),
+        (35.544, -3.194),
+        (36.355, -3.199),
+        (37.767, -3.201),
+        (39.223, -3.204),
+        (40.767, -3.228)
+    ]
+    
+    gauges_B = [
+        (33.721, -0.588),
+        (34.218, -0.533),
+        (34.679, -0.467),
+        (35.176, -0.406),
+        (35.747, -0.317),
+        (36.635, -0.229),
+        (37.773, -0.068),
+        (39.218,  0.135),
+        (40.668,  0.269)
+    ]
+    
+    gauges_C = [
+        (33.809, 1.505),
+        (34.553, 1.604),
+        (35.051, 1.686),
+        (35.556, 1.769),
+        (36.050, 1.845),
+        (37.047, 1.988),
+        (38.243, 2.193),
+        (39.208, 2.338),
+        (40.400, 2.582)
+    ]
+    
+    gauges_D = [
+        (35.124, 3.712),
+        (36.684, 3.888),
+        (39.086, 4.070),
+        (38.141, 3.585)
+    ]
+    
+    gauges_W = [
+        (20.680,-0.515),
+        (20.680, 4.605),
+        (18.618, 0.000),
+        (18.618, 2.860)
+    ]
+    
+    plt.scatter(
+        [gauge[0] for gauge in gauges_A],
+        [gauge[1] for gauge in gauges_A],
+        marker='x',
+        linewidth=0.5,
+        facecolor='r',
+        s=10,
+        label="A"
+    )
+    
+    plt.scatter(
+        [gauge[0] for gauge in gauges_B],
+        [gauge[1] for gauge in gauges_B],
+        marker='x',
+        linewidth=0.5,
+        facecolor='k',
+        s=10,
+        label="B"
+    )
+    
+    plt.scatter(
+        [gauge[0] for gauge in gauges_C],
+        [gauge[1] for gauge in gauges_C],
+        marker='x',
+        linewidth=0.5,
+        facecolor='m',
+        s=10,
+        label="C"
+    )
+    
+    plt.scatter(
+        [gauge[0] for gauge in gauges_D],
+        [gauge[1] for gauge in gauges_D],
+        marker='x',
+        linewidth=0.5,
+        facecolor='b',
+        s=10,
+        label="D"
+    )
+    
+    ax.legend()
     
     plt.setp(
         ax,
         xlabel=r"$x \, (m)$",
         ylabel=r"$y \, (m)$"
     )
+    
+    fig.tight_layout()
     
     fig.savefig(os.path.join("results", filename + ".png"), bbox_inches="tight")
     
@@ -248,7 +348,7 @@ def write_all_input_files():
         filename="oregon-seaside-0p01m.dem"
     )
     
-    write_raster_file(
+    '''write_raster_file(
         raster=initial_depths[:,western_cells_to_trim:],
         xmin=xmin,
         ymin=ymin,
@@ -272,7 +372,7 @@ def write_all_input_files():
         timeseries_name=timeseries_name
     )
     
-    write_stage_file()
+    write_stage_file()'''
 
 def write_parameter_file(
     epsilon,
