@@ -72,7 +72,7 @@ class Simulation1DDambreak:
         self.results      = {}
         self.epsilons     = [0, 1e-4, 1e-3, 1e-2]
         self.fields       = ["simtime", "runtime"]
-        self.max_ref_lvls = [8, 9, 10, 11]
+        self.max_ref_lvls = [8]#, 9, 10, 11]
         
         for solver in self.solvers:
             self.results[solver] = {}
@@ -89,14 +89,14 @@ class Simulation1DDambreak:
         # runs for verification
         for solver in self.solvers:
             for epsilon in self.epsilons:
-                self.run(
+                '''self.run(
                     solver=solver,
                     sim_time=2.5,
                     epsilon=epsilon,
                     L=8,
                     saveint=2.5,
                     limiter="on"
-                )
+                )'''
                 
                 verification_depths = self.get_verification_depths()
                 
@@ -107,14 +107,14 @@ class Simulation1DDambreak:
         for solver in self.solvers:
             for epsilon in self.epsilons:
                 for L in self.max_ref_lvls:
-                    self.run(
+                    '''self.run(
                         solver=solver,
                         sim_time=40,
                         epsilon=epsilon,
                         L=L,
                         saveint=40,
                         limiter="off"
-                    )
+                    )'''
                     
                     results_dataframe = pd.read_csv( os.path.join("results", "cumulative-data.csv") )
                     
@@ -181,7 +181,19 @@ class Simulation1DDambreak:
     ):
         plt.rcParams.update(my_rc_params)
         
-        fig, ax = plt.subplots()
+        fig = plt.figure( figsize=(6.25, 2.5) )
+        
+        gridspec = fig.add_gridspec(
+            ncols=3,
+            nrows=1,
+            hspace=1
+        )
+        
+        axs = gridspec.subplots(sharey=True)
+        
+        axs[0].set_title(r"$\epsilon = 10^{-2}$")
+        axs[1].set_title(r"$\epsilon = 10^{-3}$")
+        axs[2].set_title(r"$\epsilon = 10^{-4}$")
         
         for solver in self.solvers:
             all_speedups = []
@@ -199,9 +211,7 @@ class Simulation1DDambreak:
                     
                     all_speedups += (self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime).to_list()
                 
-            for epsilon in self.epsilons:
-                if epsilon == 0: continue
-                
+            for ax, epsilon in zip( axs, self.epsilons[1:] ):
                 for L in self.max_ref_lvls:
                     interp_adaptive = scipy.interpolate.interp1d(
                         self.results[solver][epsilon][L]["simtime"],
@@ -233,13 +243,26 @@ class Simulation1DDambreak:
                 )
                 
                 ax.set_xlabel(r"$t \, (s)$")
-                ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
                 ax.set_xlim(xlim)
                 ax.set_ylim( 0, np.max(all_speedups) )
-                ax.legend()    
-                fig.savefig(os.path.join( "results", "runtimes-" + solver + "-eps-" + str(epsilon) ) + ".png", bbox_inches="tight")
-                ax.clear()
+                axs[0].set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
+                axs[0].legend()
                 
+                xticks = [0, 10, 20, 30, 40]
+                
+                ax.set_xticks( [] )
+                ax.set_xticks(
+                    ticks=xticks,
+                    minor=True
+                )
+                
+                ax.set_xticklabels(
+                    labels=xticks,
+                    minor=True
+                )
+                
+        fig.savefig(os.path.join( "results", "runtimes-" + solver) + ".png", bbox_inches="tight")
+            
         plt.close()
         
     def plot_verification_depths(
@@ -248,7 +271,7 @@ class Simulation1DDambreak:
     ):
         plt.rcParams.update(my_rc_params)
         
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots( figsize=(2.75, 2.5) )
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
@@ -296,16 +319,11 @@ class Simulation1DDambreak:
         
     def plot(self):
         my_rc_params = {
-            "legend.fontsize" : "large",
-            "axes.labelsize"  : "xx-large",
-            "axes.titlesize"  : "xx-large",
-            "xtick.labelsize" : "xx-large",
-            "ytick.labelsize" : "xx-large",
+            "legend.fontsize" : "small"
         }
         
         self.plot_speedups(my_rc_params)
-        
         self.plot_verification_depths(my_rc_params)
         
 if __name__ == "__main__":
-    Simulation1DDambreak( ["mw"] ).plot()
+    Simulation1DDambreak( ["hw"] ).plot()
