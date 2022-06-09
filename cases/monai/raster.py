@@ -1,6 +1,7 @@
 # script to run generate the input raster files for Monai valley simulation
 # data obtained from https://nctr.pmel.noaa.gov/benchmark/Laboratory/Laboratory_MonaiValley/index.html
 
+import os
 import sys
 import pandas            as pd
 import numpy             as np
@@ -21,18 +22,32 @@ def remove_NODATA_values(
 def check_nodal_data(
         nodal_data,
         nrows,
-        ncols
+        ncols,
+        xmin,
+        ymin,
+        cellsize,
+        filename
     ):
-        x = np.linspace(0, 1, ncols)
-        y = np.linspace(0, 1, nrows)
+        x = [ xmin + cellsize * i for i in range(ncols) ]
+        y = [ ymin + cellsize * j for j in range(nrows) ]
         
-        X, Y = np.meshgrid(x, y)
+        x, y = np.meshgrid(x, y)
         
-        fig, ax    = plt.subplots()
-        contourset = ax.contourf(X, Y, nodal_data)
-        colorbar   = fig.colorbar(contourset)
+        fig, ax    = plt.subplots( figsize=(5.0,4.2) )
+        contourset = ax.contourf(x, y, nodal_data, levels=30)
+        colorbar   = fig.colorbar(
+            contourset,
+            orientation="horizontal",
+            label=r"$m$"
+        )
         
-        plt.show()
+        ax.scatter(4.501, 1.696, facecolor='r', edgecolor='r')
+        
+        ax.set_xlabel(r"$x \, (m)$")
+        ax.set_ylabel(r"$y \, (m)$")
+        
+        fig.savefig(fname=(os.path.join("results", filename)), bbox_inches="tight")
+        
         plt.close()
 
 def projection(
@@ -124,7 +139,16 @@ def main():
     
     cellsize = 0.014
     
-    #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=bed_data)
+    check_nodal_data(
+        nodal_data=bed_data,
+        nrows=nrows,
+        ncols=ncols,
+        xmin=0,
+        ymin=0,
+        cellsize=cellsize,
+        filename="topography"
+    )
+    
     #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=initial_depths)
     
     project_and_write_raster(
