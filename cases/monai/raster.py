@@ -18,7 +18,7 @@ def remove_NODATA_values(
         for j, row in enumerate(nodal_data):
             for i, element in enumerate(row):
                 if ( (element - NODATA_value) < tol_0 ): nodal_data[j, i] = 100
-
+                
 def check_nodal_data(
         nodal_data,
         nrows,
