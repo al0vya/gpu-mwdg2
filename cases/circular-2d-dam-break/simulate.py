@@ -40,13 +40,13 @@ class Simulation2DDambreak:
         for solver in self.solvers:
             for epsilon in self.epsilons:
                 for L in self.max_ref_lvls:
-                    self.run(
+                    '''self.run(
                         solver=solver,
                         sim_time=3.5,
                         epsilon=epsilon,
                         L=L,
                         saveint=3.5
-                    )
+                    )'''
                     
                     # for verification
                     if L == 8:
@@ -118,7 +118,7 @@ class Simulation2DDambreak:
     ):
         plt.rcParams.update(my_rc_params)
         
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots( figsize=(2.75, 2.5) )
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
@@ -165,7 +165,7 @@ class Simulation2DDambreak:
     ):
         plt.rcParams.update(my_rc_params)
         
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots( figsize=(2.75, 2.5) )
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
@@ -206,11 +206,7 @@ class Simulation2DDambreak:
         reference
     ):
         my_rc_params = {
-            "legend.fontsize" : "large",
-            "axes.labelsize"  : "xx-large",
-            "axes.titlesize"  : "xx-large",
-            "xtick.labelsize" : "xx-large",
-            "ytick.labelsize" : "xx-large",
+            "legend.fontsize" : "small"
         }
         
         self.plot_speedups(my_rc_params)
@@ -218,4 +214,4 @@ class Simulation2DDambreak:
         self.plot_verification_depths(my_rc_params, reference)
         
 if __name__ == "__main__":
-    Simulation2DDambreak( ["mw"] ).plot( Reference() )
+    Simulation2DDambreak( ["hw"] ).plot( Reference() )

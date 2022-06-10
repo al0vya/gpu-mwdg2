@@ -197,6 +197,65 @@ def write_bathymetry(
         header=header,
         comments=""
     )
+
+def plot_bathymetry(
+        bathymetry,
+        nrows,
+        ncols,
+        xmin,
+        ymin,
+        cellsize,
+        filename
+    ):
+        x = [ xmin + cellsize * i for i in range(ncols) ]
+        y = [ ymin + cellsize * j for j in range(nrows) ]
+        
+        x, y = np.meshgrid(x, y)
+        
+        z_max    = np.max(bathymetry)
+        levels   = 30
+        dz       = z_max / levels
+        z_levels = [ 0 + dz * i for i in range(levels+1) ]
+        
+        fig, ax    = plt.subplots( figsize=(5.0,4.2) )
+        
+        contourset = ax.contourf(
+            x / 1000, # convert from m to km
+            y / 1000,
+            bathymetry,
+            levels=z_levels
+        )
+        
+        colorbar = fig.colorbar(
+            contourset,
+            orientation="horizontal",
+            label=r"$m$"
+        )
+        
+        stages = [
+            (2.724e4, 1.846e4, "A Beacon"),
+            (3.085e4, 1.512e4, "Tug Harbour"),
+            (3.200e4, 1.347e4, "Sulphur Point"),
+            (3.005e4, 1.610e4, "Moturiki"),
+            (2.925e4, 1.466e4, "ADCP")
+        ]
+        
+        for stage in stages:
+            ax.scatter(
+                stage[0] / 1000, # convert from m to km
+                stage[1] / 1000,
+                linewidth=0.75,
+                marker='x',
+                label=stage[2]
+            )
+        
+        ax.legend()
+        ax.set_xlabel(r"$x \, (km)$")
+        ax.set_ylabel(r"$y \, (km)$")
+        
+        fig.savefig(fname=(os.path.join("results", filename)), bbox_inches="tight")
+        
+        plt.close()
     
 def write_bci_file(
     ncols,
@@ -299,6 +358,16 @@ def write_all_input_files():
         nrows=nrows,
         ncols=ncols,
         cellsize=cellsize
+    )
+    
+    plot_bathymetry(
+        bathymetry=( bathymetry - (NODATA_mask * datum) )[:,:ncols],
+        nrows=nrows,
+        ncols=ncols,
+        xmin=0,
+        ymin=0,
+        cellsize=cellsize,
+        filename="topography"
     )
     
     timeseries_name = "INLET"

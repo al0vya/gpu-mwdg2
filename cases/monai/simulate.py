@@ -40,7 +40,7 @@ class SimulationMonai:
                                 self.results[solver][epsilon][field] = {}
                                 
                 for epsilon in epsilons:
-                    self.run(epsilon, solver)
+                    #self.run(epsilon, solver)
                     
                     time_dataframe = pd.read_csv(self.runtime_file)
                     
@@ -100,7 +100,7 @@ class SimulationMonai:
     ):
         plt.rcParams.update(my_rc_params)
         
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots( figsize=(2.75, 2.5) )
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
@@ -123,13 +123,17 @@ class SimulationMonai:
             exp_data.gauge_data,
             facecolor="None",
             edgecolor="black",
+            s=5,
             label="Experimental"
         )
         
         ax.set_xlabel(r"$t \, (s)$")
         ax.set_ylabel(r"h + z \, $(m)$")
         ax.set_xlim( exp_data.time.iloc[0], exp_data.time.iloc[-1] )
-        ax.legend()
+        ax.legend(
+            bbox_to_anchor=(1.2, 1.35),
+            ncol=2
+        )
         fig.savefig(os.path.join("results", "stage"), bbox_inches="tight")
         plt.close()
             
@@ -139,7 +143,7 @@ class SimulationMonai:
     ):
         plt.rcParams.update(my_rc_params)
         
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots( figsize=(2.75, 2.5) )
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
@@ -180,15 +184,10 @@ class SimulationMonai:
         exp_data
     ):
         my_rc_params = {
-            "legend.fontsize" : "large",
-            "axes.labelsize"  : "xx-large",
-            "axes.titlesize"  : "xx-large",
-            "xtick.labelsize" : "xx-large",
-            "ytick.labelsize" : "xx-large"
+            "legend.fontsize" : "small"
         }
         
         self.plot_exp_data(my_rc_params, exp_data)
-        
         self.plot_speedups(my_rc_params)
         
 if __name__ == "__main__":
@@ -196,4 +195,4 @@ if __name__ == "__main__":
     subprocess.run( ["python", "inflow.py"] )
     subprocess.run( ["python", "raster.py"] )
     
-    SimulationMonai( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalDataMonai() )
+    SimulationMonai( [1e-3, 1e-4, 0], ["hw"] ).plot( ExperimentalDataMonai() )

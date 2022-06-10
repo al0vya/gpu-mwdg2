@@ -58,7 +58,7 @@ class SimulationConicalIsland:
                         self.results[solver][epsilon]["gauge_data"][stage] = {}
                         
                 for epsilon in epsilons:
-                    self.run(epsilon, solver)
+                    #self.run(epsilon, solver)
                     
                     time_dataframe = pd.read_csv(self.runtime_file)
                     
@@ -117,9 +117,18 @@ class SimulationConicalIsland:
         
         plt.rcParams.update(my_rc_params)
         
-        fig, ax = plt.subplots()
+        fig = plt.figure( figsize=(6, 5) )
         
-        for stage in self.stages:
+        gridspec = fig.add_gridspec(
+            nrows=2,
+            ncols=2,
+            hspace=0.15,
+            wspace=0.5
+        )
+        
+        axs = gridspec.subplots()
+        
+        for ax, stage in zip(axs.flatten(), self.stages):
             for solver in self.solvers:
                 for epsilon in self.epsilons:
                     if epsilon == 0:
@@ -150,9 +159,25 @@ class SimulationConicalIsland:
             ax.set_xlabel(r"$t \, (s)$")
             ax.set_ylabel(r"h + z \, $(m)$")
             ax.set_xlim(6, 20)
-            fig.savefig(os.path.join("results", "stage-" + stage), bbox_inches="tight")
-            ax.clear()
+            axs[0,0].legend(
+                bbox_to_anchor=(1.9, 1.4),
+                ncol=2
+            )
             
+            xticks = [6, 10, 15, 20]
+            
+            ax.set_xticks( [] )
+            ax.set_xticks(
+                ticks=xticks,
+                minor=False
+            )
+            
+            ax.set_xticklabels(
+                labels=xticks,
+                minor=False
+            )
+            
+        fig.savefig(os.path.join("results", "stages"), bbox_inches="tight")
         plt.close()
         
     def plot_speedups(
@@ -161,7 +186,7 @@ class SimulationConicalIsland:
     ):
         plt.rcParams.update(my_rc_params)
         
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots( figsize=(2.75, 2.5) )
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
@@ -202,19 +227,14 @@ class SimulationConicalIsland:
         exp_data
     ):
         my_rc_params = {
-            "legend.fontsize" : "large",
-            "axes.labelsize"  : "xx-large",
-            "axes.titlesize"  : "xx-large",
-            "xtick.labelsize" : "xx-large",
-            "ytick.labelsize" : "xx-large"
+            "legend.fontsize" : "small"
         }
         
         self.plot_exp_data(my_rc_params, exp_data)
-        
         self.plot_speedups(my_rc_params)
         
 if __name__ == "__main__":
-    subprocess.run( ["python", "stage.py" ] )
-    subprocess.run( ["python", "raster.py"] )
+    #subprocess.run( ["python", "stage.py" ] )
+    #subprocess.run( ["python", "raster.py"] )
     
-    SimulationConicalIsland( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalDataConicalIsland() )
+    SimulationConicalIsland( [1e-3, 1e-4, 0], ["hw"] ).plot( ExperimentalDataConicalIsland() )
