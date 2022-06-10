@@ -127,7 +127,7 @@ class SimulationMonai:
         )
         
         ax.set_xlabel(r"$t \, (s)$")
-        ax.set_ylabel(r"Free surface elevation $(m)$")
+        ax.set_ylabel(r"h + z \, $(m)$")
         ax.set_xlim( exp_data.time.iloc[0], exp_data.time.iloc[-1] )
         ax.legend()
         fig.savefig(os.path.join("results", "stage"), bbox_inches="tight")

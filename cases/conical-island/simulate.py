@@ -144,10 +144,12 @@ class SimulationConicalIsland:
                 label="Experimental"
             )
             
+            if stage == "#6":
+                ax.legend()
+            
             ax.set_xlabel(r"$t \, (s)$")
-            ax.set_ylabel(r"Free surface elevation $(m)$")
+            ax.set_ylabel(r"h + z \, $(m)$")
             ax.set_xlim(6, 20)
-            ax.legend()
             fig.savefig(os.path.join("results", "stage-" + stage), bbox_inches="tight")
             ax.clear()
             
