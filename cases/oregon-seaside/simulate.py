@@ -407,7 +407,7 @@ def write_parameter_file(
 ):
     params = (
         "test_case     0\n" +
-        "max_ref_lvl   12\n" +
+        "max_ref_lvl   11\n" +
         "min_dt        1\n" +
         "respath       %s\n" +
         "epsilon       %s\n" +

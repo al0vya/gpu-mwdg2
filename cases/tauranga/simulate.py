@@ -169,11 +169,28 @@ def find_min_arrays(*arrays):
     
     return a
 
+def downscale_raster(
+    raster
+):
+    nrows, ncols = raster.shape
+    
+    # don't consider the last row/column if odd number of rows/columns
+    x_lim = None if ncols % 2 == 0 else -1
+    y_lim = None if nrows % 2 == 0 else -1
+    
+    top_left     = raster[ :y_lim:2,  :x_lim:2]
+    top_right    = raster[ :y_lim:2, 1:x_lim:2]
+    bottom_left  = raster[1:y_lim:2,  :x_lim:2]
+    bottom_right = raster[1:y_lim:2, 1:x_lim:2]
+    
+    return (top_left + top_right + bottom_left + bottom_right) / 4
+
 def write_bathymetry(
     bathymetry,
     nrows,
     ncols,
-    cellsize
+    cellsize,
+    filename
 ):
     print("Preparing DEM file...")
     
@@ -191,7 +208,7 @@ def write_bathymetry(
     )
     
     np.savetxt(
-        fname="tauranga-10m.dem",
+        fname=filename,
         X=np.flipud(bathymetry),
         fmt="%.8f",
         header=header,
@@ -353,11 +370,22 @@ def write_all_input_files():
     
     cellsize = 10
     
+    '''
     write_bathymetry(
         bathymetry=( bathymetry - (NODATA_mask * datum) )[:,:ncols], # adjust datum only for non-NODATA_values
         nrows=nrows,
         ncols=ncols,
-        cellsize=cellsize
+        cellsize=cellsize,
+        filename="tauranga-10m.dem"
+    )
+    '''
+    
+    write_bathymetry(
+        bathymetry=downscale_raster( ( bathymetry - (NODATA_mask * datum) )[:,:ncols] ), # 20 m resolution
+        nrows=int(nrows/2),
+        ncols=int(ncols/2),
+        cellsize=cellsize*2,
+        filename="tauranga-20m.dem"
     )
     
     plot_bathymetry(
@@ -396,12 +424,12 @@ def write_parameter_file(
 ):
     params = (
         "test_case     0\n" +
-        "max_ref_lvl   12\n" +
+        "max_ref_lvl   11\n" +
         "min_dt        1\n" +
         "respath       %s\n" +
         "epsilon       %s\n" +
         "fpfric        0.025\n" +
-        "rasterroot    tauranga-10m\n" +
+        "rasterroot    tauranga-20m\n" +
         "bcifile       tauranga.bci\n" +
         "bdyfile       tauranga.bdy\n" +
         "stagefile     tauranga.stage\n" +
