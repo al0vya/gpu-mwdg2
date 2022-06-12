@@ -1,5 +1,5 @@
 test_case     0
-max_ref_lvl   12
+max_ref_lvl   11
 min_dt        1
 respath       help_me_please
 epsilon       1e-3
