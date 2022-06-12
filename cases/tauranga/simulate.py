@@ -370,7 +370,6 @@ def write_all_input_files():
     
     cellsize = 10
     
-    '''
     write_bathymetry(
         bathymetry=( bathymetry - (NODATA_mask * datum) )[:,:ncols], # adjust datum only for non-NODATA_values
         nrows=nrows,
@@ -378,7 +377,6 @@ def write_all_input_files():
         cellsize=cellsize,
         filename="tauranga-10m.dem"
     )
-    '''
     
     write_bathymetry(
         bathymetry=downscale_raster( ( bathymetry - (NODATA_mask * datum) )[:,:ncols] ), # 20 m resolution
@@ -424,12 +422,12 @@ def write_parameter_file(
 ):
     params = (
         "test_case     0\n" +
-        "max_ref_lvl   11\n" +
+        "max_ref_lvl   12\n" +
         "min_dt        1\n" +
         "respath       %s\n" +
         "epsilon       %s\n" +
         "fpfric        0.025\n" +
-        "rasterroot    tauranga-20m\n" +
+        "rasterroot    tauranga-10m\n" +
         "bcifile       tauranga.bci\n" +
         "bdyfile       tauranga.bdy\n" +
         "stagefile     tauranga.stage\n" +
