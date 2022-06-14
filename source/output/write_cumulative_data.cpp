@@ -2,12 +2,13 @@
 
 void write_cumulative_data
 (
-	const clock_t start,
-	const real&   time_now,
-	const real&   dt,
-	const int&    num_cells,
-	const char*   respath,
-	const bool    first_t_step
+	const clock_t           start,
+	const real&             time_now,
+	const real&             dt,
+	const int&              num_cells,
+	const SimulationParams& sim_params,
+	const char*             respath,
+	const bool              first_t_step
 )
 {
 	char fullpath[255];
@@ -22,11 +23,13 @@ void write_cumulative_data
 		exit(-1);
 	}
 
-	if (first_t_step) fprintf(cumulative_input, "simtime,runtime,dt,cells\n");
+	if (first_t_step) fprintf(cumulative_input, "simtime,runtime,dt,compression\n");
 
-	clock_t end = clock();
+	const clock_t end = clock();
 
-	real run_time = (real)(end - start) / CLOCKS_PER_SEC;
+	const real run_time = (real)(end - start) / CLOCKS_PER_SEC;
+
+	const real compression = C(100.0) - C(100.0) * num_cells / (sim_params.xsz * sim_params.ysz);
 
 	fprintf
 	(
@@ -39,7 +42,7 @@ void write_cumulative_data
 		time_now,
 		run_time,
 		dt,
-		num_cells
+		compression
 	);
 
 	fclose(cumulative_input);

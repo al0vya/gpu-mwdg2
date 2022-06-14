@@ -40,13 +40,13 @@ class Simulation2DDambreak:
         for solver in self.solvers:
             for epsilon in self.epsilons:
                 for L in self.max_ref_lvls:
-                    '''self.run(
+                    self.run(
                         solver=solver,
                         sim_time=3.5,
                         epsilon=epsilon,
                         L=L,
                         saveint=3.5
-                    )'''
+                    )
                     
                     # for verification
                     if L == 8:

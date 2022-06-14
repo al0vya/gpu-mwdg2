@@ -13,6 +13,7 @@ void write_c_prop_data
 	const char*              respath,
 	const clock_t&           start,
 	const SolverParams&      solver_params,
+	const SimulationParams&  sim_params,
 	const AssembledSolution& d_assem_sol,
 	const real&              time_now,
 	const real&              dt,

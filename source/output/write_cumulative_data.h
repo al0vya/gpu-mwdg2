@@ -7,14 +7,15 @@
 #include <cstring>
 #include <time.h>
 
-#include "real.h"
+#include "SimulationParams.h"
 
 void write_cumulative_data
 (
-	const clock_t start,
-	const real&   time_now,
-	const real&   dt,
-	const int&    num_cells,
-	const char*   respath,
-	const bool    first_t_step
+	const clock_t           start,
+	const real&             time_now,
+	const real&             dt,
+	const int&              num_cells,
+	const SimulationParams& sim_params,
+	const char*             respath,
+	const bool              first_t_step
 );

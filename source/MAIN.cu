@@ -890,6 +890,7 @@ int main
 					respath,
 					start,
 					solver_params,
+					sim_params,
 					d_assem_sol,
 					time_now,
 					dt,
@@ -909,6 +910,7 @@ int main
 			        time_now,
 					dt,
 					d_assem_sol.length,
+					sim_params,
 			        respath,
 			        first_t_step
 			    );
