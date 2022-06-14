@@ -214,4 +214,4 @@ class Simulation2DDambreak:
         self.plot_verification_depths(my_rc_params, reference)
         
 if __name__ == "__main__":
-    Simulation2DDambreak( ["hw"] ).plot( Reference() )
+    Simulation2DDambreak( ["mw"] ).plot( Reference() )

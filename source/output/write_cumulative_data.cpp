@@ -37,7 +37,7 @@ void write_cumulative_data
 		 "%" NUM_FRMT
 		",%" NUM_FRMT
 		",%" NUM_FRMT
-		",%d"
+		",%" NUM_FRMT
 		"\n",
 		time_now,
 		run_time,
