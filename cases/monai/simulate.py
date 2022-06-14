@@ -40,7 +40,7 @@ class SimulationMonai:
                                 self.results[solver][epsilon][field] = {}
                                 
                 for epsilon in epsilons:
-                    #self.run(epsilon, solver)
+                    self.run(epsilon, solver)
                     
                     time_dataframe = pd.read_csv(self.runtime_file)
                     
@@ -195,4 +195,4 @@ if __name__ == "__main__":
     subprocess.run( ["python", "inflow.py"] )
     subprocess.run( ["python", "raster.py"] )
     
-    SimulationMonai( [1e-3, 1e-4, 0], ["hw"] ).plot( ExperimentalDataMonai() )
+    SimulationMonai( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalDataMonai() )
