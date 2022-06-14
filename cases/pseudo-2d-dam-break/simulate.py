@@ -89,14 +89,14 @@ class Simulation1DDambreak:
         # runs for verification
         for solver in self.solvers:
             for epsilon in self.epsilons:
-                '''self.run(
+                self.run(
                     solver=solver,
                     sim_time=2.5,
                     epsilon=epsilon,
                     L=8,
                     saveint=2.5,
                     limiter="on"
-                )'''
+                )
                 
                 verification_depths = self.get_verification_depths()
                 
@@ -107,14 +107,14 @@ class Simulation1DDambreak:
         for solver in self.solvers:
             for epsilon in self.epsilons:
                 for L in self.max_ref_lvls:
-                    '''self.run(
+                    self.run(
                         solver=solver,
                         sim_time=40,
                         epsilon=epsilon,
                         L=L,
                         saveint=40,
                         limiter="off"
-                    )'''
+                    )
                     
                     results_dataframe = pd.read_csv( os.path.join("results", "cumulative-data.csv") )
                     
@@ -326,4 +326,4 @@ class Simulation1DDambreak:
         self.plot_verification_depths(my_rc_params)
         
 if __name__ == "__main__":
-    Simulation1DDambreak( ["hw"] ).plot()
+    Simulation1DDambreak( ["mw"] ).plot()
