@@ -38,7 +38,7 @@ def check_nodal_data(
         colorbar   = fig.colorbar(
             contourset,
             orientation="horizontal",
-            label=r"$m$"
+            label='m'
         )
         
         ax.scatter(4.501, 1.696, facecolor='r', edgecolor='r')
@@ -148,8 +148,6 @@ def main():
         cellsize=cellsize,
         filename="topography"
     )
-    
-    #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=initial_depths)
     
     project_and_write_raster(
         nrows=nrows,

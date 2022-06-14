@@ -5,23 +5,57 @@ import numpy             as np
 import matplotlib.pyplot as plt
  
 from mpl_toolkits.mplot3d import Axes3D
-
+                
 def check_nodal_data(
-        nodal_data,
-        nrows,
-        ncols
-    ):
-        x = np.linspace(0, 1, ncols)
-        y = np.linspace(0, 1, nrows)
-        
-        X, Y = np.meshgrid(x, y)
-        
-        fig, ax    = plt.subplots()
-        contourset = ax.contourf(X, Y, nodal_data)
-        colorbar   = fig.colorbar(contourset)
-        
-        plt.show()
-        plt.close()
+    nodal_data,
+    nrows,
+    ncols,
+    xmin,
+    ymin,
+    cellsize,
+    filename
+):
+    x = [ xmin + cellsize * i for i in range(ncols) ]
+    y = [ ymin + cellsize * j for j in range(nrows) ]
+    
+    x, y = np.meshgrid(x, y)
+    
+    fig, ax    = plt.subplots( figsize=(4.0,4.2) )
+    contourset = ax.contourf(x, y, nodal_data, levels=10)
+    colorbar   = fig.colorbar(
+        contourset,
+        orientation="horizontal",
+        label=r"$m$"
+    )
+    
+    stages = [
+        ( 9.36, 13.80, 6),
+        (10.36, 13.80, 9),
+        (12.96, 11.22, 16),
+        (15.56, 13.80, 22)
+    ]
+    
+    plot = ax.scatter(
+        [stage[0] for stage in stages],
+        [stage[1] for stage in stages],
+        facecolor='r',
+        s=10
+    )
+    
+    for stage in stages:
+        plt.text(
+            stage[0] - 0.4,
+            stage[1] - 2.0,
+            str( stage[2] ),
+            color="#E5E4E2"
+        )
+    
+    ax.set_xlabel(r"$x \, (m)$")
+    ax.set_ylabel(r"$y \, (m)$")
+    
+    fig.savefig(fname=(os.path.join("results", filename)), bbox_inches="tight")
+    
+    plt.close()
 
 def projection(
         nodal_data,
@@ -175,9 +209,15 @@ def main():
     
     print("Showing raster fields for checking, close the plots to continue.")
     
-    #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["h"])
-    #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["qx"])
-    #check_nodal_data(nrows=nrows, ncols=ncols, nodal_data=raster_fields["z"])
+    check_nodal_data(
+        nodal_data=raster_fields["z"],
+        nrows=nrows,
+        ncols=ncols,
+        xmin=xmin,
+        ymin=ymin,
+        cellsize=cellsize,
+        filename="topography"
+    )
     
     project_and_write_raster(
         nrows=nrows,

@@ -122,7 +122,7 @@ class SimulationConicalIsland:
         gridspec = fig.add_gridspec(
             nrows=2,
             ncols=2,
-            hspace=0.15,
+            hspace=1.0,
             wspace=0.5
         )
         
@@ -156,6 +156,7 @@ class SimulationConicalIsland:
             if stage == "#6":
                 ax.legend()
             
+            ax.set_title(stage)
             ax.set_xlabel(r"$t \, (s)$")
             ax.set_ylabel(r"h + z \, $(m)$")
             ax.set_xlim(6, 20)
@@ -237,4 +238,4 @@ if __name__ == "__main__":
     subprocess.run( ["python", "stage.py" ] )
     subprocess.run( ["python", "raster.py"] )
     
-    SimulationConicalIsland( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalDataConicalIsland() )
+    SimulationConicalIsland( [1e-3, 1e-4, 0], ["hw"] ).plot( ExperimentalDataConicalIsland() )
