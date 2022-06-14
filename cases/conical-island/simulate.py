@@ -58,7 +58,7 @@ class SimulationConicalIsland:
                         self.results[solver][epsilon]["gauge_data"][stage] = {}
                         
                 for epsilon in epsilons:
-                    self.run(epsilon, solver)
+                    #self.run(epsilon, solver)
                     
                     time_dataframe = pd.read_csv(self.runtime_file)
                     
@@ -122,7 +122,7 @@ class SimulationConicalIsland:
         gridspec = fig.add_gridspec(
             nrows=2,
             ncols=2,
-            hspace=1.0,
+            hspace=0.5,
             wspace=0.5
         )
         
@@ -153,15 +153,12 @@ class SimulationConicalIsland:
                 label="Experimental"
             )
             
-            if stage == "#6":
-                ax.legend()
-            
             ax.set_title(stage)
-            ax.set_xlabel(r"$t \, (s)$")
-            ax.set_ylabel(r"h + z \, $(m)$")
+            ax.set_xlabel(r"$t$" + " (s)")
+            ax.set_ylabel(r"$h + z$" + " (m)")
             ax.set_xlim(6, 20)
             axs[0,0].legend(
-                bbox_to_anchor=(1.9, 1.4),
+                bbox_to_anchor=(2.10, 1.55),
                 ncol=2
             )
             
