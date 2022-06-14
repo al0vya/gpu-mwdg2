@@ -375,11 +375,11 @@ class DischargeErrors:
             "ytick.labelsize" : "xx-large"
         }
         
-        plt.rcParams.update(params)
+        #plt.rcParams.update(params)
         
         print("Plotting maximum discharge errors for test %s..." % test_name)
 
-        fig, ax = plt.subplots( figsize=(5, 2) )
+        fig, ax = plt.subplots( figsize=(2.75, 1) )
         
         plt.scatter(self.simtime["simtime"], self.qx0_max,  label='$q^0_x$', marker='x')
         plt.scatter(self.simtime["simtime"], self.qy0_max,  label='$q^0_y$', marker='x')
@@ -395,8 +395,7 @@ class DischargeErrors:
         plt.ticklabel_format(axis='x', style="sci")
         plt.xlim(xlim)
         plt.ylim(0, 1e-10)
-        #plt.yscale("log")
-        plt.legend(ncol=3)
+        plt.legend(ncol=3, fontsize="x-small")
         plt.ylabel("Maximum error")
         plt.xlabel(r"$t \, (s)$")
 
