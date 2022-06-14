@@ -238,4 +238,4 @@ if __name__ == "__main__":
     subprocess.run( ["python", "stage.py" ] )
     subprocess.run( ["python", "raster.py"] )
     
-    SimulationConicalIsland( [1e-3, 1e-4, 0], ["hw"] ).plot( ExperimentalDataConicalIsland() )
+    SimulationConicalIsland( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalDataConicalIsland() )
