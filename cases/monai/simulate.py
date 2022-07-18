@@ -24,7 +24,7 @@ class SimulationMonai:
             
             self.solvers      = solvers
             self.epsilons     = epsilons
-            self.fields       = ["simtime", "runtime", "gauge_data"]
+            self.fields       = ["simtime", "runtime", "gauge_data", "compression"]
             self.stage_file   = os.path.join("results", "stage.wd")
             self.runtime_file = os.path.join("results", "cumulative-data.csv")
             self.results      = {}
@@ -42,11 +42,12 @@ class SimulationMonai:
                 for epsilon in epsilons:
                     self.run(epsilon, solver)
                     
-                    time_dataframe = pd.read_csv(self.runtime_file)
+                    cumulative_dataframe = pd.read_csv(self.runtime_file)
                     
-                    self.results[solver][epsilon]["simtime"]    = time_dataframe["simtime"]
-                    self.results[solver][epsilon]["runtime"]    = time_dataframe["runtime"]
-                    self.results[solver][epsilon]["gauge_data"] = pd.read_csv(
+                    self.results[solver][epsilon]["simtime"]     = cumulative_dataframe["simtime"]
+                    self.results[solver][epsilon]["runtime"]     = cumulative_dataframe["runtime"]
+                    self.results[solver][epsilon]["compression"] = cumulative_dataframe["compression"]
+                    self.results[solver][epsilon]["gauge_data"]  = pd.read_csv(
                         self.stage_file,
                         skiprows=7,
                         delimiter=" ",
@@ -85,7 +86,10 @@ class SimulationMonai:
                     "tol_Krivo   10\n" +
                     "cumulative  on\n" +
                     "wall_height 0.5"
-                ) % (epsilon, solver)
+                ) % (
+                    epsilon,
+                    solver
+                )
                 
                 fp.write(params)
             
@@ -105,7 +109,7 @@ class SimulationMonai:
         for solver in self.solvers:
             for epsilon in self.epsilons:
                 if epsilon == 0:
-                    label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
+                    label = "GPU-DG2"    if solver == "mw" else "GPU-FV1"
                 elif np.isclose(epsilon, 1e-3):
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
                 elif np.isclose(epsilon, 1e-4):
@@ -145,8 +149,12 @@ class SimulationMonai:
         
         fig, ax = plt.subplots( figsize=(2.75, 2.5) )
         
+        ax_twin = ax.twinx()
+        
         for solver in self.solvers:
             for epsilon in self.epsilons:
+                time = self.results[solver][epsilon]["simtime"]
+                
                 runtime_ratio = self.results[solver][0]["runtime"] / self.results[solver][epsilon]["runtime"]
                 
                 if epsilon == 0:
@@ -157,19 +165,29 @@ class SimulationMonai:
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
                 
                 ax.plot(
-                    self.results[solver][epsilon]["simtime"],
+                    time,
                     runtime_ratio,
                     linewidth=1    if epsilon == 0 else 2,
                     linestyle="-." if epsilon == 0 else "-",
                     color='k'      if epsilon == 0 else None,
                     label=label
                 )
+                
+                if np.isclose(epsilon, 1e-3) or np.isclose(epsilon, 1e-4):
+                    ax_twin.plot(
+                        time,
+                        self.results[solver][epsilon]["compression"],
+                        label=label,
+                        linestyle='--',
+                        linewidth=1
+                    )
             
             xlim = (
                 ( self.results[solver][0]["simtime"] ).iloc[0],
                 ( self.results[solver][0]["simtime"] ).iloc[-1]
             )
             
+            ax_twin.set_ylabel("Compression rate")
             ax.set_xlim(xlim)
             ax.set_xlabel(r"$t \, (s)$")
             ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )

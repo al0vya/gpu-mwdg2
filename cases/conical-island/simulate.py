@@ -36,7 +36,7 @@ class SimulationConicalIsland:
             
             self.epsilons = epsilons
             self.solvers  = solvers
-            self.fields   = ["simtime", "runtime", "gauge_data"]
+            self.fields   = ["simtime", "runtime", "gauge_data", "compression"]
             
             # stages 6, 9, 12 and 22 from
             # "Laboratory experiments of tsunami runup on a circular island"
@@ -60,10 +60,11 @@ class SimulationConicalIsland:
                 for epsilon in epsilons:
                     self.run(epsilon, solver)
                     
-                    time_dataframe = pd.read_csv(self.runtime_file)
+                    cumulative_dataframe = pd.read_csv(self.runtime_file)
                     
-                    self.results[solver][epsilon]["simtime"] = time_dataframe["simtime"]
-                    self.results[solver][epsilon]["runtime"] = time_dataframe["runtime"]
+                    self.results[solver][epsilon]["simtime"]     = cumulative_dataframe["simtime"]
+                    self.results[solver][epsilon]["runtime"]     = cumulative_dataframe["runtime"]
+                    self.results[solver][epsilon]["compression"] = cumulative_dataframe["compression"]
                     
                     stage_dataframe = pd.read_csv(self.stage_file, skiprows=10, delimiter=" ", header=None)
                     
@@ -186,8 +187,12 @@ class SimulationConicalIsland:
         
         fig, ax = plt.subplots( figsize=(2.75, 2.5) )
         
+        ax_twin = ax.twinx()
+        
         for solver in self.solvers:
             for epsilon in self.epsilons:
+                time = self.results[solver][epsilon]["simtime"]
+                
                 runtime_ratio = self.results[solver][0]["runtime"] / self.results[solver][epsilon]["runtime"]
                 
                 if epsilon == 0:
@@ -198,19 +203,29 @@ class SimulationConicalIsland:
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
                 
                 ax.plot(
-                    self.results[solver][epsilon]["simtime"],
+                    time,
                     runtime_ratio,
                     linewidth=1    if epsilon == 0 else 2,
                     linestyle="-." if epsilon == 0 else "-",
                     color='k'      if epsilon == 0 else None,
                     label=label
                 )
-            
+                
+                if np.isclose(epsilon, 1e-3) or np.isclose(epsilon, 1e-4):
+                    ax_twin.plot(
+                        time,
+                        self.results[solver][epsilon]["compression"],
+                        label=label,
+                        linestyle='--',
+                        linewidth=1
+                    )
+                
             xlim = (
                 ( self.results[solver][0]["simtime"] ).iloc[0],
                 ( self.results[solver][0]["simtime"] ).iloc[-1]
             )
             
+            ax_twin.set_ylabel("Compression rate")
             ax.set_xlim(xlim)
             ax.set_xlabel(r"$t \, (s)$")
             ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )

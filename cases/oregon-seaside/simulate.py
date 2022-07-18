@@ -382,13 +382,11 @@ def write_all_input_files():
     
     timeseries_name = "INLET"
     
-    '''
     # if using water surface elevation time series
     write_bdy_file(
         timeseries_name=timeseries_name,
         datum=datum
     )
-    '''
     
     write_bci_file(
         ymin=ymin,
@@ -407,7 +405,7 @@ def write_parameter_file(
 ):
     params = (
         "test_case     0\n" +
-        "max_ref_lvl   11\n" +
+        "max_ref_lvl   12\n" +
         "min_dt        1\n" +
         "respath       %s\n" +
         "epsilon       %s\n" +
