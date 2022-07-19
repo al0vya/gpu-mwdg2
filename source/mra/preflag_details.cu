@@ -7,6 +7,7 @@ bool* preflag_details
 	const PointSources&      point_sources,
 	const GaugePoints&       gauge_points,
 	const SimulationParams&  sim_params,
+	const SolverParams&      solver_params,
 	const int&               num_details,
 	const int&               max_ref_lvl,
 	const int&               test_case
@@ -74,11 +75,12 @@ bool* preflag_details
 		h_preflagged_details[starting_idx + child_idx] = true;
 	}
 
-	if (test_case == 0)
+	if (test_case == 0 && solver_params.refine_wall)
 	{
 		refine_high_wall
 		(
 			sim_params,
+			solver_params,
 			max_ref_lvl,
 			h_preflagged_details
 		);

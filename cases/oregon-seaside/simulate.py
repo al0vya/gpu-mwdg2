@@ -419,6 +419,8 @@ def write_parameter_file(
         "tol_s         1e-9\n" +
         "limitslopes   off\n" +
         "tol_Krivo     10\n" +
+        "refine_wall   on\n" +
+        "ref_thickness 16\n" +
         "g             9.80665\n" +
         "massint       0.2\n" +
         "sim_time      39.7\n" +

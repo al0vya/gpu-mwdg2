@@ -250,6 +250,7 @@ int main
 		point_sources, 
 		gauge_points, 
 		sim_params, 
+		solver_params, 
 		num_details, 
 		solver_params.L, 
 		test_case

@@ -4,15 +4,16 @@ __host__
 void refine_high_wall
 (
 	const SimulationParams& sim_params,
+	const SolverParams&     solver_params,
 	const int               max_ref_lvl,
 	      bool*             h_preflagged_details
 )
 {
-	const int refinement_thickness = 16;
+	const int refinement_thickness = solver_params.ref_thickness;
 
 	const int num_refined_cells_x = refinement_thickness * sim_params.xsz;
 	const int num_refined_cells_y = refinement_thickness * sim_params.ysz;
-	const int num_refined_cells = num_refined_cells_x + num_refined_cells_y;
+	const int num_refined_cells   = num_refined_cells_x + num_refined_cells_y;
 
 	MortonCode* refined_high_wall_codes = new MortonCode[num_refined_cells];
 

@@ -44,6 +44,14 @@ SolverParams read_solver_params
 	{
 		solver_params.tol_Krivo = read_keyword_real(input_filename, "tol_Krivo", 9);
 	}
+	
+    read_keyword_str(input_filename, "refine_wall", 11, solvertype_buf);
+    solver_params.refine_wall = ( !strncmp(solvertype_buf, "on", 2) );
+
+	if (solver_params.refine_wall)
+	{
+		solver_params.ref_thickness = read_keyword_int(input_filename, "ref_thickness", 13);
+	}
 
 	return solver_params;
 }

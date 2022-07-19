@@ -14,8 +14,10 @@ typedef struct SolverParams
 	real wall_height;
 	int  solver_type;
 	real CFL;
-	bool grading     = false;
-	bool limitslopes = false;
-	real tol_Krivo   = C(9999.0);
+	bool grading       = false;
+	bool limitslopes   = false;
+	real tol_Krivo     = C(9999.0);
+	bool refine_wall   = false;
+	int  ref_thickness = 16;
 
 } SolverParams;
