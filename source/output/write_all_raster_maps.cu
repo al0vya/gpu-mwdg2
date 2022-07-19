@@ -14,6 +14,8 @@ void write_all_raster_maps
 	const bool&              first_t_step
 )
 {
+	printf("Writing raster maps.\n");
+
 	if (solver_params.solver_type == HWFV1)
 	{
 		write_all_raster_maps_fv1
