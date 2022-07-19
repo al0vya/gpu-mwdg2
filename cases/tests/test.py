@@ -137,15 +137,15 @@ class Limits:
         ):
             print("Computing solution limits...")
             
-            h_file  = "depths-0.csv"
-            qx_file = "discharge_x-0.csv"
-            qy_file = "discharge_y-0.csv"
-            z_file  = "topo-0.csv"
+            h_file  = "results-0.wd"
+            qx_file = "results-0.qx"
+            qy_file = "results-0.qy"
+            z_file  = "results--1.dem"
             
-            h  = pd.read_csv( os.path.join("results", h_file ) )["results"]
-            qx = pd.read_csv( os.path.join("results", qx_file) )["results"]
-            qy = pd.read_csv( os.path.join("results", qy_file) )["results"]
-            z  = pd.read_csv( os.path.join("results", z_file ) )["results"]
+            h  = np.loadtxt(os.path.join("results", h_file ), skiprows=6)
+            qx = np.loadtxt(os.path.join("results", qx_file), skiprows=6)
+            qy = np.loadtxt(os.path.join("results", qy_file), skiprows=6)
+            z  = np.loadtxt(os.path.join("results", z_file ), skiprows=6)
             
             self.h_max  = np.max(h)
             self.qx_max = np.max(qx)
@@ -158,15 +158,14 @@ class Limits:
             self.z_min  = np.min(z)
             
             for interval in range(intervals + 1):
-                h_file  = "depths-"      + str(interval) + ".csv"
-                qx_file = "discharge_x-" + str(interval) + ".csv"
-                qy_file = "discharge_y-" + str(interval) + ".csv"
-                z_file  = "topo-"        + str(interval) + ".csv"
+                h_file  = "results-" + str(interval) + ".wd"
+                qx_file = "results-" + str(interval) + ".qx"
+                qy_file = "results-" + str(interval) + ".qy"
                 
-                h  = pd.read_csv( os.path.join("results", h_file ) )["results"]
-                qx = pd.read_csv( os.path.join("results", qx_file) )["results"]
-                qy = pd.read_csv( os.path.join("results", qy_file) )["results"]
-                z  = pd.read_csv( os.path.join("results", z_file ) )["results"]
+                h  = np.loadtxt(os.path.join("results", h_file ), skiprows=6)
+                qx = np.loadtxt(os.path.join("results", qx_file), skiprows=6)
+                qy = np.loadtxt(os.path.join("results", qy_file), skiprows=6)
+                z  = np.loadtxt(os.path.join("results", z_file ), skiprows=6)
                 
                 self.h_max  = np.max( [ self.h_max,  np.max(h)  ] ) 
                 self.qx_max = np.max( [ self.qx_max, np.max(qx) ] )
@@ -237,17 +236,17 @@ def plot_contours(
     
     plt.close()
 
-class RowMajorSolution:
+class RasterSolution:
     def __init__(
         self,
         interval
     ):
         self.interval = interval
         
-        h_file  = "depths-" +      str(self.interval) + ".csv"
-        qx_file = "discharge_x-" + str(self.interval) + ".csv"
-        qy_file = "discharge_y-" + str(self.interval) + ".csv"
-        z_file  = "topo-" +        str(self.interval) + ".csv"
+        h_file  = "results-" + str(self.interval) + ".wd"
+        qx_file = "results-" + str(self.interval) + ".qx"
+        qy_file = "results-" + str(self.interval) + ".qy"
+        z_file  = "results--1.dem"
         
         mesh_info = pd.read_csv( os.path.join("results", "mesh_info.csv") )
         
@@ -276,10 +275,10 @@ class RowMajorSolution:
         
         self.X, self.Y = np.meshgrid(x, y)
         
-        self.h  = pd.read_csv( os.path.join("results", h_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
-        self.qx = pd.read_csv( os.path.join("results", qx_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
-        self.qy = pd.read_csv( os.path.join("results", qy_file) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
-        self.z  = pd.read_csv( os.path.join("results", z_file ) )["results"].values.reshape(mesh_dim, mesh_dim)[0:ysz, 0:xsz]
+        self.h  = np.loadtxt(os.path.join("results", h_file ), skiprows=6)
+        self.qx = np.loadtxt(os.path.join("results", qx_file), skiprows=6)
+        self.qy = np.loadtxt(os.path.join("results", qy_file), skiprows=6)
+        self.z  = np.loadtxt(os.path.join("results", z_file ), skiprows=6)
 
     def plot_surfaces(
         self,
@@ -432,12 +431,12 @@ class Test:
         self.limiter     = limiter
 
         if self.test_case in c_prop_tests:
-            self.planar     = "off"
+            self.raster_out = "off"
             self.vtk        = "off"
             self.c_prop     = "on"
             self.cumulative = "off"
         else:
-            self.planar     = "on"
+            self.raster_out = "on"
             self.vtk        = "off"
             self.c_prop     = "off"
             self.cumulative = "on"
@@ -463,7 +462,7 @@ class Test:
             "massint     %s\n" +
             "solver      %s\n" +
             "wall_height 0\n" +
-            "planar      %s\n" +
+            "raster_out  %s\n" +
             "c_prop      %s\n" +
             "cumulative  %s\n" +
             "limitslopes %s\n" +
@@ -476,7 +475,7 @@ class Test:
                 self.saveint, 
                 self.massint, 
                 self.solver, 
-                self.planar, 
+                self.raster_out, 
                 self.c_prop, 
                 self.cumulative,
                 self.limiter,
@@ -502,7 +501,7 @@ class Test:
             limits=Limits(self.intervals)
             
             for interval in range(1, self.intervals + 1):
-                RowMajorSolution(interval).plot_soln(
+                RasterSolution(interval).plot_soln(
                     limits=limits,
                     test_number=self.test_case,
                     test_name=self.test_name,

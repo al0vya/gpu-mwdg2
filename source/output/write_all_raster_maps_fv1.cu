@@ -1,6 +1,6 @@
-#include "write_soln_planar_fv1.cuh"
+#include "write_all_raster_maps_fv1.cuh"
 
-void write_soln_planar_fv1
+void write_all_raster_maps_fv1
 (
     const char*              respath,
 	const AssembledSolution& d_assem_sol,
@@ -8,7 +8,8 @@ void write_soln_planar_fv1
 	const real&              dy_finest,
 	const SimulationParams&  sim_params,
 	const SolverParams&      solver_params,
-	const SaveInterval&      saveint
+	const SaveInterval&      saveint,
+	const bool&              first_t_step
 )
 {
     const int mesh_dim = 1 << (solver_params.L);
@@ -64,21 +65,39 @@ void write_soln_planar_fv1
 			}
 		}
 	}
-
-	char depths[64]      = {'\0'};
-	char discharge_x[64] = {'\0'};
-	char discharge_y[64] = {'\0'};
-	char topo[64]        = {'\0'}; 
 	
-	sprintf(depths,      "%s%d", "depths-",      saveint.count - 1);
-	sprintf(discharge_x, "%s%d", "discharge_x-", saveint.count - 1);
-	sprintf(discharge_y, "%s%d", "discharge_y-", saveint.count - 1);
-	sprintf(topo,        "%s%d", "topo-",        saveint.count - 1);
+	write_raster_file
+	(
+		respath,
+		"wd",
+		h,
+		sim_params,
+		saveint,
+		dx_finest,
+		mesh_dim
+	);
 
-	write_reals_to_file(depths,      respath, h,  num_finest_cells);
-	write_reals_to_file(discharge_x, respath, qx, num_finest_cells);
-	write_reals_to_file(discharge_y, respath, qy, num_finest_cells);
-	write_reals_to_file(topo,        respath, z,  num_finest_cells);
+	write_raster_file
+	(
+		respath,
+		"qx",
+		qx,
+		sim_params,
+		saveint,
+		dx_finest,
+		mesh_dim
+	);
+
+	write_raster_file
+	(
+		respath,
+		"qy",
+		qy,
+		sim_params,
+		saveint,
+		dx_finest,
+		mesh_dim
+	);
 
 	delete[] h;
 	delete[] qx;

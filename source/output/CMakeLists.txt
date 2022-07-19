@@ -3,7 +3,6 @@ target_sources(
 		PRIVATE
 		append_reals_to_file.cu
 		project_assem_sol.cu
-		write_all_raster_maps.cu
 		write_bool_to_file.cu
 		write_c_prop_data.cu
 		write_cumulative_data.cpp
@@ -12,9 +11,8 @@ target_sources(
 		write_mesh_info.cpp
 		write_raster_file.cu
 		write_reals_to_file.cu
-		write_soln_planar.cu
-		write_soln_planar_dg2.cu
-		write_soln_planar_fv1.cu
-		write_soln_row_major.cu
+		write_all_raster_maps.cu
+		write_all_raster_maps_dg2.cu
+		write_all_raster_maps_fv1.cu
 		write_soln_vtk.cu
 	)

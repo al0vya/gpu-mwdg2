@@ -52,8 +52,6 @@
 #include "write_c_prop_data.cuh"
 #include "write_mesh_info.h"
 #include "write_gauge_point_data.cuh"
-#include "write_soln_planar.cuh"
-#include "write_soln_row_major.cuh"
 #include "write_soln_vtk.cuh"
 
 // Helper functions
@@ -322,18 +320,6 @@ int main
 
 	//CHECK_CUDA_ERROR(peek());
 	//CHECK_CUDA_ERROR(sync());
-	
-	write_all_raster_maps
-	(
-		respath,
-		d_buf_assem_sol,
-		sim_params,
-		solver_params,
-		massint,
-		mesh_dim,
-		dx_finest,
-		first_t_step
-	);
 	
 	generate_all_morton_codes<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 	(
@@ -807,39 +793,8 @@ int main
 		// -------------- WRITING TO FILE -------------- //
 		// --------------------------------------------- //
 
-		if ( saveint.save(time_now) )
+		if ( first_t_step || saveint.save(time_now) )
 		{
-			project_assem_sol
-			(
-				mesh_dim,
-				d_sig_details,
-				d_scale_coeffs,
-				d_buf_assem_sol,
-				solver_params,
-				d_rev_z_order,
-				d_indices,
-				d_assem_sol,
-				d_plot_assem_sol
-			);
-			
-			if (plot_params.row_major)
-			{
-				write_soln_row_major
-				(
-					respath,
-					mesh_dim,
-					d_sig_details,
-					d_scale_coeffs,
-					d_buf_assem_sol,
-					solver_params,
-					d_rev_z_order,
-					d_indices,
-					d_assem_sol,
-					d_plot_assem_sol,
-					saveint
-				);
-			}
-
 			if (plot_params.vtk)
 			{
 				write_soln_vtk
@@ -855,9 +810,9 @@ int main
 				);
 			}
 			
-			if (plot_params.planar)
+			if (plot_params.raster_out)
 			{
-				write_soln_planar
+				write_all_raster_maps
 				(
 					respath,
 					d_assem_sol,
@@ -865,21 +820,7 @@ int main
 					dy_finest,
 					sim_params,
 					solver_params,
-					saveint
-				);
-			}
-
-			if (plot_params.raster_out)
-			{
-				write_all_raster_maps
-				(
-					respath,
-					d_plot_assem_sol,
-					sim_params,
-					solver_params,
 					saveint,
-					mesh_dim,
-					dx_finest,
 					first_t_step
 				);
 			}

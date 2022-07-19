@@ -12,11 +12,11 @@
 __host__
 void write_raster_file
 (
-	const char*                 respath,
-	const char*                 file_extension,
-	real*                       d_raster_array,
+	const char*             respath,
+	const char*             file_extension,
+	real*                   raster,
 	const SimulationParams& sim_params,
-	const SaveInterval          massint,
-	const real&                 dx_finest,
-	const int&                  mesh_dim
+	const SaveInterval      massint,
+	const real&             dx_finest,
+	const int&              mesh_dim
 );

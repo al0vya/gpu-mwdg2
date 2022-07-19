@@ -3,18 +3,18 @@
 __host__
 void write_raster_file
 (
-	const char*                 respath,
-	const char*                 file_extension,
-	real*                       d_raster_array,
+	const char*             respath,
+	const char*             file_extension,
+	real*                   raster,
 	const SimulationParams& sim_params,
-	const SaveInterval          massint,
-	const real&                 dx_finest,
-	const int&                  mesh_dim
+	const SaveInterval      saveint,
+	const real&             dx_finest,
+	const int&              mesh_dim
 )
 {
 	char fullpath[255];
 
-	sprintf(fullpath, "%s%s%d%c%s", respath, "results-", massint.count - 1, '.', file_extension);
+	sprintf(fullpath, "%s%s%d%c%s", respath, "results-", saveint.count - 1, '.', file_extension);
 
 	FILE* fp = fopen(fullpath, "w");
 
@@ -41,28 +41,17 @@ void write_raster_file
 	fprintf(fp, "cellsize     %" NUM_FRMT "\n", dx_finest);
 	fprintf(fp, "NODATA_value %d\n", NODATA_value);
 
-	real* raster_buf = new real[mesh_dim * mesh_dim];
-
-	copy
-	(
-		raster_buf,
-		d_raster_array,
-		bytes
-	);
-
 	for (int j = 0; j < nrows; j++)
 	{
 		for (int i = 0; i < ncols; i++)
 		{
 			int idx = (nrows - 1 - j) * mesh_dim + i;
 
-			fprintf(fp, "%" NUM_FIG NUM_FRMT " ", raster_buf[idx]);
+			fprintf(fp, "%" NUM_FIG NUM_FRMT " ", raster[idx]);
 		}
 
 		fprintf(fp, "\n");
 	}
 
 	fclose(fp);
-
-	delete[] raster_buf;
 }

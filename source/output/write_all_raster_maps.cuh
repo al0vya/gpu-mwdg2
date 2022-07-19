@@ -1,20 +1,16 @@
 #pragma once
 
-#include "AssembledSolution.h"
-#include "SolverParams.h"
-#include "FinestGrid.h"
+#include "write_all_raster_maps_fv1.cuh"
+#include "write_all_raster_maps_dg2.cuh"
 
-#include "write_raster_file.cuh"
-
-__host__
 void write_all_raster_maps
 (
-	const char*              respath,
+    const char*              respath,
 	const AssembledSolution& d_assem_sol,
+	const real&              dx_finest,
+	const real&              dy_finest,
 	const SimulationParams&  sim_params,
 	const SolverParams&      solver_params,
-	const SaveInterval       massint,
-	const int&               mesh_dim,
-	const real&              dx_finest,
-	const bool               first_t_step
+	const SaveInterval&      saveint,
+	const bool&              first_t_step
 );

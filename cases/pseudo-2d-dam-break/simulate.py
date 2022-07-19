@@ -124,7 +124,7 @@ class Simulation1DDambreak:
     def get_verification_depths(
         self
     ):
-        depths_frame    = pd.read_csv( os.path.join("results", "depths-1.csv") )
+        depths_raster   = np.loadtxt(os.path.join("results", "results-1.wd"), skiprows=6)
         mesh_info_frame = pd.read_csv( os.path.join("results", "mesh_info.csv") )
         
         xmin     = mesh_info_frame["xmin"].iloc[0]
@@ -137,10 +137,9 @@ class Simulation1DDambreak:
         
         x[-1] += dx
         
-        beg = int( (mesh_dim / 2) * mesh_dim )
-        end = int( (mesh_dim / 2) * mesh_dim + mesh_dim)
+        centre = int(mesh_dim / 2)
         
-        depths = depths_frame[beg:end]
+        depths = depths_raster[centre]
         
         return {"x" : x, "depths" : depths}
     
