@@ -26,6 +26,27 @@ class ExperimentalDataConicalIsland:
             self.data["time"]      [stage] = experimental_dataframe.iloc[:,0]
             self.data["gauge_data"][stage] = experimental_dataframe.iloc[:,1]
 
+def plot_froude_numbers(
+    ax
+):
+    ax_froude = ax.twinx()
+    
+    froude_numbers = np.loadtxt(
+        os.path.join("results", "max-froude-numbers.csv"),
+        delimiter=',',
+        skiprows=1
+    )[:,1:]
+    
+    t = [ t * 0.25 for t in range(froude_numbers.shape[0]) ]
+    
+    ax_froude.plot(t, froude_numbers[:,0], linestyle=':')
+    ax_froude.plot(t, froude_numbers[:,1], linestyle=':')
+    #ax_froude.plot(t, froude_numbers[:,2], linestyle=':')
+    
+    ax_froude.spines['right'].set_position(('outward', 50))
+    
+    ax_froude.set_ylabel("Froude number")
+
 class SimulationConicalIsland:
     def __init__(
             self,
@@ -189,7 +210,7 @@ class SimulationConicalIsland:
         
         fig, ax = plt.subplots( figsize=(2.75, 2.5) )
         
-        ax_twin = ax.twinx()
+        ax_twin   = ax.twinx()
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
@@ -231,10 +252,11 @@ class SimulationConicalIsland:
             ax.set_xlim(xlim)
             ax.set_xlabel(r"$t \, (s)$")
             ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
+            #plot_froude_numbers(ax)
             ax.legend()
             fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
             ax.clear()
-            
+        
         plt.close()
         
     def plot(
@@ -250,6 +272,6 @@ class SimulationConicalIsland:
         
 if __name__ == "__main__":
     subprocess.run( ["python", "stage.py" ] )
-    subprocess.run( ["python", "raster.py"] )
+    #subprocess.run( ["python", "raster.py"] )
     
     SimulationConicalIsland( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalDataConicalIsland() )

@@ -11,8 +11,6 @@ tol_q         0
 tol_s         1e-9
 g             9.80665
 massint       0.1
-saveint       0.25
-raster_out    on
 sim_time      20
 solver        mw
 limitslopes   off
