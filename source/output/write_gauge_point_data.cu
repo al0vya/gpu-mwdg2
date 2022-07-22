@@ -10,7 +10,7 @@ void write_gauge_point_data
 	AssembledSolution     d_plot_assem_sol,
 	FinestGrid            p_finest_grid,
 	GaugePoints           gauge_points,
-	const real&           time_now,
+	const real&           current_time,
 	const real&           dx_finest,
 	const real&           dy_finest,
 	const bool&           first_t_step
@@ -131,12 +131,12 @@ void write_gauge_point_data
 		}
 	}
 
-	fprintf(fp_h, "%" NUM_FRMT " ", time_now);
+	fprintf(fp_h, "%" NUM_FRMT " ", current_time);
 
 	if (plot_params.voutput_stage)
 	{
-		fprintf(fp_vx, "%" NUM_FRMT " ", time_now);
-		fprintf(fp_vy, "%" NUM_FRMT " ", time_now);
+		fprintf(fp_vx, "%" NUM_FRMT " ", current_time);
+		fprintf(fp_vy, "%" NUM_FRMT " ", current_time);
 	}
 
 	for (int point = 0; point < gauge_points.num_points; point++)

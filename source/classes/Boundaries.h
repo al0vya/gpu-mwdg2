@@ -28,13 +28,13 @@ typedef struct Boundaries
 	void update_all_inlets
 	(
 		const char* input_filename,
-		const real& time_now
+		const real& current_time
 	)
 	{
-		north.update_inlet(time_now);
-		east.update_inlet (time_now);
-		south.update_inlet(time_now);
-		west.update_inlet (time_now);
+		north.update_inlet(current_time);
+		east.update_inlet (current_time);
+		south.update_inlet(current_time);
+		west.update_inlet (current_time);
 	}
 
 } Boundaries;

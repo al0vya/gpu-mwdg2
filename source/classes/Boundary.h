@@ -470,7 +470,7 @@ typedef struct Boundary
 
 	void update_inlet
 	(
-		const real& time_now
+		const real& current_time
 	)
 	{
 		if ( (bdytype != HVAR && bdytype != QVAR) ) return;
@@ -480,7 +480,7 @@ typedef struct Boundary
 			real t_1 = time_data[row];
 			real t_2 = time_data[row + 1];
 
-			if (time_now > t_2)
+			if (current_time > t_2)
 			{
 				row++; 
 				
@@ -491,7 +491,7 @@ typedef struct Boundary
 			real inlet_1 = inlet_data[row];
 			real inlet_2 = inlet_data[row + 1];
 
-			inlet = inlet_1 + (inlet_2 - inlet_1) / (t_2 - t_1) * (time_now - t_1);
+			inlet = inlet_1 + (inlet_2 - inlet_1) / (t_2 - t_1) * (current_time - t_1);
 		}
 		else
 		{

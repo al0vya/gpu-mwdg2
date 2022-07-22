@@ -415,7 +415,7 @@ typedef struct PointSources
 
 	void update_src
 	(
-		const real& time_now,
+		const real& current_time,
 		const int&  src_type,
 		real&       h_src,
 		int&        row,
@@ -431,7 +431,7 @@ typedef struct PointSources
 			real t_1 = time_data[row];
 			real t_2 = time_data[row + 1];
 
-			if (time_now > t_2)
+			if (current_time > t_2)
 			{
 				row++; 
 				
@@ -442,7 +442,7 @@ typedef struct PointSources
 			real src_1 = src_data[row];
 			real src_2 = src_data[row + 1];
 
-			h_src = src_1 + (src_2 - src_1) / (t_2 - t_1) * (time_now - t_1);
+			h_src = src_1 + (src_2 - src_1) / (t_2 - t_1) * (current_time - t_1);
 		}
 		else
 		{
@@ -450,13 +450,13 @@ typedef struct PointSources
 		}
 	}
 
-	void update_all_srcs(const real& time_now)
+	void update_all_srcs(const real& current_time)
 	{
 		for (int i = 0; i < this->num_srcs; i++)
 		{
 			update_src
 			(
-				time_now,
+				current_time,
 				this->h_src_types[i],
 			    this->h_srcs[i],
 			    this->rows[i],

@@ -20,7 +20,7 @@ void add_ghost_cells
 	SolverParams      solver_params,
 	SimulationParams  sim_params,
 	Boundaries        boundaries,
-	real              time_now,
+	real              current_time,
 	real              dt,
 	real              dx_finest,
 	int               test_case

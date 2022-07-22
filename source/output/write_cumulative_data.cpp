@@ -3,7 +3,9 @@
 void write_cumulative_data
 (
 	const clock_t           start,
-	const real&             time_now,
+	const real&             current_time,
+	const real&             time_mra,
+	const real&             time_solver,
 	const real&             dt,
 	const int&              num_cells,
 	const SimulationParams& sim_params,
@@ -23,7 +25,7 @@ void write_cumulative_data
 		exit(-1);
 	}
 
-	if (first_t_step) fprintf(cumulative_input, "simtime,runtime,dt,compression\n");
+	if (first_t_step) fprintf(cumulative_input, "simtime,time_mra,time_solver,runtime,dt,compression\n");
 
 	const clock_t end = clock();
 
@@ -38,8 +40,12 @@ void write_cumulative_data
 		",%" NUM_FRMT
 		",%" NUM_FRMT
 		",%" NUM_FRMT
+		",%" NUM_FRMT
+		",%" NUM_FRMT
 		"\n",
-		time_now,
+		current_time,
+		time_mra,
+		time_solver,
 		run_time,
 		dt,
 		compression

@@ -206,8 +206,14 @@ int main
 	PointSources point_sources(input_filename, sim_params, dx_finest, test_case, dt);
 	
 	clock_t end             = clock();
+	clock_t mra_start       = clock();
+	clock_t mra_end         = clock();
+	clock_t solver_start    = clock();
+	clock_t solver_end      = clock();
 	real    run_time        = C(0.0);
-	real    time_now        = C(0.0);
+	real    current_time    = C(0.0);
+	real    time_mra        = C(0.0);
+	real    time_solver     = C(0.0);
 	bool    first_t_step    = true;
 	bool    for_nghbrs      = false;
 	bool    rkdg2           = false;
@@ -416,17 +422,19 @@ int main
 	// MAIN SOLVER LOOP //
 	// ================ //
 	
-	while (time_now < sim_params.time)
+	while (current_time < sim_params.time)
 	{
-		time_now += dt;
+		current_time += dt;
 
-		if ( (time_now - sim_params.time) > C(0.0) )
+		if ( (current_time - sim_params.time) > C(0.0) )
 		{
-			time_now -= dt;
-			dt = sim_params.time - time_now;
-			time_now += dt;
+			current_time -= dt;
+			dt = sim_params.time - current_time;
+			current_time += dt;
 		}
 		
+		mra_start = clock();
+
 		zero_details<<<num_blocks_details, THREADS_PER_BLOCK>>>
 		(
 			d_details,
@@ -454,7 +462,7 @@ int main
 		//CHECK_CUDA_ERROR(peek());
 		//CHECK_CUDA_ERROR(sync());
 
-		point_sources.update_all_srcs(time_now);
+		point_sources.update_all_srcs(current_time);
 
 		if (point_sources.num_srcs > 0)
 		{
@@ -596,7 +604,7 @@ int main
 		//CHECK_CUDA_ERROR(peek());
 		//CHECK_CUDA_ERROR(sync());
 		
-		boundaries.update_all_inlets(input_filename, time_now);
+		boundaries.update_all_inlets(input_filename, current_time);
 
 		add_ghost_cells<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 		(
@@ -605,7 +613,7 @@ int main
 			solver_params,
 			sim_params,
 			boundaries,
-			time_now,
+			current_time,
 			dt,
 			dx_finest,
 			test_case
@@ -613,6 +621,12 @@ int main
 
 		//CHECK_CUDA_ERROR(peek());
 		//CHECK_CUDA_ERROR(sync());
+
+		mra_end = clock();
+
+		time_mra += (real)(mra_end - mra_start) / CLOCKS_PER_SEC;
+
+		solver_start = clock();
 
 		if ( sim_params.manning > C(0.0) )
 		{
@@ -734,7 +748,7 @@ int main
 				solver_params,
 				sim_params,
 				boundaries,
-				time_now,
+				current_time,
 				dt,
 				dx_finest,
 				test_case
@@ -786,6 +800,10 @@ int main
 
 		dt = get_dt_CFL(d_dt_CFL, d_assem_sol.length);
 
+		solver_end = clock();
+
+		time_solver += (real)(solver_end - solver_start) / CLOCKS_PER_SEC;
+
 		//CHECK_CUDA_ERROR(peek());
 		//CHECK_CUDA_ERROR(sync());
 
@@ -793,7 +811,7 @@ int main
 		// -------------- WRITING TO FILE -------------- //
 		// --------------------------------------------- //
 
-		if ( first_t_step || saveint.save(time_now) )
+		if ( first_t_step || saveint.save(current_time) )
 		{
 			if (plot_params.vtk)
 			{
@@ -834,7 +852,9 @@ int main
 					solver_params,
 					sim_params,
 					d_assem_sol,
-					time_now,
+					current_time,
+					time_mra,
+					time_solver,
 					dt,
 					d_assem_sol.length,
 					first_t_step
@@ -842,14 +862,16 @@ int main
 			}
 		}
 
-		if ( massint.save(time_now) )
+		if ( massint.save(current_time) )
 		{
 			if (plot_params.cumulative)
 			{
 			    write_cumulative_data
 			    (
 			        start,
-			        time_now,
+			        current_time,
+			        time_mra,
+			        time_solver,
 					dt,
 					d_assem_sol.length,
 					sim_params,
@@ -880,7 +902,7 @@ int main
 				d_plot_assem_sol,
 				p_finest_grid,
 				gauge_points,
-				time_now,
+				current_time,
 				dx_finest,
 				dy_finest,
 				first_t_step
@@ -898,7 +920,7 @@ int main
 			printf
 			(
 				"Elements: %d, compression: %f%%, time step: %.15f, steps: %d, sim time: %f\n",
-				d_assem_sol.length, compression, dt, steps, time_now
+				d_assem_sol.length, compression, dt, steps, current_time
 			);
 		}
 		
@@ -912,7 +934,7 @@ int main
 	printf
 	(
 		"Elements: %d, compression: %f%%, time step: %.15f, steps: %d, sim time: %f\n",
-		d_assem_sol.length, compression, dt, steps, time_now
+		d_assem_sol.length, compression, dt, steps, current_time
 	);
 	
 	run_time = (real)(end - start) / CLOCKS_PER_SEC;

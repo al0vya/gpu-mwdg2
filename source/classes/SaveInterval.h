@@ -7,9 +7,9 @@ typedef struct SaveInterval
 	const real interval;
 	int        count;
 
-	bool save(real time_now)
+	bool save(real current_time)
 	{
-		if (time_now >= interval * count)
+		if (current_time >= interval * count)
 		{
 			count++;
 			return true;

@@ -25,7 +25,7 @@ void write_gauge_point_data
 	AssembledSolution     d_plot_assem_sol,
 	FinestGrid            p_finest_grid,
 	GaugePoints           gauge_points,
-	const real&           time_now,
+	const real&           current_time,
 	const real&           dx_finest,
 	const real&           dy_finest,
 	const bool&           first_t_step
