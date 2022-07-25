@@ -10,7 +10,7 @@ class SimulationMalpasset:
             epsilons
         ):
             self.configs      = (*epsilons, "lisflood")
-            self.fields       = ["simtime", "runtime", "arrival_time"]
+            self.fields       = ["simtime", "runtime_total", "arrival_time"]
             self.stages       = [ _ for _ in range(1,10) ]
             self.stage_file   = os.path.join("results", "stage.wd")
             self.runtime_file = os.path.join("results", "cumulative-data.csv")
@@ -30,7 +30,7 @@ class SimulationMalpasset:
                 time_dataframe = pd.read_csv(self.runtime_file)
                 
                 self.results[epsilon]["simtime"] = time_dataframe["simtime"]
-                self.results[epsilon]["runtime"] = time_dataframe["runtime"]
+                self.results[epsilon]["runtime_total"] = time_dataframe["runtime_total"]
                 
                 with open(self.stage_file, 'r') as fp:
                     for col, stage in enumerate(self.stages):
@@ -120,7 +120,7 @@ class SimulationMalpasset:
             for config in self.configs:
                 if config == "lisflood": continue
                 
-                runtime_ratio = self.results[1e-2]["runtime"] / self.results[config]["runtime"]
+                runtime_ratio = self.results[1e-2]["runtime_total"] / self.results[config]["runtime_total"]
                 
                 ax.plot(
                     self.results[config]["simtime"],

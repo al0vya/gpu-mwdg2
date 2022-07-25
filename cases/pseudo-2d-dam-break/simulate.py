@@ -71,7 +71,7 @@ class Simulation1DDambreak:
         self.solvers      = solvers
         self.results      = {}
         self.epsilons     = [0, 1e-4, 1e-3, 1e-2]
-        self.fields       = ["simtime", "runtime"]
+        self.fields       = ["simtime", "runtime_total"]
         self.max_ref_lvls = [8, 9, 10, 11]
         
         for solver in self.solvers:
@@ -119,7 +119,7 @@ class Simulation1DDambreak:
                     results_dataframe = pd.read_csv( os.path.join("results", "cumulative-data.csv") )
                     
                     self.results[solver][epsilon][L]["simtime"] = results_dataframe["simtime"]
-                    self.results[solver][epsilon][L]["runtime"] = results_dataframe["runtime"]
+                    self.results[solver][epsilon][L]["runtime_total"] = results_dataframe["runtime_total"]
                     
     def get_verification_depths(
         self
@@ -202,19 +202,19 @@ class Simulation1DDambreak:
                 for L in self.max_ref_lvls:
                     interp_adaptive = scipy.interpolate.interp1d(
                         self.results[solver][epsilon][L]["simtime"],
-                        self.results[solver][epsilon][L]["runtime"],
+                        self.results[solver][epsilon][L]["runtime_total"],
                         fill_value="extrapolate"
                     )
                     
                     interpolated_adaptive_runtime = interp_adaptive( self.results[solver][0][L]["simtime"] )
                     
-                    all_speedups += (self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime).to_list()
+                    all_speedups += (self.results[solver][0][L]["runtime_total"] / interpolated_adaptive_runtime).to_list()
                 
             for ax, epsilon in zip( axs, self.epsilons[1:] ):
                 for L in self.max_ref_lvls:
                     interp_adaptive = scipy.interpolate.interp1d(
                         self.results[solver][epsilon][L]["simtime"],
-                        self.results[solver][epsilon][L]["runtime"],
+                        self.results[solver][epsilon][L]["runtime_total"],
                         fill_value="extrapolate"
                     )
                     
@@ -222,7 +222,7 @@ class Simulation1DDambreak:
                     
                     ax.plot(
                         self.results[solver][0][L]["simtime"],
-                        self.results[solver][0][L]["runtime"] / interpolated_adaptive_runtime,
+                        self.results[solver][0][L]["runtime_total"] / interpolated_adaptive_runtime,
                         linewidth=2,
                         label=r"$L = %s$" % L
                     )

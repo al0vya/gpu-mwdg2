@@ -21,7 +21,7 @@ class Simulation2DDambreak:
         self.solvers      = solvers
         self.results      = {}
         self.epsilons     = [0, 1e-4, 1e-3, 1e-2]
-        self.fields       = ["simtime", "runtime"]
+        self.fields       = ["simtime", "runtime_total"]
         self.max_ref_lvls = [8, 9, 10, 11]
         
         for solver in self.solvers:
@@ -57,7 +57,7 @@ class Simulation2DDambreak:
                     
                     results_dataframe = pd.read_csv( os.path.join("results", "cumulative-data.csv") )
                     
-                    self.results[solver][epsilon][L]["runtime"] = results_dataframe["runtime"].iloc[-1]
+                    self.results[solver][epsilon][L]["runtime_total"] = results_dataframe["runtime_total"].iloc[-1]
                     
     def get_verification_depths(
         self
@@ -131,7 +131,7 @@ class Simulation2DDambreak:
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
                 
                 speedups = [
-                    self.results[solver][0][L]["runtime"] / self.results[solver][epsilon][L]["runtime"]
+                    self.results[solver][0][L]["runtime_total"] / self.results[solver][epsilon][L]["runtime_total"]
                     for L in self.max_ref_lvls
                 ]
                 

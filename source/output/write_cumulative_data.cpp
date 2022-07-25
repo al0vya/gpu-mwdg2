@@ -25,11 +25,9 @@ void write_cumulative_data
 		exit(-1);
 	}
 
-	if (first_t_step) fprintf(cumulative_input, "simtime,time_mra,time_solver,runtime,dt,compression\n");
+	if (first_t_step) fprintf(cumulative_input, "simtime,runtime_mra,runtime_solver,runtime_total,dt,compression\n");
 
 	const clock_t end = clock();
-
-	const real run_time = (real)(end - start) / CLOCKS_PER_SEC;
 
 	const real compression = C(100.0) - C(100.0) * num_cells / (sim_params.xsz * sim_params.ysz);
 
@@ -46,7 +44,7 @@ void write_cumulative_data
 		current_time,
 		time_mra,
 		time_solver,
-		run_time,
+		time_mra + time_solver,
 		dt,
 		compression
 	);

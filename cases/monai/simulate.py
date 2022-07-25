@@ -24,7 +24,14 @@ class SimulationMonai:
             
             self.solvers      = solvers
             self.epsilons     = epsilons
-            self.fields       = ["simtime", "runtime", "gauge_data", "compression"]
+            self.fields       = [
+                "simtime",
+                "runtime_mra",
+                "runtime_solver",
+                "runtime_total",
+                "compression",
+                "gauge_data"
+            ]
             self.stage_file   = os.path.join("results", "stage.wd")
             self.runtime_file = os.path.join("results", "cumulative-data.csv")
             self.results      = {}
@@ -44,10 +51,12 @@ class SimulationMonai:
                     
                     cumulative_dataframe = pd.read_csv(self.runtime_file)
                     
-                    self.results[solver][epsilon]["simtime"]     = cumulative_dataframe["simtime"]
-                    self.results[solver][epsilon]["runtime"]     = cumulative_dataframe["runtime"]
-                    self.results[solver][epsilon]["compression"] = cumulative_dataframe["compression"]
-                    self.results[solver][epsilon]["gauge_data"]  = pd.read_csv(
+                    self.results[solver][epsilon]["simtime"]        = cumulative_dataframe["simtime"]
+                    self.results[solver][epsilon]["runtime_mra"]    = cumulative_dataframe["runtime_mra"]
+                    self.results[solver][epsilon]["runtime_solver"] = cumulative_dataframe["runtime_solver"]
+                    self.results[solver][epsilon]["runtime_total"]  = cumulative_dataframe["runtime_total"]
+                    self.results[solver][epsilon]["compression"]    = cumulative_dataframe["compression"]
+                    self.results[solver][epsilon]["gauge_data"]     = pd.read_csv(
                         self.stage_file,
                         skiprows=7,
                         delimiter=" ",
@@ -79,7 +88,7 @@ class SimulationMonai:
                     "tol_q         0\n" +
                     "tol_s         1e-9\n" +
                     "g             9.80665\n" +
-                    "massint       0.1\n" +
+                    "massint       0.2\n" +
                     "sim_time      22.5\n" +
                     "solver        %s\n" +
                     "limitslopes   off\n" +
@@ -99,6 +108,19 @@ class SimulationMonai:
             
             subprocess.run( [os.path.join("..", executable), input_file] )
             
+    def compute_instant_runtime_ratio(
+        self,
+        runtime_uniform,
+        runtime_adapt
+    ):
+        instant_runtime_ratio = (
+            ( runtime_uniform[1:] - runtime_uniform[:-1] )
+            /
+            ( runtime_adapt[1:] - runtime_adapt[:-1] )
+        )
+        
+        return np.append( instant_runtime_ratio, instant_runtime_ratio[-1] )
+       
     def plot_exp_data(
         self,
         my_rc_params,
@@ -149,51 +171,98 @@ class SimulationMonai:
     ):
         plt.rcParams.update(my_rc_params)
         
-        fig, ax = plt.subplots( figsize=(2.75, 2.5) )
+        fig, axs = plt.subplots(
+            nrows=3,
+            ncols=1,
+            figsize=(6, 5),
+            sharex=True
+        )
         
-        ax_twin = ax.twinx()
+        ax_topo = axs[0].twinx()
+        ax_flow = axs[1].twinx()
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
-                time = self.results[solver][epsilon]["simtime"]
-                
-                runtime_ratio = self.results[solver][0]["runtime"] / self.results[solver][epsilon]["runtime"]
-                
                 if epsilon == 0:
-                    label = "break-even"
-                elif np.isclose(epsilon, 1e-3):
+                    continue
+                
+                time = self.results[solver][epsilon]["simtime"].values
+                
+                cumu_runtime_ratio = self.results[solver][0]["runtime_total"] / self.results[solver][epsilon]["runtime_total"]
+                
+                instant_runtime_ratio = self.compute_instant_runtime_ratio(
+                    runtime_uniform=self.results[solver][0]["runtime_total"].values,
+                    runtime_adapt=self.results[solver][epsilon]["runtime_total"].values
+                )
+                
+                if   np.isclose(epsilon, 1e-3):
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
                 elif np.isclose(epsilon, 1e-4):
                     label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
                 
-                ax.plot(
+                axs[0].plot(
                     time,
-                    runtime_ratio,
-                    linewidth=1    if epsilon == 0 else 2,
-                    linestyle="-." if epsilon == 0 else "-",
-                    color='k'      if epsilon == 0 else None,
+                    cumu_runtime_ratio,
+                    linewidth=2,
                     label=label
                 )
                 
+                axs[0].set_ylabel("Cumulative")
+                
+                axs[1].plot(
+                    time,
+                    instant_runtime_ratio,
+                    linewidth=2
+                )
+                
+                axs[1].set_ylabel("Instantaneous")
+                
                 if np.isclose(epsilon, 1e-3) or np.isclose(epsilon, 1e-4):
-                    ax_twin.plot(
-                        time,
-                        self.results[solver][epsilon]["compression"],
-                        label=label,
+                    # plotting reductions in cell count
+                    init_compression = self.results[solver][epsilon]["compression"].iloc[0]
+                    
+                    ax_topo.plot(
+                        [ time[0], time[-1] ],
+                        [init_compression, init_compression],
                         linestyle='--',
                         linewidth=1
                     )
+                    
+                    ax_topo.set_ylabel("Cell reduction (%)")
+                    
+                    ax_flow.plot(
+                        time,
+                        init_compression / self.results[solver][epsilon]["compression"],
+                        linestyle='--',
+                        linewidth=1
+                    )
+                    
+                    ax_flow.set_ylabel("Relative increase")
+                    
+                    solver_runtime_ratio = (
+                        self.results[solver][epsilon]["runtime_solver"]
+                        /
+                        self.results[solver][epsilon]["runtime_total"]
+                    )
+                    
+                    axs[2].plot(
+                        time[1:],
+                        solver_runtime_ratio[1:]
+                    )
+                    
+                    axs[2].set_ylabel("Solver")
             
             xlim = (
-                ( self.results[solver][0]["simtime"] ).iloc[0],
-                ( self.results[solver][0]["simtime"] ).iloc[-1]
+                0,
+                self.results[solver][0]["simtime"].iloc[-1]
             )
             
-            ax_twin.set_ylabel("Compression rate (%)")
-            ax.set_xlim(xlim)
+            for ax in axs:
+                ax.set_xlim(xlim)
+                
             ax.set_xlabel(r"$t \, (s)$")
-            ax.set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mw" else "GPU-HWFV1/GPU-FV1") )
-            ax.legend()
+            axs[0].legend(bbox_to_anchor=(0.95,1.40), ncol=3)
+            fig.tight_layout()
             fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
             ax.clear()
                 
@@ -211,8 +280,8 @@ class SimulationMonai:
         self.plot_speedups(my_rc_params)
         
 if __name__ == "__main__":
-    subprocess.run( ["python", "stage.py" ] )
-    subprocess.run( ["python", "inflow.py"] )
-    subprocess.run( ["python", "raster.py"] )
+    #subprocess.run( ["python", "stage.py" ] )
+    #subprocess.run( ["python", "inflow.py"] )
+    #subprocess.run( ["python", "raster.py"] )
     
     SimulationMonai( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalDataMonai() )

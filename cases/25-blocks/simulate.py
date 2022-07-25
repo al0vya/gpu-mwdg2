@@ -63,7 +63,7 @@ class Simulation25Blocks:
             self.epsilons     = epsilons
             self.solvers      = solvers
             self.flow_vars    = ("depth", "velocity")
-            self.time_vars    = ("simtime", "runtime")
+            self.time_vars    = ("simtime", "runtime_total")
             self.i_range      = [ _ for _ in range(col_start,col_end) ]
             self.intervals    = [4, 5, 6, 10]
             self.results      = {}
@@ -99,7 +99,7 @@ class Simulation25Blocks:
                     time_dataframe = pd.read_csv(self.runtime_file)
                     
                     self.results[solver][epsilon]["simtime"] = time_dataframe["simtime"]
-                    self.results[solver][epsilon]["runtime"] = time_dataframe["runtime"]
+                    self.results[solver][epsilon]["runtime_total"] = time_dataframe["runtime_total"]
                     
                     for interval in self.intervals:
                         h_raster_file  = os.path.join("results", "results-" + str(interval) + ".wd")
@@ -255,7 +255,7 @@ class Simulation25Blocks:
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
-                runtime_ratio = self.results[solver][ self.epsilons[0] ]["runtime"] / self.results[solver][epsilon]["runtime"]
+                runtime_ratio = self.results[solver][ self.epsilons[0] ]["runtime_total"] / self.results[solver][epsilon]["runtime_total"]
                 
                 if epsilon == 0:
                     label = "GPU-DG2" if solver == "mw" else "GPU-FV1"
