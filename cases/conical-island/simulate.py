@@ -228,17 +228,19 @@ class SimulationConicalIsland:
         self,
         my_rc_params
     ):
-        plt.rcParams.update(my_rc_params)
+        #plt.rcParams.update(my_rc_params)
         
         fig, axs = plt.subplots(
-            nrows=3,
+            nrows=4,
             ncols=1,
-            figsize=(6, 5),
+            figsize=(6, 6),
             sharex=True
         )
-        
-        ax_topo = axs[0].twinx()
-        ax_flow = axs[1].twinx()
+            
+        ax_cumu_speedup = axs[0]
+        ax_inst_speedup = axs[1]
+        ax_compression  = axs[2]
+        ax_solver       = axs[3]
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
@@ -254,49 +256,38 @@ class SimulationConicalIsland:
                     runtime_adapt=self.results[solver][epsilon]["runtime_total"].values
                 )
                 
-                if   np.isclose(epsilon, 1e-3):
-                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
-                elif np.isclose(epsilon, 1e-4):
-                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
+                init_compression = self.results[solver][epsilon]["compression"].iloc[0]
                 
-                axs[0].plot(
+                if   np.isclose(epsilon, 1e-3):
+                    label = "$\epsilon = 10^{-3}$, initial reduction in cell count: %0.4s%%" % init_compression
+                elif np.isclose(epsilon, 1e-4):
+                    label = "$\epsilon = 10^{-4}$, initial reduction in cell count: %0.4s%%" % init_compression
+                
+                ax_cumu_speedup.plot(
                     time,
                     cumu_runtime_ratio,
                     linewidth=2,
                     label=label
                 )
                 
-                axs[0].set_ylabel("Cumulative")
+                ax_cumu_speedup.set_ylabel("Cumulative\n speedup")
                 
-                axs[1].plot(
+                ax_inst_speedup.plot(
                     time,
                     instant_runtime_ratio,
                     linewidth=2
                 )
                 
-                axs[1].set_ylabel("Instantaneous")
+                ax_inst_speedup.set_ylabel("Instantaneous\n speedup")
                 
                 if np.isclose(epsilon, 1e-3) or np.isclose(epsilon, 1e-4):
-                    # plotting reductions in cell count
-                    init_compression = self.results[solver][epsilon]["compression"].iloc[0]
-                    
-                    ax_topo.plot(
-                        [ time[0], time[-1] ],
-                        [init_compression, init_compression],
-                        linestyle='--',
-                        linewidth=1
-                    )
-                    
-                    ax_topo.set_ylabel("Cell reduction (%)")
-                    
-                    ax_flow.plot(
+                    ax_compression.plot(
                         time,
                         init_compression / self.results[solver][epsilon]["compression"],
-                        linestyle='--',
-                        linewidth=1
+                        linewidth=2
                     )
                     
-                    ax_flow.set_ylabel("Relative increase")
+                    ax_compression.set_ylabel("Relative\n reduction")
                     
                     solver_runtime_ratio = (
                         self.results[solver][epsilon]["runtime_solver"]
@@ -304,12 +295,13 @@ class SimulationConicalIsland:
                         self.results[solver][epsilon]["runtime_total"]
                     )
                     
-                    axs[2].plot(
+                    ax_solver.plot(
                         time[1:],
-                        solver_runtime_ratio[1:]
+                        solver_runtime_ratio[1:],
+                        linewidth=2
                     )
                     
-                    axs[2].set_ylabel("Solver")
+                    ax_solver.set_ylabel("Solver\n runtime ratio")
             
             xlim = (
                 0,
@@ -319,11 +311,13 @@ class SimulationConicalIsland:
             for ax in axs:
                 ax.set_xlim(xlim)
                 
-            ax.set_xlabel(r"$t \, (s)$")
-            axs[0].legend(bbox_to_anchor=(0.95,1.40), ncol=3)
+            ax_solver.set_xlabel("$t$ (s)")
+            ax_cumu_speedup.legend(bbox_to_anchor=(0.85,1.80), ncol=1)
             fig.tight_layout()
             fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
             ax.clear()
+                
+        plt.close()
         
     def plot(
         self,
@@ -333,8 +327,8 @@ class SimulationConicalIsland:
             "legend.fontsize" : "small"
         }
         
-        self.plot_exp_data(my_rc_params, exp_data)
         self.plot_speedups(my_rc_params)
+        self.plot_exp_data(my_rc_params, exp_data)
         
 if __name__ == "__main__":
     subprocess.run( ["python", "stage.py" ] )
