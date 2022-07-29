@@ -172,88 +172,80 @@ class SimulationMonai:
         #plt.rcParams.update(my_rc_params)
         
         fig, axs = plt.subplots(
-            nrows=4,
+            nrows=3,
             ncols=1,
-            figsize=(6, 6),
+            figsize=(5, 4.5),
             sharex=True
         )
             
-        ax_cumu_speedup = axs[0]
-        ax_inst_speedup = axs[1]
-        ax_compression  = axs[2]
-        ax_solver       = axs[3]
+        ax_rel_speedup    = axs[0]
+        ax_reduction_norm = axs[1]
+        ax_frac_update    = axs[2]
+        
+        cell_count_finest_grid = 392 * 243
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
                 if epsilon == 0:
                     continue
                 
-                time = self.results[solver][epsilon]["simtime"].values
+                time = self.results[solver][epsilon]["simtime"]
                 
-                cumu_runtime_ratio = self.results[solver][0]["runtime_total"] / self.results[solver][epsilon]["runtime_total"]
+                rel_speedup = self.results[solver][0]["runtime_total"] / self.results[solver][epsilon]["runtime_total"]
                 
-                instant_runtime_ratio = self.compute_instant_runtime_ratio(
-                    runtime_uniform=self.results[solver][0]["runtime_total"].values,
-                    runtime_adapt=self.results[solver][epsilon]["runtime_total"].values
-                )
+                compression = self.results[solver][epsilon]["compression"]
                 
-                init_compression = self.results[solver][epsilon]["compression"].iloc[0]
+                init_reduction        = compression[0]
+                init_cell_count_adapt = (1 - init_reduction) * cell_count_finest_grid
+                
+                cell_count_norm = (1 - compression) * cell_count_finest_grid / init_cell_count_adapt
                 
                 if   np.isclose(epsilon, 1e-3):
-                    label = "$\epsilon = 10^{-3}$, initial reduction in cell count: %0.4s%%" % init_compression
+                    label = "$\epsilon = 10^{-3}$, $R_0 =$ %0.2e" % init_cell_count_adapt
                 elif np.isclose(epsilon, 1e-4):
-                    label = "$\epsilon = 10^{-4}$, initial reduction in cell count: %0.4s%%" % init_compression
+                    label = "$\epsilon = 10^{-4}$, $R_0 =$ %0.2e" % init_cell_count_adapt
                 
-                ax_cumu_speedup.plot(
+                ax_rel_speedup.plot(
                     time,
-                    cumu_runtime_ratio,
+                    rel_speedup,
                     linewidth=2,
                     label=label
                 )
                 
-                ax_cumu_speedup.set_ylabel("Cumulative\n speedup")
+                ax_rel_speedup.set_ylabel("$S_{rel}$")
                 
-                ax_inst_speedup.plot(
+                ax_reduction_norm.plot(
                     time,
-                    instant_runtime_ratio,
+                    cell_count_norm,
                     linewidth=2
                 )
                 
-                ax_inst_speedup.set_ylabel("Instantaneous\n speedup")
+                ax_reduction_norm.set_ylabel("$R_{norm}$")
                 
-                if np.isclose(epsilon, 1e-3) or np.isclose(epsilon, 1e-4):
-                    ax_compression.plot(
-                        time,
-                        init_compression / self.results[solver][epsilon]["compression"],
-                        linewidth=2
-                    )
-                    
-                    ax_compression.set_ylabel("Relative\n reduction")
-                    
-                    solver_runtime_ratio = (
-                        self.results[solver][epsilon]["runtime_solver"]
-                        /
-                        self.results[solver][epsilon]["runtime_total"]
-                    )
-                    
-                    ax_solver.plot(
-                        time[1:],
-                        solver_runtime_ratio[1:],
-                        linewidth=2
-                    )
-                    
-                    ax_solver.set_ylabel("Solver\n runtime ratio")
+                frac_update = (
+                    self.results[solver][epsilon]["runtime_solver"]
+                    /
+                    self.results[solver][epsilon]["runtime_total"]
+                )
+                
+                ax_frac_update.plot(
+                    time[1:],
+                    frac_update[1:],
+                    linewidth=2
+                )
+                
+                ax_frac_update.set_ylabel("$F_{update}$")
             
             xlim = (
                 0,
-                self.results[solver][0]["simtime"].iloc[-1]
+                round(self.results[solver][0]["simtime"].iloc[-1], 1)
             )
             
             for ax in axs:
                 ax.set_xlim(xlim)
                 
-            ax_solver.set_xlabel("$t$ (s)")
-            ax_cumu_speedup.legend(bbox_to_anchor=(0.85,1.80), ncol=1)
+            ax_frac_update.set_xlabel("$t$ (s)")
+            ax_rel_speedup.legend(bbox_to_anchor=(0.78, 1.9), ncol=1)
             fig.tight_layout()
             fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
             ax.clear()
@@ -272,8 +264,8 @@ class SimulationMonai:
         self.plot_exp_data(my_rc_params, exp_data)
         
 if __name__ == "__main__":
-    #subprocess.run( ["python", "stage.py" ] )
-    #subprocess.run( ["python", "inflow.py"] )
-    #subprocess.run( ["python", "raster.py"] )
+    subprocess.run( ["python", "stage.py" ] )
+    subprocess.run( ["python", "inflow.py"] )
+    subprocess.run( ["python", "raster.py"] )
     
     SimulationMonai( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalDataMonai() )

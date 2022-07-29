@@ -29,7 +29,7 @@ void write_cumulative_data
 
 	const clock_t end = clock();
 
-	const real compression = C(100.0) - C(100.0) * num_cells / (sim_params.xsz * sim_params.ysz);
+	const real compression = ( C(100.0) - C(100.0) * num_cells / (sim_params.xsz * sim_params.ysz) ) / C(100.0);
 
 	fprintf
 	(
