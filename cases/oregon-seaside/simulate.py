@@ -423,8 +423,10 @@ def write_parameter_file(
         "ref_thickness 16\n" +
         "g             9.80665\n" +
         "massint       0.2\n" +
+        "saveint       39.7\n" +
         "sim_time      39.7\n" +
         "solver        %s\n" +
+        "vtk           on\n" +
         "cumulative    on\n" +
         "voutput_stage on\n" +
         "wall_height   2.5"

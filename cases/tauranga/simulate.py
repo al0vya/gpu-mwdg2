@@ -438,8 +438,10 @@ def write_parameter_file(
         "tol_Krivo     10\n" +
         "g             9.80665\n" +
         "massint       500\n" +
+        "saveint       144000\n" +
         "sim_time      144000\n" +
         "solver        %s\n" +
+        "vtk           on\n" +
         "cumulative    on\n" +
         "voutput_stage on\n" +
         "wall_height   420"

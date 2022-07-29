@@ -86,7 +86,7 @@ class SimulationConicalIsland:
                         self.results[solver][epsilon]["gauge_data"][stage] = {}
                         
                 for epsilon in epsilons:
-                    #self.run(epsilon, solver)
+                    self.run(epsilon, solver)
                     
                     cumulative_dataframe = pd.read_csv(self.runtime_file)
                     
