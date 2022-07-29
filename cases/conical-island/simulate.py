@@ -228,7 +228,7 @@ class SimulationConicalIsland:
         self,
         my_rc_params
     ):
-        #plt.rcParams.update(my_rc_params)
+        #plt.rcParams.DG2(my_rc_params)
         
         fig, axs = plt.subplots(
             nrows=3,
@@ -239,7 +239,7 @@ class SimulationConicalIsland:
             
         ax_rel_speedup    = axs[0]
         ax_reduction_norm = axs[1]
-        ax_frac_update    = axs[2]
+        ax_frac_DG2    = axs[2]
         
         cell_count_finest_grid = 392 * 243
         
@@ -281,19 +281,19 @@ class SimulationConicalIsland:
                 
                 ax_reduction_norm.set_ylabel("$R_{norm}$")
                 
-                frac_update = (
+                frac_DG2 = (
                     self.results[solver][epsilon]["runtime_solver"]
                     /
                     self.results[solver][epsilon]["runtime_total"]
                 )
                 
-                ax_frac_update.plot(
+                ax_frac_DG2.plot(
                     time[1:],
-                    frac_update[1:],
+                    frac_DG2[1:],
                     linewidth=2
                 )
                 
-                ax_frac_update.set_ylabel("$F_{update}$")
+                ax_frac_DG2.set_ylabel("$F_{DG2}$")
             
             xlim = (
                 0,
@@ -303,7 +303,7 @@ class SimulationConicalIsland:
             for ax in axs:
                 ax.set_xlim(xlim)
                 
-            ax_frac_update.set_xlabel("$t$ (s)")
+            ax_frac_DG2.set_xlabel("$t$ (s)")
             ax_rel_speedup.legend(bbox_to_anchor=(0.78, 1.9), ncol=1)
             fig.tight_layout()
             fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")

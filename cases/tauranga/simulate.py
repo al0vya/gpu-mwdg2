@@ -270,7 +270,7 @@ def plot_bathymetry(
         ax.set_xlabel(r"$x \, (km)$")
         ax.set_ylabel(r"$y \, (km)$")
         
-        fig.savefig(fname=(os.path.join("results", filename)), bbox_inches="tight")
+        fig.savefig(fname=( os.path.join("results", filename + ".svg") ), bbox_inches="tight")
         
         plt.close()
     

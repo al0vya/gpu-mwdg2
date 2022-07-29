@@ -201,7 +201,7 @@ def check_raster_file(
     
     fig.tight_layout()
     
-    fig.savefig(os.path.join("results", filename + ".png"), bbox_inches="tight")
+    fig.savefig(os.path.join("results", filename + ".svg"), bbox_inches="tight")
     
     plt.close()
 
