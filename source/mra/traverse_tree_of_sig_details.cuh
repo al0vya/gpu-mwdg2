@@ -22,5 +22,5 @@ void traverse_tree_of_sig_details
 	ScaleCoefficients d_scale_coeffs,
 	AssembledSolution d_buf_assem_sol,
 	int               num_threads,
-	SolverParams  solver_params
+	SolverParams      solver_params
 );

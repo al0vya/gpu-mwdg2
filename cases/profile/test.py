@@ -11,26 +11,31 @@ def write_par_file(
 ):
     with open(input_file, 'w') as fp:
         params = (
-            "test_case   0\n" +
-            "max_ref_lvl 9\n" +
-            "min_dt      1\n" +
-            "respath     results\n" +
-            "epsilon     %s\n" +
-            "fpfric      0.01\n" +
-            "rasterroot  monai\n" +
-            "bcifile     monai.bci\n" +
-            "bdyfile     monai.bdy\n" +
-            "stagefile   monai.stage\n" +
-            "tol_h       1e-3\n" +
-            "tol_q       0\n" +
-            "tol_s       1e-9\n" +
-            "g           9.80665\n" +
-            "massint     0.1\n" +
-            "sim_time    22.5\n" +
-            "solver      %s\n" +
-            "cumulative  on\n" +
-            "wall_height 0.5"
-        ) % (epsilon, solver)
+            "test_case     0\n" +
+            "max_ref_lvl   9\n" +
+            "min_dt        1\n" +
+            "respath       results\n" +
+            "epsilon       %s\n" +
+            "fpfric        0.01\n" +
+            "rasterroot    monai\n" +
+            "bcifile       monai.bci\n" +
+            "bdyfile       monai.bdy\n" +
+            "stagefile     monai.stage\n" +
+            "tol_h         1e-3\n" +
+            "tol_q         0\n" +
+            "tol_s         1e-9\n" +
+            "g             9.80665\n" +
+            "massint       0.1\n" +
+            "sim_time      22.5\n" +
+            "solver        %s\n" +
+            "cumulative    on\n" +
+            "refine_wall   on\n" +
+            "ref_thickness 16\n" +
+            "wall_height   0.5"
+        ) % (
+            epsilon,
+            solver
+        )
         
         fp.write(params)
 
@@ -67,6 +72,8 @@ def plot_depths(
         xlabel=r"$t \, (s)$",
         ylabel=r"$h + z \, (m)$"
     )
+    
+    ax.legend()
     
     fig.savefig(fname=os.path.join("results", filename), bbox_inches="tight")
     
