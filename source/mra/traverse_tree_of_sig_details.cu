@@ -12,14 +12,12 @@ void traverse_tree_of_sig_details
 {	
 	__shared__ union
 	{
-		real           coeffs [4 * THREADS_PER_BLOCK];
 		int            levels [4 * THREADS_PER_BLOCK];
 		HierarchyIndex indices[4 * THREADS_PER_BLOCK];
 
 	} shared;
 	
-	int levels[4];
-	
+	int            levels[4];
 	HierarchyIndex indices[4];
 
 	HierarchyIndex t_idx = threadIdx.x;
@@ -29,94 +27,75 @@ void traverse_tree_of_sig_details
 
 	if (idx >= num_threads) return;
 
-	HierarchyIndex  stack[52];
-	HierarchyIndex *stackPtr = stack;
-	*stackPtr++ = NULL;
-
 	HierarchyIndex h_idx = 0;
 
+	MortonCode curr_code = 0;
 	MortonCode fine_code = 4 * idx;
 
 	int level = 0;
 
-	do
+	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
+
+	bool keep_on_traversing = true;
+
+	while (keep_on_traversing)
 	{
-		HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
+		MortonCode curr_code = ( fine_code >> ( 2 * (solver_params.L - level) ) );
 
-		HierarchyIndex local_idx = h_idx - curr_lvl_idx;
-		
-		MortonCode current_code = local_idx;
+		curr_lvl_idx = get_lvl_idx(level);
 
-		bool is_child = ( ( fine_code >> ( 2 * (solver_params.L - level) ) ) == current_code);
+		h_idx = curr_lvl_idx + curr_code;
 
-		if (is_child)
+		bool is_sig = d_sig_details[h_idx];
+
+		if (!is_sig)
 		{
-			bool is_sig = d_sig_details[h_idx];
-
-			if (!is_sig)
-			{				
-				#pragma unroll
-				for (int i = 0; i < 4; i++)
-				{
-					indices[i] = h_idx;
-					levels[i]  = level;
-				}
-
-				goto store;
-			}
-			else
+			// recording z-order index and level
+			for (int i = 0; i < 4; i++)
 			{
-				bool penultimate_level = (++level == solver_params.L);
-				
-				HierarchyIndex next_lvl_idx = get_lvl_idx(level);
-				
-				HierarchyIndex child_idx = next_lvl_idx + 4 * local_idx;
-
-				if (!penultimate_level)
-				{
-					// get child indices and make index child_0 of current sub-element
-					h_idx       = child_idx + 0;
-					*stackPtr++ = child_idx + 1;
-					*stackPtr++ = child_idx + 2;
-					*stackPtr++ = child_idx + 3;
-				}
-				else
-				{
-					// reached penultimate level, add information to last level and exit
-					
-					#pragma unroll
-					for (int i = 0; i < 4; i++)
-					{
-						indices[i] = child_idx + i;
-						levels[i]  = level;
-					}
-					
-					goto store;
-				}
+				indices[i] = h_idx;
+				levels[i]  = level;
 			}
+
+			keep_on_traversing = false;
 		}
 		else
 		{
-			h_idx = *--stackPtr;
+			level++;
+			
+			bool penultimate_level = (level == solver_params.L);
+
+			if (!penultimate_level)
+			{
+				keep_on_traversing = true;
+			}
+			else
+			{
+				HierarchyIndex next_lvl_idx = get_lvl_idx(level);
+				HierarchyIndex child_idx    = next_lvl_idx + 4 * curr_code;
+
+				// recording z-order index and level
+				for (int i = 0; i < 4; i++)
+				{
+					indices[i] = child_idx + i;
+					levels[i]  = level;
+				}
+
+				keep_on_traversing = false;
+			}
 		}
 	}
-	while (NULL != h_idx);
+	
+	// storing active indices
+	for (int i = 0; i < 4; i++) shared.indices[4 * t_idx + i] = indices[i];
+	__syncthreads();
 
-	store:
-	{
-		// storing active indices
-		#pragma unroll
-		for (int i = 0; i < 4; i++) shared.indices[4 * t_idx + i] = indices[i];
-		__syncthreads();
-		#pragma unroll
-		for (int i = 0; i < 4; i++) d_buf_assem_sol.act_idcs[idx + i * THREADS_PER_BLOCK + block_store_step] = shared.indices[t_idx + i * THREADS_PER_BLOCK];
-		__syncthreads();
-		
-		// storing levels
-		#pragma unroll
-		for (int i = 0; i < 4; i++) shared.levels[4 * t_idx + i] = levels[i];
-		__syncthreads();
-		#pragma unroll
-		for (int i = 0; i < 4; i++) d_buf_assem_sol.levels[idx + i * THREADS_PER_BLOCK + block_store_step] = shared.levels[t_idx + i * THREADS_PER_BLOCK];
-	}
+	for (int i = 0; i < 4; i++) d_buf_assem_sol.act_idcs[idx + i * THREADS_PER_BLOCK + block_store_step] = shared.indices[t_idx + i * THREADS_PER_BLOCK];
+	__syncthreads();
+
+	// storing levels
+	for (int i = 0; i < 4; i++) shared.levels[4 * t_idx + i] = levels[i];
+	__syncthreads();
+
+	for (int i = 0; i < 4; i++) d_buf_assem_sol.levels[idx + i * THREADS_PER_BLOCK + block_store_step] = shared.levels[t_idx + i * THREADS_PER_BLOCK];
 }
