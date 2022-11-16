@@ -178,9 +178,9 @@ class SimulationMonai:
             sharex=True
         )
             
-        ax_rel_speedup    = axs[0]
-        ax_reduction_norm = axs[1]
-        ax_frac_DG2    = axs[2]
+        ax_reduction_norm = axs[0]
+        ax_frac_DG2       = axs[1]
+        ax_rel_speedup    = axs[2]
         
         cell_count_finest_grid = 392 * 243
         
@@ -201,15 +201,14 @@ class SimulationMonai:
                 cell_count_norm = (1 - compression) * cell_count_finest_grid / init_cell_count_adapt
                 
                 if   np.isclose(epsilon, 1e-3):
-                    label = "$\epsilon = 10^{-3}$, $R_0 =$ %0.2e" % init_cell_count_adapt
+                    label = "$\epsilon = 10^{-3}$"
                 elif np.isclose(epsilon, 1e-4):
-                    label = "$\epsilon = 10^{-4}$, $R_0 =$ %0.2e" % init_cell_count_adapt
+                    label = "$\epsilon = 10^{-4}$"
                 
                 ax_rel_speedup.plot(
                     time,
                     rel_speedup,
-                    linewidth=2,
-                    label=label
+                    linewidth=2
                 )
                 
                 ax_rel_speedup.set_ylabel("$S_{rel}$")
@@ -217,10 +216,11 @@ class SimulationMonai:
                 ax_reduction_norm.plot(
                     time,
                     cell_count_norm,
-                    linewidth=2
+                    linewidth=2,
+                    label=label
                 )
                 
-                ax_reduction_norm.set_ylabel("$R_{norm}$")
+                ax_reduction_norm.set_ylabel("$N_{rel}$")
                 
                 frac_DG2 = (
                     self.results[solver][epsilon]["runtime_solver"]
@@ -236,16 +236,13 @@ class SimulationMonai:
                 
                 ax_frac_DG2.set_ylabel("$F_{DG2}$")
             
-            xlim = (
-                0,
-                round(self.results[solver][0]["simtime"].iloc[-1], 1)
-            )
+            xlim = (0, 22.5)
             
             for ax in axs:
                 ax.set_xlim(xlim)
                 
-            ax_frac_DG2.set_xlabel("$t$ (s)")
-            ax_rel_speedup.legend(bbox_to_anchor=(0.78, 1.9), ncol=1)
+            ax_rel_speedup.set_xlabel("$t$ (s)")
+            ax_reduction_norm.legend(bbox_to_anchor=(0.8, 1.5), ncol=2)
             fig.tight_layout()
             fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
             ax.clear()
