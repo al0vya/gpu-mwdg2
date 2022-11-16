@@ -241,7 +241,7 @@ class SimulationConicalIsland:
         ax_frac_DG2       = axs[1]
         ax_rel_speedup    = axs[2]
         
-        cell_count_finest_grid = 310 * 276
+        cell_count_finest_grid = 620 * 552
         
         for solver in self.solvers:
             for epsilon in self.epsilons:
@@ -260,9 +260,9 @@ class SimulationConicalIsland:
                 cell_count_norm = (1 - compression) * cell_count_finest_grid / init_cell_count_adapt
                 
                 if   np.isclose(epsilon, 1e-3):
-                    label = "$\epsilon = 10^{-3}$"
+                    label = "$\epsilon = 10^{-3}$, initial reduction = %0.4s%%" % (init_reduction * 100)
                 elif np.isclose(epsilon, 1e-4):
-                    label = "$\epsilon = 10^{-4}$"
+                    label = "$\epsilon = 10^{-4}$, initial reduction = %0.4s%%" % (init_reduction * 100)
                 
                 ax_rel_speedup.plot(
                     time,
@@ -303,8 +303,8 @@ class SimulationConicalIsland:
             for ax in axs:
                 ax.set_xlim(xlim)
                 
-            ax_frac_DG2.set_xlabel("$t$ (s)")
-            ax_reduction_norm.legend( bbox_to_anchor=(0.8, 1.5), ncol=2 )
+            ax_rel_speedup.set_xlabel("$t$ (s)")
+            ax_reduction_norm.legend(bbox_to_anchor=(0.85, 1.9), ncol=1)
             fig.tight_layout()
             fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
             ax.clear()

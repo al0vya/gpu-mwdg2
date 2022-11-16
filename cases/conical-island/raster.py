@@ -195,7 +195,7 @@ def main():
     ymin = 0
     ymax = 27.6
     
-    cellsize = 0.05;
+    cellsize = 0.05
     
     x = np.arange(xmin, xmax + cellsize, cellsize, dtype=float)
     y = np.arange(ymin, ymax + cellsize, cellsize, dtype=float)
