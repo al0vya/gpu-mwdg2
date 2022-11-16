@@ -113,7 +113,7 @@ class SimulationConicalIsland:
             with open(input_file, 'w') as fp:
                 params = (
                     "test_case     0\n" +
-                    "max_ref_lvl   9\n" +
+                    "max_ref_lvl   10\n" +
                     "min_dt        1\n" +
                     "respath       results\n" +
                     "epsilon       %s\n" +
