@@ -5,6 +5,78 @@ import numpy             as np
 import pandas            as pd
 import matplotlib.pyplot as plt
 
+class YAxisLimits:
+    def __init__(self):
+        limits = {}
+        
+        limits["reduction"]   = {}
+        limits["frac_DG2"]    = {}
+        limits["rel_speedup"] = {}
+        
+        for key in limits:
+            limits[key]["min"] =  (2 ** 63 + 1)
+            limits[key]["max"] = -(2 ** 63 + 1)
+        
+        #limits["reduction"]["min"] = 0
+        
+        self.limits = limits
+    
+    def set_y_axis_limits(
+        self,
+        field,
+        field_data
+    ):
+        self.limits[field]["min"] = min(
+            self.limits[field]["min"],
+            min(field_data)
+        )
+        
+        self.limits[field]["max"] = max(
+            self.limits[field]["max"],
+            max(field_data)
+        )
+    
+    def get_y_axis_ticks(
+        self,
+        field,
+        num_ticks,
+        num_digits_round
+    ):
+        if field == "rel_speedup":
+            min_val = 0.9 * self.limits[field]["min"]
+            max_val = 1.1 * self.limits[field]["max"]
+        else:
+            min_val = max( 0,   0.9 * self.limits[field]["min"] )
+            max_val = min( 100, 1.1 * self.limits[field]["max"] )
+        
+        d_val = (max_val - min_val) / num_ticks
+        
+        return [ round(min_val + i * d_val, num_digits_round) for i in range(num_ticks+1) ]
+        
+    def set_y_axis_ticks(
+        self,
+        ax,
+        field,
+        num_ticks,
+        num_digits_round=1
+    ):
+        yticks = self.get_y_axis_ticks(
+            field=field,
+            num_ticks=num_ticks,
+            num_digits_round=num_digits_round
+        )
+        
+        ax.set_yticks( [] )
+        ax.set_yticks(
+            ticks=yticks,
+            minor=False
+        )
+        
+        ax.set_yticklabels(
+            labels=[int(ytick) for ytick in yticks],
+            minor=False
+        )
+        
 class ExperimentalDataConicalIsland:
     def __init__(self):
         print("Reading experimental data...")
@@ -231,20 +303,29 @@ class SimulationConicalIsland:
         #plt.rcParams.DG2(my_rc_params)
         
         fig, axs = plt.subplots(
-            nrows=3,
-            ncols=1,
-            figsize=(5, 4.5),
+            nrows=2,
+            ncols=2,
+            figsize=(6, 4),
             sharex=True
         )
-            
-        ax_reduction_norm = axs[0]
-        ax_frac_DG2       = axs[1]
-        ax_rel_speedup    = axs[2]
         
-        cell_count_finest_grid = 620 * 552
+        gridspec = axs[0,0].get_gridspec()
+        
+        axs[0,0].remove()
+        axs[1,0].remove()
+        
+        ax_reduction   = fig.add_subplot( gridspec[:,0] )
+        ax_frac_DG2    = axs[0,1]
+        ax_rel_speedup = axs[1,1]
+        
+        axs = [ax_reduction, ax_frac_DG2, ax_rel_speedup]
+        
+        y_axis_limits = YAxisLimits()
+        
+        colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
         
         for solver in self.solvers:
-            for epsilon in self.epsilons:
+            for epsilon, color in zip(self.epsilons, colors):
                 if epsilon == 0:
                     continue
                 
@@ -252,36 +333,45 @@ class SimulationConicalIsland:
                 
                 rel_speedup = self.results[solver][0]["runtime_total"] / self.results[solver][epsilon]["runtime_total"]
                 
-                compression = self.results[solver][epsilon]["compression"]
-                
-                init_reduction        = compression[0]
-                init_cell_count_adapt = (1 - init_reduction) * cell_count_finest_grid
-                
-                cell_count_norm = (1 - compression) * cell_count_finest_grid / init_cell_count_adapt
+                compression = 100 * self.results[solver][epsilon]["compression"]
                 
                 if   np.isclose(epsilon, 1e-3):
-                    label = "$\epsilon = 10^{-3}$, initial reduction = %0.4s%%" % (init_reduction * 100)
+                    label = "$\epsilon = 10^{-3}$"
                 elif np.isclose(epsilon, 1e-4):
-                    label = "$\epsilon = 10^{-4}$, initial reduction = %0.4s%%" % (init_reduction * 100)
+                    label = "$\epsilon = 10^{-4}$"
                 
                 ax_rel_speedup.plot(
                     time,
                     rel_speedup,
-                    linewidth=2
+                    linestyle='--',
+                    linewidth=1.5
                 )
                 
-                ax_rel_speedup.set_ylabel("$S_{rel}$")
+                y_axis_limits.set_y_axis_limits(field="rel_speedup", field_data=rel_speedup)
                 
-                ax_reduction_norm.plot(
+                ax_rel_speedup.set_ylabel("$S_{rel}$ (-)")
+                
+                ax_reduction.plot(
                     time,
-                    cell_count_norm,
-                    linewidth=2,
+                    compression,
+                    linestyle='--',
+                    linewidth=1.5,
+                    color=color,
                     label=label
                 )
                 
-                ax_reduction_norm.set_ylabel("$N_{rel}$")
+                ax_reduction.plot(
+                    [ time.iloc[0], time.iloc[-1] ],
+                    [ compression.iloc[0], compression.iloc[0] ],
+                    linewidth=2,
+                    color=color
+                )
                 
-                frac_DG2 = (
+                y_axis_limits.set_y_axis_limits(field="reduction", field_data=compression)
+                
+                ax_reduction.set_ylabel("Reduction (%)")
+                
+                frac_DG2 = 100 * (
                     self.results[solver][epsilon]["runtime_solver"]
                     /
                     self.results[solver][epsilon]["runtime_total"]
@@ -290,10 +380,19 @@ class SimulationConicalIsland:
                 ax_frac_DG2.plot(
                     time[1:],
                     frac_DG2[1:],
-                    linewidth=2
+                    linestyle='--',
+                    linewidth=1.5
                 )
                 
-                ax_frac_DG2.set_ylabel("$F_{DG2}$")
+                y_axis_limits.set_y_axis_limits(field="frac_DG2", field_data=frac_DG2[1:])
+                
+                ax_frac_DG2.set_ylabel("$F_{DG2}$ (%)")
+            
+            ax_reduction.invert_yaxis()
+            
+            y_axis_limits.set_y_axis_ticks(ax=ax_rel_speedup, field="rel_speedup", num_ticks=5, num_digits_round=1)
+            y_axis_limits.set_y_axis_ticks(ax=ax_reduction,   field="reduction",   num_ticks=10)
+            y_axis_limits.set_y_axis_ticks(ax=ax_frac_DG2,    field="frac_DG2",    num_ticks=5)
             
             xlim = (
                 0,
@@ -303,8 +402,9 @@ class SimulationConicalIsland:
             for ax in axs:
                 ax.set_xlim(xlim)
                 
+            ax_reduction.set_xlabel("$t$ (s)")
             ax_rel_speedup.set_xlabel("$t$ (s)")
-            ax_reduction_norm.legend(bbox_to_anchor=(0.85, 1.9), ncol=1)
+            ax_reduction.legend()
             fig.tight_layout()
             fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
             ax.clear()
