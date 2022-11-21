@@ -51,10 +51,7 @@ class YAxisLimits:
         
         d_val = (max_val - min_val) / num_ticks
         
-        if field == "rel_speedup":
-            return [ round(min_val + i * d_val, num_digits_round) for i in range(num_ticks+1) ]
-        else:
-            return [ int( round(min_val + i * d_val, num_digits_round) ) for i in range(num_ticks+1) ]
+        return [ round(min_val + i * d_val, num_digits_round) for i in range(num_ticks+1) ]
         
     def set_y_axis_ticks(
         self,
@@ -76,7 +73,7 @@ class YAxisLimits:
         )
         
         ax.set_yticklabels(
-            labels=yticks,
+            labels=yticks if field == "rel_speedup" else [int(ytick) for ytick in yticks],
             minor=False
         )
         

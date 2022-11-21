@@ -73,7 +73,7 @@ class YAxisLimits:
         )
         
         ax.set_yticklabels(
-            labels=[int(ytick) for ytick in yticks],
+            labels=yticks if field == "rel_speedup" else [int(ytick) for ytick in yticks],
             minor=False
         )
         
