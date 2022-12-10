@@ -1,11 +1,10 @@
 #include "read_keyword_str.h"
 
-void read_keyword_str
+bool read_keyword_str
 (
 	const char* filename,
 	const char* keyword,
-	const int&  num_char,
-	char*       value_buf
+	const int&  num_char
 )
 {
 	if (num_char > 128)
@@ -30,13 +29,14 @@ void read_keyword_str
 		if ( NULL == fgets(line_buf, 255, fp) )
 		{
 			fprintf(stderr, "Keyword %s not found when reading file %s, file: %s line: %d.\n", keyword, filename, __FILE__, __LINE__);
-			value_buf[0] = '\0';
 			fclose(fp);
-			return;
+			return false;
 		}
 
-		sscanf(line_buf, "%s %s", keyword_buf, value_buf);
+		sscanf(line_buf, "%s", keyword_buf);
 	}
 
 	fclose(fp);
+
+	return true;
 }

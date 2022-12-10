@@ -4,10 +4,9 @@
 #include <cstdio>
 #include <cstring>
 
-void read_keyword_str
+bool read_keyword_str
 (
 	const char* filename,
 	const char* keyword,
-	const int&  num_char,
-	char*       value_buf
+	const int&  num_char
 );
