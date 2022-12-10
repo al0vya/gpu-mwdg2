@@ -14,8 +14,8 @@ tol_s         1e-9
 g             9.80665
 massint       0.1
 sim_time      22.5
-solver        mw
-cumulative    on
-refine_wall   on
+hwfv1
+cumulative
+refine_wall
 ref_thickness 16
 wall_height   0.5

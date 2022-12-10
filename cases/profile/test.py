@@ -27,9 +27,9 @@ def write_par_file(
             "g             9.80665\n" +
             "massint       0.1\n" +
             "sim_time      22.5\n" +
-            "solver        %s\n" +
-            "cumulative    on\n" +
-            "refine_wall   on\n" +
+            "%s\n" +
+            "cumulative\n" +
+            "refine_wall\n" +
             "ref_thickness 16\n" +
             "wall_height   0.5"
         ) % (
@@ -87,9 +87,9 @@ def verify_depths(
     filename = ""
     
     if epsilon == 0:
-        solver_text = "fv1"   if solver == "hw" else "dg2"
+        solver_text = "fv1"   if solver == "hwfv1" else "dg2"
     else:
-        solver_text = "hwfv1" if solver == "hw" else "mwdg2"
+        solver_text = "hwfv1" if solver == "hwfv1" else "mwdg2"
     
     verification_filename = "stage-" + solver_text + ".txt"
     
@@ -133,18 +133,18 @@ def verify(
 def verify_all():
     verification = {}
     
-    verification["hw"]       = {}
-    verification["hw"][0]    = {}
-    verification["hw"][1e-3] = {}
+    verification["hwfv1"]       = {}
+    verification["hwfv1"][0]    = {}
+    verification["hwfv1"][1e-3] = {}
     
-    verification["mw"]       = {}
-    verification["mw"][0]    = {}
-    verification["mw"][1e-3] = {}
+    verification["mwdg2"]       = {}
+    verification["mwdg2"][0]    = {}
+    verification["mwdg2"][1e-3] = {}
     
-    verification["hw"][0]    = verify(epsilon=0,    solver="hw")
-    verification["hw"][1e-3] = verify(epsilon=1e-3, solver="hw")
-    verification["mw"][0]    = verify(epsilon=0,    solver="mw")
-    verification["mw"][1e-3] = verify(epsilon=1e-3, solver="mw")
+    verification["hwfv1"][0]    = verify(epsilon=0,    solver="hwfv1")
+    verification["hwfv1"][1e-3] = verify(epsilon=1e-3, solver="hwfv1")
+    verification["mwdg2"][0]    = verify(epsilon=0,    solver="mwdg2")
+    verification["mwdg2"][1e-3] = verify(epsilon=1e-3, solver="mwdg2")
     
     return verification
     
@@ -170,7 +170,7 @@ def main():
     print(option)
     
     if option == "fast":
-        print("Code " + verify(epsilon=1e-3, solver="hw") + " fast verification.\n")
+        print("Code " + verify(epsilon=1e-3, solver="hwfv1") + " fast verification.\n")
     elif option == "slow":
         verification = verify_all()
         
@@ -180,8 +180,8 @@ def main():
             "%8s" + "%8s" + "%8s"
         ) % (
             "eps", "0", "1e-3",
-            "hw", str( verification["hw"][0] ), str( verification["hw"][1e-3] ),
-            "mw", str( verification["mw"][0] ), str( verification["mw"][1e-3] )
+            "hwfv1", str( verification["hwfv1"][0] ), str( verification["hwfv1"][1e-3] ),
+            "mwdg2", str( verification["mwdg2"][0] ), str( verification["mwdg2"][1e-3] )
         )
         
         print(results)
