@@ -2,9 +2,9 @@
 
 #include "cuda_runtime.h"
 
-#include "Filters.h"
-#include "SubDetail.h"
-#include "ScaleChildren.h"
+#include "../mra/Filters.h"
+#include "../classes/SubDetail.h"
+#include "../classes/ScaleChildren.h"
 
 __device__ __forceinline__
 real decode_0(real& u, SubDetailHW& sub_detail);

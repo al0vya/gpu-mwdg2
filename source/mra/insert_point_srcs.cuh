@@ -3,10 +3,10 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "AssembledSolution.h"
-#include "PointSources.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/PointSources.h"
 
-#include "get_lvl_idx.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 
 __global__
 void insert_point_srcs

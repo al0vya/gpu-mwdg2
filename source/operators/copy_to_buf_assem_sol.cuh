@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "AssembledSolution.h"
+#include "../classes/AssembledSolution.h"
 
 __host__
 void copy_to_buf_assem_sol

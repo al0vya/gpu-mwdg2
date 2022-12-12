@@ -3,13 +3,13 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "NodalValues.h"
-#include "HierarchyIndex.h"
-#include "Coordinate.h"
-#include "AssembledSolution.h"
-#include "SolverParams.h"
+#include "../classes/NodalValues.h"
+#include "../types/HierarchyIndex.h"
+#include "../types/Coordinate.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/SolverParams.h"
 
 __global__
 void modal_projections

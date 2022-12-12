@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "real.h"
+#include "../types/real.h"
 
 __device__ __forceinline__
 real h_init_three_blocks

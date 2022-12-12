@@ -4,6 +4,6 @@
 #include <cstdio>
 #include <cstring>
 
-#include "real.h"
+#include "../types/real.h"
 
 real read_cell_size(const char* input_filename);

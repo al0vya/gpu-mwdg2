@@ -1,10 +1,10 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "SolverParams.h"
-#include "get_num_blocks.h"
-#include "HierarchyIndex.h"
+#include "../classes/SolverParams.h"
+#include "../utilities/get_num_blocks.h"
+#include "../types/HierarchyIndex.h"
 
 #include "encode_and_thresh_topo.cuh"
 

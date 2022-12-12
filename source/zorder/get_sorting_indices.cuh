@@ -1,14 +1,14 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
 #include "cub/cub.cuh"
 
-#include "CHECK_CUDA_ERROR.cuh"
+#include "../utilities/CHECK_CUDA_ERROR.cuh"
 
-#include "AssembledSolution.h"
-#include "SolverParams.h"
-#include "MortonCode.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/SolverParams.h"
+#include "../types/MortonCode.h"
 
 __host__
 void get_sorting_indices

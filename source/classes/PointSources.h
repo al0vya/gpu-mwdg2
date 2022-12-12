@@ -1,16 +1,16 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-#include "MortonCode.h"
-#include "InletTypes.h"
-#include "SimulationParams.h"
+#include "../types/MortonCode.h"
+#include "../types/InletTypes.h"
+#include "../classes/SimulationParams.h"
 
-#include "generate_morton_code.cuh"
+#include "../zorder/generate_morton_code.cuh"
 
 typedef struct PointSources
 {

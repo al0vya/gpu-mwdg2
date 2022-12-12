@@ -3,19 +3,19 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "Points.h"
-#include "AssembledSolution.h"
-#include "SimulationParams.h"
-#include "SolverParams.h"
-#include "SaveInterval.h"
-#include "FinestGrid.h"
+#include "../classes/Points.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/SimulationParams.h"
+#include "../classes/SolverParams.h"
+#include "../classes/SaveInterval.h"
+#include "../classes/FinestGrid.h"
 
 #include "write_raster_file.cuh"
-#include "get_i_index.cuh"
-#include "get_j_index.cuh"
-#include "get_lvl_idx.cuh"
+#include "../zorder/get_i_index.cuh"
+#include "../zorder/get_j_index.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 
 void write_all_raster_maps_fv1
 (

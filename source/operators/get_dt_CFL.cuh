@@ -2,9 +2,9 @@
 
 #include "cub/device/device_reduce.cuh"
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "real.h"
+#include "../types/real.h"
 
 __host__
 real get_dt_CFL

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "compact.cuh"
+#include "../zorder/compact.cuh"
 
 __host__ __device__ __forceinline__
 Coordinate get_j_index(MortonCode code)

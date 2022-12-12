@@ -1,14 +1,14 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "Boundaries.h"
-#include "PointSources.h"
-#include "GaugePoints.h"
-#include "SimulationParams.h"
-#include "SolverParams.h"
+#include "../classes/Boundaries.h"
+#include "../classes/PointSources.h"
+#include "../classes/GaugePoints.h"
+#include "../classes/SimulationParams.h"
+#include "../classes/SolverParams.h"
 
-#include "get_lvl_idx.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 #include "refine_high_wall.cuh"
 
 __host__

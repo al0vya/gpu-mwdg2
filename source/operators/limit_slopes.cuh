@@ -3,11 +3,11 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "Neighbours.h"
-#include "SolverParams.h"
-#include "SimulationParams.h"
-#include "LegendreBasis.h"
-#include "FlowCoeffs.h"
+#include "../classes/Neighbours.h"
+#include "../classes/SolverParams.h"
+#include "../classes/SimulationParams.h"
+#include "../classes/LegendreBasis.h"
+#include "../classes/FlowCoeffs.h"
 
 #include "get_limited_slopes.cuh"
 #include "get_leg_basis.cuh"

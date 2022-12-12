@@ -2,8 +2,8 @@
 
 #include "cuda_runtime.h"
 
-#include "Detail.h"
-#include "Details.h"
+#include "../classes/Detail.h"
+#include "../classes/Details.h"
 
 __device__ __forceinline__
 void store_details

@@ -5,13 +5,13 @@
 
 #include "cub/block/block_scan.cuh"
 
-#include "SolverParams.h"
-#include "HierarchyIndex.h"
-#include "Details.h"
-#include "ScaleCoefficients.h"
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../classes/SolverParams.h"
+#include "../types/HierarchyIndex.h"
+#include "../classes/Details.h"
+#include "../classes/ScaleCoefficients.h"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "get_lvl_idx.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 #include "load_details.cuh"
 #include "load_parent_scale_coeffs.cuh"
 #include "decode_scale_coeffs.cuh"

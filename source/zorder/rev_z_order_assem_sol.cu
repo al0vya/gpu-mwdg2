@@ -1,4 +1,4 @@
-#include "rev_z_order_assem_sol.cuh"
+#include "../zorder/rev_z_order_assem_sol.cuh"
 
 void rev_z_order_assem_sol
 (

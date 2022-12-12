@@ -3,9 +3,9 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "ScaleCoefficients.h"
-#include "AssembledSolution.h"
-#include "SolverParams.h"
+#include "../classes/ScaleCoefficients.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/SolverParams.h"
 
 __global__
 void reinsert_assem_sol

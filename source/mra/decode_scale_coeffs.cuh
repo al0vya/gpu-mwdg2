@@ -2,10 +2,10 @@
 
 #include "cuda_runtime.h"
 
-#include "Filters.h"
-#include "ParentScaleCoeffs.h"
-#include "ChildScaleCoeffs.h"
-#include "Detail.h"
+#include "../mra/Filters.h"
+#include "../classes/ParentScaleCoeffs.h"
+#include "../classes/ChildScaleCoeffs.h"
+#include "../classes/Detail.h"
 #include "decode_scale_children.cuh"
 
 __device__ __forceinline__

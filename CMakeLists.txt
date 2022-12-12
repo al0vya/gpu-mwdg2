@@ -18,6 +18,5 @@ project(proj-gpu-mwdg2)
 add_executable(gpu-mwdg2)
 
 include(options.cmake)
-include(include.cmake)
 
 add_subdirectory(source)

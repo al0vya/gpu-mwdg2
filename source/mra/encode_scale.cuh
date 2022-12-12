@@ -2,9 +2,9 @@
 
 #include "cuda_runtime.h"
 
-#include "real.h"
-#include "ScaleChildren.h"
-#include "Filters.h"
+#include "../types/real.h"
+#include "../classes/ScaleChildren.h"
+#include "../mra/Filters.h"
 
 __device__ __forceinline__
 real encode_scale(const ScaleChildrenHW& u)

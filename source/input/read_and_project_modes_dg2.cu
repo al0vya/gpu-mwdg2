@@ -1,4 +1,4 @@
-#include "read_and_project_modes_dg2.cuh"
+#include "../input/read_and_project_modes_dg2.cuh"
 
 __host__
 void read_and_project_modes_dg2

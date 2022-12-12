@@ -1,13 +1,13 @@
 #pragma once
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <time.h>
 
-#include "SimulationParams.h"
+#include "../classes/SimulationParams.h"
 
 void write_cumulative_data
 (

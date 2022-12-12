@@ -3,10 +3,10 @@
 #include "cuda_runtime.h"
 #include "cub/cub.cuh"
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "AssembledSolution.h"
-#include "MortonCode.h"
+#include "../classes/AssembledSolution.h"
+#include "../types/MortonCode.h"
 
 void rev_z_order_assem_sol
 (

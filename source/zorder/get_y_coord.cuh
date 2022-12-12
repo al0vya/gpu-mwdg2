@@ -2,8 +2,8 @@
 
 #include "cuda_runtime.h"
 
-#include "get_lvl_idx.cuh"
-#include "get_j_index.cuh"
+#include "../utilities/get_lvl_idx.cuh"
+#include "../zorder/get_j_index.cuh"
 #include "get_spatial_coord.cuh"
 
 __device__ __forceinline__

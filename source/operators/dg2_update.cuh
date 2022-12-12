@@ -5,13 +5,13 @@
 
 #include "cub/block/block_scan.cuh"
 
-#include "BLOCK_VAR_MACROS.cuh"
-#include "MortonCode.h"
-#include "Neighbours.h"
-#include "FlowCoeffs.h"
-#include "SolverParams.h"
-#include "SimulationParams.h"
-#include "FlowVector.h"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
+#include "../types/MortonCode.h"
+#include "../classes/Neighbours.h"
+#include "../classes/FlowCoeffs.h"
+#include "../classes/SolverParams.h"
+#include "../classes/SimulationParams.h"
+#include "../classes/FlowVector.h"
 
 #include "get_leg_basis.cuh"
 #include "get_bed_src.cuh"

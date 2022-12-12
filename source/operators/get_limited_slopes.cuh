@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Slopes.h"
-#include "PlanarCoefficients.h"
-#include "SolverParams.h"
+#include "../classes/Slopes.h"
+#include "../classes/PlanarCoefficients.h"
+#include "../classes/SolverParams.h"
 
-#include "eval_loc_face_val_dg2.cuh"
+#include "../operators/eval_loc_face_val_dg2.cuh"
 #include "minmod.cuh"
 
 __device__ __forceinline__

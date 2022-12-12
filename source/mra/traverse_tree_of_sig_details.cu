@@ -1,4 +1,4 @@
-#include "traverse_tree_of_sig_details.cuh"
+#include "../mra/traverse_tree_of_sig_details.cuh"
 
 __global__
 void traverse_tree_of_sig_details

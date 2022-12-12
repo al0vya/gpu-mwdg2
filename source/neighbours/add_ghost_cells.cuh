@@ -3,14 +3,14 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "Neighbours.h"
-#include "SolverParams.h"
-#include "SimulationParams.h"
-#include "Boundaries.h"
+#include "../classes/Neighbours.h"
+#include "../classes/SolverParams.h"
+#include "../classes/SimulationParams.h"
+#include "../classes/Boundaries.h"
 
-#include "get_lvl_idx.cuh"
-#include "compact.cuh"
-#include "non_reflective_wave.cuh"
+#include "../utilities/get_lvl_idx.cuh"
+#include "../zorder/compact.cuh"
+#include "../operators/non_reflective_wave.cuh"
 
 __global__
 void add_ghost_cells

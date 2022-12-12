@@ -3,10 +3,10 @@
 #include <cstdio>
 #include <cstring>
 
-#include "BLOCK_VAR_MACROS.cuh"
-#include "cuda_utils.cuh"
-#include "AssembledSolution.h"
-#include "SimulationParams.h"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
+#include "../utilities/cuda_utils.cuh"
+#include "../classes/AssembledSolution.h"
+#include "../classes/SimulationParams.h"
 
 __host__ void write_for_lisflood
 (

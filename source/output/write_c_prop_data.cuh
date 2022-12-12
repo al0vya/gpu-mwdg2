@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SolverParams.h"
-#include "AssembledSolution.h"
+#include "../classes/SolverParams.h"
+#include "../classes/AssembledSolution.h"
 
 #include "write_cumulative_data.h"
 

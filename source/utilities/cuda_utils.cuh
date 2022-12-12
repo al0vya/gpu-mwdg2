@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "CHECK_CUDA_ERROR.cuh"
+#include "../utilities/CHECK_CUDA_ERROR.cuh"
 
 #include "cstdio"
 

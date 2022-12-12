@@ -2,10 +2,10 @@
 
 #include "cuda_runtime.h"
 
-#include "ParentScaleCoeffs.h"
-#include "ChildScaleCoeffs.h"
-#include "ScaleCoefficients.h"
-#include "HierarchyIndex.h"
+#include "../classes/ParentScaleCoeffs.h"
+#include "../classes/ChildScaleCoeffs.h"
+#include "../classes/ScaleCoefficients.h"
+#include "../types/HierarchyIndex.h"
 
 __device__ __forceinline__
 void store_scale_coeffs

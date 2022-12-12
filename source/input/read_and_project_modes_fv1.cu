@@ -1,4 +1,4 @@
-#include "read_and_project_modes_fv1.cuh"
+#include "../input/read_and_project_modes_fv1.cuh"
 
 __host__
 void read_and_project_modes_fv1

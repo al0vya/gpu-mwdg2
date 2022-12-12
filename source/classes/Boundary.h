@@ -6,13 +6,13 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "Directions.h"
-#include "Coordinate.h"
-#include "MortonCode.h"
-#include "InletTypes.h"
-#include "SimulationParams.h"
+#include "../types/Directions.h"
+#include "../types/Coordinate.h"
+#include "../types/MortonCode.h"
+#include "../types/InletTypes.h"
+#include "../classes/SimulationParams.h"
 
-#include "generate_morton_code.cuh"
+#include "../zorder/generate_morton_code.cuh"
 
 typedef struct Boundary
 {

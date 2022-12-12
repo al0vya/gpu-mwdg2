@@ -2,8 +2,8 @@
 
 #include "cuda_runtime.h"
 
-#include "MortonCode.h"
-#include "Coordinate.h"
+#include "../types/MortonCode.h"
+#include "../types/Coordinate.h"
 
 /*
  * BITWISE OPERATORS AND HEXADECIMAL

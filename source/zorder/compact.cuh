@@ -2,8 +2,8 @@
 
 #include "cuda_runtime.h"
 
-#include "Coordinate.h"
-#include "MortonCode.h"
+#include "../types/Coordinate.h"
+#include "../types/MortonCode.h"
 
 // remove the even bits and squash together the odd bits of a Morton code
 __host__ __device__ __forceinline__

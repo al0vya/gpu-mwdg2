@@ -1,19 +1,19 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
 #include <cstdio>
 #include <cstdlib>
 
-#include "AssembledSolution.h"
-#include "ScaleCoefficients.h"
-#include "SolverParams.h"
-#include "PlottingParams.h"
-#include "GaugePoints.h"
-#include "FinestGrid.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/ScaleCoefficients.h"
+#include "../classes/SolverParams.h"
+#include "../classes/PlottingParams.h"
+#include "../classes/GaugePoints.h"
+#include "../classes/FinestGrid.h"
 
-#include "get_i_index.cuh"
-#include "get_j_index.cuh"
+#include "../zorder/get_i_index.cuh"
+#include "../zorder/get_j_index.cuh"
 
 __host__
 void write_gauge_point_data

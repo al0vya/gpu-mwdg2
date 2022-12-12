@@ -1,10 +1,10 @@
 #pragma once
 
-#include "get_num_blocks.h"
+#include "../utilities/get_num_blocks.h"
 
-#include "reinsert_assem_sol.cuh"
-#include "traverse_tree_of_sig_details.cuh"
-#include "rev_z_order_assem_sol.cuh"
+#include "../mra/reinsert_assem_sol.cuh"
+#include "../mra/traverse_tree_of_sig_details.cuh"
+#include "../zorder/rev_z_order_assem_sol.cuh"
 #include "write_reals_to_file.cuh"
 #include "write_int_to_file.cuh"
 

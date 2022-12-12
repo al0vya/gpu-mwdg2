@@ -5,15 +5,15 @@
 
 #include "cub/block/block_store.cuh"
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "HierarchyIndex.h"
-#include "AssembledSolution.h"
-#include "MortonCode.h"
-#include "SolverParams.h"
-#include "ScaleCoefficients.h"
+#include "../types/HierarchyIndex.h"
+#include "../classes/AssembledSolution.h"
+#include "../types/MortonCode.h"
+#include "../classes/SolverParams.h"
+#include "../classes/ScaleCoefficients.h"
 
-#include "get_lvl_idx.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 
 __global__
 void traverse_tree_of_sig_details

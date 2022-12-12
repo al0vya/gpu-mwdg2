@@ -1,13 +1,13 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "SimulationParams.h"
+#include "../classes/SimulationParams.h"
 
-#include "read_raster_file.h"
-#include "get_num_blocks.h"
+#include "../input/read_raster_file.h"
+#include "../utilities/get_num_blocks.h"
 
-#include "modal_projections.cuh"
+#include "../mra/modal_projections.cuh"
 
 __host__
 void read_and_project_modes_dg2

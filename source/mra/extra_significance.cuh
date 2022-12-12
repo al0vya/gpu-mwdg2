@@ -8,12 +8,12 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "SolverParams.h"
-#include "HierarchyIndex.h"
+#include "../classes/SolverParams.h"
+#include "../types/HierarchyIndex.h"
 
-#include "get_lvl_idx.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 
 template<bool SINGLE_BLOCK>
 __global__

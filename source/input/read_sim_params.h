@@ -3,8 +3,8 @@
 #include <cstdlib>
 #include <iostream>
 
-#include "SimulationParams.h"
-#include "SolverParams.h"
+#include "../classes/SimulationParams.h"
+#include "../classes/SolverParams.h"
 
 #include "read_keyword_int.h"
 #include "read_keyword_real.h"

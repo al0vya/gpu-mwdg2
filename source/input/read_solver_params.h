@@ -4,7 +4,7 @@
 #include "read_keyword_real.h"
 #include "read_keyword_str.h"
 
-#include "SolverParams.h"
+#include "../classes/SolverParams.h"
 
 SolverParams read_solver_params
 (

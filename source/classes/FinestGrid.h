@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "real.h"
+#include "../types/real.h"
 
 typedef struct FinestGrid
 {

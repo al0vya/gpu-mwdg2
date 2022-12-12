@@ -2,8 +2,8 @@
 
 #include "cuda_runtime.h"
 
-#include "ChildScaleCoeffs.h"
-#include "ParentScaleCoeffs.h"
+#include "../classes/ChildScaleCoeffs.h"
+#include "../classes/ParentScaleCoeffs.h"
 #include "encode_scale.cuh"
 
 __device__ __forceinline__

@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "real.h"
+#include "../types/real.h"
 
 typedef struct ScaleChildrenHW
 {

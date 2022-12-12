@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "real.h"
+#include "../types/real.h"
 
 // from https://www.sciencedirect.com/science/article/pii/S0309170815002237
 __device__ __forceinline__

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "BLOCK_VAR_MACROS.cuh"
-#include "cuda_utils.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "get_lvl_idx.cuh"
-#include "read_and_project_modes_fv1.cuh"
-#include "read_and_project_modes_dg2.cuh"
+#include "../utilities/get_lvl_idx.cuh"
+#include "../input/read_and_project_modes_fv1.cuh"
+#include "../input/read_and_project_modes_dg2.cuh"
 
 __host__
 void get_modal_values

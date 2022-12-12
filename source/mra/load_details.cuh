@@ -2,9 +2,9 @@
 
 #include "cuda_runtime.h"
 
-#include "Detail.h"
-#include "Details.h"
-#include "HierarchyIndex.h"
+#include "../classes/Detail.h"
+#include "../classes/Details.h"
+#include "../types/HierarchyIndex.h"
 
 __device__ __forceinline__ DetailHW load_details_hw
 (

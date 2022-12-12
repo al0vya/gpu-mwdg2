@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SimulationParams.h"
+#include "../classes/SimulationParams.h"
 
-#include "generate_morton_code.cuh"
+#include "../zorder/generate_morton_code.cuh"
 
 typedef struct GaugePoints
 {

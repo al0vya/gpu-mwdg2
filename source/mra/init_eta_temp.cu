@@ -1,4 +1,4 @@
-#include "init_eta_temp.cuh"
+#include "../mra/init_eta_temp.cuh"
 
 __global__
 void init_eta_temp

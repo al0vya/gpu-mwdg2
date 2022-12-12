@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Coordinate.h"
-#include "real.h"
+#include "../types/Coordinate.h"
+#include "../types/real.h"
 
 typedef struct SimulationParams
 {

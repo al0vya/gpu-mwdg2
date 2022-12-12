@@ -2,12 +2,12 @@
 
 #include "cuda_runtime.h"
 
-#include "cuda_utils.cuh"
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/cuda_utils.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "SimulationParams.h"
+#include "../classes/SimulationParams.h"
 
-#include "get_num_blocks.h"
+#include "../utilities/get_num_blocks.h"
 #include "init_nodal_values.cuh"
 
 __host__ void get_nodal_values

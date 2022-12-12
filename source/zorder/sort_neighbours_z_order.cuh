@@ -4,12 +4,12 @@
 
 #include "cub/device/device_radix_sort.cuh"
 
-#include "CHECK_CUDA_ERROR.cuh"
-#include "cuda_utils.cuh"
+#include "../utilities/CHECK_CUDA_ERROR.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "Neighbours.h"
-#include "MortonCode.h"
-#include "SolverParams.h"
+#include "../classes/Neighbours.h"
+#include "../types/MortonCode.h"
+#include "../classes/SolverParams.h"
 
 __global__
 void sort_neighbours_z_order

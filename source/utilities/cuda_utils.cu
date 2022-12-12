@@ -1,4 +1,4 @@
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
 __host__
 cudaError_t sync()

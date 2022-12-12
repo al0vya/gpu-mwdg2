@@ -5,14 +5,14 @@
 
 #include "cub/block/block_scan.cuh"
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "Neighbours.h"
-#include "SolverParams.h"
-#include "SimulationParams.h"
+#include "../classes/Neighbours.h"
+#include "../classes/SolverParams.h"
+#include "../classes/SimulationParams.h"
 
 #include "apply_friction.cuh"
-#include "generate_morton_code.cuh"
+#include "../zorder/generate_morton_code.cuh"
 
 __global__
 void friction_implicit

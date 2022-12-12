@@ -5,11 +5,11 @@
 
 #include "cub/block/block_load.cuh"
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "HierarchyIndex.h"
-#include "CompactionFlags.h"
-#include "AssembledSolution.h"
+#include "../types/HierarchyIndex.h"
+#include "../classes/CompactionFlags.h"
+#include "../classes/AssembledSolution.h"
 
 __global__
 void get_compaction_flags

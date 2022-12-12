@@ -2,12 +2,12 @@
 
 #include "cub/device/device_select.cuh"
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "AssembledSolution.h"
-#include "Neighbours.h"
-#include "CompactionFlags.h"
-#include "SolverParams.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/Neighbours.h"
+#include "../classes/CompactionFlags.h"
+#include "../classes/SolverParams.h"
 
 __host__
 void compaction

@@ -4,9 +4,9 @@
 
 #include <cstdio>
 
-#include "ParentScaleCoeffs.h"
-#include "ChildScaleCoeffs.h"
-#include "ScaleCoefficients.h"
+#include "../classes/ParentScaleCoeffs.h"
+#include "../classes/ChildScaleCoeffs.h"
+#include "../classes/ScaleCoefficients.h"
 #include "index_1D.h"
 
 __device__ __forceinline__ void store_scale_coefficients

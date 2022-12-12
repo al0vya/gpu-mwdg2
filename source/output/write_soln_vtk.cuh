@@ -3,16 +3,16 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "Points.h"
-#include "AssembledSolution.h"
-#include "SimulationParams.h"
-#include "SolverParams.h"
-#include "SaveInterval.h"
+#include "../classes/Points.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/SimulationParams.h"
+#include "../classes/SolverParams.h"
+#include "../classes/SaveInterval.h"
 
-#include "compact.cuh"
-#include "get_lvl_idx.cuh"
+#include "../zorder/compact.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 __host__ void write_soln_vtk
 (
 	const char*              respath,

@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "real.h"
+#include "../types/real.h"
 
 /*
  * 1D topography mimicking the c-property test case from GK's HFV1_MATLAB

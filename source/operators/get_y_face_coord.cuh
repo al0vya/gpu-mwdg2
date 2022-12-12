@@ -2,8 +2,8 @@
 
 #include "cuda_runtime.h"
 
-#include "real.h"
-#include "Directions.h"
+#include "../types/real.h"
+#include "../types/Directions.h"
 
 __device__ __forceinline__
 real get_y_face_coord

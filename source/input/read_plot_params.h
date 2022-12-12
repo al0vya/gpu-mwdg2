@@ -2,7 +2,7 @@
 
 #include "read_keyword_str.h"
 
-#include "PlottingParams.h"
+#include "../classes/PlottingParams.h"
 
 PlottingParams read_plot_params
 (

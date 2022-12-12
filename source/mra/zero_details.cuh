@@ -3,9 +3,9 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "Details.h"
-#include "HierarchyIndex.h"
-#include "SolverParams.h"
+#include "../classes/Details.h"
+#include "../types/HierarchyIndex.h"
+#include "../classes/SolverParams.h"
 
 __global__
 void zero_details

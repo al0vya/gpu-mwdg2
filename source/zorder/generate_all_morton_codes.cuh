@@ -3,10 +3,10 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "MortonCode.h"
-#include "HierarchyIndex.h"
+#include "../types/MortonCode.h"
+#include "../types/HierarchyIndex.h"
 
-#include "generate_morton_code.cuh"
+#include "../zorder/generate_morton_code.cuh"
 
 __global__
 void generate_all_morton_codes

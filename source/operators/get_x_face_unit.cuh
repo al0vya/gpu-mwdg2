@@ -2,10 +2,10 @@
 
 #include "cuda_runtime.h"
 
-#include "real.h"
-#include "HierarchyIndex.h"
+#include "../types/real.h"
+#include "../types/HierarchyIndex.h"
 
-#include "get_x_coord.cuh"
+#include "../zorder/get_x_coord.cuh"
 
 __device__ __forceinline__
 real get_x_face_unit

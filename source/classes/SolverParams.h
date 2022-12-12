@@ -1,7 +1,7 @@
 #pragma once
 
-#include "real.h"
-#include "SolverTypes.h"
+#include "../types/real.h"
+#include "../types/SolverTypes.h"
 
 typedef struct SolverParams
 {

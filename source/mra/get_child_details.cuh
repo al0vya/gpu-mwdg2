@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "DetailChildren.h"
+#include "../classes/DetailChildren.h"
 
 __device__ __forceinline__
 DetailChildren get_child_details

@@ -5,12 +5,12 @@
 
 #include "cub/block/block_scan.cuh"
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "Neighbours.h"
-#include "SolverParams.h"
-#include "SimulationParams.h"
-#include "FlowVector.h"
+#include "../classes/Neighbours.h"
+#include "../classes/SolverParams.h"
+#include "../classes/SimulationParams.h"
+#include "../classes/FlowVector.h"
 
 #include "flux_HLL.cuh"
 #include "get_bed_src.cuh"

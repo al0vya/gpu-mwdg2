@@ -1,13 +1,13 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "HierarchyIndex.h"
-#include "SolverParams.h"
+#include "../types/HierarchyIndex.h"
+#include "../classes/SolverParams.h"
 
-#include "get_num_blocks.h"
+#include "../utilities/get_num_blocks.h"
 
 #include "regularisation.cuh"
 

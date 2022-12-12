@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SubDetail.h"
-#include "Maxes.h"
+#include "../classes/SubDetail.h"
+#include "../classes/Maxes.h"
 
 typedef struct DetailHW
 {

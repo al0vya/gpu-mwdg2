@@ -3,14 +3,14 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "real.h"
-#include "DetailChildren.h"
-#include "HierarchyIndex.h"
+#include "../types/real.h"
+#include "../classes/DetailChildren.h"
+#include "../types/HierarchyIndex.h"
 
 #include "get_child_details.cuh"
-#include "get_lvl_idx.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 
 template <bool SINGLE_BLOCK>
 __global__ void regularisation

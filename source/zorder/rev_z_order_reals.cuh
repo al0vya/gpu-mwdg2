@@ -1,11 +1,11 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
 #include "cub/device/device_radix_sort.cuh"
 
-#include "real.h"
-#include "MortonCode.h"
+#include "../types/real.h"
+#include "../types/MortonCode.h"
 
 __host__
 void rev_z_order_reals

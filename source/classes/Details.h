@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SubDetails.h"
-#include "SolverTypes.h"
+#include "../types/SolverTypes.h"
 
 typedef struct Details
 {

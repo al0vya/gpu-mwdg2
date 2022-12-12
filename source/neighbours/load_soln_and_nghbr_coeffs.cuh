@@ -4,10 +4,10 @@
 
 #include "cub/block/block_radix_sort.cuh"
 
-#include "Neighbours.h"
-#include "ScaleCoefficients.h"
-#include "AssembledSolution.h"
-#include "SolverParams.h"
+#include "../classes/Neighbours.h"
+#include "../classes/ScaleCoefficients.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/SolverParams.h"
 
 __global__
 void load_soln_and_nghbr_coeffs

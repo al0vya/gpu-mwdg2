@@ -1,4 +1,4 @@
-#include "modal_projections.cuh"
+#include "../mra/modal_projections.cuh"
 
 /*
  * SQUARE SHARED MEMORY BLOCKS:

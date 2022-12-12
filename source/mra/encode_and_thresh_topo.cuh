@@ -5,27 +5,27 @@
 
 #include "cub/block/block_scan.cuh"
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "HierarchyIndex.h"
-#include "ScaleCoefficients.h"
-#include "SolverParams.h"
-#include "SimulationParams.h"
-#include "Details.h"
-#include "Detail.h"
-#include "Maxes.h"
-#include "ChildScaleCoeffs.h"
-#include "ParentScaleCoeffs.h"
+#include "../types/HierarchyIndex.h"
+#include "../classes/ScaleCoefficients.h"
+#include "../classes/SolverParams.h"
+#include "../classes/SimulationParams.h"
+#include "../classes/Details.h"
+#include "../classes/Detail.h"
+#include "../classes/Maxes.h"
+#include "../classes/ChildScaleCoeffs.h"
+#include "../classes/ParentScaleCoeffs.h"
 
 #include "store_details.cuh"
 #include "store_scale_coeffs.cuh"
-#include "get_lvl_idx.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 #include "encode_scale_coeffs.cuh"
 #include "encode_details.cuh"
-#include "MortonCode.h"
-#include "Coordinate.h"
-#include "compact.cuh"
-#include "generate_morton_code.cuh"
+#include "../types/MortonCode.h"
+#include "../types/Coordinate.h"
+#include "../zorder/compact.cuh"
+#include "../zorder/generate_morton_code.cuh"
 
 __global__ void encode_and_thresh_topo
 (

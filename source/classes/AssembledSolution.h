@@ -1,10 +1,10 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "real.h"
-#include "HierarchyIndex.h"
-#include "SolverTypes.h"
+#include "../types/real.h"
+#include "../types/HierarchyIndex.h"
+#include "../types/SolverTypes.h"
 
 typedef struct AssembledSolution
 {

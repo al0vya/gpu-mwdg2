@@ -1,12 +1,12 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "Tracer.h"
-#include "SolverParams.h"
-#include "HierarchyIndex.h"
+#include "../classes/Tracer.h"
+#include "../classes/SolverParams.h"
+#include "../types/HierarchyIndex.h"
 
-#include "get_num_blocks.h"
+#include "../utilities/get_num_blocks.h"
 
 #include "encode_and_thresh_flow.cuh"
 

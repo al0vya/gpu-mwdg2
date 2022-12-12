@@ -1,11 +1,11 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
 #include "cub/cub.cuh"
 
-#include "AssembledSolution.h"
-#include "MortonCode.h"
+#include "../classes/AssembledSolution.h"
+#include "../types/MortonCode.h"
 
 __global__
 void rev_z_order_act_idcs

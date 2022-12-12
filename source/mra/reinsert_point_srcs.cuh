@@ -3,10 +3,10 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "ScaleCoefficients.h"
-#include "PointSources.h"
+#include "../classes/ScaleCoefficients.h"
+#include "../classes/PointSources.h"
 
-#include "get_lvl_idx.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 
 __global__
 void reinsert_point_srcs

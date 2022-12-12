@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "LegendreBasis.h"
+#include "../classes/LegendreBasis.h"
 
 #include "get_x_face_coord.cuh"
 #include "get_y_face_coord.cuh"

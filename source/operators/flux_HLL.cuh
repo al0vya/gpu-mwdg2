@@ -2,9 +2,9 @@
 
 #include "cuda_runtime.h"
 
-#include "FlowVector.h"
-#include "SolverParams.h"
-#include "SimulationParams.h"
+#include "../classes/FlowVector.h"
+#include "../classes/SolverParams.h"
+#include "../classes/SimulationParams.h"
 
 __device__ __forceinline__
 FlowVector flux_HLL_x

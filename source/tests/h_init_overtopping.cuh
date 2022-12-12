@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "Depths1D.h"
+#include "../classes/Depths1D.h"
 
 __device__ __forceinline__
 real h_init_overtopping

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "real.h"
+#include "../types/real.h"
 
 typedef struct Depths1D
 {

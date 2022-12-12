@@ -2,9 +2,9 @@
 
 #include "cuda_runtime.h"
 
-#include "Detail.h"
-#include "ChildScaleCoeffs.h"
-#include "Filters.h"
+#include "../classes/Detail.h"
+#include "../classes/ChildScaleCoeffs.h"
+#include "../mra/Filters.h"
 
 // encodes the details alpha, beta and gamma for eta, qx, qy and z
 __device__ __forceinline__

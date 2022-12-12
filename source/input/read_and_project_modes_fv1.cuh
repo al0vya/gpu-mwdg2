@@ -1,10 +1,10 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
-#include "AssembledSolution.h"
+#include "../classes/AssembledSolution.h"
 
-#include "read_raster_file.h"
+#include "../input/read_raster_file.h"
 
 __host__
 void read_and_project_modes_fv1

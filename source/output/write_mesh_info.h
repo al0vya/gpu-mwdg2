@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "SimulationParams.h"
+#include "../classes/SimulationParams.h"
 
 void write_mesh_info
 (

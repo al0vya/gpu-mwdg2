@@ -1,8 +1,8 @@
 #pragma once
 
-#include "FlowVector.h"
-#include "PlanarCoefficients.h"
-#include "LegendreBasis.h"
+#include "../classes/FlowVector.h"
+#include "../classes/PlanarCoefficients.h"
+#include "../classes/LegendreBasis.h"
 
 __host__ __device__ __forceinline__
 real eval_loc_face_val_dg2

@@ -3,9 +3,9 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "AssembledSolution.h"
-#include "ScaleCoefficients.h"
-#include "SolverParams.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/ScaleCoefficients.h"
+#include "../classes/SolverParams.h"
 
 __global__
 void copy_finest_coefficients

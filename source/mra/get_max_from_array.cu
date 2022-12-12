@@ -1,4 +1,4 @@
-#include "get_max_from_array.cuh"
+#include "../mra/get_max_from_array.cuh"
 
 __host__
 real get_max_from_array

@@ -1,4 +1,4 @@
-#include "reinsert_assem_sol.cuh"
+#include "../mra/reinsert_assem_sol.cuh"
 
 __global__
 void reinsert_assem_sol

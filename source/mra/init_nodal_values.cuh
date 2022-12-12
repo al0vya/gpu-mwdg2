@@ -3,14 +3,14 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "Depths1D.h"
-#include "SimulationParams.h"
-#include "NodalValues.h"
-#include "HierarchyIndex.h"
-#include "Coordinate.h"
+#include "../classes/Depths1D.h"
+#include "../classes/SimulationParams.h"
+#include "../classes/NodalValues.h"
+#include "../types/HierarchyIndex.h"
+#include "../types/Coordinate.h"
 
-#include "h_init.cuh"
-#include "topo.cuh"
+#include "../tests/h_init.cuh"
+#include "../tests/topo.cuh"
 
 // initialise nodal values of h, qx, qy and z depending on x, y nodal values
 __global__

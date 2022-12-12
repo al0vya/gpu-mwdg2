@@ -1,14 +1,14 @@
 #pragma once
 
-#include "BLOCK_VAR_MACROS.cuh"
+#include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "AssembledSolution.h"
-#include "Maxes.h"
+#include "../classes/AssembledSolution.h"
+#include "../classes/Maxes.h"
 
-#include "get_num_blocks.h"
+#include "../utilities/get_num_blocks.h"
 
-#include "init_eta_temp.cuh"
-#include "get_max_from_array.cuh"
+#include "../mra/init_eta_temp.cuh"
+#include "../mra/get_max_from_array.cuh"
 
 __host__
 Maxes get_max_scale_coeffs

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ScaleChildren.h"
+#include "../classes/ScaleChildren.h"
 
 typedef struct ChildScaleCoefficients
 {

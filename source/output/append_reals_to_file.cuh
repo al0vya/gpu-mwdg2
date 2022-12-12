@@ -1,11 +1,11 @@
 #pragma once
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 
 #include <cstdio>
 #include <cstring>
 
-#include "real.h"
+#include "../types/real.h"
 
 
 __host__

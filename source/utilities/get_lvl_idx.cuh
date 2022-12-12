@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "HierarchyIndex.h"
+#include "../types/HierarchyIndex.h"
 
 // gets the starting index of a grid at refinement level n within an array 
 // containing grids at refinement level n to L, mapped to 1D using Morton codes,

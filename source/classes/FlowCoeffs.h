@@ -1,9 +1,9 @@
 #pragma once
 
-#include "FlowVector.h"
-#include "PlanarCoefficients.h"
-#include "LegendreBasis.h"
-#include "eval_loc_face_val_dg2.cuh"
+#include "../classes/FlowVector.h"
+#include "../classes/PlanarCoefficients.h"
+#include "../classes/LegendreBasis.h"
+#include "../operators/eval_loc_face_val_dg2.cuh"
 
 typedef struct FlowCoeffs
 {

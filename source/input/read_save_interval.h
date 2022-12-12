@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "SaveInterval.h"
+#include "../classes/SaveInterval.h"
 
 SaveInterval read_save_interval
 (

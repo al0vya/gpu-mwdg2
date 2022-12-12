@@ -3,13 +3,13 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "Neighbours.h"
-#include "Coordinate.h"
-#include "Directions.h"
-#include "MortonCode.h"
-#include "SimulationParams.h"
+#include "../classes/Neighbours.h"
+#include "../types/Coordinate.h"
+#include "../types/Directions.h"
+#include "../types/MortonCode.h"
+#include "../classes/SimulationParams.h"
 
-#include "get_lvl_idx.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 
 __global__
 void find_neighbours

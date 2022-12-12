@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "FlowCoeffs.h"
+#include "../classes/FlowCoeffs.h"
 
 __device__ __forceinline__
 real get_bed_src_x

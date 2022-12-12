@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AssembledSolution.h"
+#include "../classes/AssembledSolution.h"
 
 typedef struct Neighbours
 {

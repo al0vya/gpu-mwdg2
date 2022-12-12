@@ -1,8 +1,8 @@
 #pragma once
 
-#include "get_num_blocks.h"
+#include "../utilities/get_num_blocks.h"
 
-#include "cuda_utils.cuh"
+#include "../utilities/cuda_utils.cuh"
 #include "decoding.cuh"
 #include "extra_significance.cuh"
 

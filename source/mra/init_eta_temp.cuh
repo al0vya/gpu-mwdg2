@@ -3,7 +3,7 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "AssembledSolution.h"
+#include "../classes/AssembledSolution.h"
 
 __global__
 void init_eta_temp
