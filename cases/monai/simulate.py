@@ -39,8 +39,7 @@ class YAxisLimits:
     def get_y_axis_ticks(
         self,
         field,
-        num_ticks,
-        num_digits_round
+        num_ticks
     ):
         if field == "rel_speedup":
             min_val = 0.9 * self.limits[field]["min"]
@@ -51,7 +50,7 @@ class YAxisLimits:
         
         d_val = (max_val - min_val) / num_ticks
         
-        return [ round(min_val + i * d_val, num_digits_round) for i in range(num_ticks+1) ]
+        return [ min_val + i * d_val for i in range(num_ticks+1) ]
         
     def set_y_axis_ticks(
         self,
@@ -62,8 +61,7 @@ class YAxisLimits:
     ):
         yticks = self.get_y_axis_ticks(
             field=field,
-            num_ticks=num_ticks,
-            num_digits_round=num_digits_round
+            num_ticks=num_ticks
         )
         
         ax.set_yticks( [] )
@@ -72,8 +70,10 @@ class YAxisLimits:
             minor=False
         )
         
+        yticks = [round(ytick, num_digits_round) if field == "rel_speedup" else int(ytick) for ytick in yticks]
+        
         ax.set_yticklabels(
-            labels=yticks if field == "rel_speedup" else [int(ytick) for ytick in yticks],
+            labels=yticks,
             minor=False
         )
         
@@ -284,8 +284,7 @@ class SimulationMonai:
                 ax_rel_speedup.plot(
                     time,
                     rel_speedup,
-                    linestyle='--',
-                    linewidth=1.5
+                    linewidth=2
                 )
                 
                 y_axis_limits.set_y_axis_limits(field="rel_speedup", field_data=rel_speedup)
@@ -295,8 +294,7 @@ class SimulationMonai:
                 ax_reduction.plot(
                     time,
                     compression,
-                    linestyle='--',
-                    linewidth=1.5,
+                    linewidth=2,
                     color=color,
                     label=label
                 )
@@ -304,13 +302,14 @@ class SimulationMonai:
                 ax_reduction.plot(
                     [ time.iloc[0], time.iloc[-1] ],
                     [ compression.iloc[0], compression.iloc[0] ],
-                    linewidth=2,
+                    linestyle='--',
+                    linewidth=1.5,
                     color=color
                 )
                 
                 y_axis_limits.set_y_axis_limits(field="reduction", field_data=compression)
                 
-                ax_reduction.set_ylabel("Reduction (%)")
+                ax_reduction.set_ylabel("$R_{cell}$ (%)")
                 
                 frac_DG2 = 100 * (
                     self.results[solver][epsilon]["runtime_solver"]
@@ -321,15 +320,14 @@ class SimulationMonai:
                 ax_frac_DG2.plot(
                     time[1:],
                     frac_DG2[1:],
-                    linestyle='--',
-                    linewidth=1.5
+                    linewidth=2
                 )
                 
                 y_axis_limits.set_y_axis_limits(field="frac_DG2", field_data=frac_DG2[1:])
                 
                 ax_frac_DG2.set_ylabel("$F_{DG2}$ (%)")
             
-            ax_reduction.invert_yaxis()
+            #ax_reduction.invert_yaxis()
             
             y_axis_limits.set_y_axis_ticks(ax=ax_rel_speedup, field="rel_speedup", num_ticks=5, num_digits_round=1)
             y_axis_limits.set_y_axis_ticks(ax=ax_reduction,   field="reduction",   num_ticks=10)
