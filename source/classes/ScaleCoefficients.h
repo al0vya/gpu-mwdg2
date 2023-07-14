@@ -22,7 +22,7 @@ typedef struct ScaleCoefficients
 	real* qy1y;
 	real* z1y;
 
-	bool is_copy = false;
+	bool is_copy_cuda = false;
 
 	ScaleCoefficients
 	(
@@ -48,11 +48,11 @@ typedef struct ScaleCoefficients
 		z1y   = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
 	}
 
-	ScaleCoefficients(const ScaleCoefficients& original) { *this = original; is_copy = true; }
+	ScaleCoefficients(const ScaleCoefficients& original) { *this = original; is_copy_cuda = true; }
 
 	~ScaleCoefficients()
 	{
-		if (!is_copy)
+		if (!is_copy_cuda)
 		{
 			CHECK_CUDA_ERROR( free_device(eta0) );
 			CHECK_CUDA_ERROR( free_device(qx0) );

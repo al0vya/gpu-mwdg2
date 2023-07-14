@@ -33,7 +33,7 @@ real get_dt_CFL
 		sol_len
 	) );
 
-	copy
+	copy_cuda
 	(
 		h_min_out, 
 		d_min_out, 

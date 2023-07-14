@@ -1,6 +1,6 @@
 test_case     0
 max_ref_lvl   10
-min_dt        1
+initial_tstep        1
 respath       results
 epsilon       1e-3
 fpfric        0.0

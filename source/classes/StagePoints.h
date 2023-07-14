@@ -4,13 +4,13 @@
 
 #include "../zorder/generate_morton_code.cuh"
 
-typedef struct GaugePoints
+typedef struct StagePoints
 {
 	MortonCode* codes;
 	int         num_points;
-	bool        is_copy = false;
+	bool        is_copy_cuda = false;
 
-	GaugePoints
+	StagePoints
 	(
 		const char*                input_filename,
 		const SimulationParams sim_params,
@@ -18,10 +18,10 @@ typedef struct GaugePoints
 
 	)
 	{
-		num_points = read_num_gauge_points(input_filename);
+		num_points = read_num_stage_points(input_filename);
 		codes      = (num_points > 0) ? new MortonCode[num_points] : nullptr;
 
-		read_gauge_points
+		read_stage_points
 		(
 			input_filename,
 			cell_size,
@@ -29,13 +29,13 @@ typedef struct GaugePoints
 		);
 	}
 
-	GaugePoints(const GaugePoints& original) { *this = original; is_copy = true; }
+	StagePoints(const StagePoints& original) { *this = original; is_copy_cuda = true; }
 
-	~GaugePoints() { if (!is_copy && codes != nullptr) delete[] codes; }
+	~StagePoints() { if (!is_copy_cuda && codes != nullptr) delete[] codes; }
 
-	int read_num_gauge_points(const char* input_filename)
+	int read_num_stage_points(const char* input_filename)
 	{
-		int num_gauge_points = 0;
+		int num_stage_points = 0;
 		
 		char str[255]          = {'\0'};
 		char buf[64]           = {'\0'};
@@ -71,12 +71,12 @@ typedef struct GaugePoints
 			exit(-1);
 		}
 
-		fscanf(fp, "%d", &num_gauge_points);
+		fscanf(fp, "%d", &num_stage_points);
 
-		return num_gauge_points;
+		return num_stage_points;
 	}
 
-	void read_gauge_points
+	void read_stage_points
 	(
 		const char*                 input_filename,
 		const real&                 cell_size,
@@ -85,7 +85,7 @@ typedef struct GaugePoints
 	{
 		if (num_points == 0) return;
 		
-		int num_gauge_points = 0;
+		int num_stage_points = 0;
 
 		char str[255]          = {'\0'};
 		char buf[64]           = {'\0'};
@@ -121,7 +121,7 @@ typedef struct GaugePoints
 			exit(-1);
 		}
 
-		fscanf(fp, "%d", &num_gauge_points);
+		fscanf(fp, "%d", &num_stage_points);
 
 		real x_stage = C(0.0);
 		real y_stage = C(0.0);
@@ -139,4 +139,4 @@ typedef struct GaugePoints
 		fclose(fp);
 	}
 
-} GaugePoints;
+} StagePoints;

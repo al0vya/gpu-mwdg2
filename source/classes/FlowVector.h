@@ -14,7 +14,7 @@ typedef struct FlowVector
     real get_speed
     (
         const real& q,
-        const real& tol_h
+        const real tol_h
     )
     {
         return (h < tol_h) ? 0 : q / h;
@@ -37,7 +37,7 @@ typedef struct FlowVector
     (
         const real& z,
         const real& z_intermediate,
-        const real& tol_h
+        const real tol_h
     )
     {
         real h_star  = calc_h_star(z, z_intermediate);
@@ -50,7 +50,7 @@ typedef struct FlowVector
     __device__ __forceinline__
     FlowVector phys_flux_x
     (
-        const real& tol_h,
+        const real tol_h,
         const real& g
     )
     {
@@ -67,7 +67,7 @@ typedef struct FlowVector
     __device__ __forceinline__
     FlowVector phys_flux_y
     (
-        const real& tol_h,
+        const real tol_h,
         const real& g
     )
     {

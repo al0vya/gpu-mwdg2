@@ -3,7 +3,7 @@
 __host__
 void write_raster_file
 (
-	const char*             respath,
+	const PlottingParams&   plot_params,
 	const char*             file_extension,
 	real*                   raster,
 	const SimulationParams& sim_params,
@@ -12,9 +12,9 @@ void write_raster_file
 	const int&              mesh_dim
 )
 {
-	char fullpath[255];
+	char fullpath[255] = {'\0'};
 
-	sprintf(fullpath, "%s%s%d%c%s", respath, "results-", saveint.count - 1, '.', file_extension);
+	sprintf(fullpath, "%s%c%s%c%d%c%s", plot_params.dirroot, '/', plot_params.resroot, '-', saveint.count - 1, '.', file_extension);
 
 	FILE* fp = fopen(fullpath, "w");
 

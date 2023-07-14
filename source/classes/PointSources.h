@@ -26,7 +26,7 @@ typedef struct PointSources
 	real**      all_src_data    = nullptr;
 	int*        rows            = nullptr;
 	int         num_srcs        = 0;
-	bool        is_copy         = false;
+	bool        is_copy_cuda         = false;
 
 	PointSources
 	(
@@ -74,11 +74,11 @@ typedef struct PointSources
 		update_all_srcs(dt);
 	}
 
-	PointSources(const PointSources& original) { *this = original; is_copy = true; }
+	PointSources(const PointSources& original) { *this = original; is_copy_cuda = true; }
 
 	~PointSources()
 	{
-		if (!is_copy)
+		if (!is_copy_cuda)
 		{
 			if (h_codes         != nullptr) delete[] h_codes;
 			if (d_codes         != nullptr) CHECK_CUDA_ERROR( free_device(d_codes) );
@@ -288,9 +288,9 @@ typedef struct PointSources
 		size_t bytes_srcs      = sizeof(real)       * num_srcs;
 		size_t bytes_src_types = sizeof(int)        * num_srcs;
 
-		copy(d_codes,     h_codes,     bytes_codes);
-		copy(d_srcs,      h_srcs,      bytes_srcs);
-		copy(d_src_types, h_src_types, bytes_src_types);
+		copy_cuda(d_codes,     h_codes,     bytes_codes);
+		copy_cuda(d_srcs,      h_srcs,      bytes_srcs);
+		copy_cuda(d_src_types, h_src_types, bytes_src_types);
 	}
 
 	void read_timeseries
@@ -468,7 +468,7 @@ typedef struct PointSources
 
 		size_t bytes_srcs = sizeof(real) * num_srcs;
 
-		copy(d_srcs, h_srcs, bytes_srcs);
+		copy_cuda(d_srcs, h_srcs, bytes_srcs);
 	}
 
 } PointSources;

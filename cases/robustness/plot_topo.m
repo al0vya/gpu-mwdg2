@@ -31,7 +31,7 @@ ylim([0, ymax]);
 
 hold off
 
-filename_full = strcat(fullfile('results', filename), '.jpg');
+filename_full = strcat(fullfile('results', filename), '.pdf');
 
 if not( isfile(filename_full) )
     exportgraphics(gcf, filename_full, 'Resolution', 600)

@@ -2,7 +2,7 @@
 
 __host__ void write_soln_vtk
 (
-	const char*              respath,
+	const PlottingParams&    plot_params,
 	const AssembledSolution& d_assem_sol,
 	      real*              d_dt_CFL,
 	const real&              dx_finest,
@@ -14,7 +14,7 @@ __host__ void write_soln_vtk
 {	
 	char fullpath[255] = {'\0'};
 
-	sprintf(fullpath, "%s%s%d%s", respath, "results-", saveint.count - 1, ".vtk");
+	sprintf(fullpath, "%s%c%s%c%d%s", plot_params.dirroot, '/', plot_params.resroot, '-', saveint.count - 1, ".vtk");
 
 	FILE* fp = fopen(fullpath, "w");
 
@@ -56,13 +56,13 @@ __host__ void write_soln_vtk
 	size_t bytes_act_idcs = d_assem_sol.length * sizeof(HierarchyIndex);
 	size_t bytes_levels   = d_assem_sol.length * sizeof(int);
 	
-	copy(h,        d_assem_sol.h0,       bytes_flow);
-	copy(qx,       d_assem_sol.qx0,      bytes_flow);
-	copy(qy,       d_assem_sol.qy0,      bytes_flow);
-	copy(z,        d_assem_sol.z0,       bytes_flow);
-	copy(dt,       d_dt_CFL,             bytes_flow);
-	copy(act_idcs, d_assem_sol.act_idcs, bytes_act_idcs);
-	copy(levels,   d_assem_sol.levels,   bytes_levels);
+	copy_cuda(h,        d_assem_sol.h0,       bytes_flow);
+	copy_cuda(qx,       d_assem_sol.qx0,      bytes_flow);
+	copy_cuda(qy,       d_assem_sol.qy0,      bytes_flow);
+	copy_cuda(z,        d_assem_sol.z0,       bytes_flow);
+	copy_cuda(dt,       d_dt_CFL,             bytes_flow);
+	copy_cuda(act_idcs, d_assem_sol.act_idcs, bytes_act_idcs);
+	copy_cuda(levels,   d_assem_sol.levels,   bytes_levels);
 
 	// number of cells excluding those in extended domain
 	int num_bound = 0;

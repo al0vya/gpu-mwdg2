@@ -7,6 +7,7 @@
 
 #include "../classes/Points.h"
 #include "../classes/AssembledSolution.h"
+#include "../classes/PlottingParams.h"
 #include "../classes/SimulationParams.h"
 #include "../classes/SolverParams.h"
 #include "../classes/SaveInterval.h"
@@ -19,7 +20,7 @@
 
 void write_all_raster_maps_fv1
 (
-    const char*              respath,
+    const PlottingParams&    plot_params,
 	const AssembledSolution& d_assem_sol,
 	const real&              dx_finest,
 	const real&              dy_finest,

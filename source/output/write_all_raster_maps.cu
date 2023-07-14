@@ -1,10 +1,8 @@
-#pragma once
-
 #include "write_all_raster_maps.cuh"
 
 void write_all_raster_maps
 (
-    const char*              respath,
+    const PlottingParams&    plot_params,
 	const AssembledSolution& d_assem_sol,
 	const real&              dx_finest,
 	const real&              dy_finest,
@@ -20,7 +18,7 @@ void write_all_raster_maps
 	{
 		write_all_raster_maps_fv1
 		(
-			respath,
+			plot_params,
 			d_assem_sol,
 			dx_finest,
 			dy_finest,
@@ -34,7 +32,7 @@ void write_all_raster_maps
 	{
 		write_all_raster_maps_dg2
 		(
-			respath,
+			plot_params,
 			d_assem_sol,
 			dx_finest,
 			dy_finest,

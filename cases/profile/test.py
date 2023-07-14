@@ -11,24 +11,24 @@ def write_par_file(
 ):
     with open(input_file, 'w') as fp:
         params = (
-            "test_case     0\n" +
             "max_ref_lvl   9\n" +
-            "min_dt        1\n" +
-            "respath       results\n" +
+            "initial_tstep 1\n" +
+            "dirroot       results\n" +
             "epsilon       %s\n" +
             "fpfric        0.01\n" +
-            "rasterroot    monai\n" +
+            "DEMfile       monai.dem\n" +
+            "startfile     monai.start\n" +
             "bcifile       monai.bci\n" +
             "bdyfile       monai.bdy\n" +
             "stagefile     monai.stage\n" +
-            "tol_h         1e-3\n" +
-            "tol_q         0\n" +
-            "tol_s         1e-9\n" +
-            "g             9.80665\n" +
+            "saveint       22.5\n" +
             "massint       0.1\n" +
             "sim_time      22.5\n" +
             "%s\n" +
             "cumulative\n" +
+            "raster_out\n" +
+            "vtk\n" +
+            "cuda\n" +
             "refine_wall\n" +
             "ref_thickness 16\n" +
             "wall_height   0.5"
@@ -126,7 +126,7 @@ def verify(
     
     subprocess.run( [os.path.join("..", "gpu-mwdg2.exe"), input_file] )
     
-    depths_computed = np.loadtxt(fname=os.path.join("results", "stage.wd"), skiprows=7, usecols=1, delimiter=' ')
+    depths_computed = np.loadtxt(fname=os.path.join("results", "res.stage"), skiprows=7, usecols=1, delimiter=' ')
     
     return verify_depths(epsilon, solver, depths_computed)
     

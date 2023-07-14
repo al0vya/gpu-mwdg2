@@ -1,49 +1,48 @@
-#include "write_gauge_point_data.cuh"
+#include "write_stage_point_data.cuh"
 
 __host__
-void write_gauge_point_data
+void write_stage_point_data
 (
-	const char*           respath,
 	const int&            mesh_dim,
 	const SolverParams&   solver_params,
 	const PlottingParams& plot_params,
 	AssembledSolution     d_plot_assem_sol,
 	FinestGrid            p_finest_grid,
-	GaugePoints           gauge_points,
+	StagePoints           stage_points,
 	const real&           current_time,
 	const real&           dx_finest,
 	const real&           dy_finest,
 	const bool&           first_t_step
 )
 {
-	if (gauge_points.num_points == 0) return;
+	if (stage_points.num_points == 0) return;
 	
 	int num_finest_elems = mesh_dim * mesh_dim;
 	
 	size_t bytes = sizeof(real) * num_finest_elems;
 
-	copy(p_finest_grid.h, d_plot_assem_sol.h0, bytes);
-	copy(p_finest_grid.z, d_plot_assem_sol.z0, bytes);
+	copy_cuda(p_finest_grid.h, d_plot_assem_sol.h0, bytes);
+	copy_cuda(p_finest_grid.z, d_plot_assem_sol.z0, bytes);
 	
 	if (plot_params.voutput_stage)
 	{
-		copy(p_finest_grid.qx, d_plot_assem_sol.qx0, bytes);
-		copy(p_finest_grid.qy, d_plot_assem_sol.qy0, bytes);
+		copy_cuda(p_finest_grid.qx, d_plot_assem_sol.qx0, bytes);
+		copy_cuda(p_finest_grid.qy, d_plot_assem_sol.qy0, bytes);
 	}
 
 	char fullpath_h[255]  = {"\0"};
 	char fullpath_vx[255] = {"\0"};
 	char fullpath_vy[255] = {"\0"};
 
-	sprintf(fullpath_h,  "%s%s", respath, "stage.wd");
-	sprintf(fullpath_vx, "%s%s", respath, "stage.vx");
-	sprintf(fullpath_vy, "%s%s", respath, "stage.vy");
+	sprintf(fullpath_h,  "%s%c%s%s", plot_params.dirroot, '/', plot_params.resroot, ".stage");
+	sprintf(fullpath_vx, "%s%c%s%s", plot_params.dirroot, '/', plot_params.resroot, ".xvelocity");
+	sprintf(fullpath_vy, "%s%c%s%s", plot_params.dirroot, '/', plot_params.resroot, ".yvelocity");
 	
 	FILE* fp_h  = fopen(fullpath_h,  (first_t_step) ? "w" : "a");
 	FILE* fp_vx = fopen(fullpath_vx, (first_t_step) ? "w" : "a");
 	FILE* fp_vy = fopen(fullpath_vy, (first_t_step) ? "w" : "a");
 
-	if (nullptr == fp_h || nullptr == fp_vx || nullptr == fp_vy)
+	if (NULL == fp_h || NULL == fp_vx || NULL == fp_vy)
 	{
 		fprintf(stderr, "Error opening stage results file, file: %s, line: %d.\n", __FILE__, __LINE__);
 		exit(-1);
@@ -54,10 +53,10 @@ void write_gauge_point_data
 		fprintf(fp_h, "Stage output, depth (m).\n\n");
 		fprintf(fp_h, "Stage information (stage,x,y,elev):\n");
 
-		for (int point = 0; point < gauge_points.num_points; point++)
+		for (int point = 0; point < stage_points.num_points; point++)
 		{
-			Coordinate i = get_i_index( gauge_points.codes[point] );
-			Coordinate j = get_j_index( gauge_points.codes[point] );
+			Coordinate i = get_i_index( stage_points.codes[point] );
+			Coordinate j = get_j_index( stage_points.codes[point] );
 			
 			int idx = mesh_dim * j + i;
 
@@ -77,7 +76,7 @@ void write_gauge_point_data
 		}
 		
 		fprintf(fp_h, "\nOutput, depths:\n");
-		fprintf(fp_h, "Time; stages 1 to %d\n", gauge_points.num_points);
+		fprintf(fp_h, "Time; stages 1 to %d\n", stage_points.num_points);
 		
 		if (plot_params.voutput_stage)
 		{
@@ -87,10 +86,10 @@ void write_gauge_point_data
 			fprintf(fp_vy, "Stage output, y velocity (m/s).\n\n");
 		    fprintf(fp_vy, "Stage information (stage,x,y,elev):\n");
 		    
-		    for (int point = 0; point < gauge_points.num_points; point++)
+		    for (int point = 0; point < stage_points.num_points; point++)
 		    {
-		    	Coordinate i = get_i_index( gauge_points.codes[point] );
-		    	Coordinate j = get_j_index( gauge_points.codes[point] );
+		    	Coordinate i = get_i_index( stage_points.codes[point] );
+		    	Coordinate j = get_j_index( stage_points.codes[point] );
 		    	
 		    	int idx = mesh_dim * j + i;
 		    
@@ -124,10 +123,10 @@ void write_gauge_point_data
 		    }
 		    
 		    fprintf(fp_vx, "\nOutput, x velocities:\n");
-		    fprintf(fp_vx, "Time; stages 1 to %d\n", gauge_points.num_points);
+		    fprintf(fp_vx, "Time; stages 1 to %d\n", stage_points.num_points);
 			
 			fprintf(fp_vy, "\nOutput, y velocities:\n");
-		    fprintf(fp_vy, "Time; stages 1 to %d\n", gauge_points.num_points);
+		    fprintf(fp_vy, "Time; stages 1 to %d\n", stage_points.num_points);
 		}
 	}
 
@@ -139,17 +138,17 @@ void write_gauge_point_data
 		fprintf(fp_vy, "%" NUM_FRMT " ", current_time);
 	}
 
-	for (int point = 0; point < gauge_points.num_points; point++)
+	for (int point = 0; point < stage_points.num_points; point++)
 	{
-		Coordinate i = get_i_index( gauge_points.codes[point] );
-		Coordinate j = get_j_index( gauge_points.codes[point] );
+		Coordinate i = get_i_index( stage_points.codes[point] );
+		Coordinate j = get_j_index( stage_points.codes[point] );
 
 		int idx = j * mesh_dim + i;
 
 		fprintf
 		(
 			fp_h,
-			( (point + 1) == gauge_points.num_points )
+			( (point + 1) == stage_points.num_points )
 			? "%" NUM_FRMT
 			: "%" NUM_FRMT " ",
 			p_finest_grid.h[idx]
@@ -163,7 +162,7 @@ void write_gauge_point_data
 			fprintf
 			(
 				fp_vx,
-				( (point + 1) == gauge_points.num_points )
+				( (point + 1) == stage_points.num_points )
 				? "%" NUM_FRMT
 				: "%" NUM_FRMT " ",
 				vx
@@ -172,7 +171,7 @@ void write_gauge_point_data
 			fprintf
 			(
 				fp_vy,
-				( (point + 1) == gauge_points.num_points )
+				( (point + 1) == stage_points.num_points )
 				? "%" NUM_FRMT
 				: "%" NUM_FRMT " ",
 				vy

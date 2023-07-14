@@ -3,7 +3,7 @@
 __host__
 void write_c_prop_data
 (
-	const char*              respath,
+	const PlottingParams&    plot_params,
 	const clock_t&           start,
 	const SolverParams&      solver_params,
 	const SimulationParams&  sim_params,
@@ -25,14 +25,14 @@ void write_c_prop_data
 		dt,
 		num_cells,
 		sim_params,
-		respath,
+		plot_params,
 		first_t_step
 	);
 
 	append_reals_to_file
 	(
 		"qx0-c-prop",
-		respath,
+		plot_params.dirroot,
 		d_assem_sol.qx0,
 		d_assem_sol.length,
 		first_t_step
@@ -41,7 +41,7 @@ void write_c_prop_data
 	append_reals_to_file
 	(
 		"qy0-c-prop",
-		respath,
+		plot_params.dirroot,
 		d_assem_sol.qy0,
 		d_assem_sol.length,
 		first_t_step
@@ -52,7 +52,7 @@ void write_c_prop_data
 		append_reals_to_file
 		(
 			"qx1x-c-prop",
-			respath,
+			plot_params.dirroot,
 			d_assem_sol.qx1x,
 			d_assem_sol.length,
 			first_t_step
@@ -61,7 +61,7 @@ void write_c_prop_data
 		append_reals_to_file
 		(
 			"qx1y-c-prop",
-			respath,
+			plot_params.dirroot,
 			d_assem_sol.qx1y,
 			d_assem_sol.length,
 			first_t_step
@@ -70,7 +70,7 @@ void write_c_prop_data
 		append_reals_to_file
 		(
 			"qy1x-c-prop",
-			respath,
+			plot_params.dirroot,
 			d_assem_sol.qy1x,
 			d_assem_sol.length,
 			first_t_step
@@ -78,7 +78,7 @@ void write_c_prop_data
 		append_reals_to_file
 		(
 			"qy1y-c-prop",
-			respath,
+			plot_params.dirroot,
 			d_assem_sol.qy1y,
 			d_assem_sol.length,
 			first_t_step

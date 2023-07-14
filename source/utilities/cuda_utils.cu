@@ -19,7 +19,7 @@ cudaError_t reset()
 }
 
 __host__
-cudaError_t copy
+cudaError_t copy_cuda
 (
 	void*  dst,
 	void*  src,
@@ -38,7 +38,7 @@ cudaError_t copy
 }
 
 __host__
-cudaError_t copy_async
+cudaError_t copy_cuda_async
 (
 	void*  dst,
 	void*  src,

@@ -86,7 +86,7 @@ void compaction
 		num_finest_elems
 	) );
 
-	copy
+	copy_cuda
 	(
 		h_sol_len, 
 		d_assem_sol_len, 

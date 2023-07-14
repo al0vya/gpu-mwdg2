@@ -27,7 +27,7 @@ typedef struct Boundary
 	real*       inlet_data     = nullptr;
 	int         row            = 0;
 	int         direction;
-	bool        is_copy        = false;
+	bool        is_copy_cuda        = false;
 
 	Boundary
 	(
@@ -61,11 +61,11 @@ typedef struct Boundary
 		read_time_series(input_filename);
 	}
 
-	Boundary(const Boundary& original) { *this = original; is_copy = true; }
+	Boundary(const Boundary& original) { *this = original; is_copy_cuda = true; }
 
 	~Boundary()
 	{
-		if (!is_copy)
+		if (!is_copy_cuda)
 		{
 			if (codes      != nullptr) delete[] codes;
 			if (time_data  != nullptr) delete[] time_data;

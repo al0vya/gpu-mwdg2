@@ -9,7 +9,7 @@ class SimulationMalpasset:
             self,
             epsilons
         ):
-            self.configs      = (*epsilons, "lisflood")
+            self.configs      = (*epsilons, "gpu-mwdg2")
             self.fields       = ["simtime", "runtime_total", "arrival_time"]
             self.stages       = [ _ for _ in range(1,10) ]
             self.stage_file   = os.path.join("results", "stage.wd")
@@ -93,7 +93,7 @@ class SimulationMalpasset:
             fig, ax = plt.subplots()
             
             for config in self.configs:
-                if config == "lisflood": continue
+                if config == "gpu-mwdg2": continue
                 
                 ax.plot(
                     self.stages,
@@ -118,7 +118,7 @@ class SimulationMalpasset:
             ax.clear()
             
             for config in self.configs:
-                if config == "lisflood": continue
+                if config == "gpu-mwdg2": continue
                 
                 runtime_ratio = self.results[1e-2]["runtime_total"] / self.results[config]["runtime_total"]
                 

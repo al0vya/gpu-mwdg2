@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../classes/SolverParams.h"
+#include "../classes/PlottingParams.h"
 #include "../classes/AssembledSolution.h"
 
 #include "write_cumulative_data.h"
@@ -10,7 +11,7 @@
 __host__
 void write_c_prop_data
 (
-	const char*              respath,
+	const PlottingParams&    plot_params,
 	const clock_t&           start,
 	const SolverParams&      solver_params,
 	const SimulationParams&  sim_params,

@@ -4,17 +4,17 @@ __host__
 void write_bool_to_file
 (
 	const char* filename,
-	const char* respath,
+	const char* dirroot,
 	bool*       d_results,
 	const int   array_length
 )
 {
-	// allocating host array to copy device array to 
+	// allocating host array to copy_cuda device array to 
 	bool* h_results = new bool[array_length];
 
 	size_t bytes = array_length * sizeof(bool);
 
-	copy
+	copy_cuda
 	(
 		h_results,
 		d_results,
@@ -23,9 +23,9 @@ void write_bool_to_file
 
 	FILE* fp;
 
-	char fullpath[255];
+	char fullpath[255] = {'\0'};
 
-	sprintf(fullpath, "%s%s%s", respath, filename, ".csv");
+	sprintf(fullpath, "%s%s%s", dirroot, filename, ".csv");
 	
 	fp = fopen(fullpath, "w");
 

@@ -2,7 +2,7 @@
 
 void write_all_raster_maps_fv1
 (
-    const char*              respath,
+    const PlottingParams&    plot_params,
 	const AssembledSolution& d_assem_sol,
 	const real&              dx_finest,
 	const real&              dy_finest,
@@ -32,12 +32,12 @@ void write_all_raster_maps_fv1
 	size_t bytes_act_idcs = d_assem_sol.length * sizeof(HierarchyIndex);
 	size_t bytes_levels   = d_assem_sol.length * sizeof(int);
 	
-	copy(h0,       d_assem_sol.h0,       bytes_flow);
-	copy(qx0,      d_assem_sol.qx0,      bytes_flow);
-	copy(qy0,      d_assem_sol.qy0,      bytes_flow);
-	copy(z0,       d_assem_sol.z0,       bytes_flow);
-	copy(act_idcs, d_assem_sol.act_idcs, bytes_act_idcs);
-	copy(levels,   d_assem_sol.levels,   bytes_levels);
+	copy_cuda(h0,       d_assem_sol.h0,       bytes_flow);
+	copy_cuda(qx0,      d_assem_sol.qx0,      bytes_flow);
+	copy_cuda(qy0,      d_assem_sol.qy0,      bytes_flow);
+	copy_cuda(z0,       d_assem_sol.z0,       bytes_flow);
+	copy_cuda(act_idcs, d_assem_sol.act_idcs, bytes_act_idcs);
+	copy_cuda(levels,   d_assem_sol.levels,   bytes_levels);
 
 	for (int element = 0; element < d_assem_sol.length; element++)
 	{
@@ -68,7 +68,7 @@ void write_all_raster_maps_fv1
 	
 	write_raster_file
 	(
-		respath,
+		plot_params,
 		"wd",
 		h,
 		sim_params,
@@ -79,7 +79,7 @@ void write_all_raster_maps_fv1
 
 	write_raster_file
 	(
-		respath,
+		plot_params,
 		"qx",
 		qx,
 		sim_params,
@@ -90,7 +90,7 @@ void write_all_raster_maps_fv1
 
 	write_raster_file
 	(
-		respath,
+		plot_params,
 		"qy",
 		qy,
 		sim_params,

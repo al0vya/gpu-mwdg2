@@ -6,7 +6,7 @@ typedef struct CompactionFlags
 {
 	bool* north_east;
 	bool* south_west;
-	bool  is_copy = false;
+	bool  is_copy_cuda = false;
 
 	CompactionFlags(const int& num_finest_elems)
 	{
@@ -16,11 +16,11 @@ typedef struct CompactionFlags
 		south_west = (bool*)malloc_device(bytes);
 	}
 
-	CompactionFlags(const CompactionFlags& original) { *this = original; is_copy = true; }
+	CompactionFlags(const CompactionFlags& original) { *this = original; is_copy_cuda = true; }
 
 	~CompactionFlags()
 	{
-		if (!is_copy)
+		if (!is_copy_cuda)
 		{
 			CHECK_CUDA_ERROR( free_device(north_east) );
 			CHECK_CUDA_ERROR( free_device(south_west) );

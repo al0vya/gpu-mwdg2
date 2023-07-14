@@ -58,7 +58,7 @@ void dg2_update
             !highwall
         );
 
-        d_dt_CFL[idx] = solver_params.min_dt;
+        d_dt_CFL[idx] = solver_params.initial_tstep;
     }
 
     block_scan(shared.temp_storage).ExclusiveSum

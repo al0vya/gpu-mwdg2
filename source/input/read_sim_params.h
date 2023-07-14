@@ -8,10 +8,11 @@
 
 #include "read_keyword_int.h"
 #include "read_keyword_real.h"
+#include "read_keyword_str.h"
 
 SimulationParams read_sim_params
 (
-	const int&              test_case,
-	const char*             input_filename,
+	const int&          test_case,
+	const char*         input_filename,
 	const SolverParams& solver_params
 );

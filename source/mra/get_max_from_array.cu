@@ -47,7 +47,7 @@ real get_max_from_array
 		C(0.0)
 	) );
 
-	copy
+	copy_cuda
 	(
 		h_max_out,
 		d_max_out,

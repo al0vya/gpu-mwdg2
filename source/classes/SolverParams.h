@@ -5,19 +5,20 @@
 
 typedef struct SolverParams
 {
-	int  L;
-	real min_dt;
-	real epsilon;
-	real tol_h;
-	real tol_q;
-	real tol_s;
-	real wall_height;
-	int  solver_type;
-	real CFL;
+	int  L             = 0;
+	real initial_tstep = C(0.0);
+	real epsilon       = C(0.0);
+	real tol_h         = C(1e-3);
+	real tol_q         = C(0.0);
+	real tol_s         = C(1e-9);
+	real wall_height   = C(0.0);
+	int  solver_type   = 0;
+	real CFL           = C(0.0);
 	bool grading       = false;
 	bool limitslopes   = false;
 	real tol_Krivo     = C(9999.0);
 	bool refine_wall   = false;
-	int  ref_thickness = 16;
+	int  ref_thickness = 0;
+	bool startq2d      = false;
 
 } SolverParams;

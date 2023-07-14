@@ -8,6 +8,7 @@
 #include <time.h>
 
 #include "../classes/SimulationParams.h"
+#include "../classes/PlottingParams.h"
 
 void write_cumulative_data
 (
@@ -18,6 +19,6 @@ void write_cumulative_data
 	const real&             dt,
 	const int&              num_cells,
 	const SimulationParams& sim_params,
-	const char*             respath,
+	const PlottingParams&   plot_params,
 	const bool              first_t_step
 );

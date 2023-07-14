@@ -1,5 +1,6 @@
 #pragma once
 
+#include "read_keyword_bool.h"
 #include "read_keyword_str.h"
 
 #include "../classes/PlottingParams.h"

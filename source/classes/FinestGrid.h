@@ -11,7 +11,7 @@ typedef struct FinestGrid
     real* qy;
     real* z;
 	
-	bool is_copy = false;
+	bool is_copy_cuda = false;
 	
 	FinestGrid(const int& num_finest_elems)
 	{
@@ -23,11 +23,11 @@ typedef struct FinestGrid
 		z  = (real*)malloc_pinned(bytes);
 	}
 	
-	FinestGrid(const FinestGrid& original) { *this = original; is_copy = true; }
+	FinestGrid(const FinestGrid& original) { *this = original; is_copy_cuda = true; }
 	
 	~FinestGrid()
 	{
-	    if (!is_copy)
+	    if (!is_copy_cuda)
 		{
 		    CHECK_CUDA_ERROR( free_pinned(h)  );
 		    CHECK_CUDA_ERROR( free_pinned(qx) );

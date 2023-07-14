@@ -5,7 +5,7 @@
 
 void write_all_raster_maps
 (
-    const char*              respath,
+    const PlottingParams&    plot_params,
 	const AssembledSolution& d_assem_sol,
 	const real&              dx_finest,
 	const real&              dy_finest,

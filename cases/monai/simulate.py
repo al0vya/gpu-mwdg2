@@ -17,8 +17,6 @@ class YAxisLimits:
             limits[key]["min"] =  (2 ** 63 + 1)
             limits[key]["max"] = -(2 ** 63 + 1)
         
-        #limits["reduction"]["min"] = 0
-        
         self.limits = limits
     
     def set_y_axis_limits(
@@ -39,8 +37,7 @@ class YAxisLimits:
     def get_y_axis_ticks(
         self,
         field,
-        num_ticks,
-        num_digits_round
+        num_ticks
     ):
         if field == "rel_speedup":
             min_val = 0.9 * self.limits[field]["min"]
@@ -51,7 +48,7 @@ class YAxisLimits:
         
         d_val = (max_val - min_val) / num_ticks
         
-        return [ round(min_val + i * d_val, num_digits_round) for i in range(num_ticks+1) ]
+        return [ min_val + i * d_val for i in range(num_ticks+1) ]
         
     def set_y_axis_ticks(
         self,
@@ -62,8 +59,7 @@ class YAxisLimits:
     ):
         yticks = self.get_y_axis_ticks(
             field=field,
-            num_ticks=num_ticks,
-            num_digits_round=num_digits_round
+            num_ticks=num_ticks
         )
         
         ax.set_yticks( [] )
@@ -72,8 +68,10 @@ class YAxisLimits:
             minor=False
         )
         
+        yticks = [round(ytick, num_digits_round) if field == "rel_speedup" else int(ytick) for ytick in yticks]
+        
         ax.set_yticklabels(
-            labels=yticks if field == "rel_speedup" else [int(ytick) for ytick in yticks],
+            labels=yticks,
             minor=False
         )
         
@@ -104,8 +102,8 @@ class SimulationMonai:
                 "compression",
                 "gauge_data"
             ]
-            self.stage_file   = os.path.join("results", "stage.wd")
-            self.runtime_file = os.path.join("results", "cumulative-data.csv")
+            self.stage_file   = os.path.join("results", "res.stage")
+            self.runtime_file = os.path.join("results", "res-cumulative-data.csv")
             self.results      = {}
             
             for solver in self.solvers:
@@ -146,32 +144,27 @@ class SimulationMonai:
             
             with open(input_file, 'w') as fp:
                 params = (
-                    "test_case     0\n" +
+                    "%s\n" + # solver
+                    "cuda\n" +
+                    "cumulative\n" +
+                    "refine_wall\n" +
+                    "ref_thickness 16\n" +
                     "max_ref_lvl   9\n" +
-                    "min_dt        1\n" +
-                    "respath       results\n" +
                     "epsilon       %s\n" +
+                    "wall_height   0.5\n" +
+                    "initial_tstep 1\n" +
                     "fpfric        0.01\n" +
-                    "rasterroot    monai\n" +
+                    "sim_time      22.5\n" +
+                    "dirroot       results\n" +
+                    "massint       0.2\n" +
+                    "DEMfile       monai.dem\n" +
+                    "startfile     monai.start\n" +
                     "bcifile       monai.bci\n" +
                     "bdyfile       monai.bdy\n" +
-                    "stagefile     monai.stage\n" +
-                    "tol_h         1e-3\n" +
-                    "tol_q         0\n" +
-                    "tol_s         1e-9\n" +
-                    "g             9.80665\n" +
-                    "massint       0.2\n" +
-                    "sim_time      22.5\n" +
-                    "solver        %s\n" +
-                    "limitslopes   off\n" +
-                    "tol_Krivo     10\n" +
-                    "refine_wall   on\n" +
-                    "ref_thickness 16\n" +
-                    "cumulative    on\n" +
-                    "wall_height   0.5"
+                    "stagefile     monai.stage\n"
                 ) % (
-                    epsilon,
-                    solver
+                    solver,
+                    epsilon
                 )
                 
                 fp.write(params)
@@ -205,11 +198,11 @@ class SimulationMonai:
         for solver in self.solvers:
             for epsilon in self.epsilons:
                 if epsilon == 0:
-                    label = "GPU-DG2"    if solver == "mw" else "GPU-FV1"
+                    label = "GPU-DG2"    if solver == "mwdg2" else "GPU-FV1"
                 elif np.isclose(epsilon, 1e-3):
-                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                    label = ("GPU-MWDG2" if solver == "mwdg2" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
                 elif np.isclose(epsilon, 1e-4):
-                    label = ("GPU-MWDG2" if solver == "mw" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
+                    label = ("GPU-MWDG2" if solver == "mwdg2" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
 
                 ax.plot(
                     self.results[solver][epsilon]["simtime"],
@@ -284,8 +277,7 @@ class SimulationMonai:
                 ax_rel_speedup.plot(
                     time,
                     rel_speedup,
-                    linestyle='--',
-                    linewidth=1.5
+                    linewidth=2
                 )
                 
                 y_axis_limits.set_y_axis_limits(field="rel_speedup", field_data=rel_speedup)
@@ -295,8 +287,7 @@ class SimulationMonai:
                 ax_reduction.plot(
                     time,
                     compression,
-                    linestyle='--',
-                    linewidth=1.5,
+                    linewidth=2,
                     color=color,
                     label=label
                 )
@@ -304,13 +295,14 @@ class SimulationMonai:
                 ax_reduction.plot(
                     [ time.iloc[0], time.iloc[-1] ],
                     [ compression.iloc[0], compression.iloc[0] ],
-                    linewidth=2,
+                    linestyle='--',
+                    linewidth=1.5,
                     color=color
                 )
                 
                 y_axis_limits.set_y_axis_limits(field="reduction", field_data=compression)
                 
-                ax_reduction.set_ylabel("Reduction (%)")
+                ax_reduction.set_ylabel("$R_{cell}$ (%)")
                 
                 frac_DG2 = 100 * (
                     self.results[solver][epsilon]["runtime_solver"]
@@ -321,15 +313,14 @@ class SimulationMonai:
                 ax_frac_DG2.plot(
                     time[1:],
                     frac_DG2[1:],
-                    linestyle='--',
-                    linewidth=1.5
+                    linewidth=2
                 )
                 
                 y_axis_limits.set_y_axis_limits(field="frac_DG2", field_data=frac_DG2[1:])
                 
                 ax_frac_DG2.set_ylabel("$F_{DG2}$ (%)")
             
-            ax_reduction.invert_yaxis()
+            #ax_reduction.invert_yaxis()
             
             y_axis_limits.set_y_axis_ticks(ax=ax_rel_speedup, field="rel_speedup", num_ticks=5, num_digits_round=1)
             y_axis_limits.set_y_axis_ticks(ax=ax_reduction,   field="reduction",   num_ticks=10)
@@ -368,4 +359,4 @@ if __name__ == "__main__":
     subprocess.run( ["python", "inflow.py"] )
     subprocess.run( ["python", "raster.py"] )
     
-    SimulationMonai( [1e-3, 1e-4, 0], ["mw"] ).plot( ExperimentalDataMonai() )
+    SimulationMonai( [1e-3, 1e-4, 0], ["mwdg2"] ).plot( ExperimentalDataMonai() )

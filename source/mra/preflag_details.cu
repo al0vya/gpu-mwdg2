@@ -5,7 +5,7 @@ bool* preflag_details
 (
 	const Boundaries&        boundaries,
 	const PointSources&      point_sources,
-	const GaugePoints&       gauge_points,
+	const StagePoints&       stage_points,
 	const SimulationParams&  sim_params,
 	const SolverParams&      solver_params,
 	const int&               num_details,
@@ -21,9 +21,9 @@ bool* preflag_details
 
 	HierarchyIndex starting_idx = get_lvl_idx(max_ref_lvl - 1);
 
-	for (int i = 0; i < gauge_points.num_points; i++)
+	for (int i = 0; i < stage_points.num_points; i++)
 	{
-		MortonCode child_idx = gauge_points.codes[i] / 4; // to get Morton code one level below
+		MortonCode child_idx = stage_points.codes[i] / 4; // to get Morton code one level below
 
 		h_preflagged_details[starting_idx + child_idx] = true;
 	}
@@ -86,7 +86,7 @@ bool* preflag_details
 		);
 	}
 
-	copy(d_preflagged_details, h_preflagged_details, bytes);
+	copy_cuda(d_preflagged_details, h_preflagged_details, bytes);
 
 	delete[] h_preflagged_details;
 

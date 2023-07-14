@@ -4,12 +4,12 @@ void write_mesh_info
 (
 	const SimulationParams& sim_params,
 	const int&              mesh_dim,
-	const char*             respath
+	const char*             dirroot
 )
 {
-	char fullpath[255];
+	char fullpath[255] = {'\0'};
 
-	sprintf(fullpath, "%s%s", respath, "mesh_info.csv");
+	sprintf(fullpath, "%s%c%s", dirroot, '/', "mesh_info.csv");
 	
 	FILE* fp = fopen(fullpath, "w");
 

@@ -53,7 +53,7 @@ def check_nodal_data(
     ax.set_xlabel(r"$x \, (m)$")
     ax.set_ylabel(r"$y \, (m)$")
     
-    fig.savefig(fname=( os.path.join("results", filename) ) + ".svg", bbox_inches="tight")
+    fig.savefig(filename, bbox_inches="tight")
     
     plt.close()
 

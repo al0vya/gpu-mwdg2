@@ -2,8 +2,8 @@
 
 SimulationParams read_sim_params
 (
-	const int&              test_case,
-	const char*             input_filename,
+	const int&          test_case,
+	const char*         input_filename,
 	const SolverParams& solver_params
 )
 {
@@ -15,50 +15,30 @@ SimulationParams read_sim_params
 	{
 	    case 0: // raster file based test case
 	    {
-	    	char str[255]         = {'\0'};
-	    	char buf[64]          = {'\0'};
-	    	char rasterroot[64]   = {'\0'};
-	    	char dem_filename[64] = {'\0'};
-	    
-	    	real cellsize = C(0.0);
-	    
-	    	FILE* fp = fopen(input_filename, "r");
-	    
-	    	if (NULL == fp)
-	    	{
-	    		fprintf(stderr, "Error opening input file for reading study area dimensions, file: %s, line: %d.\n", __FILE__, __LINE__);
-	    		exit(-1);
-	    	}
-	    
-	    	while ( strncmp(buf, "rasterroot", 10) )
-	    	{
-	    		if ( NULL == fgets( str, sizeof(str), fp) )
-	    		{
-	    			fprintf(stderr, "Error reading input file for reading raster root filename, file: %s, line: %d.\n", __FILE__, __LINE__);
-	    			fclose(fp);
-	    			exit(-1);
-	    		}
-	    
-	    		sscanf(str, "%s %s", buf, rasterroot);
-	    	}
-	    
-	    	fclose(fp);
-	    
-	    	strcpy(dem_filename, rasterroot);
-	    	strcat(dem_filename, ".dem");
+			char dem_filename_buf[128] = {'\0'};
+			read_keyword_str(input_filename, "DEMfile", 7, dem_filename_buf);
 
-			sim_params.xsz       = read_keyword_int (dem_filename, "ncols", 5);
-			sim_params.ysz       = read_keyword_int (dem_filename, "nrows", 5);
-			sim_params.xmin      = read_keyword_real(dem_filename, "xllcorner", 9);
-			sim_params.ymin      = read_keyword_real(dem_filename, "yllcorner", 9);
-			cellsize             = read_keyword_real(dem_filename, "cellsize", 8);
+			FILE* fp = fopen(dem_filename_buf, "r");
+
+			if (NULL == fp)
+			{
+				fprintf(stderr, "Error opening DEM file for reading simulation parameters, file: %s, line: %d.\n", __FILE__, __LINE__);
+				exit(-1);
+			}
+
+			real cellsize = C(0.0);
+
+			sim_params.xsz       = read_keyword_int (dem_filename_buf, "ncols", 5);
+			sim_params.ysz       = read_keyword_int (dem_filename_buf, "nrows", 5);
+			sim_params.xmin      = read_keyword_real(dem_filename_buf, "xllcorner", 9);
+			sim_params.ymin      = read_keyword_real(dem_filename_buf, "yllcorner", 9);
+			cellsize             = read_keyword_real(dem_filename_buf, "cellsize", 8);
 	    	sim_params.xmax      = sim_params.xmin + sim_params.xsz * cellsize;
 	    	sim_params.ymax      = sim_params.ymin + sim_params.ysz * cellsize;
-			sim_params.g         = read_keyword_real(input_filename, "g", 1);
 			sim_params.time      = read_keyword_real(input_filename, "sim_time", 8);
 			sim_params.manning   = read_keyword_real(input_filename, "fpfric", 6);
-			sim_params.is_monai  = !strncmp("monai", rasterroot, 5);
-			sim_params.is_oregon = !strncmp("oregon-seaside", rasterroot, 14);
+			sim_params.is_monai  = !strncmp("monai.dem", dem_filename_buf, 9);
+			sim_params.is_oregon = !strncmp("oregon-seaside.dem", dem_filename_buf, 18);
 	    }
 	    	break;
 	    case 1: // c prop

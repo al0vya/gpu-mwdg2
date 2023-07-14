@@ -406,7 +406,7 @@ def write_parameter_file(
     params = (
         "test_case     0\n" +
         "max_ref_lvl   12\n" +
-        "min_dt        1\n" +
+        "initial_tstep        1\n" +
         "respath       %s\n" +
         "epsilon       %s\n" +
         "fpfric        0.025\n" + # from "A comparison of a two-dimensional depth-averaged flow model ... for predicting tsunami ..."

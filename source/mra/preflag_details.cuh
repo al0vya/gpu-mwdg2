@@ -4,7 +4,7 @@
 
 #include "../classes/Boundaries.h"
 #include "../classes/PointSources.h"
-#include "../classes/GaugePoints.h"
+#include "../classes/StagePoints.h"
 #include "../classes/SimulationParams.h"
 #include "../classes/SolverParams.h"
 
@@ -16,7 +16,7 @@ bool* preflag_details
 (
 	const Boundaries&        boundaries,
 	const PointSources&      point_sources,
-	const GaugePoints&       gauge_points,
+	const StagePoints&       stage_points,
 	const SimulationParams&  sim_params,
 	const SolverParams&      solver_params,
 	const int&               num_details,

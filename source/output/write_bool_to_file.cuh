@@ -9,7 +9,7 @@ __host__
 void write_bool_to_file
 (
 	const char* filename,
-	const char* respath,
+	const char* dirroot,
 	bool*       d_results,
 	const int   array_length
 );

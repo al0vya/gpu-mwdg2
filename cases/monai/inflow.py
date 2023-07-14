@@ -9,7 +9,7 @@ if __name__ == "__main__":
         fp.write("W 0 3.402 HVAR TEST1")
     
     with open("monai.bdy", 'w') as fp:
-        fp.write("TEST1\n")
+        fp.write("\nTEST1\n")
         
         timeseries_len = inflow_timeseries.shape[0]
         

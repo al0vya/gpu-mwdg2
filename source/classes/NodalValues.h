@@ -10,7 +10,7 @@ typedef struct NodalValues
 	real* qx;
 	real* qy;
 	real* z;
-	bool  is_copy = false;
+	bool  is_copy_cuda = false;
 
 	NodalValues(const int& interface_dim)
 	{
@@ -22,11 +22,11 @@ typedef struct NodalValues
 		z  = (real*)malloc_device(bytes);
 	}
 
-	NodalValues(const NodalValues& original) { *this = original; is_copy = true; }
+	NodalValues(const NodalValues& original) { *this = original; is_copy_cuda = true; }
 
 	~NodalValues()
 	{
-		if (!is_copy)
+		if (!is_copy_cuda)
 		{
 			CHECK_CUDA_ERROR( free_device(h)  );
 			CHECK_CUDA_ERROR( free_device(qx) );

@@ -7,12 +7,13 @@
 #include "../utilities/cuda_utils.cuh"
 
 #include "../classes/SimulationParams.h"
+#include "../classes/PlottingParams.h"
 #include "../classes/SaveInterval.h"
 
 __host__
 void write_raster_file
 (
-	const char*             respath,
+	const PlottingParams&   plot_params,
 	const char*             file_extension,
 	real*                   raster,
 	const SimulationParams& sim_params,

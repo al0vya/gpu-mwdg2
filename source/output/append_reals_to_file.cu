@@ -4,18 +4,18 @@ __host__
 void append_reals_to_file
 (
 	const char* filename,
-	const char* respath,
+	const char* dirroot,
 	real*       d_results,
 	const int&  array_length,
 	const bool  first_t_step
 )
 {
-	// allocating host array to copy device array to 
+	// allocating host array to copy_cuda device array to 
 	real* h_results = new real[array_length];
 
 	size_t bytes = array_length * sizeof(real);
 
-	copy
+	copy_cuda
 	(
 		h_results,
 		d_results,
@@ -24,9 +24,9 @@ void append_reals_to_file
 
 	FILE* fp;
 
-	char fullpath[255];
+	char fullpath[255] = {'\0'};
 
-	sprintf(fullpath, "%s%s%s", respath, filename, ".csv");
+	sprintf(fullpath, "%s%s%s", dirroot, filename, ".csv");
 
 	fp = (first_t_step) ? fopen(fullpath, "w") : fopen(fullpath, "a");
 

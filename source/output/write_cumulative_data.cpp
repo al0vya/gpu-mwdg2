@@ -9,13 +9,13 @@ void write_cumulative_data
 	const real&             dt,
 	const int&              num_cells,
 	const SimulationParams& sim_params,
-	const char*             respath,
+	const PlottingParams&   plot_params,
 	const bool              first_t_step
 )
 {
-	char fullpath[255];
+	char fullpath[255] = {'\0'};
 
-	sprintf(fullpath, "%s%s", respath, "cumulative-data.csv");
+	sprintf(fullpath, "%s%c%s%c%s", plot_params.dirroot, '/', plot_params.resroot, '-', "cumulative-data.csv");
 	
 	FILE* cumulative_input = fopen(fullpath, (first_t_step) ? "w" : "a");
 

@@ -1,10 +1,3 @@
-// RC's suggestion to manage Intellisense
-#ifdef __INTELLISENSE__
-    #ifndef __CUDACC__
-        #define __CUDACC__
-    #endif
-#endif
-
 //-----------------Custom headers-----------------//
 
 // Kernels
@@ -43,7 +36,6 @@
 #include "input/read_bound_conds.h"
 #include "input/read_cell_size.h"
 #include "input/read_plot_params.h"
-#include "input/read_respath.h"
 #include "input/read_save_interval.h"
 #include "input/read_sim_params.h"
 #include "input/read_solver_params.h"
@@ -51,7 +43,7 @@
 #include "output/write_all_raster_maps.cuh"
 #include "output/write_c_prop_data.cuh"
 #include "output/write_mesh_info.h"
-#include "output/write_gauge_point_data.cuh"
+#include "output/write_stage_point_data.cuh"
 #include "output/write_soln_vtk.cuh"
 
 // Helper functions
@@ -161,9 +153,6 @@ int main
 	
 	const int test_case = read_test_case(input_filename);
 	
-	char respath[255] = {'\0'};
-	read_respath(input_filename, respath);
-
 	// ================ //
 
 	// =========================================================== //
@@ -201,7 +190,7 @@ int main
 	// Structures
 	Maxes maxes = { C(1.0), C(1.0), C(1.0), C(1.0), C(1.0) };
 	
-	GaugePoints  gauge_points (input_filename, sim_params, dx_finest);
+	StagePoints  stage_points (input_filename, sim_params, dx_finest);
 	Boundaries   boundaries   (input_filename, sim_params, dx_finest, test_case);
 	PointSources point_sources(input_filename, sim_params, dx_finest, test_case, dt);
 	
@@ -252,7 +241,7 @@ int main
 	(
 		boundaries, 
 		point_sources, 
-		gauge_points, 
+		stage_points, 
 		sim_params, 
 		solver_params, 
 		num_details, 
@@ -266,7 +255,7 @@ int main
 	// INPUT AND OUTPUT //
 	// ================ //
 
-	write_mesh_info(sim_params, mesh_dim, respath);
+	write_mesh_info(sim_params, mesh_dim, plot_params.dirroot);
 
 	// ================ //
 
@@ -817,7 +806,7 @@ int main
 			{
 				write_soln_vtk
 				(
-					respath,
+					plot_params,
 					d_assem_sol,
 					d_dt_CFL,
 					dx_finest,
@@ -832,7 +821,7 @@ int main
 			{
 				write_all_raster_maps
 				(
-					respath,
+					plot_params,
 					d_assem_sol,
 					dx_finest,
 					dy_finest,
@@ -847,7 +836,7 @@ int main
 			{
 				write_c_prop_data
 				(
-					respath,
+					plot_params,
 					start,
 					solver_params,
 					sim_params,
@@ -875,7 +864,7 @@ int main
 					dt,
 					d_assem_sol.length,
 					sim_params,
-			        respath,
+			        plot_params,
 			        first_t_step
 			    );
 			}
@@ -893,15 +882,14 @@ int main
 				d_plot_assem_sol
 			);
 			
-			write_gauge_point_data
+			write_stage_point_data
 			(
-				respath,
 				mesh_dim,
 				solver_params,
 				plot_params,
 				d_plot_assem_sol,
 				p_finest_grid,
-				gauge_points,
+				stage_points,
 				current_time,
 				dx_finest,
 				dy_finest,
@@ -963,7 +951,7 @@ int main
 
 	// =================== //
 
-    return 0;
+	return 0;
 }
 
 //==========================================================================================================//

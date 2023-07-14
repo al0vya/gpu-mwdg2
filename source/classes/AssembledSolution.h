@@ -27,7 +27,7 @@ typedef struct AssembledSolution
 
 	int* levels;
 	int  length;
-	bool is_copy = false;
+	bool is_copy_cuda = false;
 
 	AssembledSolution(const int& num_finest_elems, const int& solver_type)
 	{
@@ -54,11 +54,11 @@ typedef struct AssembledSolution
 		length   = num_finest_elems;
 	}
 
-	AssembledSolution(const AssembledSolution& original) { *this = original; is_copy = true; }
+	AssembledSolution(const AssembledSolution& original) { *this = original; is_copy_cuda = true; }
 
 	~AssembledSolution()
 	{
-		if (!is_copy)
+		if (!is_copy_cuda)
 		{
 			CHECK_CUDA_ERROR( free_device(h0) );
 			CHECK_CUDA_ERROR( free_device(qx0) );

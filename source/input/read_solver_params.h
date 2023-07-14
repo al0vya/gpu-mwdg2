@@ -2,7 +2,7 @@
 
 #include "read_keyword_int.h"
 #include "read_keyword_real.h"
-#include "read_keyword_str.h"
+#include "read_keyword_bool.h"
 
 #include "../classes/SolverParams.h"
 

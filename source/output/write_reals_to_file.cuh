@@ -11,7 +11,7 @@ __host__
 void write_reals_to_file
 (
 	const char* filename,
-	const char* respath,
+	const char* dirroot,
 	real*       d_results,
 	const int&  array_length
 );

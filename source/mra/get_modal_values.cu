@@ -3,14 +3,14 @@
 __host__
 void get_modal_values
 (
-	NodalValues&          d_nodal_vals,
-	AssembledSolution&    d_assem_sol,
-	SolverParams&     solver_params,
-	SimulationParams& sim_params,
-	const int&            mesh_dim,
-	const int&            interface_dim,
-	const int&            test_case,
-	const char*           input_filename
+	NodalValues&       d_nodal_vals,
+	AssembledSolution& d_assem_sol,
+	SolverParams&      solver_params,
+	SimulationParams&  sim_params,
+	const int&         mesh_dim,
+	const int&         interface_dim,
+	const int&         test_case,
+	const char*        input_filename
 )
 {
 	if (test_case != 0) // synthetic test cases
@@ -35,7 +35,7 @@ void get_modal_values
 				input_filename,
 				d_assem_sol,
 				mesh_dim,
-				solver_params.wall_height
+				solver_params
 			);
 		}
 		else if (solver_params.solver_type == MWDG2)

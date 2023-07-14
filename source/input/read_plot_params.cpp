@@ -7,11 +7,25 @@ PlottingParams read_plot_params
 {
 	PlottingParams plot_params = PlottingParams();
 
-	plot_params.vtk           = read_keyword_str(input_filename, "vtk", 3);
-	plot_params.c_prop        = read_keyword_str(input_filename, "c_prop", 6);
-	plot_params.raster_out    = read_keyword_str(input_filename, "raster_out", 10);
-	plot_params.voutput_stage = read_keyword_str(input_filename, "voutput_stage", 13);
-	plot_params.cumulative    = read_keyword_str(input_filename, "cumulative", 10);
+	plot_params.vtk           = read_keyword_bool(input_filename, "vtk", 3);
+	plot_params.c_prop        = read_keyword_bool(input_filename, "c_prop", 6);
+	plot_params.raster_out    = read_keyword_bool(input_filename, "raster_out", 10);
+	plot_params.voutput_stage = read_keyword_bool(input_filename, "voutput_stage", 13);
+	plot_params.cumulative    = read_keyword_bool(input_filename, "cumulative", 10);
 	
+	read_keyword_str(input_filename, "resroot", 7, plot_params.resroot);
+	read_keyword_str(input_filename, "dirroot", 7, plot_params.dirroot);
+
+	// if no result filename suffix is specified
+	if (plot_params.resroot[0] == '\0')
+	{
+		// default suffix is "res"
+		sprintf(plot_params.resroot, "%s", "res");
+	}
+
+	char sys_cmd_str_buf[255] = {'\0'};
+	sprintf(sys_cmd_str_buf, "%s%s", "mkdir ", plot_params.dirroot);
+	system(sys_cmd_str_buf);
+
 	return plot_params;
 }
