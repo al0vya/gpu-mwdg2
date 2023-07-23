@@ -118,6 +118,7 @@ A `.par` file is a text file containing all of the parameters needed to access v
 | bcifile | Keyword followed by text. Specifies the name of the boundary condition file. |
 | bdyfile | Keyword followed by text. Specifies the name of the file containing the time-varying conditions. |
 | stagefile | Keyword followed by text. Specifies the name of the stage file. |
+| sim_time | Keyword followed by a decimal number. Specifies the simulation time in seconds. |
 | hwfv1 | Boolean keyword instructing the code to use the GPU-HWFV1 solver. |
 | mwdg2 | Boolean keyword instructing the code to use the GPU-MWDG2 solver. |
 | max_ref_lvl | Keyword followed by an integer. Specifies the maximum refinement level L used by the model when setting the $2^L × 2^L$ finest resolution grid. For a test case involving a digital elevation model (DEM) made up of $N × M$ cells, the user must specify the value of L to be such that $2^L ≥ \max(N, M)$. By doing so, two areas emerge in the grid: the actual $N × M$ domain area defined by the DEM, and empty areas beyond the $N × M$ area where no DEM data are available and where no flow should should occur. |
