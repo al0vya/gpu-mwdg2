@@ -22,7 +22,7 @@ def check_raster_file(
     ncols,
     filename
 ):
-    fig, ax = plt.subplots( figsize=(6,4) )
+    fig, ax = plt.subplots( figsize=(4,4) )
     
     y = [ ymin + j * cellsize for j in range(nrows) ]
     x = [ xmin + i * cellsize for i in range(ncols) ]
@@ -31,7 +31,7 @@ def check_raster_file(
     
     x, y = np.meshgrid(x, y)
     
-    contourset = ax.contourf(x, y, raster, levels=[-30 + i for i in range(30)])
+    contourset = ax.contourf(x, y, raster, levels=30)
     
     fig.colorbar(
         contourset,
@@ -107,6 +107,11 @@ def write_all_input_files():
         fname=os.path.join("input-data", "hilo_grid_1_3_arcsec.txt"),
         usecols=2
     ).reshape( (nrows,ncols) )
+    
+    # multiply by -1 to flip elevation
+    bathymetry *= -1
+    
+    bathymetry = np.maximum( bathymetry, np.full(shape=(nrows,ncols), fill_value=-30) )
     
     write_raster_file(
         raster=bathymetry,
