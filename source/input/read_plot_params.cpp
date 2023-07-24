@@ -16,11 +16,18 @@ PlottingParams read_plot_params
 	read_keyword_str(input_filename, "resroot", 7, plot_params.resroot);
 	read_keyword_str(input_filename, "dirroot", 7, plot_params.dirroot);
 
-	// if no result filename suffix is specified
+	// if no result filename prefix is specified
 	if (plot_params.resroot[0] == '\0')
 	{
-		// default suffix is "res"
+		// default prefix is "res"
 		sprintf(plot_params.resroot, "%s", "res");
+	}
+    
+    // if no results folder name is specified
+	if (plot_params.dirroot[0] == '\0')
+	{
+		// results folder name is "res"
+		sprintf(plot_params.dirroot, "%s", "res");
 	}
 
 	char sys_cmd_str_buf[255] = {'\0'};

@@ -20,3 +20,5 @@ add_executable(gpu-mwdg2)
 include(options.cmake)
 
 add_subdirectory(source)
+
+target_include_directories(gpu-mwdg2 PRIVATE cub)
