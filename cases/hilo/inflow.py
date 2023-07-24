@@ -22,8 +22,10 @@ def write_bdy_file():
         
         fp.write(str(timeseries_len) + " minutes\n")
         
+        timeshift = inflow_timeseries[0,0]
+        
         for entry in inflow_timeseries:
-            fp.write(str( entry[1] ) + " " + str( entry[0] ) + "\n")
+            fp.write(str( entry[1] ) + " " + str(entry[0] - timeshift) + "\n")
             
 def main():
     write_bci_file()
