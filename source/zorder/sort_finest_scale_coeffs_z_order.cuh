@@ -2,7 +2,7 @@
 
 #include "../utilities/cuda_utils.cuh"
 
-#include "cub/cub.cuh"
+#include "../../cub/cub.cuh"
 
 #include "../utilities/CHECK_CUDA_ERROR.cuh"
 

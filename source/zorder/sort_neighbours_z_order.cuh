@@ -2,7 +2,7 @@
 
 #include "cuda_runtime.h"
 
-#include "cub/device/device_radix_sort.cuh"
+#include "../../cub/device/device_radix_sort.cuh"
 
 #include "../utilities/CHECK_CUDA_ERROR.cuh"
 #include "../utilities/cuda_utils.cuh"

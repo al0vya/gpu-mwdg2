@@ -3,7 +3,7 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "cub/block/block_load.cuh"
+#include "../../cub/block/block_load.cuh"
 
 #include "../utilities/BLOCK_VAR_MACROS.cuh"
 

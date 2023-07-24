@@ -1,7 +1,7 @@
 #pragma once
 
 #include "cuda_runtime.h"
-#include "cub/cub.cuh"
+#include "../../cub/cub.cuh"
 
 #include "../utilities/cuda_utils.cuh"
 
