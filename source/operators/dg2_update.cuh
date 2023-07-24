@@ -3,7 +3,7 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "../../cub/block/block_scan.cuh"
+#include "cub/block/block_scan.cuh"
 
 #include "../utilities/BLOCK_VAR_MACROS.cuh"
 #include "../types/MortonCode.h"

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
 
 include(CheckLanguage)
 
@@ -20,5 +20,3 @@ add_executable(gpu-mwdg2)
 include(options.cmake)
 
 add_subdirectory(source)
-
-target_include_directories(gpu-mwdg2 PRIVATE cub)

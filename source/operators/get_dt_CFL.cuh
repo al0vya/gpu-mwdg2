@@ -1,6 +1,6 @@
 #pragma once 
 
-#include "../../cub/device/device_reduce.cuh"
+#include "cub/device/device_reduce.cuh"
 
 #include "../utilities/cuda_utils.cuh"
 

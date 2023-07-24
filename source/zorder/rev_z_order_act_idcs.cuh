@@ -2,7 +2,7 @@
 
 #include "../utilities/cuda_utils.cuh"
 
-#include "../../cub/cub.cuh"
+#include "cub/cub.cuh"
 
 #include "../classes/AssembledSolution.h"
 #include "../types/MortonCode.h"

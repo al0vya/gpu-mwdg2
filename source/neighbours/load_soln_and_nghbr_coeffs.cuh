@@ -2,7 +2,7 @@
 
 #include "device_launch_parameters.h"
 
-#include "../../cub/block/block_radix_sort.cuh"
+#include "cub/block/block_radix_sort.cuh"
 
 #include "../classes/Neighbours.h"
 #include "../classes/ScaleCoefficients.h"

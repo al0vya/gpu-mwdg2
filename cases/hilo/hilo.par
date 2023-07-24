@@ -13,3 +13,4 @@ ref_thickness 16
 initial_tstep 1
 vtk
 saveint 1000
+massint 10
