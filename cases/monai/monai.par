@@ -1,21 +1,18 @@
+mwdg2
+cuda
+cumulative
+refine_wall
+ref_thickness 16
 max_ref_lvl   9
-initial_tstep 1
-dirroot       results
 epsilon       0.001
+wall_height   0.5
+initial_tstep 1
 fpfric        0.01
+sim_time      22.5
+dirroot       results
+massint       0.2
 DEMfile       monai.dem
 startfile     monai.start
 bcifile       monai.bci
 bdyfile       monai.bdy
 stagefile     monai.stage
-saveint       22.5
-massint       0.1
-sim_time      22.5
-hwfv1
-cumulative
-raster_out
-vtk
-cuda
-refine_wall
-ref_thickness 16
-wall_height   0.5

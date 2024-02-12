@@ -1,16 +1,20 @@
-DEMfile hilo.dem
-bcifile hilo.bci
-bdyfile hilo.bdy
-stagefile hilo.stage
-sim_time 24000
-fpfric 0.025
-hwfv1
-max_ref_lvl 10
-epsilon 1e-3
-wall_height 180
+cuda
+mwdg2
+cumulative
+raster_out
+voutput_stage
 refine_wall
 ref_thickness 16
+massint       10
+saveint       23000
+DEMfile       hilo.dem
+startfile     hilo.start
+bcifile       hilo.bci
+bdyfile       hilo.bdy
+stagefile     hilo.stage
+sim_time      23000
+fpfric        0.025
+max_ref_lvl   10
+epsilon       0
+wall_height   180
 initial_tstep 1
-vtk
-saveint 1000
-massint 10

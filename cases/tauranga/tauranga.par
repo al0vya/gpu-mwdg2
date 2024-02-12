@@ -1,22 +1,18 @@
-test_case     0
-max_ref_lvl   11
-min_dt        1
-respath       help_me_please
-epsilon       1e-3
+mwdg2
+cuda
+max_ref_lvl   12
+initial_tstep 1
+epsilon       0
 fpfric        0.025
-rasterroot    tauranga-20m
+DEMfile       tauranga.dem
+startfile     tauranga.start
 bcifile       tauranga.bci
 bdyfile       tauranga.bdy
 stagefile     tauranga.stage
-tol_h         1e-2
-tol_q         0
-tol_s         1e-9
-limitslopes   on
-tol_Krivo     10
-g             9.80665
 massint       500
+saveint       144000
 sim_time      144000
-solver        mw
-cumulative    on
-voutput_stage on
+raster_out
+cumulative
+voutput_stage
 wall_height   420

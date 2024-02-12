@@ -6,9 +6,7 @@ import matplotlib.pyplot as plt
 
 def EXIT_HELP():
     help_message = (
-        "Use this tool as follows:\n" +
-        "python simulate.py preprocess\n" +
-        "python simulate.py simulate <SOLVER> <EPSILON> <RESULTS_DIRECTORY>"
+        "Use this tool as: python preprocess.py <SOLVER>, SOLVER={hwfv1|mwdg2} to select either the GPU-HWFV1 or GPU-MWDG2 solver, respectively."
     )
     
     sys.exit(help_message)
@@ -34,7 +32,7 @@ def write_bdy_file(
     
     boundary_timeseries = np.loadtxt( fname=os.path.join("input-data", "ts_5m.txt") )
     
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots( figsize=(5,1.5) )
     
     wave_amplitude_original     = 0.51
     wave_amplitude_calibrated   = 0.60
@@ -42,20 +40,23 @@ def write_bdy_file(
     
     bdy_inlet = scale_factor_wave_amplitude * (0.97 + boundary_timeseries[:,1] - datum)
     
+    # timeshift to account for wave travel time from x = 0 m to 5 m    
+    timeshift = 16 - 14.75
+    
     ax.plot(
-        boundary_timeseries[:,0],
-        bdy_inlet
+        boundary_timeseries[:,0]-timeshift,
+        (bdy_inlet-bdy_inlet[0])/scale_factor_wave_amplitude
     )
     
     plt.setp(
         ax,
-        title="Western boundary timeseries",
-        xlim=( boundary_timeseries[0,0], boundary_timeseries[-1,0] ),
+        title="Impact wave",
+        xlim=( (0,40) ),
         xlabel=r"$t \, (s)$",
         ylabel=r"$h + z \, (m)$"
     )
     
-    fig.savefig(os.path.join("results", "input-wave.png"), bbox_inches="tight")
+    fig.savefig("impact-wave.svg", bbox_inches="tight")
     
     plt.close()
     
@@ -75,6 +76,19 @@ def write_bdy_file(
         for time, inlet in zip(boundary_timeseries[:,0], bdy_inlet):
             fp.write(str(inlet) + " " + str(time) + "\n")
 
+def plot_impact_wave_direction(ax):
+    xmax = (7010    ) / 1000
+    ymax = (6920-100) / 1000
+    
+    num_arrows = 5
+    
+    gap_between_arrows = xmax / num_arrows
+    
+    arrow_centres = [0.5 * gap_between_arrows + i * gap_between_arrows for i in range(num_arrows)]
+    
+    for centre in arrow_centres:
+        ax.arrow(x=centre, y=ymax, dx=0, dy=-2500 / 1000, head_width=200 / 1000, color='r')
+        
 def check_raster_file(
     raster,
     xmin,
@@ -84,12 +98,10 @@ def check_raster_file(
     ncols,
     filename
 ):
-    fig, ax = plt.subplots( figsize=(6,4) )
+    fig, ax = plt.subplots( figsize=(4,4) )
     
-    y = [ ymin + j * cellsize for j in range(nrows) ]
-    x = [ xmin + i * cellsize for i in range(ncols) ]
-    
-    aspect = ( y[-1] - y[0] ) / ( x[-1] - x[0] )
+    y = [ (ymin + j * cellsize) / 1000 for j in range(nrows) ]
+    x = [ (xmin + i * cellsize) / 1000 for i in range(ncols) ]
     
     x, y = np.meshgrid(x, y)
     
@@ -98,110 +110,32 @@ def check_raster_file(
     fig.colorbar(
         contourset,
         orientation="horizontal",
-        label=r"$m$"
+        label='m'
     )
     
-    gauges_A = [
-        (33.611, -3.193),
-        (34.103, -3.194),
-        (34.534, -3.184),
-        (35.040, -3.181),
-        (35.544, -3.194),
-        (36.355, -3.199),
-        (37.767, -3.201),
-        (39.223, -3.204),
-        (40.767, -3.228)
-    ]
+    control_point = (3209.998457028253 / 1000,  5141.1819163712990 / 1000)
+    tide_gauge    = (4797.716401790525 / 1000,  2246.5668878259044 / 1000)
+    adcp_HA1125   = (1913.902175590039 / 1000,  3801.8824255519144 / 1000)
+    adcp_HA1126   = (3209.998457028253 / 1000,  3423.8543434658964 / 1000)
+        
+    ax.scatter(control_point[0], control_point[1], marker='x', label="Control point")
+    ax.scatter(tide_gauge[0],    tide_gauge[1],    marker='x', label="Tide gauge")
+    ax.scatter(adcp_HA1125[0],   adcp_HA1125[1],   marker='x', label="ADCP HA1125")
+    ax.scatter(adcp_HA1126[0],   adcp_HA1126[1],   marker='x', label="ADCP HA1126")
     
-    gauges_B = [
-        (33.721, -0.588),
-        (34.218, -0.533),
-        (34.679, -0.467),
-        (35.176, -0.406),
-        (35.747, -0.317),
-        (36.635, -0.229),
-        (37.773, -0.068),
-        (39.218,  0.135),
-        (40.668,  0.269)
-    ]
+    plot_impact_wave_direction(ax)
     
-    gauges_C = [
-        (33.809, 1.505),
-        (34.553, 1.604),
-        (35.051, 1.686),
-        (35.556, 1.769),
-        (36.050, 1.845),
-        (37.047, 1.988),
-        (38.243, 2.193),
-        (39.208, 2.338),
-        (40.400, 2.582)
-    ]
-    
-    gauges_D = [
-        (35.124, 3.712),
-        (36.684, 3.888),
-        (39.086, 4.070),
-        (38.141, 3.585)
-    ]
-    
-    gauges_W = [
-        ( 2.068,-0.515),
-        ( 2.068, 4.605),
-        (18.618, 0.000),
-        (18.618, 2.860)
-    ]
-    
-    plt.scatter(
-        [gauge[0] for gauge in gauges_A],
-        [gauge[1] for gauge in gauges_A],
-        marker='x',
-        linewidth=0.5,
-        facecolor='r',
-        s=10,
-        label="A"
-    )
-    
-    plt.scatter(
-        [gauge[0] for gauge in gauges_B],
-        [gauge[1] for gauge in gauges_B],
-        marker='x',
-        linewidth=0.5,
-        facecolor='k',
-        s=10,
-        label="B"
-    )
-    
-    plt.scatter(
-        [gauge[0] for gauge in gauges_C],
-        [gauge[1] for gauge in gauges_C],
-        marker='x',
-        linewidth=0.5,
-        facecolor='m',
-        s=10,
-        label="C"
-    )
-    
-    plt.scatter(
-        [gauge[0] for gauge in gauges_D],
-        [gauge[1] for gauge in gauges_D],
-        marker='x',
-        linewidth=0.5,
-        facecolor='b',
-        s=10,
-        label="D"
-    )
-    
-    ax.legend()
+    ax.legend(loc="lower left", fontsize=8)
     
     plt.setp(
         ax,
-        xlabel=r"$x \, (m)$",
-        ylabel=r"$y \, (m)$"
+        xlabel="$x$ (km)",
+        ylabel="$y$ (km)"
     )
     
     fig.tight_layout()
     
-    fig.savefig(os.path.join("results", filename + ".svg"), bbox_inches="tight")
+    fig.savefig(filename + ".svg", bbox_inches="tight")
     
     plt.close()
 
@@ -311,7 +245,7 @@ def write_stage_file():
     with open("oregon-seaside.stage", 'w') as fp:
         fp.write(stages)
 
-def write_all_input_files():
+def write_all_input_files(solver):
     print("Loading DEM...")
     
     bathymetry = np.loadtxt( fname=os.path.join("input-data", "bathymetry.csv"), delimiter="," );
@@ -396,78 +330,44 @@ def write_all_input_files():
     )
     
     write_stage_file()
+    
+    write_par_file(solver)
 
-def write_parameter_file(
-    epsilon,
-    solver,
-    results_dir,
-    filename
-):
+def write_par_file(solver):
     params = (
-        "test_case     0\n" +
+        f"{solver}\n" +
+        "cuda\n" +
+        "cumulative\n" +
+        "raster_out\n" +
         "max_ref_lvl   12\n" +
-        "initial_tstep        1\n" +
-        "respath       %s\n" +
-        "epsilon       %s\n" +
+        "initial_tstep 1\n" +
+        "epsilon       0\n" +
         "fpfric        0.025\n" + # from "A comparison of a two-dimensional depth-averaged flow model ... for predicting tsunami ..."
-        "rasterroot    oregon-seaside-0p02m\n" +
-        "bcifile       oregon-seaside.bci\n" +
-        "bdyfile       oregon-seaside.bdy\n" +
+        "DEMfile       oregon-seaside-0p02m.dem\n" +
+        "startfile     oregon-seaside-0p02m.start\n" +
         "stagefile     oregon-seaside.stage\n" +
-        "tol_h         1e-3\n" +
-        "tol_q         0\n" +
-        "tol_s         1e-9\n" +
-        "limitslopes   off\n" +
-        "tol_Krivo     10\n" +
         "refine_wall   on\n" +
         "ref_thickness 16\n" +
-        "g             9.80665\n" +
         "massint       0.2\n" +
         "saveint       39.7\n" +
         "sim_time      39.7\n" +
-        "solver        %s\n" +
-        "vtk           on\n" +
-        "cumulative    on\n" +
-        "voutput_stage on\n" +
-        "wall_height   2.5"
-    ) % (
-        results_dir,
-        epsilon,
-        solver
+        "wall_height   2.5\n" +
+        "voutput_stage\n"
     )
     
-    with open(filename, 'w') as fp:
+    with open("oregon-seaside.par", 'w') as fp:
         fp.write(params)
 
-def run_simulation():
-    if len(sys.argv) != 5: EXIT_HELP()
-    
-    dummy, option, solver, epsilon, results_dir = sys.argv
-    
-    parameter_filename = "oregon-seaside.par"
-    
-    write_parameter_file(
-        epsilon=epsilon,
-        solver=solver,
-        results_dir=results_dir,
-        filename=parameter_filename
-    )
-    
-    executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
-    
-    subprocess.run( [os.path.join("..", executable), parameter_filename] )
-
 def main():
-    if len(sys.argv) < 2: EXIT_HELP()
-    
-    option = sys.argv[1]
-    
-    if   option == "preprocess":
-        write_all_input_files()
-    elif option == "simulate":
-        run_simulation()
-    else:
+    if len(sys.argv) < 2:
         EXIT_HELP()
+    
+    solver = sys.argv[1]
+    
+    if solver != "hwfv1" and solver != "mwdg2":
+        EXIT_HELP()
+        
+    write_all_input_files(solver)
 
 if __name__ == "__main__":
     main()

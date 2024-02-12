@@ -4,6 +4,12 @@ import subprocess
 import numpy             as np
 import pandas            as pd
 import matplotlib.pyplot as plt
+import collections
+
+def EXIT_HELP():
+    help_message = ("Use this tool as:\n" + "python simulate.py <SOLVER>, SOLVER={hwfv1|mwdg2} to select either the GPU-HWFV1 or GPU-MWDG2 solver, respectively.\n")
+    
+    sys.exit(help_message)
 
 class YAxisLimits:
     def __init__(self):
@@ -77,165 +83,262 @@ class YAxisLimits:
         
 class ExperimentalDataMonai:
     def __init__(self):
+        self.gauge_data = {}
+        
         print("Reading experimental data...")
         
-        experimental_dataframe = pd.read_csv("experimental.txt")
+        experimental_dataframe = pd.read_csv("MonaiValley_WaveGages.txt", delimiter="\t")
         
-        self.time       = experimental_dataframe["time"]
-        self.gauge_data = experimental_dataframe["stage1"]
+        self.time                  = experimental_dataframe["Time (sec)"]
+        self.gauge_data["Point 1"] = experimental_dataframe["Gage 1 (cm)"]
+        self.gauge_data["Point 2"] = experimental_dataframe["Gage 2 (cm)"]
+        self.gauge_data["Point 3"] = experimental_dataframe["Gage 3 (cm)"]
 
 class SimulationMonai:
     def __init__(
             self,
-            epsilons,
-            solvers
+            solver
         ):
             print("Creating fields for simulation results...")
             
-            self.solvers      = solvers
-            self.epsilons     = epsilons
-            self.fields       = [
-                "simtime",
-                "runtime_mra",
-                "runtime_solver",
-                "runtime_total",
-                "compression",
-                "gauge_data"
-            ]
-            self.stage_file   = os.path.join("results", "res.stage")
-            self.runtime_file = os.path.join("results", "res-cumulative-data.csv")
-            self.results      = {}
+            self.solver      = solver
+            self.epsilons    = [1e-3, 1e-4, 0]
+            self.dirroots    = ["eps-1e-3", "eps-1e-4", "eps-0"]
+            self.input_file  = "monai.par"
+            self.points      = ["Point 1", "Point 2", "Point 3"]
             
-            for solver in self.solvers:
-                self.results[solver] = {}
-                
-                for epsilon in self.epsilons:
-                    if epsilon not in self.results:
-                        self.results[solver][epsilon] = {}
-                        for field in self.fields:
-                            if field not in self.results[solver][epsilon]:
-                                self.results[solver][epsilon][field] = {}
-                                
-                for epsilon in epsilons:
-                    self.run(epsilon, solver)
+            red_dd = lambda: collections.defaultdict(red_dd)
+            
+            self.results = red_dd()
+            
+            self.write_par_file()
+            
+            simulation_runs = 10
+            
+            for epsilon, dirroot_base in zip(self.epsilons, self.dirroots):
+                for run in range(simulation_runs):
+                    dirroot = dirroot_base + "-" + str(run)
                     
-                    cumulative_dataframe = pd.read_csv(self.runtime_file)
+                    #self.run(epsilon, dirroot)
                     
-                    self.results[solver][epsilon]["simtime"]        = cumulative_dataframe["simtime"]
-                    self.results[solver][epsilon]["runtime_mra"]    = cumulative_dataframe["runtime_mra"]
-                    self.results[solver][epsilon]["runtime_solver"] = cumulative_dataframe["runtime_solver"]
-                    self.results[solver][epsilon]["runtime_total"]  = cumulative_dataframe["runtime_total"]
-                    self.results[solver][epsilon]["compression"]    = cumulative_dataframe["compression"]
-                    self.results[solver][epsilon]["gauge_data"]     = pd.read_csv(
-                        self.stage_file,
-                        skiprows=7,
+                    cumulative_dataframe = pd.read_csv( os.path.join(dirroot, "res.cumu") )
+                    
+                    self.results[run][epsilon]["simtime"]        = cumulative_dataframe["simtime"]
+                    self.results[run][epsilon]["runtime_mra"]    = cumulative_dataframe["runtime_mra"]
+                    self.results[run][epsilon]["runtime_solver"] = cumulative_dataframe["runtime_solver"]
+                    self.results[run][epsilon]["runtime_total"]  = cumulative_dataframe["runtime_total"]
+                    self.results[run][epsilon]["reduction"]      = cumulative_dataframe["reduction"]
+                    
+                    if run > 0:
+                        continue
+                    
+                    gauge_dataframe = pd.read_csv(
+                        os.path.join(dirroot, "res.stage"),
+                        skiprows=9,
                         delimiter=" ",
                         header=None
-                    ).iloc[:,1]
+                    )
+                    
+                    self.results[-1][epsilon]["gauge_data"]["Point 1"] = gauge_dataframe.iloc[:,1]
+                    self.results[-1][epsilon]["gauge_data"]["Point 2"] = gauge_dataframe.iloc[:,2]
+                    self.results[-1][epsilon]["gauge_data"]["Point 3"] = gauge_dataframe.iloc[:,3]
+                    
+                    self.results[-1][epsilon]["map"] = np.loadtxt(fname=os.path.join(dirroot, "res-1.elev"), skiprows=6)
             
+            rows = self.results[0][0]["simtime"].shape[0]
+            
+            for epsilon in self.epsilons:
+                self.results[-1][epsilon]["simtime"]        = np.zeros( shape=(rows,simulation_runs) )
+                self.results[-1][epsilon]["runtime_mra"]    = np.zeros( shape=(rows,simulation_runs) )
+                self.results[-1][epsilon]["runtime_solver"] = np.zeros( shape=(rows,simulation_runs) )
+                self.results[-1][epsilon]["runtime_total"]  = np.zeros( shape=(rows,simulation_runs) )
+                self.results[-1][epsilon]["reduction"]      = np.zeros( shape=(rows,simulation_runs) )
+                
+                for run in range(simulation_runs):
+                    self.results[-1][epsilon]["simtime"][:,run]        = self.results[run][epsilon]["simtime"]       
+                    self.results[-1][epsilon]["runtime_mra"][:,run]    = self.results[run][epsilon]["runtime_mra"]   
+                    self.results[-1][epsilon]["runtime_solver"][:,run] = self.results[run][epsilon]["runtime_solver"]
+                    self.results[-1][epsilon]["runtime_total"][:,run]  = self.results[run][epsilon]["runtime_total"] 
+                    self.results[-1][epsilon]["reduction"] [:,run]     = self.results[run][epsilon]["reduction"]     
+                
+                self.results[-1][epsilon]["simtime"]        = self.results[-1][epsilon]["simtime"].mean(axis=1)       
+                self.results[-1][epsilon]["runtime_mra"]    = self.results[-1][epsilon]["runtime_mra"].mean(axis=1)   
+                self.results[-1][epsilon]["runtime_solver"] = self.results[-1][epsilon]["runtime_solver"].mean(axis=1)
+                self.results[-1][epsilon]["runtime_total"]  = self.results[-1][epsilon]["runtime_total"].mean(axis=1) 
+                self.results[-1][epsilon]["reduction"]      = self.results[-1][epsilon]["reduction"].mean(axis=1)     
+    
+    def write_par_file(self):
+        with open(self.input_file, 'w') as fp:
+            params = (
+                f"{self.solver}\n" +
+                "cuda\n" +
+                "raster_out\n" +
+                "cumulative\n" +
+                "refine_wall\n" +
+                "ref_thickness 16\n" +
+                "max_ref_lvl   9\n" +
+                "epsilon       0\n" +
+                "wall_height   0.5\n" +
+                "initial_tstep 1\n" +
+                "fpfric        0.01\n" +
+                "sim_time      22.5\n" +
+                "massint       0.2\n" +
+                "saveint       22.5\n" +
+                "DEMfile       monai.dem\n" +
+                "startfile     monai.start\n" +
+                "bcifile       monai.bci\n" +
+                "bdyfile       monai.bdy\n" +
+                "stagefile     monai.stage\n"
+            )
+            
+            fp.write(params)
+    
     def run(
             self,
             epsilon,
-            solver
+            dirroot
         ):
             print("Running simulation, eps = " + str(epsilon) + ", solver: " + solver)
             
-            input_file = "monai.par"
+            executable = "lisflood.exe" if sys.platform == "win32" else "lisflood"
             
-            with open(input_file, 'w') as fp:
-                params = (
-                    "%s\n" + # solver
-                    "cuda\n" +
-                    "cumulative\n" +
-                    "refine_wall\n" +
-                    "ref_thickness 16\n" +
-                    "max_ref_lvl   9\n" +
-                    "epsilon       %s\n" +
-                    "wall_height   0.5\n" +
-                    "initial_tstep 1\n" +
-                    "fpfric        0.01\n" +
-                    "sim_time      22.5\n" +
-                    "dirroot       results\n" +
-                    "massint       0.2\n" +
-                    "DEMfile       monai.dem\n" +
-                    "startfile     monai.start\n" +
-                    "bcifile       monai.bci\n" +
-                    "bdyfile       monai.bdy\n" +
-                    "stagefile     monai.stage\n"
-                ) % (
-                    solver,
-                    epsilon
-                )
-                
-                fp.write(params)
+            command_line_args = [
+                os.path.join("..", executable),
+                "-epsilon", str(epsilon),
+                "-dirroot", str(dirroot),
+                self.input_file
+            ]
             
-            executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
-            
-            subprocess.run( [os.path.join("..", executable), input_file] )
-            
-    def compute_instant_runtime_ratio(
-        self,
-        runtime_uniform,
-        runtime_adapt
-    ):
-        instant_runtime_ratio = (
-            ( runtime_uniform[1:] - runtime_uniform[:-1] )
-            /
-            ( runtime_adapt[1:] - runtime_adapt[:-1] )
+            subprocess.run(command_line_args)
+        
+    def compute_root_mean_squared_errors(self):
+        RMSE = [
+            np.sqrt( np.square( self.results[-1][1e-3]["gauge_data"]["Point 1"].to_numpy() - self.results[-1][0]["gauge_data"]["Point 1"].to_numpy() ).mean() ),
+            np.sqrt( np.square( self.results[-1][1e-4]["gauge_data"]["Point 1"].to_numpy() - self.results[-1][0]["gauge_data"]["Point 1"].to_numpy() ).mean() ),
+            np.sqrt( np.square( self.results[-1][1e-3]["gauge_data"]["Point 2"].to_numpy() - self.results[-1][0]["gauge_data"]["Point 2"].to_numpy() ).mean() ),
+            np.sqrt( np.square( self.results[-1][1e-4]["gauge_data"]["Point 2"].to_numpy() - self.results[-1][0]["gauge_data"]["Point 2"].to_numpy() ).mean() ),
+            np.sqrt( np.square( self.results[-1][1e-3]["gauge_data"]["Point 3"].to_numpy() - self.results[-1][0]["gauge_data"]["Point 3"].to_numpy() ).mean() ),
+            np.sqrt( np.square( self.results[-1][1e-4]["gauge_data"]["Point 3"].to_numpy() - self.results[-1][0]["gauge_data"]["Point 3"].to_numpy() ).mean() ),
+            np.sqrt( np.square( self.results[-1][1e-3]["map"] - self.results[-1][0]["map"] ).mean() ),
+            np.sqrt( np.square( self.results[-1][1e-4]["map"] - self.results[-1][0]["map"] ).mean() )
+        ]
+        
+        return pd.DataFrame(
+            [[RMSE[0], RMSE[1]], [RMSE[2], RMSE[3]], [RMSE[4], RMSE[5]], [RMSE[6], RMSE[7]]],
+            [f"Time series at {point}" for point in self.points] + ["Map"],
+            ["\epsilon = 10-3", "\epsilon = 10-4"]
         )
         
-        return np.append( instant_runtime_ratio, instant_runtime_ratio[-1] )
-       
+    def compute_correlation(self):
+        corr = [
+            np.corrcoef(x=self.results[-1][1e-3]["gauge_data"]["Point 1"].to_numpy(), y=self.results[-1][0]["gauge_data"]["Point 1"].to_numpy() )[0][1],
+            np.corrcoef(x=self.results[-1][1e-4]["gauge_data"]["Point 1"].to_numpy(), y=self.results[-1][0]["gauge_data"]["Point 1"].to_numpy() )[0][1],
+            np.corrcoef(x=self.results[-1][1e-3]["gauge_data"]["Point 2"].to_numpy(), y=self.results[-1][0]["gauge_data"]["Point 2"].to_numpy() )[0][1],
+            np.corrcoef(x=self.results[-1][1e-4]["gauge_data"]["Point 2"].to_numpy(), y=self.results[-1][0]["gauge_data"]["Point 2"].to_numpy() )[0][1],
+            np.corrcoef(x=self.results[-1][1e-3]["gauge_data"]["Point 3"].to_numpy(), y=self.results[-1][0]["gauge_data"]["Point 3"].to_numpy() )[0][1],
+            np.corrcoef(x=self.results[-1][1e-4]["gauge_data"]["Point 3"].to_numpy(), y=self.results[-1][0]["gauge_data"]["Point 3"].to_numpy() )[0][1],
+            np.corrcoef(x=self.results[-1][1e-3]["map"].flatten(), y=self.results[-1][0]["map"].flatten() )[0][1],
+            np.corrcoef(x=self.results[-1][1e-4]["map"].flatten(), y=self.results[-1][0]["map"].flatten() )[0][1]
+        ]
+        
+        return pd.DataFrame(
+            [[corr[0], corr[1]], [corr[2], corr[3]], [corr[4], corr[5]], [corr[6], corr[7]]],
+            [f"Time series at {point}" for point in self.points] + ["Map"],
+            ["\epsilon = 10-3", "\epsilon = 10-4"]
+        )
+    
+    def write_table(self):
+        RMSE = self.compute_root_mean_squared_errors()
+        corr = self.compute_correlation()
+        
+        table = pd.concat([RMSE, corr], axis=1, keys=["RMSE", "r"])
+        
+        table.to_csv("table.csv")
+    
     def plot_exp_data(
         self,
-        my_rc_params,
         exp_data
     ):
-        plt.rcParams.update(my_rc_params)
+        fig, axs = plt.subplots(
+            figsize=(5,6),
+            nrows=3,
+            sharex=True
+        )
         
-        fig, ax = plt.subplots( figsize=(2.75, 2.5) )
+        lines = []
         
-        for solver in self.solvers:
-            for epsilon in self.epsilons:
-                if epsilon == 0:
-                    label = "GPU-DG2"    if solver == "mwdg2" else "GPU-FV1"
-                elif np.isclose(epsilon, 1e-3):
-                    label = ("GPU-MWDG2" if solver == "mwdg2" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
-                elif np.isclose(epsilon, 1e-4):
-                    label = ("GPU-MWDG2" if solver == "mwdg2" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
-
-                ax.plot(
-                    self.results[solver][epsilon]["simtime"],
-                    self.results[solver][epsilon]["gauge_data"],
-                    linewidth=2.5,
-                    label=label
-                )
+        for epsilon in self.epsilons:
+            line = axs[0].plot(
+                self.results[-1][epsilon]["simtime"],
+                self.results[-1][epsilon]["gauge_data"]["Point 1"] + 0.123591 - 0.13535,
+                linewidth=2.5
+            )[0]
             
-        ax.scatter(
+            axs[1].plot(
+                self.results[-1][epsilon]["simtime"],
+                self.results[-1][epsilon]["gauge_data"]["Point 2"] + 0.132484 - 0.13535,
+                linewidth=2.5
+            )
+            
+            axs[2].plot(
+                self.results[-1][epsilon]["simtime"],
+                self.results[-1][epsilon]["gauge_data"]["Point 3"] + 0.130107 - 0.13535,
+                linewidth=2.5
+            )
+            
+            lines.append(line)
+            
+        line = axs[0].scatter(
             exp_data.time,
-            exp_data.gauge_data,
+            exp_data.gauge_data["Point 1"] / 100, # convert from cm to m
             facecolor="None",
             edgecolor="black",
-            s=5,
-            label="Experimental"
+            s=5
         )
         
-        ax.set_xlabel(r"$t \, (s)$")
-        ax.set_ylabel(r"h + z \, $(m)$")
-        ax.set_xlim( exp_data.time.iloc[0], exp_data.time.iloc[-1] )
-        ax.legend(
-            bbox_to_anchor=(1.2, 1.35),
-            ncol=2
+        lines.append(line)
+        
+        axs[1].scatter(
+            exp_data.time,
+            exp_data.gauge_data["Point 2"] / 100,
+            facecolor="None",
+            edgecolor="black",
+            s=5
         )
-        fig.savefig(os.path.join("results", "stage"), bbox_inches="tight")
-        plt.close()
+        
+        axs[2].scatter(
+            exp_data.time,
+            exp_data.gauge_data["Point 3"] / 100,
+            facecolor="None",
+            edgecolor="black",
+            s=5
+        )
+        
+        axs[2].set_xlabel("$t$ (s)")
+        axs[2].set_xlim( (0,22.5) )
+        
+        axs[0].set_title("Point 1")
+        axs[1].set_title("Point 2")
+        axs[2].set_title("Point 3")
+        
+        for ax in axs:
+            ax.set_ylim( (-0.02, 0.05) )
+            ax.set_ylabel("$h + z$ (m)")
+        
+        main_labels = [
+            ("GPU-MWDG2" if self.solver == "mwdg2" else "GPU-HWFV1") + ", $\epsilon = 10^{-3}$",
+            ("GPU-MWDG2" if self.solver == "mwdg2" else "GPU-HWFV1") + ", $\epsilon = 10^{-4}$",
+            "GPU-DG2"    if self.solver == "mwdg2" else "GPU-HWFV1",
+            "Experimental"
+        ]
+        
+        axs[0].legend(handles=lines, labels=main_labels, bbox_to_anchor=(1.0,2.0),ncol=2)
+        
+        fig.tight_layout()
+        
+        fig.savefig("predictions-" + self.solver, bbox_inches="tight")
             
-    def plot_speedups(
-        self,
-        my_rc_params
-    ):
-        #plt.rcParams.DG2(my_rc_params)
-        
+    def plot_speedups(self):
         fig, axs = plt.subplots(
             nrows=2,
             ncols=2,
@@ -258,105 +361,107 @@ class SimulationMonai:
         
         colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
         
-        for solver in self.solvers:
-            for epsilon, color in zip(self.epsilons, colors):
-                if epsilon == 0:
-                    continue
-                
-                time = self.results[solver][epsilon]["simtime"]
-                
-                rel_speedup = self.results[solver][0]["runtime_total"] / self.results[solver][epsilon]["runtime_total"]
-                
-                compression = 100 * self.results[solver][epsilon]["compression"]
-                
-                if   np.isclose(epsilon, 1e-3):
-                    label = "$\epsilon = 10^{-3}$"
-                elif np.isclose(epsilon, 1e-4):
-                    label = "$\epsilon = 10^{-4}$"
-                
-                ax_rel_speedup.plot(
-                    time,
-                    rel_speedup,
-                    linewidth=2
-                )
-                
-                y_axis_limits.set_y_axis_limits(field="rel_speedup", field_data=rel_speedup)
-                
-                ax_rel_speedup.set_ylabel("$S_{rel}$ (-)")
-                
-                ax_reduction.plot(
-                    time,
-                    compression,
-                    linewidth=2,
-                    color=color,
-                    label=label
-                )
-                
-                ax_reduction.plot(
-                    [ time.iloc[0], time.iloc[-1] ],
-                    [ compression.iloc[0], compression.iloc[0] ],
-                    linestyle='--',
-                    linewidth=1.5,
-                    color=color
-                )
-                
-                y_axis_limits.set_y_axis_limits(field="reduction", field_data=compression)
-                
-                ax_reduction.set_ylabel("$R_{cell}$ (%)")
-                
-                frac_DG2 = 100 * (
-                    self.results[solver][epsilon]["runtime_solver"]
-                    /
-                    self.results[solver][epsilon]["runtime_total"]
-                )
-                
-                ax_frac_DG2.plot(
-                    time[1:],
-                    frac_DG2[1:],
-                    linewidth=2
-                )
-                
-                y_axis_limits.set_y_axis_limits(field="frac_DG2", field_data=frac_DG2[1:])
-                
-                ax_frac_DG2.set_ylabel("$F_{DG2}$ (%)")
+        for epsilon, color in zip(self.epsilons, colors):
+            if epsilon == 0:
+                continue
             
-            #ax_reduction.invert_yaxis()
+            time = self.results[-1][epsilon]["simtime"]
             
-            y_axis_limits.set_y_axis_ticks(ax=ax_rel_speedup, field="rel_speedup", num_ticks=5, num_digits_round=1)
-            y_axis_limits.set_y_axis_ticks(ax=ax_reduction,   field="reduction",   num_ticks=10)
-            y_axis_limits.set_y_axis_ticks(ax=ax_frac_DG2,    field="frac_DG2",    num_ticks=5)
+            rel_speedup = self.results[-1][0]["runtime_total"] / self.results[-1][epsilon]["runtime_total"]
             
-            xlim = (
-                0,
-                round(self.results[solver][0]["simtime"].iloc[-1], 1)
+            compression = 100 * self.results[-1][epsilon]["reduction"]
+            
+            if   np.isclose(epsilon, 1e-3):
+                label = "$\epsilon = 10^{-3}$"
+            elif np.isclose(epsilon, 1e-4):
+                label = "$\epsilon = 10^{-4}$"
+            
+            ax_rel_speedup.plot(
+                time,
+                rel_speedup,
+                linewidth=2
             )
             
-            for ax in axs:
-                ax.set_xlim(xlim)
-                
-            ax_reduction.set_xlabel("$t$ (s)")
-            ax_rel_speedup.set_xlabel("$t$ (s)")
-            ax_reduction.legend()
-            fig.tight_layout()
-            fig.savefig(os.path.join("results", "runtimes-" + solver), bbox_inches="tight")
-            ax.clear()
-                
-        plt.close()
-    
+            y_axis_limits.set_y_axis_limits(field="rel_speedup", field_data=rel_speedup)
+            
+            ax_rel_speedup.set_ylabel("$S_{rel}$ (-)")
+            
+            ax_reduction.plot(
+                time,
+                compression,
+                linewidth=2,
+                color=color,
+                label=label
+            )
+            
+            ax_reduction.plot(
+                [ time[0], time[-1] ],
+                [ compression[0], compression[0] ],
+                linestyle='--',
+                linewidth=1.5,
+                color=color
+            )
+            
+            y_axis_limits.set_y_axis_limits(field="reduction", field_data=compression)
+            
+            ax_reduction.set_ylabel("$R_{cell}$ (%)")
+            
+            frac_DG2 = 100 * (
+                self.results[-1][epsilon]["runtime_solver"]
+                /
+                self.results[-1][epsilon]["runtime_total"]
+            )
+            
+            ax_frac_DG2.plot(
+                time[1:],
+                frac_DG2[1:],
+                linewidth=2
+            )
+            
+            y_axis_limits.set_y_axis_limits(field="frac_DG2", field_data=frac_DG2[1:])
+            
+            ax_frac_DG2.set_ylabel("$F_{DG2}$ (%)")
+        
+        y_axis_limits.set_y_axis_ticks(ax=ax_rel_speedup, field="rel_speedup", num_ticks=5, num_digits_round=1)
+        y_axis_limits.set_y_axis_ticks(ax=ax_reduction,   field="reduction",   num_ticks=10)
+        y_axis_limits.set_y_axis_ticks(ax=ax_frac_DG2,    field="frac_DG2",    num_ticks=5)
+        
+        xlim = (
+            0,
+            round(self.results[-1][0]["simtime"][-1], 1)
+        )
+        
+        for ax in axs:
+            ax.set_xlim(xlim)
+            
+        ax_reduction.set_xlabel("$t$ (s)")
+        ax_rel_speedup.set_xlabel("$t$ (s)")
+        
+        ax_reduction.legend()
+        
+        fig.tight_layout()
+        
+        fig.savefig("speedups-" + self.solver, bbox_inches="tight")
+        
     def plot(
         self,
         exp_data
     ):
-        my_rc_params = {
-            "legend.fontsize" : "small"
-        }
-        
-        self.plot_speedups(my_rc_params)
-        self.plot_exp_data(my_rc_params, exp_data)
+        self.plot_speedups()
+        self.plot_exp_data(exp_data)
+        self.write_table()
         
 if __name__ == "__main__":
-    subprocess.run( ["python", "stage.py" ] )
-    subprocess.run( ["python", "inflow.py"] )
-    subprocess.run( ["python", "raster.py"] )
+    if len(sys.argv) != 2:
+        EXIT_HELP()
+        
+    dummy, solver = sys.argv
     
-    SimulationMonai( [1e-3, 1e-4, 0], ["mwdg2"] ).plot( ExperimentalDataMonai() )
+    if solver != "hwfv1" and solver != "mwdg2":
+        EXIT_HELP()
+    
+    #subprocess.run( ["python", "stage.py" ] )
+    #subprocess.run( ["python", "inflow.py"] )
+    #subprocess.run( ["python", "raster.py"] )
+    
+    SimulationMonai(solver).plot( ExperimentalDataMonai() )

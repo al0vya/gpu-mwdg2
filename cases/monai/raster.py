@@ -9,6 +9,20 @@ import matplotlib.pyplot as plt
  
 from mpl_toolkits.mplot3d import Axes3D
 
+# wave enters from the west
+def plot_impact_wave_direction(ax):
+    xmax = 392 * 0.014
+    ymax = 243 * 0.014
+    
+    num_arrows = 5
+    
+    gap_between_arrows = ymax / num_arrows
+    
+    arrow_centres = [0.5 * gap_between_arrows + j * gap_between_arrows for j in range(num_arrows)]
+    
+    for centre in arrow_centres:
+        ax.arrow(x=0, y=centre, dx=4.6, dy=0, head_width=0.1, color='r')
+
 def remove_NODATA_values(
         nodal_data,
         NODATA_value
@@ -41,14 +55,18 @@ def check_nodal_data(
             label='m'
         )
         
-        ax.scatter(4.501, 1.696, facecolor='r', edgecolor='r')
+        ax.scatter(4.501, 1.196, label="Point 1", color='c')
+        ax.scatter(4.501, 1.696, label="Point 2", color='m')
+        ax.scatter(4.501, 2.196, label="Point 3", color='y')
         
-        ax.set_xlabel(r"$x \, (m)$")
-        ax.set_ylabel(r"$y \, (m)$")
+        plot_impact_wave_direction(ax)
+        
+        ax.set_xlabel("$x$ (m)")
+        ax.set_ylabel("$y$ (m)")
+        
+        ax.legend()
         
         fig.savefig(fname=filename + ".svg", bbox_inches="tight")
-        
-        plt.close()
 
 def projection(
         nodal_data,
@@ -146,7 +164,7 @@ def main():
         xmin=0,
         ymin=0,
         cellsize=cellsize,
-        filename="topography"
+        filename="monai-topography"
     )
     
     project_and_write_raster(
