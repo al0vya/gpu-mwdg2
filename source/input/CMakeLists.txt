@@ -3,16 +3,12 @@ target_sources(
 		PRIVATE
 		read_and_project_modes_dg2.cu
 		read_and_project_modes_fv1.cu
-		read_bound_conds.cpp
 		read_cell_size.cpp
+		read_command_line_params.cpp
 		read_keyword_bool.cpp
 		read_keyword_int.cpp
 		read_keyword_real.cpp
 		read_keyword_str.cpp
-		read_plot_params.cpp
 		read_raster_file.cpp
-		read_save_interval.cpp
-		read_sim_params.cpp
-		read_solver_params.cpp
 		read_test_case.cpp
 	)

@@ -33,12 +33,8 @@
 #include "operators/get_dt_CFL.cuh"
 
 // Input/output
-#include "input/read_bound_conds.h"
 #include "input/read_cell_size.h"
-#include "input/read_plot_params.h"
-#include "input/read_save_interval.h"
-#include "input/read_sim_params.h"
-#include "input/read_solver_params.h"
+#include "input/read_command_line_params.h"
 #include "input/read_test_case.h"
 #include "output/write_all_raster_maps.cuh"
 #include "output/write_c_prop_data.cuh"
@@ -149,7 +145,7 @@ int main
 	// TEST CASE SET UP //
 	// ================ //
 
-	const char* input_filename = argv[1];
+	const char* input_filename = argv[argc - 1];
 	
 	const int test_case = read_test_case(input_filename);
 	
@@ -160,12 +156,21 @@ int main
 	// =========================================================== //
 
 	// Structures setting up simulation
-	SolverParams     solver_params = read_solver_params(input_filename);
-	SimulationParams sim_params    = read_sim_params(test_case, input_filename, solver_params);
-	PlottingParams   plot_params   = read_plot_params(input_filename);
-	Depths1D         bcs           = read_bound_conds(test_case);
-	SaveInterval     saveint       = read_save_interval(input_filename, "saveint");
-	SaveInterval     massint       = read_save_interval(input_filename, "massint");
+	SolverParams     solver_params(input_filename);
+	SimulationParams sim_params(test_case, input_filename, solver_params.L);
+	PlottingParams   plot_params(input_filename);
+	Depths1D         bcs(test_case);
+	SaveInterval     saveint(input_filename, "saveint");
+	SaveInterval     massint(input_filename, "massint");
+
+	read_command_line_params
+	(
+		argc,
+		argv,
+		sim_params,
+		solver_params,
+		plot_params
+	);
 
 	// Variables
 	int mesh_dim      = 1 << solver_params.L;
