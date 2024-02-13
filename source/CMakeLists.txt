@@ -10,4 +10,5 @@ target_sources(
 	    gpu-mwdg2
 		PRIVATE
 		main.cu
+		run_simulation.cu
 	)
