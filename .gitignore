@@ -367,3 +367,4 @@ build/
 *.xvelocity
 *.yvelocity
 *.stage
+*.cumu
