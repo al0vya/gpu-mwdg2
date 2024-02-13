@@ -113,13 +113,13 @@ class SimulationMonai:
             
             self.write_par_file()
             
-            simulation_runs = 10
+            simulation_runs = 1
             
             for epsilon, dirroot_base in zip(self.epsilons, self.dirroots):
                 for run in range(simulation_runs):
                     dirroot = dirroot_base + "-" + str(run)
                     
-                    #self.run(epsilon, dirroot)
+                    self.run(epsilon, dirroot)
                     
                     cumulative_dataframe = pd.read_csv( os.path.join(dirroot, "res.cumu") )
                     
@@ -200,7 +200,7 @@ class SimulationMonai:
         ):
             print("Running simulation, eps = " + str(epsilon) + ", solver: " + solver)
             
-            executable = "lisflood.exe" if sys.platform == "win32" else "lisflood"
+            executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
             
             command_line_args = [
                 os.path.join("..", executable),

@@ -15,7 +15,7 @@ void write_cumulative_data
 {
 	char fullpath[255] = {'\0'};
 
-	sprintf(fullpath, "%s%c%s%c%s", plot_params.dirroot, '/', plot_params.resroot, '-', "cumulative-data.csv");
+	sprintf(fullpath, "%s%c%s%s", plot_params.dirroot, '/', plot_params.resroot, ".cumu");
 	
 	FILE* cumulative_input = fopen(fullpath, (first_t_step) ? "w" : "a");
 
@@ -25,7 +25,7 @@ void write_cumulative_data
 		exit(-1);
 	}
 
-	if (first_t_step) fprintf(cumulative_input, "simtime,runtime_mra,runtime_solver,runtime_total,dt,compression\n");
+	if (first_t_step) fprintf(cumulative_input, "simtime,runtime_mra,runtime_solver,runtime_total,dt,reduction\n");
 
 	const clock_t end = clock();
 

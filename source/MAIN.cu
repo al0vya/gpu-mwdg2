@@ -805,7 +805,7 @@ int main
 		// -------------- WRITING TO FILE -------------- //
 		// --------------------------------------------- //
 
-		if ( first_t_step || saveint.save(current_time) )
+		if ( saveint.save(current_time) )
 		{
 			if (plot_params.vtk)
 			{

@@ -16,10 +16,13 @@ void write_all_raster_maps_fv1
 
 	const int num_finest_cells = mesh_dim * mesh_dim;
 
-	real* h  = new real[num_finest_cells];
-	real* qx = new real[num_finest_cells];
-	real* qy = new real[num_finest_cells];
-	real* z  = new real[num_finest_cells];
+	real* h    = new real[num_finest_cells];
+	real* qx   = new real[num_finest_cells];
+	real* qy   = new real[num_finest_cells];
+	real* vx   = new real[num_finest_cells];
+	real* vy   = new real[num_finest_cells];
+	real* z    = new real[num_finest_cells];
+	real* eta  = new real[num_finest_cells];
 
 	real*           h0       = new real[d_assem_sol.length];
 	real*           qx0      = new real[d_assem_sol.length];
@@ -58,51 +61,128 @@ void write_all_raster_maps_fv1
 			{
 				int idx = (mesh_dim) * (j + j_loc) + (i + i_loc);
 
-				h[idx]  = h0 [element];
-				qx[idx] = qx0[element];
-				qy[idx] = qy0[element];
-				z[idx]  = z0 [element];
+				h[idx]    = h0 [element];
+				z[idx]    = z0 [element];
+				eta[idx]  = h0[element] + z0 [element];
+
+				// only compute velocity or discharge if voutput/qoutput params are included
+				if (plot_params.voutput || plot_params.qoutput)
+				{
+					if (plot_params.qoutput)
+					{
+						qx[idx] = qx0[element];
+						qy[idx] = qy0[element];
+					}
+					
+					if (plot_params.voutput)
+					{
+						vx[idx] = (h0[element] > solver_params.tol_h) ? qx0[element] / h0[element] : C(0.0);
+						vy[idx] = (h0[element] > solver_params.tol_h) ? qy0[element] / h0[element] : C(0.0);
+					}
+				}
 			}
 		}
 	}
-	
-	write_raster_file
-	(
-		plot_params,
-		"wd",
-		h,
-		sim_params,
-		saveint,
-		dx_finest,
-		mesh_dim
-	);
 
-	write_raster_file
-	(
-		plot_params,
-		"qx",
-		qx,
-		sim_params,
-		saveint,
-		dx_finest,
-		mesh_dim
-	);
+	if (!plot_params.elevoff)
+	{
+		write_raster_file
+		(
+			plot_params,
+			"elev",
+			eta,
+			sim_params,
+			saveint,
+			dx_finest,
+			mesh_dim
+		);
+	}
 
-	write_raster_file
-	(
-		plot_params,
-		"qy",
-		qy,
-		sim_params,
-		saveint,
-		dx_finest,
-		mesh_dim
-	);
+	if (!plot_params.depthoff)
+	{
+		write_raster_file
+		(
+			plot_params,
+			"wd",
+			h,
+			sim_params,
+			saveint,
+			dx_finest,
+			mesh_dim
+		);
+	}
+
+	if (plot_params.qoutput)
+	{
+		write_raster_file
+		(
+			plot_params,
+			"qx",
+			qx,
+			sim_params,
+			saveint,
+			dx_finest,
+			mesh_dim
+		);
+
+		write_raster_file
+		(
+			plot_params,
+			"qy",
+			qy,
+			sim_params,
+			saveint,
+			dx_finest,
+			mesh_dim
+		);
+	}
+
+	if (plot_params.voutput)
+	{
+		write_raster_file
+		(
+			plot_params,
+			"vx",
+			vx,
+			sim_params,
+			saveint,
+			dx_finest,
+			mesh_dim
+		);
+
+		write_raster_file
+		(
+			plot_params,
+			"vy",
+			vy,
+			sim_params,
+			saveint,
+			dx_finest,
+			mesh_dim
+		);
+	}
+
+	if (first_t_step)
+	{
+		write_raster_file
+		(
+			plot_params,
+			"dem",
+			z,
+			sim_params,
+			saveint,
+			dx_finest,
+			mesh_dim
+		);
+	}
 
 	delete[] h;
 	delete[] qx;
 	delete[] qy;
+	delete[] vx;
+	delete[] vy;
 	delete[] z;
+	delete[] eta;
 
 	delete[] h0;
 	delete[] qx0;
