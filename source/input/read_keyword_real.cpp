@@ -3,10 +3,11 @@
 real read_keyword_real
 (
 	const char* filename,
-	const char* keyword,
-	const int&  num_char
+	const char* keyword
 )
 {
+	const int num_char = strlen(keyword); 
+	
 	if (num_char > 128)
 	{
 		fprintf(stderr, "Keyword length %s exceeds keyword buffer size 128, file: %s line: %d.\n", keyword, __FILE__, __LINE__);

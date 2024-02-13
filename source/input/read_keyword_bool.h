@@ -7,6 +7,5 @@
 bool read_keyword_bool
 (
 	const char* filename,
-	const char* keyword,
-	const int&  num_char
+	const char* keyword
 );

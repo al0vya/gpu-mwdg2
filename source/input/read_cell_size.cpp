@@ -3,7 +3,7 @@
 real read_cell_size(const char* input_filename)
 {
 	char dem_filename_buf[128] = {'\0'};
-	read_keyword_str(input_filename, "DEMfile", 7, dem_filename_buf);
+	read_keyword_str(input_filename, "DEMfile", dem_filename_buf);
 
 	int  dummy          = 0;
 	char dummy_buf[128] = {'\0'};

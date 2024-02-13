@@ -1,0 +1,38 @@
+STATION INFORMATION
+
+Data Type:                              Currents                      
+Station ID:                             HAI1125                       
+Station Name:                           Approach to Hilo Harbor       
+Project:                                Hawaii 2011 Current Observation Project
+Latitude:                               19° 44.710' N                 
+Longitude:                              155° 4.919' W                 
+Deployment/Recovery Dates (UTC):        Feb 16, 2011 17:47:00 / Apr 4, 2011 17:28:00
+Approximate Station Depth *:            63.3ft / 19.29m               
+Sensor Orientation:                     Up (Bottom-Mounted)           
+Time Zone:                              UTC -10                       
+Sample Interval:                        6 min                         
+Time Meridian:                          150 W                         
+NOAA Chart #:                           19324                         
+Approximate Flood Direction (deg true): 180.0                         
+
+* The elevation cannot be linked, connected or related to any tidal or geodetic 
+datum published by NOS. 
+
+Data is available for the following depths:
+
+Approximate Depth (feet)                Approximate Depth (meters)    
+54.4ft                                  16.58m                        
+51.1ft                                  15.58m                        
+47.8ft                                  14.57m                        
+44.6ft                                  13.59m                        
+41.3ft                                  12.59m                        
+38.0ft                                  11.58m                        
+34.7ft                                  10.58m                        
+31.4ft                                  9.57m                         
+28.1ft                                  8.56m                         
+24.9ft                                  7.59m                         
+21.6ft                                  6.58m                         
+18.3ft                                  5.58m                         
+15.0ft                                  4.57m                         
+11.7ft                                  3.57m                         
+8.5ft                                   2.59m                         

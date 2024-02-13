@@ -22,18 +22,18 @@ typedef struct PlottingParams
 		const char* input_filename
 	)
 	{
-		this->vtk           = read_keyword_bool(input_filename, "vtk", 3);
-		this->c_prop        = read_keyword_bool(input_filename, "c_prop", 6);
-		this->raster_out    = read_keyword_bool(input_filename, "raster_out", 10);
-		this->voutput_stage = read_keyword_bool(input_filename, "voutput_stage", 13);
-		this->voutput       = read_keyword_bool(input_filename, "voutput", 7);
-		this->qoutput       = read_keyword_bool(input_filename, "qoutput", 7);
-		this->elevoff       = read_keyword_bool(input_filename, "elevoff", 7);
-		this->depthoff      = read_keyword_bool(input_filename, "depthoff", 7);
-		this->cumulative    = read_keyword_bool(input_filename, "cumulative", 10);
+		this->vtk           = read_keyword_bool(input_filename, "vtk");
+		this->c_prop        = read_keyword_bool(input_filename, "c_prop");
+		this->raster_out    = read_keyword_bool(input_filename, "raster_out");
+		this->voutput_stage = read_keyword_bool(input_filename, "voutput_stage");
+		this->voutput       = read_keyword_bool(input_filename, "voutput");
+		this->qoutput       = read_keyword_bool(input_filename, "qoutput");
+		this->elevoff       = read_keyword_bool(input_filename, "elevoff");
+		this->depthoff      = read_keyword_bool(input_filename, "depthoff");
+		this->cumulative    = read_keyword_bool(input_filename, "cumulative");
 		
-		read_keyword_str(input_filename, "resroot", 7, this->resroot);
-		read_keyword_str(input_filename, "dirroot", 7, this->dirroot);
+		read_keyword_str(input_filename, "resroot", this->resroot);
+		read_keyword_str(input_filename, "dirroot", this->dirroot);
 
 		// if no result filename prefix is specified
 		if (this->resroot[0] == '\0')

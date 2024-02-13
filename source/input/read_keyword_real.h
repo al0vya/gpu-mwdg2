@@ -9,6 +9,5 @@
 real read_keyword_real
 (
 	const char* filename,
-	const char* keyword,
-	const int&  num_char
+	const char* keyword
 );

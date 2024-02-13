@@ -16,7 +16,7 @@ void read_and_project_modes_dg2
 	char qy_raster_filename_buf[128] = {'\0'};
 	char dem_filename_buf[128]       = {'\0'};
 
-	read_keyword_str(input_filename, "DEMfile",   7, dem_filename_buf);
+	read_keyword_str(input_filename, "DEMfile", dem_filename_buf);
 	
 	// buffer for DEM filename should never be null char because DEM is always needed for realistic test case
 	if (dem_filename_buf[0] == '\0')
@@ -24,7 +24,7 @@ void read_and_project_modes_dg2
 		fprintf(stderr, "Error reading DEM filename, file: %s, line: %d.\n", __FILE__, __LINE__);
 	}
 	
-	read_keyword_str(input_filename, "startfile", 9, h_raster_filename_buf);
+	read_keyword_str(input_filename, "startfile", h_raster_filename_buf);
 
 	real* h_raster  = new real[d_assem_sol.length]();
 	real* qx_raster = new real[d_assem_sol.length]();

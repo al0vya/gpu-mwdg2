@@ -35,7 +35,7 @@ typedef struct SimulationParams
             case 0: // raster file based test case
             {
                 char dem_filename_buf[128] = {'\0'};
-                read_keyword_str(input_filename, "DEMfile", 7, dem_filename_buf);
+                read_keyword_str(input_filename, "DEMfile", dem_filename_buf);
     
                 FILE* fp = fopen(dem_filename_buf, "r");
     
@@ -47,15 +47,15 @@ typedef struct SimulationParams
     
                 real cellsize = C(0.0);
     
-                this->xsz       = read_keyword_int (dem_filename_buf, "ncols", 5);
-                this->ysz       = read_keyword_int (dem_filename_buf, "nrows", 5);
-                this->xmin      = read_keyword_real(dem_filename_buf, "xllcorner", 9);
-                this->ymin      = read_keyword_real(dem_filename_buf, "yllcorner", 9);
-                cellsize        = read_keyword_real(dem_filename_buf, "cellsize", 8);
+                this->xsz       = read_keyword_int (dem_filename_buf, "ncols");
+                this->ysz       = read_keyword_int (dem_filename_buf, "nrows");
+                this->xmin      = read_keyword_real(dem_filename_buf, "xllcorner");
+                this->ymin      = read_keyword_real(dem_filename_buf, "yllcorner");
+                cellsize        = read_keyword_real(dem_filename_buf, "cellsize");
                 this->xmax      = this->xmin + this->xsz * cellsize;
                 this->ymax      = this->ymin + this->ysz * cellsize;
-                this->time      = read_keyword_real(input_filename, "sim_time", 8);
-                this->manning   = read_keyword_real(input_filename, "fpfric", 6);
+                this->time      = read_keyword_real(input_filename, "sim_time");
+                this->manning   = read_keyword_real(input_filename, "fpfric");
                 this->is_monai  = !strncmp("monai.dem", dem_filename_buf, 9);
                 this->is_oregon = !strncmp("oregon-seaside-0p02m.dem", dem_filename_buf, 24);
             }
@@ -71,7 +71,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.0);
                 break;
             case 5: // wet dam break
@@ -83,7 +83,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.0);
                 break;
             case 7: // dry dam break
@@ -95,7 +95,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.0);
                 break;
             case 9: // dry dam break w fric
@@ -107,7 +107,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.02);
                 break;
             case 11: // building overtopping
@@ -121,7 +121,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.02);
                 break;
             case 15: // triangle dam break
@@ -133,7 +133,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.0125);
                 break;
             case 17: // parabolic bowl, period "T" = 14.4 s
@@ -145,7 +145,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.0);
                 break;
             case 19: // three cones c prop
@@ -156,7 +156,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.0);
                 break;
             case 20: // three cones dam break
@@ -167,7 +167,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.018);
                 break;
             case 21: // diff and non diff topo c prop
@@ -179,7 +179,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.0);
                 break;
             case 23: // radial dam break
@@ -190,7 +190,7 @@ typedef struct SimulationParams
                 this->xsz  = mesh_dim;
                 this->ysz  = mesh_dim;
                 this->g    = C(9.80665);
-                this->time = read_keyword_real(input_filename, "sim_time", 8);
+                this->time = read_keyword_real(input_filename, "sim_time");
                 this->manning = C(0.0);
                 break;
             default:

@@ -1,0 +1,32 @@
+STATION INFORMATION
+
+Data Type:                              Currents                      
+Station ID:                             HAI1126                       
+Station Name:                           Hilo Harbor                   
+Project:                                Hawaii 2011 Current Observation Project
+Latitude:                               19° 44.500' N                 
+Longitude:                              155° 4.198' W                 
+Deployment/Recovery Dates (UTC):        Feb 16, 2011 17:24:00 / Apr 4, 2011 18:16:00
+Approximate Station Depth *:            40.9ft / 12.46m               
+Sensor Orientation:                     Up (Bottom-Mounted)           
+Time Zone:                              UTC -10                       
+Sample Interval:                        6 min                         
+Time Meridian:                          150 W                         
+NOAA Chart #:                           19324                         
+Approximate Flood Direction (deg true): 200.0                         
+
+* The elevation cannot be linked, connected or related to any tidal or geodetic 
+datum published by NOS. 
+
+Data is available for the following depths:
+
+Approximate Depth (feet)                Approximate Depth (meters)    
+32.0ft                                  9.75m                         
+28.7ft                                  8.75m                         
+25.4ft                                  7.74m                         
+22.1ft                                  6.74m                         
+18.9ft                                  5.76m                         
+15.6ft                                  4.75m                         
+12.3ft                                  3.75m                         
+9.0ft                                   2.74m                         
+5.7ft                                   1.74m                         
