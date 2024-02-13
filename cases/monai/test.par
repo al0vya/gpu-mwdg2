@@ -1,6 +1,5 @@
 max_ref_lvl   9
 initial_tstep 1
-dirroot       results
 epsilon       0.001
 fpfric        0.01
 DEMfile       monai.dem
@@ -8,13 +7,10 @@ startfile     monai.start
 bcifile       monai.bci
 bdyfile       monai.bdy
 stagefile     monai.stage
-saveint       22.5
+saveint       5
 massint       0.1
 sim_time      22.5
-hwfv1
-cumulative
-raster_out
-vtk
+mwdg2
 cuda
 refine_wall
 ref_thickness 16

@@ -9,7 +9,31 @@ def EXIT_HELP():
     help_message = ("Use this tool as:\n" + "python test.py <OPTION>, OPTION={fast|slow} to perform either fast or slow verification.\n")
     
     sys.exit(help_message)
-
+    
+def main():
+    if len(sys.argv) != 2:
+        EXIT_HELP()
+    
+    dummy, option = sys.argv
+    
+    generate_input_files()
+    
+    print("Running verification test...")
+    
+    if option == "fast":
+        error = compute_error(epsilon=1e-3, solver="hwfv1")
+        
+        print(f"Mean absolute error for hwfv1 solver, epsilon = 1e-3: {error}")
+    elif option == "slow":
+        errors = compute_all_errors()
+        
+        print(f"Mean absolute error for hwfv1 solver, epsilon = 1e-3: {errors['hwfv1'][1e-3]}")
+        print(f"Mean absolute error for hwfv1 solver, epsilon = 0:    {errors['hwfv1'][0]}")
+        print(f"Mean absolute error for mwdg2 solver, epsilon = 1e-3: {errors['mwdg2'][1e-3]}")
+        print(f"Mean absolute error for mwdg2 solver, epsilon = 0:    {errors['mwdg2'][0]}")
+    else:
+        EXIT_HELP()
+        
 def write_par_file(
     epsilon,
     solver,
@@ -19,7 +43,7 @@ def write_par_file(
         params = (
             "max_ref_lvl   9\n" +
             "initial_tstep 1\n" +
-            "epsilon       %s\n" +
+            f"epsilon       {epsilon}\n" +
             "fpfric        0.01\n" +
             "DEMfile       monai.dem\n" +
             "startfile     monai.start\n" +
@@ -29,14 +53,11 @@ def write_par_file(
             "saveint       5\n" +
             "massint       0.1\n" +
             "sim_time      22.5\n" +
-            "%s\n" + # solver
+            f"{solver}\n"
             "cuda\n" +
             "refine_wall\n" +
             "ref_thickness 16\n" +
             "wall_height   0.5"
-        ) % (
-            epsilon,
-            solver
         )
         
         fp.write(params)
@@ -46,10 +67,10 @@ def plot_depths(
     depths_computed,
     filename
 ):
-    exp_data = np.loadtxt(fname="experimental.txt", skiprows=1, delimiter=',')
+    exp_data = np.loadtxt(fname="MonaiValley_WaveGages.txt", skiprows=1, delimiter='\t')
     
     t_exp      = exp_data[:,0]
-    depths_exp = exp_data[:,1]
+    depths_exp = exp_data[:,1] / 100 # convert from cm to m
     
     N_points_verified = len(depths_verified)
     N_points_computed = len(depths_computed)
@@ -65,41 +86,53 @@ def plot_depths(
     
     fig, ax = plt.subplots()
     
-    ax.plot(t_verified, depths_verified, label="verified")
-    ax.plot(t_computed, depths_computed, label="computed")
-    ax.plot(t_exp,      depths_exp,      label="experimental")
+    ax.plot(t_verified, depths_verified, label="Verified")
+    ax.plot(t_computed, depths_computed, label="Computed")
+    ax.plot(t_exp,      depths_exp,      label="Experimental")
     
     plt.setp(ax,
         xlim=(t_min, t_max),
-        xlabel=r"$t \, (s)$",
-        ylabel=r"$h + z \, (m)$"
+        xlabel="$t$ (s)",
+        ylabel="$h + z$ (m)"
     )
     
     ax.legend()
     
-    fig.savefig(fname=os.path.join("res", filename), bbox_inches="tight")
+    fig.savefig(fname=os.path.join("res", filename) + ".png", bbox_inches="tight")
     
     plt.close()
     
-def verify_depths(
+def compute_error(
     epsilon,
-    solver,
-    depths_computed
+    solver
 ):
-    filename = ""
+    print(f"Running simulation, solver: {solver}, eps: {epsilon}")
     
-    if epsilon == 0:
-        solver_text = "fv1"   if solver == "hwfv1" else "dg2"
-    else:
-        solver_text = "hwfv1" if solver == "hwfv1" else "mwdg2"
+    input_file = "test.par"
     
-    verification_filename = "stage-" + solver_text + ".txt"
+    write_par_file(
+        epsilon=epsilon,
+        solver=solver,
+        input_file=input_file
+    )
+    
+    executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
+    
+    subprocess.run( [os.path.join("..", executable), input_file] )
+    
+    solver_text = f"{solver}-eps-{epsilon}"
     
     depths_verified = np.loadtxt(
-        fname=verification_filename,
-        skiprows=1,
-        usecols=1,
-        delimiter=','
+        fname=os.path.join(solver_text, "res.txt"),
+        skiprows=9,
+        usecols=2,
+        delimiter=' '
+    )
+    
+    depths_computed = np.loadtxt(fname=os.path.join("res", "res.stage"),
+        skiprows=9,
+        usecols=2,
+        delimiter=' '
     )
     
     plot_depths(
@@ -110,80 +143,26 @@ def verify_depths(
     
     error = np.abs(depths_computed - depths_verified).mean()
     
-    return "passed" if (error < 1e-14) else "failed"
-
-def verify(
-    epsilon,
-    solver
-):
-    print( "Running simulation, solver: " + solver + ", eps = " + str(epsilon) )
+    return error
     
-    input_file = "test.par"
-    
-    write_par_file(
-        epsilon=epsilon,
-        solver=solver,
-        input_file=input_file
-    )
-    
-    executable = "lisflood.exe" if sys.platform == "win32" else "lisflood"
-    
-    subprocess.run( [os.path.join("..", executable), input_file] )
-    
-    depths_computed = np.loadtxt(fname=os.path.join("res", "res.stage"), skiprows=9, usecols=2, delimiter=' ')
-    
-    return verify_depths(epsilon, solver, depths_computed)
-    
-def verify_all():
+def compute_all_errors():
     rec_dd = lambda: collections.defaultdict(rec_dd)
     
-    verification = rec_dd()
+    errors = rec_dd()
     
-    verification["hwfv1"][0]    = verify(epsilon=0,    solver="hwfv1")
-    verification["hwfv1"][1e-3] = verify(epsilon=1e-3, solver="hwfv1")
-    verification["mwdg2"][0]    = verify(epsilon=0,    solver="mwdg2")
-    verification["mwdg2"][1e-3] = verify(epsilon=1e-3, solver="mwdg2")
+    errors["hwfv1"][0]    = compute_error(epsilon=0,    solver="hwfv1")
+    errors["hwfv1"][1e-3] = compute_error(epsilon=1e-3, solver="hwfv1")
+    errors["mwdg2"][0]    = compute_error(epsilon=0,    solver="mwdg2")
+    errors["mwdg2"][1e-3] = compute_error(epsilon=1e-3, solver="mwdg2")
     
-    return verification
+    return errors
     
-# when using this script, make sure to have the Monai directory too
 def generate_input_files():
     print("Generating input files...")
     
-    monai_dir = os.path.join("..", "monai")
-    
-    subprocess.run( [ "python", os.path.join(monai_dir, "stage.py" ) ] )
-    subprocess.run( [ "python", os.path.join(monai_dir, "inflow.py") ] )
-    subprocess.run( [ "python", os.path.join(monai_dir, "raster.py") ] )
-    
-def main():
-    if len(sys.argv) != 2:
-        EXIT_HELP()
-    
-    dummy, option = sys.argv
-    
-    generate_input_files()
-    
-    print("Running verification test...")
-    
-    if option == "fast":
-        print("Code " + verify(epsilon=1e-3, solver="hwfv1") + " fast verification.\n")
-    elif option == "slow":
-        verification = verify_all()
-        
-        results = (
-            "%8s" + "%8s" + "%8s\n\n" +
-            "%8s" + "%8s" + "%8s\n\n" +
-            "%8s" + "%8s" + "%8s"
-        ) % (
-            "eps", "0", "1e-3",
-            "hwfv1", str( verification["hwfv1"][0] ), str( verification["hwfv1"][1e-3] ),
-            "mwdg2", str( verification["mwdg2"][0] ), str( verification["mwdg2"][1e-3] )
-        )
-        
-        print(results)
-    else:
-        EXIT_HELP()
-        
+    subprocess.run( [ "python", "stage.py"  ] )
+    subprocess.run( [ "python", "inflow.py" ] )
+    subprocess.run( [ "python", "raster.py" ] )
+
 if __name__ == "__main__":
     main()
