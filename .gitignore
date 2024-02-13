@@ -364,3 +364,6 @@ build/
 *.jpg
 *.mat
 *.exe
+*.xvelocity
+*.yvelocity
+*.stage
