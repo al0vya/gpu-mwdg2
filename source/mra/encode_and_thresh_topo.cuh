@@ -33,8 +33,8 @@ __global__ void encode_and_thresh_topo
 	Details           d_details,
 	bool*             d_preflagged_details,
 	Maxes             maxes,
-	SolverParams  solver_params,
-	SimulationParams sim_params,
+	SolverParams      solver_params,
+	SimulationParams  sim_params,
 	int               level,
 	bool              first_time_step
 );

@@ -1,5 +1,7 @@
 #include "read_cell_size.h"
 
+#define EXIT_READ_CELL_SIZE_LFP_82 { if (NULL == fp) { fprintf(stderr, "Error reading DEM file for cell size.\n"); exit(-1); } }
+
 real read_cell_size(const char* input_filename)
 {
 	char dem_filename_buf[128] = {'\0'};
@@ -17,10 +19,20 @@ real read_cell_size(const char* input_filename)
 		exit(-1);
 	}
 
-	fscanf(fp, "%s %d", dummy_buf, &dummy);
-	fscanf(fp, "%s %d", dummy_buf, &dummy);
-	fscanf(fp, "%s %" NUM_FRMT, dummy_buf, &cell_size);
-	fscanf(fp, "%s %" NUM_FRMT, dummy_buf, &cell_size);
+	// ESRI raster file header format:
+	
+	// ncols        392
+	// nrows        243
+	// xllcorner    0
+	// yllcorner    0
+	// cellsize     0.014
+	// NODATA_value -9999
+
+	// read up until cellsize
+	fscanf(fp, "%s %d", dummy_buf, &dummy); EXIT_READ_CELL_SIZE_LFP_82
+	fscanf(fp, "%s %d", dummy_buf, &dummy); EXIT_READ_CELL_SIZE_LFP_82
+	fscanf(fp, "%s %" NUM_FRMT, dummy_buf, &cell_size); EXIT_READ_CELL_SIZE_LFP_82
+	fscanf(fp, "%s %" NUM_FRMT, dummy_buf, &cell_size); EXIT_READ_CELL_SIZE_LFP_82
 	fscanf(fp, "%s %" NUM_FRMT, dummy_buf, &cell_size);
 
 	fclose(fp);

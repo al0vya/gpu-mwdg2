@@ -9,8 +9,8 @@
 #include "../types/HierarchyIndex.h"
 #include "../types/Coordinate.h"
 
-#include "../tests/h_init.cuh"
-#include "../tests/topo.cuh"
+#include "../synthetic/h_init.cuh"
+#include "../synthetic/topo.cuh"
 
 // initialise nodal values of h, qx, qy and z depending on x, y nodal values
 __global__

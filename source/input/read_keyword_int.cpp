@@ -31,7 +31,7 @@ int read_keyword_int
 	{
 		if ( NULL == fgets(line_buf, 255, fp) )
 		{
-			fprintf(stderr, "Keyword %s not found when reading file %s, file: %s line: %d.\n", keyword, filename, __FILE__, __LINE__);
+			fprintf(stderr, "Keyword %s not found when reading file %s.\n", keyword, filename);
 			fclose(fp);
 			return 0;
 		}

@@ -4,6 +4,7 @@ add_subdirectory(neighbours)
 add_subdirectory(operators)
 add_subdirectory(output)
 add_subdirectory(utilities)
+add_subdirectory(unittests)
 add_subdirectory(zorder)
 
 target_sources(

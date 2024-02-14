@@ -1,0 +1,7 @@
+ncols        392
+nrows        243
+xllcorner    0
+yllcorner    0
+cellsize     0.014
+NODATA_value -9999
+DEMfile      unit_test_read_cell_size_CELL_SIZE_FOUND.txt
