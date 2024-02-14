@@ -4,7 +4,8 @@ void run_simulation
 (
 	int    argc,
 	char** argv
-){
+)
+{
 	// begin timing from the beginning, as input is automated
 	const clock_t start = clock();
 
