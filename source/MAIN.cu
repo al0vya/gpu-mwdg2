@@ -1,5 +1,5 @@
 #include "run_simulation.cuh"
-#include "unittests/run_unit_tests.h"
+#include "unittests/run_unit_tests.cuh"
 
 int main
 (
@@ -8,7 +8,10 @@ int main
 )
 {
 	#if _RUN_UNIT_TESTS
-	run_unit_tests();
+	if (argc == 1)
+	{
+		run_unit_tests();
+	}
 	#endif
 	
 	if (argc < 2)

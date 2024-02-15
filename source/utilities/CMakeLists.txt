@@ -3,4 +3,5 @@ target_sources(
 		PRIVATE
 		cuda_utils.cu
 		get_num_blocks.cpp
+		are_reals_equal.cpp
 	)

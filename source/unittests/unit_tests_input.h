@@ -5,13 +5,7 @@
 #include "../input/read_keyword_int.h"
 #include "../input/read_keyword_str.h"
 #include "../input/read_cell_size.h"
-
-bool are_reals_equal
-(
-	const real& a,
-	const real& b,
-	const real& epsilon
-);
+#include "../utilities/are_reals_equal.h"
 
 void test_read_keyword_int_KEYWORD_NOT_FOUND();
 

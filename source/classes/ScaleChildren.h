@@ -1,7 +1,5 @@
 #pragma once
 
-#include "cuda_runtime.h"
-
 #include "../types/real.h"
 
 typedef struct ScaleChildrenHW

@@ -1,6 +1,7 @@
 target_sources(
 	    gpu-mwdg2
 		PRIVATE
-		run_unit_tests.cpp
+		run_unit_tests.cu
         unit_tests_input.cpp
+        unit_tests_mra.cu
 	)

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "cuda_runtime.h"
-
 #include "../classes/Detail.h"
 #include "../classes/ChildScaleCoeffs.h"
 #include "../mra/Filters.h"
