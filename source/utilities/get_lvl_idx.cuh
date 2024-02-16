@@ -1,7 +1,5 @@
 #pragma once
 
-#include "cuda_runtime.h"
-
 #include "../types/HierarchyIndex.h"
 
 // gets the starting index of a grid at refinement level n within an array 

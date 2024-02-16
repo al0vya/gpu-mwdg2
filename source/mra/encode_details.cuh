@@ -5,16 +5,16 @@
 #include "../mra/Filters.h"
 
 // encodes the details alpha, beta and gamma for eta, qx, qy and z
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_alpha(const ScaleChildrenHW& u);
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_beta(const ScaleChildrenHW& u);
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_gamma(const ScaleChildrenHW& u);
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 DetailHW encode_details(const ChildScaleCoeffsHW& child_coeffs)
 {
 	SubDetailHW eta =
@@ -54,25 +54,25 @@ DetailHW encode_details(const ChildScaleCoeffsHW& child_coeffs)
 	};
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_alpha(const ScaleChildrenHW& u)
 {
 	return C(0.5) * ( H0 * (G0 * u.child_0 + G1 * u.child_2) + H1 * (G0 * u.child_1 + G1 * u.child_3) );
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_beta(const ScaleChildrenHW& u)
 {
 	return C(0.5) * ( G0 * (H0 * u.child_0 + H1 * u.child_2) + G1 * (H0 * u.child_1 + H1 * u.child_3) );
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_gamma(const ScaleChildrenHW& u)
 {
 	return C(0.5) * ( G0 * (G0 * u.child_0 + G1 * u.child_2) + G1 * (G0 * u.child_1 + G1 * u.child_3) );
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_alpha_0(const ScaleChildrenMW& u)
 {
 	return (GA0_11 * u._0.child_0 + GA0_12 * u._1x.child_0 + GA0_13 * u._1y.child_0 +
@@ -81,7 +81,7 @@ real encode_detail_alpha_0(const ScaleChildrenMW& u)
 		    GA3_11 * u._0.child_3 + GA3_12 * u._1x.child_3 + GA3_13 * u._1y.child_3) / C(2.0);
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_beta_0(const ScaleChildrenMW& u)
 {
 	return (GB0_11 * u._0.child_0 + GB0_12 * u._1x.child_0 + GB0_13 * u._1y.child_0 +
@@ -90,7 +90,7 @@ real encode_detail_beta_0(const ScaleChildrenMW& u)
 		    GB3_11 * u._0.child_3 + GB3_12 * u._1x.child_3 + GB3_13 * u._1y.child_3) / C(2.0);
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_gamma_0(const ScaleChildrenMW& u)
 {
 	return (GC0_11 * u._0.child_0 + GC0_12 * u._1x.child_0 + GC0_13 * u._1y.child_0 +
@@ -99,7 +99,7 @@ real encode_detail_gamma_0(const ScaleChildrenMW& u)
 		    GC3_11 * u._0.child_3 + GC3_12 * u._1x.child_3 + GC3_13 * u._1y.child_3) / C(2.0);
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_alpha_1x(const ScaleChildrenMW& u)
 {
 	return (GA0_21 * u._0.child_0 + GA0_22 * u._1x.child_0 + GA0_23 * u._1y.child_0 +
@@ -108,7 +108,7 @@ real encode_detail_alpha_1x(const ScaleChildrenMW& u)
 		    GA3_21 * u._0.child_3 + GA3_22 * u._1x.child_3 + GA3_23 * u._1y.child_3) / C(2.0);
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_beta_1x(const ScaleChildrenMW& u)
 {
 	return (GB0_21 * u._0.child_0 + GB0_22 * u._1x.child_0 + GB0_23 * u._1y.child_0 +
@@ -117,7 +117,7 @@ real encode_detail_beta_1x(const ScaleChildrenMW& u)
 		    GB3_21 * u._0.child_3 + GB3_22 * u._1x.child_3 + GB3_23 * u._1y.child_3) / C(2.0);
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_gamma_1x(const ScaleChildrenMW& u)
 
 {
@@ -127,7 +127,7 @@ real encode_detail_gamma_1x(const ScaleChildrenMW& u)
 		    GC3_21 * u._0.child_3 + GC3_22 * u._1x.child_3 + GC3_23 * u._1y.child_3) / C(2.0);
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_alpha_1y(const ScaleChildrenMW& u)
 {
 	return (GA0_31 * u._0.child_0 + GA0_32 * u._1x.child_0 + GA0_33 * u._1y.child_0 +
@@ -136,7 +136,7 @@ real encode_detail_alpha_1y(const ScaleChildrenMW& u)
 		    GA3_31 * u._0.child_3 + GA3_32 * u._1x.child_3 + GA3_33 * u._1y.child_3) / C(2.0);
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_beta_1y(const ScaleChildrenMW& u)
 {
 	return (GB0_31 * u._0.child_0 + GB0_32 * u._1x.child_0 + GB0_33 * u._1y.child_0 +
@@ -145,7 +145,7 @@ real encode_detail_beta_1y(const ScaleChildrenMW& u)
 		    GB3_31 * u._0.child_3 + GB3_32 * u._1x.child_3 + GB3_33 * u._1y.child_3) / C(2.0);
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 real encode_detail_gamma_1y(const ScaleChildrenMW& u)
 {
 	return (GC0_31 * u._0.child_0 + GC0_32 * u._1x.child_0 + GC0_33 * u._1y.child_0 +
@@ -154,7 +154,7 @@ real encode_detail_gamma_1y(const ScaleChildrenMW& u)
 		    GC3_31 * u._0.child_3 + GC3_32 * u._1x.child_3 + GC3_33 * u._1y.child_3) / C(2.0);
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 SubDetailHW encode_detail_0(const ScaleChildrenMW& u)
 {
 	return
@@ -164,7 +164,7 @@ SubDetailHW encode_detail_0(const ScaleChildrenMW& u)
 		encode_detail_gamma_0(u)
 	};
 }
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 SubDetailHW encode_detail_1x(const ScaleChildrenMW& u)
 {
 	return
@@ -175,7 +175,7 @@ SubDetailHW encode_detail_1x(const ScaleChildrenMW& u)
 	};
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 SubDetailHW encode_detail_1y(const ScaleChildrenMW& u)
 {
 	return
@@ -186,7 +186,7 @@ SubDetailHW encode_detail_1y(const ScaleChildrenMW& u)
 	};
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 SubDetailMW encode_detail(const ScaleChildrenMW& u)
 {
 	return
@@ -197,7 +197,7 @@ SubDetailMW encode_detail(const ScaleChildrenMW& u)
 	};
 }
 
-__device__ __forceinline__
+__host__ __device__ __forceinline__
 DetailMW encode_details(const ChildScaleCoeffsMW& child_coeffs)
 {
 	return

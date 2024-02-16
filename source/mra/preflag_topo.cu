@@ -7,8 +7,8 @@ void preflag_topo
 	Details&           d_details,
 	bool*              d_preflagged_details,
 	Maxes&             maxes, 
-	SolverParams&  solver_params,
-	SimulationParams& sim_params,
+	SolverParams&      solver_params,
+	SimulationParams&  sim_params,
 	int                first_time_step
 )
 {

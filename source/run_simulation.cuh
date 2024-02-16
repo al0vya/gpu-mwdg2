@@ -41,6 +41,7 @@
 #include "output/write_mesh_info.h"
 #include "output/write_stage_point_data.cuh"
 #include "output/write_soln_vtk.cuh"
+#include "output/write_hierarchy_to_file.cuh"
 
 // Helper functions
 #include "utilities/get_lvl_idx.cuh"

@@ -11,6 +11,7 @@ target_sources(
 		write_mesh_info.cpp
 		write_raster_file.cu
 		write_reals_to_file.cu
+		write_hierarchy_to_file.cu
 		write_all_raster_maps.cu
 		write_all_raster_maps_dg2.cu
 		write_all_raster_maps_fv1.cu
