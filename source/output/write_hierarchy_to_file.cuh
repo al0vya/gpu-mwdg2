@@ -10,6 +10,7 @@
 __host__
 void write_hierarchy_to_file
 (
+	const char* dirroot,
 	const char* filename,
 	real*       d_hierarchy,
 	const int&  levels

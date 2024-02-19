@@ -8,6 +8,7 @@
 
 
 #include "../output/write_hierarchy_to_file.cuh"
+#include "../input/read_hierarchy_from_file.cuh"
 
 typedef struct ScaleCoefficients
 {
@@ -28,47 +29,48 @@ typedef struct ScaleCoefficients
 
 	bool is_copy_cuda = false;
 
-	int solver_type;
+	int levels = 0;
+	int solver_type = 0;
 
 	ScaleCoefficients
 	(
-		const int& num_all_elems, 
+		const int& levels,
 		const int& solver_type
 	)
-		: solver_type(solver_type)
+		: levels(levels), solver_type(solver_type)
 	{
-		size_t bytes = sizeof(real) * num_all_elems;
+		const int num_all_elems = get_lvl_idx(this->levels + 1);
 		
-		eta0 = (real*)malloc_device(bytes);
-		qx0  = (real*)malloc_device(bytes);
-		qy0  = (real*)malloc_device(bytes);
-		z0   = (real*)malloc_device(bytes);
+		const size_t bytes = sizeof(real) * num_all_elems;
+		
+		this->eta0 = (real*)malloc_device(bytes);
+		this->qx0  = (real*)malloc_device(bytes);
+		this->qy0  = (real*)malloc_device(bytes);
+		this->z0   = (real*)malloc_device(bytes);
 
-		eta1x = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-		qx1x  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-		qy1x  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-		z1x   = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
+		this->eta1x = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
+		this->qx1x  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
+		this->qy1x  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
+		this->z1x   = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
 
-		eta1y = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-		qx1y  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-		qy1y  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-		z1y   = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
+		this->eta1y = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
+		this->qx1y  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
+		this->qy1y  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
+		this->z1y   = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
 	}
 
-	// constructor based on reading files from
-	// Monai test case, with L = 9, for unit testing
 	ScaleCoefficients
 	(
-		const int& solver_type
+		const int&  levels,
+		const int&  solver_type,
+		const char* dirroot
 	)
-		: solver_type(solver_type)
+		: levels(levels), solver_type(solver_type)
 	{
-		const int num_all_elems = get_lvl_idx(9+1); // L = 9 then + 1
-
-		size_t bytes = sizeof(real) * num_all_elems;
-
-		// ALLOCATING DEVICE BUFFERS //
+		const int num_all_elems = get_lvl_idx(levels + 1);
 		
+		const size_t bytes = sizeof(real) * num_all_elems;
+
 		this->eta0 = (real*)malloc_device(bytes);
 		this->qx0  = (real*)malloc_device(bytes);
 		this->qy0  = (real*)malloc_device(bytes);
@@ -84,84 +86,27 @@ typedef struct ScaleCoefficients
 		this->qy1y  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
 		this->z1y   = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
 		
-		// ------------------------- //
-		
-		
-		// ALLOCATING HOST BUFFERS //
-		
-		real* h_eta0 = new real[num_all_elems];
-		real* h_qx0  = new real[num_all_elems];
-		real* h_qy0  = new real[num_all_elems];
-		real* h_z0   = new real[num_all_elems];
-		
-		real* h_eta1x = (solver_type == MWDG2) ? new real[num_all_elems] : nullptr;
-		real* h_qx1x  = (solver_type == MWDG2) ? new real[num_all_elems] : nullptr;
-		real* h_qy1x  = (solver_type == MWDG2) ? new real[num_all_elems] : nullptr;
-		real* h_z1x   = (solver_type == MWDG2) ? new real[num_all_elems] : nullptr;
-		
-		real* h_eta1y = (solver_type == MWDG2) ? new real[num_all_elems] : nullptr;
-		real* h_qx1y  = (solver_type == MWDG2) ? new real[num_all_elems] : nullptr;
-		real* h_qy1y  = (solver_type == MWDG2) ? new real[num_all_elems] : nullptr;
-		real* h_z1y   = (solver_type == MWDG2) ? new real[num_all_elems] : nullptr;
-
-		// ------------------------//
-
-		if (solver_type == HWFV1) // reading from file for GPU-HWFV1
+		if (this->solver_type == HWFV1)
 		{
-			FILE* fp_eta0 = fopen("unittestdata/unit_test_encode_and_thresh_topo/scale-coeffs-eta0-hw.txt", "r");
-			FILE* fp_qx0  = fopen("unittestdata/unit_test_encode_and_thresh_topo/scale-coeffs-qx0-hw.txt",  "r");
-			FILE* fp_qy0  = fopen("unittestdata/unit_test_encode_and_thresh_topo/scale-coeffs-qy0-hw.txt",  "r");
-			FILE* fp_z0   = fopen("unittestdata/unit_test_encode_and_thresh_topo/scale-coeffs-z0-hw.txt",   "r");
-
-			real eta0_dummy = C(0.0);
-			real qx0_dummy  = C(0.0);
-			real qy0_dummy  = C(0.0);
-			real z0_dummy   = C(0.0);
-
-			for (int i = 0; i < num_all_elems; i++) // reading from file for GPU-MWDG2
-			{
-				fscanf(fp_eta0, "%" NUM_FRMT, &eta0_dummy);
-				fscanf(fp_qx0,  "%" NUM_FRMT, &qx0_dummy);
-				fscanf(fp_qy0,  "%" NUM_FRMT, &qy0_dummy);
-				fscanf(fp_z0,   "%" NUM_FRMT, &z0_dummy);
-
-				h_eta0[i] = eta0_dummy;
-				h_qx0[i]  = qx0_dummy;
-				h_qy0[i]  = qy0_dummy;
-				h_z0[i]   = z0_dummy;
-			}
-
-			copy_cuda(this->eta0, h_eta0, bytes);
-			copy_cuda(this->qx0,  h_qx0,  bytes);
-			copy_cuda(this->qy0,  h_qy0,  bytes);
-			copy_cuda(this->z0,   h_z0,   bytes);
-
-			fclose(fp_eta0);
-			fclose(fp_qx0);
-			fclose(fp_qy0);
-			fclose(fp_z0);
+			read_hierarchy_from_file(this->eta0, this->levels, dirroot, "input-scale-coeffs-eta0-hw");
+			read_hierarchy_from_file(this->qx0,  this->levels, dirroot, "input-scale-coeffs-qx0-hw");
+			read_hierarchy_from_file(this->qy0,  this->levels, dirroot, "input-scale-coeffs-qy0-hw");
+			read_hierarchy_from_file(this->z0,   this->levels, dirroot, "input-scale-coeffs-z0-hw");
 		}
-		else if (solver_type == MWDG2)
+		else if (this->solver_type == MWDG2) // reading from file for GPU-MWDG2
 		{
-
-		}
-
-		delete[] h_eta0;
-		delete[] h_qx0;
-		delete[] h_qy0;
-		delete[] h_z0;
-
-		if (solver_type == MWDG2)
-		{
-			delete[] h_eta1x;
-			delete[] h_qx1x;
-			delete[] h_qy1x;
-			delete[] h_z1x;
-
-			delete[] h_eta1y;
-			delete[] h_qx1y;
-			delete[] h_qy1y;
-			delete[] h_z1y;
+			read_hierarchy_from_file(this->eta0,  this->levels, dirroot, "input-scale-coeffs-eta0-mw");
+			read_hierarchy_from_file(this->qx0,   this->levels, dirroot, "input-scale-coeffs-qx0-mw");
+			read_hierarchy_from_file(this->qy0,   this->levels, dirroot, "input-scale-coeffs-qy0-mw");
+			read_hierarchy_from_file(this->z0,    this->levels, dirroot, "input-scale-coeffs-z0-mw");
+			read_hierarchy_from_file(this->eta1x, this->levels, dirroot, "input-scale-coeffs-eta1x-mw");
+			read_hierarchy_from_file(this->qx1x,  this->levels, dirroot, "input-scale-coeffs-qx1x-mw");
+			read_hierarchy_from_file(this->qy1x,  this->levels, dirroot, "input-scale-coeffs-qy1x-mw");
+			read_hierarchy_from_file(this->z1x,   this->levels, dirroot, "input-scale-coeffs-z1x-mw");
+			read_hierarchy_from_file(this->eta1y, this->levels, dirroot, "input-scale-coeffs-eta1y-mw");
+			read_hierarchy_from_file(this->qx1y,  this->levels, dirroot, "input-scale-coeffs-qx1y-mw");
+			read_hierarchy_from_file(this->qy1y,  this->levels, dirroot, "input-scale-coeffs-qy1y-mw");
+			read_hierarchy_from_file(this->z1y,   this->levels, dirroot, "input-scale-coeffs-z1y-mw");
 		}
 	}
 
@@ -188,14 +133,69 @@ typedef struct ScaleCoefficients
 		}
 	}
 
-	void write_to_file()
+	void write_to_file
+	(
+		const char* dirroot,
+		const char* prefix
+	)
 	{
 		if (this->solver_type == HWFV1)
 		{
-			write_hierarchy_to_file("unittestdata/unit_test_encode_and_thresh_topo/output-scale-coeffs-eta0-hw", this->eta0, 9);
-			write_hierarchy_to_file("unittestdata/unit_test_encode_and_thresh_topo/output-scale-coeffs-qx0-hw",  this->qx0,  9);
-			write_hierarchy_to_file("unittestdata/unit_test_encode_and_thresh_topo/output-scale-coeffs-qy0-hw",  this->qy0,  9);
-			write_hierarchy_to_file("unittestdata/unit_test_encode_and_thresh_topo/output-scale-coeffs-z0-hw",   this->z0,   9);
+			char filename_eta0[255] = {'\0'};
+			char filename_qx0[255]  = {'\0'};
+			char filename_qy0[255]  = {'\0'};
+			char filename_z0[255]   = {'\0'};
+
+			sprintf(filename_eta0, "%s%c%s", prefix, '-', "scale-coeffs-eta0-hw");
+			sprintf(filename_qx0,  "%s%c%s", prefix, '-', "scale-coeffs-qx0-hw");
+			sprintf(filename_qy0,  "%s%c%s", prefix, '-', "scale-coeffs-qy0-hw");
+			sprintf(filename_z0,   "%s%c%s", prefix, '-', "scale-coeffs-z0-hw");
+			
+			write_hierarchy_to_file(dirroot, filename_eta0, this->eta0, this->levels);
+			write_hierarchy_to_file(dirroot, filename_qx0,  this->qx0,  this->levels);
+			write_hierarchy_to_file(dirroot, filename_qy0,  this->qy0,  this->levels);
+			write_hierarchy_to_file(dirroot, filename_z0,   this->z0,   this->levels);
+		}
+		if (this->solver_type == MWDG2)
+		{
+			char filename_eta0[255]  = {'\0'};
+			char filename_qx0[255]   = {'\0'};
+			char filename_qy0[255]   = {'\0'};
+			char filename_z0[255]    = {'\0'};
+			char filename_eta1x[255] = {'\0'};
+			char filename_qx1x[255]  = {'\0'};
+			char filename_qy1x[255]  = {'\0'};
+			char filename_z1x[255]   = {'\0'};
+			char filename_eta1y[255] = {'\0'};
+			char filename_qx1y[255]  = {'\0'};
+			char filename_qy1y[255]  = {'\0'};
+			char filename_z1y[255]   = {'\0'};
+
+			sprintf(filename_eta0,  "%s%c%s", prefix, '-', "scale-coeffs-eta0-mw");
+			sprintf(filename_qx0,   "%s%c%s", prefix, '-', "scale-coeffs-qx0-mw");
+			sprintf(filename_qy0,   "%s%c%s", prefix, '-', "scale-coeffs-qy0-mw");
+			sprintf(filename_z0,    "%s%c%s", prefix, '-', "scale-coeffs-z0-mw");
+			sprintf(filename_eta1x, "%s%c%s", prefix, '-', "scale-coeffs-eta1x-mw");
+			sprintf(filename_qx1x,  "%s%c%s", prefix, '-', "scale-coeffs-qx1x-mw");
+			sprintf(filename_qy1x,  "%s%c%s", prefix, '-', "scale-coeffs-qy1x-mw");
+			sprintf(filename_z1x,   "%s%c%s", prefix, '-', "scale-coeffs-z1x-mw");
+			sprintf(filename_eta1y, "%s%c%s", prefix, '-', "scale-coeffs-eta1y-mw");
+			sprintf(filename_qx1y,  "%s%c%s", prefix, '-', "scale-coeffs-qx1y-mw");
+			sprintf(filename_qy1y,  "%s%c%s", prefix, '-', "scale-coeffs-qy1y-mw");
+			sprintf(filename_z1y,   "%s%c%s", prefix, '-', "scale-coeffs-z1y-mw");
+			
+			write_hierarchy_to_file(dirroot, filename_eta0,  this->eta0,  this->levels);
+			write_hierarchy_to_file(dirroot, filename_qx0,   this->qx0,   this->levels);
+			write_hierarchy_to_file(dirroot, filename_qy0,   this->qy0,   this->levels);
+			write_hierarchy_to_file(dirroot, filename_z0,    this->z0,    this->levels);
+			write_hierarchy_to_file(dirroot, filename_eta1x, this->eta1x, this->levels);
+			write_hierarchy_to_file(dirroot, filename_qx1x,  this->qx1x,  this->levels);
+			write_hierarchy_to_file(dirroot, filename_qy1x,  this->qy1x,  this->levels);
+			write_hierarchy_to_file(dirroot, filename_z1x,   this->z1x,   this->levels);
+			write_hierarchy_to_file(dirroot, filename_eta1y, this->eta1y, this->levels);
+			write_hierarchy_to_file(dirroot, filename_qx1y,  this->qx1y,  this->levels);
+			write_hierarchy_to_file(dirroot, filename_qy1y,  this->qy1y,  this->levels);
+			write_hierarchy_to_file(dirroot, filename_z1y,   this->z1y,   this->levels);
 		}
 	}
 

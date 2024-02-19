@@ -3,6 +3,7 @@
 __host__
 void write_hierarchy_to_file
 (
+	const char* dirroot,
 	const char* filename,
 	real*       d_hierarchy,
 	const int&  levels
@@ -24,7 +25,7 @@ void write_hierarchy_to_file
 
 	char fullpath[255] = {'\0'};
 
-	sprintf(fullpath, "%s%s", filename, ".txt");
+	sprintf(fullpath, "%s%c%s%s", dirroot, '/', filename, ".txt");
 
 	FILE* fp = fopen(fullpath, "w");
 

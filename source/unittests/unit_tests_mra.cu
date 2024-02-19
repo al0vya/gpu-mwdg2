@@ -229,9 +229,12 @@ void test_encode_detail_gamma_1y()
 
 void unit_test_scale_coeffs()
 {
-	ScaleCoefficients d_scale_coeffs(HWFV1);
+	const char* dirroot = "unittestdata/unit_test_encode_and_thresh_topo";
+	
+	// L = 9 for Monai test case verification data
+	ScaleCoefficients d_scale_coeffs(9, HWFV1, dirroot);
 
-	d_scale_coeffs.write_to_file();
+	d_scale_coeffs.write_to_file(dirroot, "check");
 }
 
 void run_unit_tests_mra()
