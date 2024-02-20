@@ -45,4 +45,6 @@ typedef struct Details
 		solver_type(solver_params.solver_type)
 	{}
 
+
+
 } Details;
