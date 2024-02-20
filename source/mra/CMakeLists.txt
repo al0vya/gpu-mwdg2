@@ -8,6 +8,7 @@ target_sources(
 		encoding_all.cu
 		extra_significance.cu
 		get_max_from_array.cu
+		get_mean_from_array.cu
 		get_max_scale_coeffs.cu
 		get_modal_values.cu
 		get_nodal_values.cu

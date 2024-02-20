@@ -1,20 +1,20 @@
-#include "write_hierarchy_array_real.cuh"
+#include "write_hierarchy_array_bool.cuh"
 
 __host__
-void write_hierarchy_array_real
+void write_hierarchy_array_bool
 (
 	const char* dirroot,
 	const char* filename,
-	real*       d_hierarchy,
+	bool*       d_hierarchy,
 	const int&  levels
 )
 {
 	const int num_all_elems = get_lvl_idx(levels + 1);
 	
 	// allocating host array to copy_cuda device array to 
-	real* h_hierarchy = new real[num_all_elems];
+	bool* h_hierarchy = new bool[num_all_elems] ;
 
-	size_t bytes = num_all_elems * sizeof(real);
+	size_t bytes = num_all_elems * sizeof(bool);
 
 	copy_cuda
 	(
@@ -42,7 +42,7 @@ void write_hierarchy_array_real
 
 		for (int i = start; i < end; i++)
 		{
-			fprintf(fp, "%" NUM_FRMT " ", h_hierarchy[i]);
+			fprintf(fp, "%d ", h_hierarchy[i]);
 		}
 
 		fprintf(fp, "\n");

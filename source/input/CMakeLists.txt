@@ -12,5 +12,5 @@ target_sources(
 		read_raster_file.cpp
 		read_test_case.cpp
 		read_hierarchy_array_real.cu
-		read_hierarchy_array_int.cu
+		read_hierarchy_array_bool.cu
 	)

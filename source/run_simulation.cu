@@ -6,24 +6,13 @@ void run_simulation
 	char** argv
 )
 {
-	// begin timing from the beginning, as input is automated
 	const clock_t start = clock();
-
-	// ================ //
-	// TEST CASE SET UP //
-	// ================ //
 
 	const char* input_filename = argv[argc - 1];
 	
 	const int test_case = read_test_case(input_filename);
 	
-	// ================ //
-
-	// =========================================================== //
-	// INITIALISATION OF VARIABLES AND INSTANTIATION OF STRUCTURES //
-	// =========================================================== //
-
-	// Structures setting up simulation
+	// Structures for setting up simulation
 	SolverParams     solver_params(input_filename);
 	SimulationParams sim_params(test_case, input_filename, solver_params.L);
 	PlottingParams   plot_params(input_filename);
@@ -40,7 +29,6 @@ void run_simulation
 		plot_params
 	);
 
-	// Variables
 	int mesh_dim      = 1 << solver_params.L;
 	int interface_dim = mesh_dim + 1;
 
@@ -76,7 +64,7 @@ void run_simulation
 	real    current_time    = C(0.0);
 	real    time_mra        = C(0.0);
 	real    time_solver     = C(0.0);
-	bool    first_t_step    = true;
+	bool    first_timestep  = true;
 	bool    for_nghbrs      = false;
 	bool    rkdg2           = false;
 	float   avg_cuda_time   = 0.0f;
@@ -122,41 +110,6 @@ void run_simulation
 		test_case
 	);
 
-	// =========================================================== //
-
-	// ================ //
-	// INPUT AND OUTPUT //
-	// ================ //
-
-	write_mesh_info(sim_params, mesh_dim, plot_params.dirroot);
-
-	// ================ //
-
-	/*
-		
-		cudaEvent_t cuda_begin, cuda_end;
-		cudaEventCreate(&cuda_begin);
-		cudaEventCreate(&cuda_end);
-
-		cudaEventRecord(cuda_begin);
-
-
-		cudaEventRecord(cuda_end);
-		cudaEventSynchronize(cuda_end);
-
-		float cuda_time = 0;
-		cudaEventElapsedTime(&cuda_time, cuda_begin, cuda_end);
-		cudaEventDestroy(cuda_begin);
-		cudaEventDestroy(cuda_end);
-
-		avg_cuda_time += cuda_time;
-
-	*/
-
-	// ================================ //
-	// PREPROCESSING BEFORE SOLVER LOOP //
-	// ================================ //
-	
 	if (test_case != 0)
 	{
 		get_nodal_values
@@ -171,9 +124,6 @@ void run_simulation
 		);
 	}
 
-	//CHECK_CUDA_ERROR(peek());
-	//CHECK_CUDA_ERROR(sync());
-
 	get_modal_values
 	(
 		d_nodal_vals,
@@ -186,18 +136,12 @@ void run_simulation
 		input_filename
 	);
 
-	//CHECK_CUDA_ERROR(peek());
-	//CHECK_CUDA_ERROR(sync());
-	
 	generate_all_morton_codes<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 	(
 		d_morton_codes,
 		d_indices,
 		mesh_dim
 	);
-
-	//CHECK_CUDA_ERROR(peek());
-	//CHECK_CUDA_ERROR(sync());
 
 	get_sorting_indices
 	(
@@ -211,9 +155,6 @@ void run_simulation
 		solver_params
 	);
 
-	//CHECK_CUDA_ERROR(peek());
-	//CHECK_CUDA_ERROR(sync());
-
 	sort_finest_scale_coeffs_z_order<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 	(
 		d_buf_assem_sol,
@@ -222,9 +163,6 @@ void run_simulation
 		solver_params
 	);
 
-	//CHECK_CUDA_ERROR(peek());
-	//CHECK_CUDA_ERROR(sync());
-
 	copy_finest_coefficients<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 	(
 		d_assem_sol,
@@ -232,9 +170,6 @@ void run_simulation
 		solver_params,
 		finest_lvl_idx
 	);
-
-	//CHECK_CUDA_ERROR(peek());
-	//CHECK_CUDA_ERROR(sync());
 
 	if (point_sources.num_srcs > 0)
 	{
@@ -247,25 +182,19 @@ void run_simulation
 		);
 	}
 
-	//CHECK_CUDA_ERROR(peek());
-	//CHECK_CUDA_ERROR(sync());
-
 	init_sig_details<<<num_blocks_details, THREADS_PER_BLOCK>>> //d_sig_details[idx] = true;
 	(
 		d_sig_details, 
 		num_details
 	);
 
-	//CHECK_CUDA_ERROR(peek());
-	//CHECK_CUDA_ERROR(sync());
-
 	maxes = get_max_scale_coeffs(d_assem_sol, d_eta_temp);
 
-	//CHECK_CUDA_ERROR(peek());
-	//CHECK_CUDA_ERROR(sync());
-
-	d_scale_coeffs.write_to_file("res", "input");
-	d_details.write_to_file("res", "input");
+	#if _RUN_UNIT_TESTS
+	d_scale_coeffs.write_to_file("res", "unit_test_preflag_topo-input");
+	d_details.write_to_file("res", "unit_test_preflag_topo-input");
+	write_hierarchy_array_bool("res", "unit_test_preflag_topo-input-preflagged-details", d_preflagged_details, solver_params.L - 1);
+	#endif
 
 	preflag_topo
 	(
@@ -275,21 +204,16 @@ void run_simulation
 		maxes,
 		solver_params,
 		sim_params,
-		first_t_step
+		first_timestep
 	);
 
-	d_scale_coeffs.write_to_file("res", "output");
-	d_details.write_to_file("res", "output");
+	#if _RUN_UNIT_TESTS
+	d_scale_coeffs.write_to_file("res", "unit_test_preflag_topo-output");
+	d_details.write_to_file("res", "unit_test_preflag_topo-output");
+	write_hierarchy_array_bool("res", "unit_test_preflag_topo-output-preflagged-details", d_preflagged_details, solver_params.L - 1);
+	#endif
 
-	//CHECK_CUDA_ERROR(peek());
-	//CHECK_CUDA_ERROR(sync());
-
-	// ================================ //
-
-	// ================ //
-	// MAIN SOLVER LOOP //
-	// ================ //
-	
+	// main solver loop
 	while (current_time < sim_params.time)
 	{
 		current_time += dt;
@@ -311,12 +235,9 @@ void run_simulation
 			solver_params
 		);
 
-		//CHECK_CUDA_ERROR(peek());
-		//CHECK_CUDA_ERROR(sync());
-
 		maxes = get_max_scale_coeffs(d_assem_sol, d_eta_temp);
 
-		if (!first_t_step)
+		if (!first_timestep)
 		{						
 			reinsert_assem_sol<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(
@@ -326,9 +247,6 @@ void run_simulation
 				solver_params
 			);
 		}
-
-		//CHECK_CUDA_ERROR(peek());
-		//CHECK_CUDA_ERROR(sync());
 
 		point_sources.update_all_srcs(current_time);
 
@@ -344,10 +262,7 @@ void run_simulation
 			);
 		}
 
-		//CHECK_CUDA_ERROR(peek());
-		//CHECK_CUDA_ERROR(sync());
-
-		if (solver_params.epsilon > C(0.0) || first_t_step)
+		if (solver_params.epsilon > C(0.0) || first_timestep)
 		{
 		    for_nghbrs = false;
 		    
@@ -369,9 +284,6 @@ void run_simulation
 		    	solver_params
 		    );
 		    
-		    //CHECK_CUDA_ERROR(peek());
-		    //CHECK_CUDA_ERROR(sync());
-		    
 		    decoding_all // contains extra sig
 		    (
 		    	d_sig_details,
@@ -380,9 +292,6 @@ void run_simulation
 		    	d_scale_coeffs,
 		    	solver_params
 		    );
-		    
-		    //CHECK_CUDA_ERROR(peek());
-		    //CHECK_CUDA_ERROR(sync());
 		    
 		    traverse_tree_of_sig_details<<<num_blocks_traversal, THREADS_PER_BLOCK>>>
 		    (
@@ -393,9 +302,6 @@ void run_simulation
 		    	solver_params
 		    );
 		    
-		    //CHECK_CUDA_ERROR(peek());
-		    //CHECK_CUDA_ERROR(sync());
-		    
 		    rev_z_order_act_idcs<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 		    (
 				d_rev_row_major,
@@ -403,9 +309,6 @@ void run_simulation
 		    	d_assem_sol,
 		    	num_finest_elems
 		    );
-		    
-		    //CHECK_CUDA_ERROR(peek());
-		    //CHECK_CUDA_ERROR(sync());
 		    
 		    find_neighbours<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 		    (
@@ -415,18 +318,12 @@ void run_simulation
 		    	mesh_dim
 		    );
 		    
-		    //CHECK_CUDA_ERROR(peek());
-		    //CHECK_CUDA_ERROR(sync());
-		    
 		    get_compaction_flags<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 		    (
 		    	d_buf_assem_sol,
 		    	d_compaction_flags,
 		    	num_finest_elems
 		    );
-		    
-		    //CHECK_CUDA_ERROR(peek());
-		    //CHECK_CUDA_ERROR(sync());
 		    
 		    sort_neighbours_z_order<<<num_blocks_finest, THREADS_PER_BLOCK>>>
 		    (
@@ -436,9 +333,6 @@ void run_simulation
 		    	num_finest_elems,
 		    	solver_params
 		    );
-		    
-		    //CHECK_CUDA_ERROR(peek());
-		    //CHECK_CUDA_ERROR(sync());
 		    
 		    compaction
 		    (
@@ -450,16 +344,9 @@ void run_simulation
 		    	num_finest_elems,
 		    	solver_params
 		    );
-		    
-		    //CHECK_CUDA_ERROR(peek());
-		    //CHECK_CUDA_ERROR(sync());
 		}
 
-		// GRID DIMENSIONS BASED ON ASSEMBLED SOLUTION LENGTH //
-
 		num_blocks_sol = get_num_blocks(d_assem_sol.length, THREADS_PER_BLOCK);
-
-		// -------------------------------------------------- //
 
 		load_soln_and_nghbr_coeffs<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 		(
@@ -469,9 +356,6 @@ void run_simulation
 			solver_params
 		);
 
-		//CHECK_CUDA_ERROR(peek());
-		//CHECK_CUDA_ERROR(sync());
-		
 		boundaries.update_all_inlets(input_filename, current_time);
 
 		add_ghost_cells<<<num_blocks_sol, THREADS_PER_BLOCK>>>
@@ -486,9 +370,6 @@ void run_simulation
 			dx_finest,
 			test_case
 		);
-
-		//CHECK_CUDA_ERROR(peek());
-		//CHECK_CUDA_ERROR(sync());
 
 		mra_end = clock();
 
@@ -508,9 +389,6 @@ void run_simulation
 			);
 		}
 
-		//CHECK_CUDA_ERROR(peek());
-		//CHECK_CUDA_ERROR(sync());
-		
 		if (solver_params.solver_type == HWFV1)
 		{
 			fv1_update<<<num_blocks_sol, THREADS_PER_BLOCK>>>
@@ -564,9 +442,6 @@ void run_simulation
 				rkdg2
 			);
 
-			//CHECK_CUDA_ERROR(peek());
-			//CHECK_CUDA_ERROR(sync());
-			
 			reinsert_assem_sol<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(
 				d_buf_assem_sol,
@@ -575,9 +450,6 @@ void run_simulation
 				solver_params
 			);
 
-			//CHECK_CUDA_ERROR(peek());
-			//CHECK_CUDA_ERROR(sync());
-			
 			if ( solver_params.epsilon > C(0.0) )
 			{
 				for_nghbrs = true;
@@ -595,9 +467,6 @@ void run_simulation
 				);
 			}
 			
-			//CHECK_CUDA_ERROR(peek());
-			//CHECK_CUDA_ERROR(sync());
-
 			load_soln_and_nghbr_coeffs<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(
 				d_neighbours,
@@ -605,9 +474,6 @@ void run_simulation
 				d_buf_assem_sol,
 				solver_params
 			);
-
-			//CHECK_CUDA_ERROR(peek());
-			//CHECK_CUDA_ERROR(sync());
 
 			add_ghost_cells<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(
@@ -621,9 +487,6 @@ void run_simulation
 				dx_finest,
 				test_case
 			);
-
-			//CHECK_CUDA_ERROR(peek());
-			//CHECK_CUDA_ERROR(sync());
 
 			rkdg2 = true;
 			
@@ -662,8 +525,6 @@ void run_simulation
 				rkdg2
 			);
 
-			//CHECK_CUDA_ERROR(peek());
-			//CHECK_CUDA_ERROR(sync());
 		}
 
 		dt = get_dt_CFL(d_dt_CFL, d_assem_sol.length);
@@ -671,13 +532,6 @@ void run_simulation
 		solver_end = clock();
 
 		time_solver += (real)(solver_end - solver_start) / CLOCKS_PER_SEC;
-
-		//CHECK_CUDA_ERROR(peek());
-		//CHECK_CUDA_ERROR(sync());
-
-		// --------------------------------------------- //
-		// -------------- WRITING TO FILE -------------- //
-		// --------------------------------------------- //
 
 		if ( saveint.save(current_time) )
 		{
@@ -707,7 +561,7 @@ void run_simulation
 					sim_params,
 					solver_params,
 					saveint,
-					first_t_step
+					first_timestep
 				);
 			}
 
@@ -725,7 +579,7 @@ void run_simulation
 					time_solver,
 					dt,
 					d_assem_sol.length,
-					first_t_step
+					first_timestep
 				);
 			}
 		}
@@ -744,7 +598,7 @@ void run_simulation
 					d_assem_sol.length,
 					sim_params,
 			        plot_params,
-			        first_t_step
+			        first_timestep
 			    );
 			}
 			
@@ -772,13 +626,9 @@ void run_simulation
 				current_time,
 				dx_finest,
 				dy_finest,
-				first_t_step
+				first_timestep
 			);
 		}
-
-		// --------------------------------------------- //
-		// --------------------------------------------- //
-		// --------------------------------------------- //
 
 		if (steps++ % 10000 == 0)
 		{
@@ -791,7 +641,7 @@ void run_simulation
 			);
 		}
 		
- 		first_t_step = false;
+ 		first_timestep = false;
 	}
 
 	end = clock();
@@ -811,10 +661,6 @@ void run_simulation
 	printf("Average time step: %f s\n", sim_params.time / steps);
 	printf("Average kernel time: %f ms\n", avg_cuda_time);
 
-	// =================== //
-	// DEALLOCATING MEMORY //
-	// =================== //
-
 	CHECK_CUDA_ERROR( free_device(d_morton_codes) );
 	CHECK_CUDA_ERROR( free_device(d_sorted_morton_codes) );
 	CHECK_CUDA_ERROR( free_device(d_indices) );
@@ -825,8 +671,4 @@ void run_simulation
 	CHECK_CUDA_ERROR( free_device(d_preflagged_details) );
 	CHECK_CUDA_ERROR( free_device(d_norm_details) );
 	CHECK_CUDA_ERROR( free_device(d_dt_CFL) );
-	
-	//reset();
-
-	// =================== //
 }

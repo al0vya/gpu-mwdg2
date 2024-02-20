@@ -4,4 +4,6 @@ target_sources(
 		run_unit_tests.cu
         unit_tests_input.cpp
         unit_tests_mra.cu
+        compute_error.cu
+        compute_error_kernel.cu
 	)

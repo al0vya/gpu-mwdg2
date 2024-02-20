@@ -1,6 +1,6 @@
-#include "read_hierarchy_array_real.cuh"
+#include "read_hierarchy_array_bool.cuh"
 
-real* read_hierarchy_array_real
+bool* read_hierarchy_array_bool
 (
 	const int&  levels,
 	const char* dirroot,
@@ -9,9 +9,9 @@ real* read_hierarchy_array_real
 {
 	// setting up host and device hierarchy arrays
 	const int    num_all_elems = get_lvl_idx(levels + 1);
-	const size_t bytes         = sizeof(real) * num_all_elems;
-	      real*  h_hierarchy   = new real[num_all_elems];
-	      real*  d_hierarchy   = (real*)malloc_device(bytes);
+	const size_t bytes         = sizeof(bool) * num_all_elems;
+	      bool*  h_hierarchy    = new bool[num_all_elems];
+	      bool*  d_hierarchy    = (bool*)malloc_device(bytes);
 	
 	// reading into host array from file
 	char fullpath[255] = {'\0'};
@@ -20,16 +20,11 @@ real* read_hierarchy_array_real
 
 	FILE* fp = fopen(fullpath, "r");
 
-	if (NULL == fp)
-	{
-		fprintf(stderr, "Error opening file %s for reading hierarchy array.\n", fullpath);
-	}
-
-	real dummy = C(0.0);
+	int dummy = 0;
 
 	for (int i = 0; i < num_all_elems; i++)
 	{
-		fscanf(fp, "%" NUM_FRMT, &dummy);
+		fscanf(fp, "%d", &dummy);
 		
 		h_hierarchy[i] = dummy;
 	}

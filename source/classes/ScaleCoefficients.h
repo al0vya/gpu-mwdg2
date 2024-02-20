@@ -1,12 +1,10 @@
 #pragma once
 
-#include "../utilities/cuda_utils.cuh"
 #include "../utilities/get_lvl_idx.cuh"
-
 #include "../classes/SolverParams.h"
-
 #include "../output/write_hierarchy_array_real.cuh"
 #include "../input/read_hierarchy_array_real.cuh"
+#include "../unittests/compute_error.cuh"
 
 typedef struct ScaleCoefficients
 {
@@ -173,6 +171,45 @@ typedef struct ScaleCoefficients
 			write_hierarchy_array_real(dirroot, filename_qx1y,  this->qx1y,  this->levels);
 			write_hierarchy_array_real(dirroot, filename_qy1y,  this->qy1y,  this->levels);
 			write_hierarchy_array_real(dirroot, filename_z1y,   this->z1y,   this->levels);
+		}
+	}
+
+	real verify
+	(
+		const char* dirroot,
+		const char* prefix
+	)
+	{
+		if (this->solver_type == HWFV1)
+		{
+			char filename_eta0[255] = {'\0'};
+			char filename_qx0[255]  = {'\0'};
+			char filename_qy0[255]  = {'\0'};
+			char filename_z0[255]   = {'\0'};
+
+			sprintf(filename_eta0, "%s%c%s", prefix, '-', "scale-coeffs-eta0-hw");
+			sprintf(filename_qx0,  "%s%c%s", prefix, '-', "scale-coeffs-qx0-hw");
+			sprintf(filename_qy0,  "%s%c%s", prefix, '-', "scale-coeffs-qy0-hw");
+			sprintf(filename_z0,   "%s%c%s", prefix, '-', "scale-coeffs-z0-hw");
+			
+			real* d_eta0_verified = read_hierarchy_array_real(this->levels, dirroot, filename_eta0);
+			real* d_qx0_verified  = read_hierarchy_array_real(this->levels, dirroot, filename_qx0);
+			real* d_qy0_verified  = read_hierarchy_array_real(this->levels, dirroot, filename_qy0);
+			real* d_z0_verified   = read_hierarchy_array_real(this->levels, dirroot, filename_z0);
+
+			const int num_scale_coeffs = get_lvl_idx(this->levels + 1);
+
+			real error_eta0 = compute_error(dirroot, filename_eta0, this->eta0, d_eta0_verified, num_scale_coeffs);
+			real error_qx0  = compute_error(dirroot, filename_qx0,  this->qx0,  d_qx0_verified,  num_scale_coeffs);
+			real error_qy0  = compute_error(dirroot, filename_qy0,  this->qy0,  d_qy0_verified,  num_scale_coeffs);
+			real error_z0   = compute_error(dirroot, filename_z0,   this->z0,   d_z0_verified,   num_scale_coeffs);
+
+			free_device(d_eta0_verified);
+			free_device(d_qx0_verified);
+			free_device(d_qy0_verified);
+			free_device(d_z0_verified);
+
+			return (error_eta0 + error_qx0 + error_qy0 + error_z0) / C(4.0);
 		}
 	}
 

@@ -18,12 +18,12 @@
 __global__
 void fv1_update
 (
-    Neighbours           d_neighbours,
-    AssembledSolution    d_assem_sol,
-    SolverParams     solver_params,
-    SimulationParams sim_params,
-    real                 dx_finest,
-    real                 dy_finest,
-    real                 dt,
-    real*                d_dt_CFL
+    Neighbours        d_neighbours,
+    AssembledSolution d_assem_sol,
+    SolverParams      solver_params,
+    SimulationParams  sim_params,
+    real              dx_finest,
+    real              dy_finest,
+    real              dt,
+    real*             d_dt_CFL
 );

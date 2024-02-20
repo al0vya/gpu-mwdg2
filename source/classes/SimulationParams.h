@@ -21,6 +21,8 @@ typedef struct SimulationParams
 	bool       is_monai  = false;
 	bool       is_oregon = false;
     
+    SimulationParams() = default;
+
     SimulationParams
     (
         const int&  test_case,

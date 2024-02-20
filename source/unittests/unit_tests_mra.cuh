@@ -3,8 +3,10 @@
 #include <cmath>
 #include <cstdio>
 
-#include "../mra/encode_and_thresh_topo.cuh"
+#include "../mra/preflag_topo.cuh"
 #include "../utilities/are_reals_equal.h"
+#include "../input/read_hierarchy_array_bool.cuh"
+#include "../output/write_hierarchy_array_bool.cuh"
 
 void test_encode_scale();
 void test_encode_scale_0();
@@ -24,6 +26,6 @@ void test_encode_detail_alpha_1y();
 void test_encode_detail_beta_1y();
 void test_encode_detail_gamma_1y();
 
-void unit_test_scale_coeffs();
+void unit_test_preflag_topo_hw();
 
 void run_unit_tests_mra();

@@ -227,18 +227,57 @@ void test_encode_detail_gamma_1y()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_scale_coeffs()
+void unit_test_preflag_topo_hw()
 {
-	const char* dirroot = "unittestdata/unit_test_encode_and_thresh_topo";
+	// monai.par file looks like:
+	// hwfv1
+	// cuda
+	// raster_out
+	// cumulative
+	// refine_wall
+	// ref_thickness 16
+	// max_ref_lvl   9
+	// epsilon       1e-3
+	// wall_height   0.5
+	// initial_tstep 1
+	// fpfric        0.01
+	// sim_time      22.5
+	// massint       0.2
+	// saveint       22.5
+	// DEMfile       monai.txt <- CAREFUL
+	// startfile     monai.start
+	// bcifile       monai.bci
+	// bdyfile       monai.bdy
+	// stagefile     monai.stage
 	
-	const SolverParams solver_params("unittestdata/unit_test_encode_and_thresh_topo/monai-hw.par");
-
-	// L = 9 for Monai test case verification data
+	const char* dirroot = "unittestdata/unit_test_preflag_topo_hw";
+	
+	Maxes             maxes = { C(1.0), C(1.0), C(1.0), C(1.0), C(1.0) };
+	SolverParams      solver_params("unittestdata/unit_test_preflag_topo_hw/monai.par");
+	SimulationParams  sim_params{};
 	ScaleCoefficients d_scale_coeffs(solver_params, dirroot);
-	Details d_details(solver_params, dirroot);
+	Details           d_details     (solver_params, dirroot);
+	bool*             d_preflagged_details = read_hierarchy_array_bool(solver_params.L - 1, dirroot, "input-preflagged-details");
+	bool              first_timestep       = true;
 
-	d_scale_coeffs.write_to_file(dirroot, "check");
-	d_details.write_to_file(dirroot, "check");
+	preflag_topo
+	(
+		d_scale_coeffs, 
+		d_details,  
+		d_preflagged_details, 
+		maxes,
+		solver_params,
+		sim_params,
+		first_timestep
+	);
+
+	const real error_scale   = d_scale_coeffs.verify(dirroot, "output");
+	const real error_details = d_details.verify(dirroot, "output");
+
+	const real epsilon = C(1e-5);
+
+	if (error_scale < epsilon && error_details < epsilon)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
 void run_unit_tests_mra()
@@ -261,7 +300,7 @@ void run_unit_tests_mra()
 	test_encode_detail_beta_1y();
 	test_encode_detail_gamma_1y();
 
-	unit_test_scale_coeffs();
+	unit_test_preflag_topo_hw();
 }
 
 #endif

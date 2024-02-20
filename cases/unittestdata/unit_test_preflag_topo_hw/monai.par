@@ -12,7 +12,7 @@ fpfric        0.01
 sim_time      22.5
 massint       0.2
 saveint       22.5
-DEMfile       monai.dem
+DEMfile       monai.txt
 startfile     monai.start
 bcifile       monai.bci
 bdyfile       monai.bdy
