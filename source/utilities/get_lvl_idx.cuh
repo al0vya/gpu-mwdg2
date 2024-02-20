@@ -16,6 +16,6 @@ HierarchyIndex get_lvl_idx(int level)
      * Hence, up to a grid at n - 1 there are (4^n - 1) / 3 elements, which is the starting index.
      */
 
-     // 1 << n = 2^n therefore 1 << 2 * n = 2^(2*n) = 4^n
+    // 1 << n = 2^n therefore 1 << (2 * n) = 2^(2*n) = 4^n
     return ( ( 1 << (2 * level) ) - 1 ) / 3;
 }

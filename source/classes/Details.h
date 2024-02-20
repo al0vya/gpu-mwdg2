@@ -45,6 +45,28 @@ typedef struct Details
 		solver_type(solver_params.solver_type)
 	{}
 
-
+	Details
+	(
+		const SolverParams& solver_params,
+		const char*         dirroot
+	)
+	:
+		eta0( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "input-details-eta0-mw" : "input-details-eta0-hw"),
+		qx0 ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "input-details-qx0-mw"  : "input-details-qx0-hw"),
+		qy0 ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "input-details-qy0-mw"  : "input-details-qy0-hw"),
+		z0  ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "input-details-z0-mw"   : "input-details-z0-hw"),
+		
+		eta1x( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-eta1x-mw"),
+		qx1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-qx1x-mw" ),
+		qy1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-qy1x-mw" ),
+		z1x  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-z1x-mw"  ),
+		
+		eta1y( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-eta1y-mw"),
+		qx1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-qx1y-mw" ),
+		qy1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-qy1y-mw" ),
+		z1y  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-z1y-mw"  ),
+		
+		solver_type(solver_params.solver_type)
+	{}
 
 } Details;

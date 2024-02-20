@@ -5,6 +5,8 @@
 
 #include "../classes/SolverParams.h"
 
+#include "../input/read_hierarchy_array_real.cuh"
+
 typedef struct SubDetails
 {
 	real* alpha = nullptr;
@@ -22,32 +24,32 @@ typedef struct SubDetails
 	)
 		: levels(solver_params.L - 1)
 	{
-		const int num_details = get_lvl_idx(this->levels);
+		const int num_details = get_lvl_idx(this->levels + 1);
 		
 		size_t bytes = sizeof(real) * num_details;
 
-		alpha = (num_details > 0) ? (real*)malloc_device(bytes) : nullptr;
-		beta  = (num_details > 0) ? (real*)malloc_device(bytes) : nullptr;
-		gamma = (num_details > 0) ? (real*)malloc_device(bytes) : nullptr;
+		// no allocation if defaultly constructed SolverParams is passed since
+		// solver_params.L - 1 = 0 so this->levels will be 0
+		alpha = (this->levels > 0) ? (real*)malloc_device(bytes) : nullptr;
+		beta  = (this->levels > 0) ? (real*)malloc_device(bytes) : nullptr;
+		gamma = (this->levels > 0) ? (real*)malloc_device(bytes) : nullptr;
 	}
 
 	SubDetails
 	(
 		const SolverParams& solver_params,
 		const char*         dirroot,
-		const char*         shape
+		const char*         filename
 	)
 		: levels(solver_params.L - 1)
 	{
-		const int num_details = get_lvl_idx(this->levels);
+		const int num_details = get_lvl_idx(this->levels + 1);
 		
-		size_t bytes = sizeof(real) * num_details;
-
-
-
-		alpha = (num_details > 0) ? read_hierarchy_array_real(this->levels, dirroot, "input-scale-coeffs-eta0-hw") : nullptr;
-		beta  = (num_details > 0) ? read_hierarchy_array_real(this->levels, dirroot, "input-scale-coeffs-eta0-hw") : nullptr;
-		gamma = (num_details > 0) ? read_hierarchy_array_real(this->levels, dirroot, "input-scale-coeffs-eta0-hw") : nullptr;
+		// no allocation if defaultly constructed SolverParams is passed since
+		// solver_params.L - 1 = 0 so this->levels will be 0
+		alpha = (this->levels > 0) ? read_hierarchy_array_real(this->levels, dirroot, filename) : nullptr;
+		beta  = (this->levels > 0) ? read_hierarchy_array_real(this->levels, dirroot, filename) : nullptr;
+		gamma = (this->levels > 0) ? read_hierarchy_array_real(this->levels, dirroot, filename) : nullptr;
 	}
 
 	SubDetails(const SubDetails& original) { *this = original; is_copy_cuda = true; }
