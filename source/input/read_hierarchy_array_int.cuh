@@ -7,9 +7,8 @@
 
 #include "../types/real.h"
 
-void read_hierarchy_from_file
+int* read_hierarchy_array_int
 (
-	      real* d_hierarchy,
 	const int&  levels,
 	const char* dirroot,
 	const char* filename

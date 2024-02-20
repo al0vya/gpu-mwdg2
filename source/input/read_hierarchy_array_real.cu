@@ -1,18 +1,18 @@
-#include "read_hierarchy_from_file.cuh"
+#include "read_hierarchy_array_real.cuh"
 
-void read_hierarchy_from_file
+real* read_hierarchy_array_real
 (
-	      real* d_hierarchy,
 	const int&  levels,
 	const char* dirroot,
 	const char* filename
 )
 {
-	// setting up host hierarchy array
-	const int num_all_elems = get_lvl_idx(levels + 1);
-	const size_t bytes      = sizeof(real) * num_all_elems;
-	real* h_hierarchy       = new real[num_all_elems];
-
+	// setting up host and device hierarchy arrays
+	const int    num_all_elems = get_lvl_idx(levels + 1);
+	const size_t bytes         = sizeof(real) * num_all_elems;
+	      real*  h_hierarchy   = new real[num_all_elems];
+	      real*  d_hierarchy   = (real*)malloc_device(bytes);
+	
 	// reading into host array from file
 	char fullpath[255] = {'\0'};
 
@@ -35,4 +35,6 @@ void read_hierarchy_from_file
 	fclose(fp);
 
 	delete[] h_hierarchy;
+
+	return d_hierarchy;
 }

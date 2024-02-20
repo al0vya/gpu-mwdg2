@@ -89,8 +89,8 @@ void run_simulation
 	AssembledSolution d_plot_assem_sol  (num_finest_elems, solver_params.solver_type);
 	Neighbours        d_neighbours      (num_finest_elems, solver_params.solver_type);
 	Neighbours        d_buf_neighbours  (num_finest_elems, solver_params.solver_type);
-	ScaleCoefficients d_scale_coeffs    (solver_params.L,  solver_params.solver_type);
-	Details           d_details         (num_details,      solver_params.solver_type);
+	ScaleCoefficients d_scale_coeffs    (solver_params);
+	Details           d_details         (solver_params);
 	CompactionFlags   d_compaction_flags(num_finest_elems);
 	FinestGrid        p_finest_grid     (num_finest_elems);
 	
@@ -278,8 +278,6 @@ void run_simulation
 	);
 
 	d_scale_coeffs.write_to_file("res", "output");
-
-	return;
 
 	//CHECK_CUDA_ERROR(peek());
 	//CHECK_CUDA_ERROR(sync());

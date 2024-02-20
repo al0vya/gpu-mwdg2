@@ -20,26 +20,29 @@ typedef struct Details
 	SubDetails qy1y;
 	SubDetails z1y;
 
+	int solver_type = 0;
+
 	Details
 	(
-		const int& num_details, 
-		const int& solver_type
+		const SolverParams& solver_params
 	)
 	:
-		eta0(num_details),
-		qx0 (num_details),
-		qy0 (num_details),
-		z0  (num_details),
+		eta0(solver_params),
+		qx0 (solver_params),
+		qy0 (solver_params),
+		z0  (solver_params),
 
-		eta1x( (solver_type == MWDG2) ? num_details : 0 ),
-		qx1x ( (solver_type == MWDG2) ? num_details : 0 ),
-		qy1x ( (solver_type == MWDG2) ? num_details : 0 ),
-		z1x  ( (solver_type == MWDG2) ? num_details : 0 ),
+		eta1x( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
+		qx1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
+		qy1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
+		z1x  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
 		
-		eta1y( (solver_type == MWDG2) ? num_details : 0 ),
-		qx1y ( (solver_type == MWDG2) ? num_details : 0 ),
-		qy1y ( (solver_type == MWDG2) ? num_details : 0 ),
-		z1y  ( (solver_type == MWDG2) ? num_details : 0 )
+		eta1y( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
+		qx1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
+		qy1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
+		z1y  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
+
+		solver_type(solver_params.solver_type)
 	{}
 
 } Details;

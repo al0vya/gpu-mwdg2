@@ -36,27 +36,17 @@ typedef struct SimulationParams
             {
                 char dem_filename_buf[128] = {'\0'};
                 read_keyword_str(input_filename, "DEMfile", dem_filename_buf);
-    
-                FILE* fp = fopen(dem_filename_buf, "r");
-    
-                if (NULL == fp)
-                {
-                    fprintf(stderr, "Error opening DEM file for reading simulation parameters, file: %s, line: %d.\n", __FILE__, __LINE__);
-                    exit(-1);
-                }
-    
-                real cellsize = C(0.0);
-    
+
                 this->xsz       = read_keyword_int (dem_filename_buf, "ncols");
                 this->ysz       = read_keyword_int (dem_filename_buf, "nrows");
                 this->xmin      = read_keyword_real(dem_filename_buf, "xllcorner");
                 this->ymin      = read_keyword_real(dem_filename_buf, "yllcorner");
-                cellsize        = read_keyword_real(dem_filename_buf, "cellsize");
+                real cellsize   = read_keyword_real(dem_filename_buf, "cellsize");
                 this->xmax      = this->xmin + this->xsz * cellsize;
                 this->ymax      = this->ymin + this->ysz * cellsize;
                 this->time      = read_keyword_real(input_filename, "sim_time");
                 this->manning   = read_keyword_real(input_filename, "fpfric");
-                this->is_monai  = !strncmp("monai.dem", dem_filename_buf, 9);
+                this->is_monai  = !strncmp("monai", dem_filename_buf, 5);
                 this->is_oregon = !strncmp("oregon-seaside-0p02m.dem", dem_filename_buf, 24);
             }
                 break;

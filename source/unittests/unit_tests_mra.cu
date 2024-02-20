@@ -231,8 +231,10 @@ void unit_test_scale_coeffs()
 {
 	const char* dirroot = "unittestdata/unit_test_encode_and_thresh_topo";
 	
+	const SolverParams solver_params("unittestdata/unit_test_encode_and_thresh_topo/monai-hw.par");
+
 	// L = 9 for Monai test case verification data
-	ScaleCoefficients d_scale_coeffs(9, HWFV1, dirroot);
+	ScaleCoefficients d_scale_coeffs(solver_params, dirroot);
 
 	d_scale_coeffs.write_to_file(dirroot, "check");
 }

@@ -1,0 +1,19 @@
+mwdg2
+cuda
+raster_out
+cumulative
+refine_wall
+ref_thickness 16
+max_ref_lvl   9
+epsilon       1e-3
+wall_height   0.5
+initial_tstep 1
+fpfric        0.01
+sim_time      22.5
+massint       0.2
+saveint       22.5
+DEMfile       monai.txt
+startfile     monai.start
+bcifile       monai.bci
+bdyfile       monai.bdy
+stagefile     monai.stage

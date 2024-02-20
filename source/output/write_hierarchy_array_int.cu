@@ -1,7 +1,7 @@
-#include "write_hierarchy_to_file.cuh"
+#include "write_hierarchy_array_int.cuh"
 
 __host__
-void write_hierarchy_to_file
+void write_hierarchy_array_int
 (
 	const char* dirroot,
 	const char* filename,
@@ -12,9 +12,9 @@ void write_hierarchy_to_file
 	const int num_all_elems = get_lvl_idx(levels + 1);
 	
 	// allocating host array to copy_cuda device array to 
-	real* h_hierarchy = new real[num_all_elems];
+	int* h_hierarchy = new int[num_all_elems];
 
-	size_t bytes = num_all_elems * sizeof(real);
+	size_t bytes = num_all_elems * sizeof(int);
 
 	copy_cuda
 	(
@@ -42,7 +42,7 @@ void write_hierarchy_to_file
 
 		for (int i = start; i < end; i++)
 		{
-			fprintf(fp, "%" NUM_FRMT " ", h_hierarchy[i]);
+			fprintf(fp, "%d ", h_hierarchy[i]);
 		}
 
 		fprintf(fp, "\n");

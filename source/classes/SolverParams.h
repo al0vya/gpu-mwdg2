@@ -25,6 +25,8 @@ typedef struct SolverParams
 	int  ref_thickness = 0;
 	bool startq2d      = false;
     
+    SolverParams() = default;
+
     SolverParams
     (
         const char* input_filename

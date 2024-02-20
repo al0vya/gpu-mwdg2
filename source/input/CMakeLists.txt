@@ -11,5 +11,6 @@ target_sources(
 		read_keyword_str.cpp
 		read_raster_file.cpp
 		read_test_case.cpp
-		read_hierarchy_from_file.cu
+		read_hierarchy_array_real.cu
+		read_hierarchy_array_int.cu
 	)
