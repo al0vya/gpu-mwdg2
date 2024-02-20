@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cmath>
-
 #include "../input/read_keyword_int.h"
 #include "../input/read_keyword_str.h"
 #include "../input/read_cell_size.h"

@@ -2,8 +2,6 @@
 
 real compute_error
 (
-	const char* dirroot,
-	const char* filename,
 	real*       d_computed,
 	real*       d_verified,
 	const int&  array_length

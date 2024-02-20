@@ -2,7 +2,7 @@
 
 #include "../utilities/cuda_utils.cuh"
 #include "../utilities/get_lvl_idx.cuh"
-#include "../unittests/compute_error.cuh"
+#include "../utilities/compute_error.cuh"
 
 #include "../classes/SolverParams.h"
 
@@ -115,9 +115,9 @@ typedef struct SubDetails
 
 		const int num_details = get_lvl_idx(this->levels + 1);
 
-		real error_alpha = compute_error(dirroot, filename_alpha, this->alpha, d_alpha, num_details);
-		real error_beta  = compute_error(dirroot, filename_beta , this->beta , d_beta , num_details);
-		real error_gamma = compute_error(dirroot, filename_gamma, this->gamma, d_gamma, num_details);
+		real error_alpha = compute_error(this->alpha, d_alpha, num_details);
+		real error_beta  = compute_error(this->beta , d_beta , num_details);
+		real error_gamma = compute_error(this->gamma, d_gamma, num_details);
 
 		free_device(d_alpha);
 		free_device(d_beta );

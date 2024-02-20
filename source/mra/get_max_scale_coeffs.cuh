@@ -6,9 +6,9 @@
 #include "../classes/Maxes.h"
 
 #include "../utilities/get_num_blocks.h"
+#include "../utilities/get_max_from_array.cuh"
 
 #include "../mra/init_eta_temp.cuh"
-#include "../mra/get_max_from_array.cuh"
 
 __host__
 Maxes get_max_scale_coeffs

@@ -2,6 +2,10 @@ target_sources(
 	    gpu-mwdg2
 		PRIVATE
 		cuda_utils.cu
+		get_max_from_array
+		get_mean_from_array
 		get_num_blocks.cpp
 		are_reals_equal.cpp
+		compute_error.cu
+        compute_error_kernel.cu
 	)

@@ -4,7 +4,7 @@
 #include "../classes/SolverParams.h"
 #include "../output/write_hierarchy_array_real.cuh"
 #include "../input/read_hierarchy_array_real.cuh"
-#include "../unittests/compute_error.cuh"
+#include "../utilities/compute_error.cuh"
 
 typedef struct ScaleCoefficients
 {
@@ -199,10 +199,10 @@ typedef struct ScaleCoefficients
 
 			const int num_scale_coeffs = get_lvl_idx(this->levels + 1);
 
-			real error_eta0 = compute_error(dirroot, filename_eta0, this->eta0, d_eta0_verified, num_scale_coeffs);
-			real error_qx0  = compute_error(dirroot, filename_qx0,  this->qx0,  d_qx0_verified,  num_scale_coeffs);
-			real error_qy0  = compute_error(dirroot, filename_qy0,  this->qy0,  d_qy0_verified,  num_scale_coeffs);
-			real error_z0   = compute_error(dirroot, filename_z0,   this->z0,   d_z0_verified,   num_scale_coeffs);
+			real error_eta0 = compute_error(this->eta0, d_eta0_verified, num_scale_coeffs);
+			real error_qx0  = compute_error(this->qx0,  d_qx0_verified,  num_scale_coeffs);
+			real error_qy0  = compute_error(this->qy0,  d_qy0_verified,  num_scale_coeffs);
+			real error_z0   = compute_error(this->z0,   d_z0_verified,   num_scale_coeffs);
 
 			free_device(d_eta0_verified);
 			free_device(d_qx0_verified);

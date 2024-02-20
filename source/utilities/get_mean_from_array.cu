@@ -1,4 +1,4 @@
-#include "../mra/get_mean_from_array.cuh"
+#include "get_mean_from_array.cuh"
 
 __host__
 real get_mean_from_array

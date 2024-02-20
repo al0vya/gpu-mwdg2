@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdio>
 
+#include "../types/real.h"
 #include "../mra/preflag_topo.cuh"
 #include "../utilities/are_reals_equal.h"
 #include "../input/read_hierarchy_array_bool.cuh"
@@ -27,5 +28,7 @@ void unit_test_encode_detail_beta_1y();
 void unit_test_encode_detail_gamma_1y();
 
 void unit_test_preflag_topo_hw();
+
+void unit_test_get_mean_from_array();
 
 void run_unit_tests_mra();

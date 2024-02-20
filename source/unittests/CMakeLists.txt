@@ -5,6 +5,5 @@ target_sources(
         unit_tests_output.cu
         unit_tests_input.cu
         unit_tests_mra.cu
-        compute_error.cu
-        compute_error_kernel.cu
+        unit_tests_utilities.cu
 	)
