@@ -18,7 +18,14 @@ real* read_hierarchy_array_real
 
 	sprintf(fullpath, "%s%c%s%s", dirroot, '/', filename, ".txt");
 
+	printf("File for reading: %s\n", fullpath);
+
 	FILE* fp = fopen(fullpath, "r");
+
+	if (NULL == fp)
+	{
+		fprintf(stderr, "Error opening file %s for reading hierarchy array.\n", fullpath);
+	}
 
 	real dummy = C(0.0);
 

@@ -51,22 +51,54 @@ typedef struct Details
 		const char*         dirroot
 	)
 	:
-		eta0( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "input-details-eta0-mw" : "input-details-eta0-hw"),
-		qx0 ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "input-details-qx0-mw"  : "input-details-qx0-hw"),
-		qy0 ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "input-details-qy0-mw"  : "input-details-qy0-hw"),
-		z0  ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "input-details-z0-mw"   : "input-details-z0-hw"),
+		eta0( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "eta0-mw" : "eta0-hw"),
+		qx0 ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "qx0-mw"  : "qx0-hw"),
+		qy0 ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "qy0-mw"  : "qy0-hw"),
+		z0  ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "z0-mw"   : "z0-hw"),
 		
-		eta1x( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-eta1x-mw"),
-		qx1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-qx1x-mw" ),
-		qy1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-qy1x-mw" ),
-		z1x  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-z1x-mw"  ),
+		eta1x( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "eta1x-mw"),
+		qx1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "qx1x-mw" ),
+		qy1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "qy1x-mw" ),
+		z1x  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "z1x-mw"  ),
 		
-		eta1y( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-eta1y-mw"),
-		qx1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-qx1y-mw" ),
-		qy1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-qy1y-mw" ),
-		z1y  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "input-details-z1y-mw"  ),
+		eta1y( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "eta1y-mw"),
+		qx1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "qx1y-mw" ),
+		qy1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "qy1y-mw" ),
+		z1y  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "z1y-mw"  ),
 		
 		solver_type(solver_params.solver_type)
 	{}
+
+	void write_to_file
+	(
+		const char* dirroot,
+		const char* prefix
+	)
+	{
+		if (this->solver_type == HWFV1)
+		{
+			eta0.write_to_file(dirroot, prefix, "eta0-hw");
+			qx0.write_to_file(dirroot,  prefix, "qx0-hw");
+			qy0.write_to_file(dirroot,  prefix, "qy0-hw");
+			z0.write_to_file(dirroot,   prefix, "z0-hw");
+		}
+		else if (this->solver_type == MWDG2)
+		{
+			eta0.write_to_file(dirroot, prefix, "eta0-mw");
+			qx0.write_to_file(dirroot,  prefix, "qx0-mw");
+			qy0.write_to_file(dirroot,  prefix, "qy0-mw");
+			z0.write_to_file(dirroot,   prefix, "z0-mw");
+
+			eta1x.write_to_file(dirroot, prefix, "eta1x-mw");
+			qx1x.write_to_file(dirroot,  prefix, "qx1x-mw");
+			qy1x.write_to_file(dirroot,  prefix, "qy1x-mw");
+			z1x.write_to_file(dirroot,   prefix, "z1x-mw");
+
+			eta1y.write_to_file(dirroot, prefix, "eta1y-mw");
+			qx1y.write_to_file(dirroot,  prefix, "qx1y-mw");
+			qy1y.write_to_file(dirroot,  prefix, "qy1y-mw");
+			z1y.write_to_file(dirroot,   prefix, "z1y-mw");
+		}
+	}
 
 } Details;

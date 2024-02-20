@@ -235,8 +235,10 @@ void unit_test_scale_coeffs()
 
 	// L = 9 for Monai test case verification data
 	ScaleCoefficients d_scale_coeffs(solver_params, dirroot);
+	Details d_details(solver_params, dirroot);
 
 	d_scale_coeffs.write_to_file(dirroot, "check");
+	d_details.write_to_file(dirroot, "check");
 }
 
 void run_unit_tests_mra()

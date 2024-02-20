@@ -29,6 +29,8 @@ void write_hierarchy_array_real
 
 	FILE* fp = fopen(fullpath, "w");
 
+	printf("File for writing: %s\n", fullpath);
+
 	if (NULL == fp)
 	{
 		fprintf(stderr, "Error opening %s for writing hierarchy to file", filename);

@@ -265,6 +265,7 @@ void run_simulation
 	//CHECK_CUDA_ERROR(sync());
 
 	d_scale_coeffs.write_to_file("res", "input");
+	d_details.write_to_file("res", "input");
 
 	preflag_topo
 	(
@@ -278,6 +279,7 @@ void run_simulation
 	);
 
 	d_scale_coeffs.write_to_file("res", "output");
+	d_details.write_to_file("res", "output");
 
 	//CHECK_CUDA_ERROR(peek());
 	//CHECK_CUDA_ERROR(sync());
