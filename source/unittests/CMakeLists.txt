@@ -2,7 +2,8 @@ target_sources(
 	    gpu-mwdg2
 		PRIVATE
 		run_unit_tests.cu
-        unit_tests_input.cpp
+        unit_tests_output.cu
+        unit_tests_input.cu
         unit_tests_mra.cu
         compute_error.cu
         compute_error_kernel.cu

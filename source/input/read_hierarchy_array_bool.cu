@@ -10,8 +10,8 @@ bool* read_hierarchy_array_bool
 	// setting up host and device hierarchy arrays
 	const int    num_all_elems = get_lvl_idx(levels + 1);
 	const size_t bytes         = sizeof(bool) * num_all_elems;
-	      bool*  h_hierarchy    = new bool[num_all_elems];
-	      bool*  d_hierarchy    = (bool*)malloc_device(bytes);
+	      bool*  h_hierarchy   = new bool[num_all_elems];
+	      bool*  d_hierarchy   = (bool*)malloc_device(bytes);
 	
 	// reading into host array from file
 	char fullpath[255] = {'\0'};
@@ -20,7 +20,7 @@ bool* read_hierarchy_array_bool
 
 	FILE* fp = fopen(fullpath, "r");
 
-	int dummy = 0;
+	bool dummy = 0;
 
 	for (int i = 0; i < num_all_elems; i++)
 	{

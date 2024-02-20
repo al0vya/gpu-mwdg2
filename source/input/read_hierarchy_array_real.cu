@@ -23,6 +23,8 @@ real* read_hierarchy_array_real
 	if (NULL == fp)
 	{
 		fprintf(stderr, "Error opening file %s for reading hierarchy array.\n", fullpath);
+		fclose(fp);
+		exit(-1);
 	}
 
 	real dummy = C(0.0);

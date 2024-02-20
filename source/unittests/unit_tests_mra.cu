@@ -2,7 +2,7 @@
 
 #if _RUN_UNIT_TESTS
 
-#define TEST_MESSAGE_PASSED_ELSE_FAILED { printf("Passed unit test %s!\n", __func__); } else { printf("Failed unit test %s.\n", __func__); }
+#define TEST_MESSAGE_PASSED_ELSE_FAILED { printf("Passed %s!\n", __func__); } else { printf("Failed %s.\n", __func__); }
 
 const real child_0 = C(1.0);
 const real child_1 = C(2.0);
@@ -11,7 +11,7 @@ const real child_3 = C(4.0);
 
 const ScaleChildrenHW s_HW = { child_0, child_1, child_2, child_3 };
 
-void test_encode_scale()
+void unit_test_encode_scale()
 {
 	const real expected = C(0.5) * ( H0 * ( H0 * child_0 + H1 * child_2 ) + H1 * ( H0 * child_1 + H1 * child_3 ) );
 
@@ -21,7 +21,7 @@ void test_encode_scale()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_alpha()
+void unit_test_encode_detail_alpha()
 {
 	const real expected  = C(0.5) * ( H0 * (G0 * child_0 + G1 * child_2) + H1 * (G0 * child_1 + G1 * child_3) );
 
@@ -31,7 +31,7 @@ void test_encode_detail_alpha()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_beta()
+void unit_test_encode_detail_beta()
 {
 	const real expected  = C(0.5) * ( G0 * (H0 * child_0 + H1 * child_2) + G1 * (H0 * child_1 + H1 * child_3) );
 
@@ -41,7 +41,7 @@ void test_encode_detail_beta()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_gamma()
+void unit_test_encode_detail_gamma()
 {
 	const real expected = C(0.5) * ( G0 * (G0 * child_0 + G1 * child_2) + G1 * (G0 * child_1 + G1 * child_3) );
 
@@ -71,7 +71,7 @@ const ScaleChildrenMW s_MW =
 	{child_0_1y, child_1_1y, child_2_1y, child_3_1y}
 };
 
-void test_encode_scale_0()
+void unit_test_encode_scale_0()
 {
 	const real expected = (HH0_11 * child_0_0 + HH0_12 * child_0_1x + HH0_13 * child_0_1y +
 						   HH1_11 * child_2_0 + HH1_12 * child_2_1x + HH1_13 * child_2_1y +
@@ -84,7 +84,7 @@ void test_encode_scale_0()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_scale_1x()
+void unit_test_encode_scale_1x()
 {
 	const real expected = (HH0_21 * child_0_0 + HH0_22 * child_0_1x + HH0_23 * child_0_1y +
 						   HH1_21 * child_2_0 + HH1_22 * child_2_1x + HH1_23 * child_2_1y +
@@ -97,7 +97,7 @@ void test_encode_scale_1x()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_scale_1y()
+void unit_test_encode_scale_1y()
 {
 	const real expected = (HH0_21 * child_0_0 + HH0_22 * child_0_1x + HH0_23 * child_0_1y +
 						   HH1_21 * child_2_0 + HH1_22 * child_2_1x + HH1_23 * child_2_1y +
@@ -110,7 +110,7 @@ void test_encode_scale_1y()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_alpha_0()
+void unit_test_encode_detail_alpha_0()
 {
 	const real expected = (GA0_11 * child_0_0 + GA0_12 * child_0_1x + GA0_13 * child_0_1y +
 						   GA1_11 * child_2_0 + GA1_12 * child_2_1x + GA1_13 * child_2_1y +
@@ -123,7 +123,7 @@ void test_encode_detail_alpha_0()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_beta_0()
+void unit_test_encode_detail_beta_0()
 {
 	const real expected = (GB0_11 * child_0_0 + GB0_12 * child_0_1x + GB0_13 * child_0_1y +
 						   GB1_11 * child_2_0 + GB1_12 * child_2_1x + GB1_13 * child_2_1y +
@@ -136,7 +136,7 @@ void test_encode_detail_beta_0()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_gamma_0()
+void unit_test_encode_detail_gamma_0()
 {
 	const real expected = (GC0_11 * child_0_0 + GC0_12 * child_0_1x + GC0_13 * child_0_1y +
 						   GC1_11 * child_2_0 + GC1_12 * child_2_1x + GC1_13 * child_2_1y +
@@ -149,7 +149,7 @@ void test_encode_detail_gamma_0()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_alpha_1x()
+void unit_test_encode_detail_alpha_1x()
 {
 	const real expected = (GA0_21 * child_0_0 + GA0_22 * child_0_1x + GA0_23 * child_0_1y +
 						   GA1_21 * child_2_0 + GA1_22 * child_2_1x + GA1_23 * child_2_1y +
@@ -162,7 +162,7 @@ void test_encode_detail_alpha_1x()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_beta_1x()
+void unit_test_encode_detail_beta_1x()
 {
 	const real expected = (GB0_21 * child_0_0 + GB0_22 * child_0_1x + GB0_23 * child_0_1y +
 						   GB1_21 * child_2_0 + GB1_22 * child_2_1x + GB1_23 * child_2_1y +
@@ -175,7 +175,7 @@ void test_encode_detail_beta_1x()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_gamma_1x()
+void unit_test_encode_detail_gamma_1x()
 {
 	const real expected = (GC0_21 * child_0_0 + GC0_22 * child_0_1x + GC0_23 * child_0_1y +
 						   GC1_21 * child_2_0 + GC1_22 * child_2_1x + GC1_23 * child_2_1y +
@@ -188,7 +188,7 @@ void test_encode_detail_gamma_1x()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_alpha_1y()
+void unit_test_encode_detail_alpha_1y()
 {
 	const real expected = (GA0_31 * child_0_0 + GA0_32 * child_0_1x + GA0_33 * child_0_1y +
 						   GA1_31 * child_2_0 + GA1_32 * child_2_1x + GA1_33 * child_2_1y +
@@ -201,7 +201,7 @@ void test_encode_detail_alpha_1y()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_beta_1y()
+void unit_test_encode_detail_beta_1y()
 {
 	const real expected = (GB0_31 * child_0_0 + GB0_32 * child_0_1x + GB0_33 * child_0_1y +
 						   GB1_31 * child_2_0 + GB1_32 * child_2_1x + GB1_33 * child_2_1y +
@@ -214,7 +214,7 @@ void test_encode_detail_beta_1y()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void test_encode_detail_gamma_1y()
+void unit_test_encode_detail_gamma_1y()
 {
 	const real expected = (GC0_31 * child_0_0 + GC0_32 * child_0_1x + GC0_33 * child_0_1y +
 						   GC1_31 * child_2_0 + GC1_32 * child_2_1x + GC1_33 * child_2_1y +
@@ -282,23 +282,23 @@ void unit_test_preflag_topo_hw()
 
 void run_unit_tests_mra()
 {
-	test_encode_scale();
-	test_encode_scale_0();
-	test_encode_scale_1x();
-	test_encode_scale_1y();
+	unit_test_encode_scale();
+	unit_test_encode_scale_0();
+	unit_test_encode_scale_1x();
+	unit_test_encode_scale_1y();
 
-	test_encode_detail_alpha();
-	test_encode_detail_beta();
-	test_encode_detail_gamma();
-	test_encode_detail_alpha_0();
-	test_encode_detail_beta_0();
-	test_encode_detail_gamma_0();
-	test_encode_detail_alpha_1x();
-	test_encode_detail_beta_1x();
-	test_encode_detail_gamma_1x();
-	test_encode_detail_alpha_1y();
-	test_encode_detail_beta_1y();
-	test_encode_detail_gamma_1y();
+	unit_test_encode_detail_alpha();
+	unit_test_encode_detail_beta();
+	unit_test_encode_detail_gamma();
+	unit_test_encode_detail_alpha_0();
+	unit_test_encode_detail_beta_0();
+	unit_test_encode_detail_gamma_0();
+	unit_test_encode_detail_alpha_1x();
+	unit_test_encode_detail_beta_1x();
+	unit_test_encode_detail_gamma_1x();
+	unit_test_encode_detail_alpha_1y();
+	unit_test_encode_detail_beta_1y();
+	unit_test_encode_detail_gamma_1y();
 
 	unit_test_preflag_topo_hw();
 }

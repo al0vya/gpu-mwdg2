@@ -4,6 +4,7 @@
 
 void run_unit_tests()
 {
+	run_unit_tests_output();
 	run_unit_tests_input();
 	run_unit_tests_mra();
 }
