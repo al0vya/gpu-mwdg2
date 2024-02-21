@@ -200,10 +200,10 @@ real ScaleCoefficients::verify
 		char filename_qy0[255]  = {'\0'};
 		char filename_z0[255]   = {'\0'};
 
-		sprintf(filename_eta0, "%s%c%s", prefix, '-', "scale-coeffs-eta0-hw");
-		sprintf(filename_qx0,  "%s%c%s", prefix, '-', "scale-coeffs-qx0-hw");
-		sprintf(filename_qy0,  "%s%c%s", prefix, '-', "scale-coeffs-qy0-hw");
-		sprintf(filename_z0,   "%s%c%s", prefix, '-', "scale-coeffs-z0-hw");
+		sprintf(filename_eta0, "%s%s", prefix, "-scale-coeffs-eta0-hw");
+		sprintf(filename_qx0,  "%s%s", prefix, "-scale-coeffs-qx0-hw");
+		sprintf(filename_qy0,  "%s%s", prefix, "-scale-coeffs-qy0-hw");
+		sprintf(filename_z0,   "%s%s", prefix, "-scale-coeffs-z0-hw");
 		
 		real* d_eta0_verified = read_hierarchy_array_real(this->levels, dirroot, filename_eta0);
 		real* d_qx0_verified  = read_hierarchy_array_real(this->levels, dirroot, filename_qx0);
@@ -223,5 +223,82 @@ real ScaleCoefficients::verify
 		free_device(d_z0_verified);
 
 		return (error_eta0 + error_qx0 + error_qy0 + error_z0) / C(4.0);
+	}
+	else if (this->solver_type == MWDG2)
+	{
+		char filename_eta0[255]  = {'\0'};
+		char filename_qx0[255]   = {'\0'};
+		char filename_qy0[255]   = {'\0'};
+		char filename_z0[255]    = {'\0'};
+		char filename_eta1x[255] = {'\0'};
+		char filename_qx1x[255]  = {'\0'};
+		char filename_qy1x[255]  = {'\0'};
+		char filename_z1x[255]   = {'\0'};
+		char filename_eta1y[255] = {'\0'};
+		char filename_qx1y[255]  = {'\0'};
+		char filename_qy1y[255]  = {'\0'};
+		char filename_z1y[255]   = {'\0'};
+
+		sprintf(filename_eta0,  "%s%s", prefix, "-scale-coeffs-eta0-mw");
+		sprintf(filename_qx0,   "%s%s", prefix, "-scale-coeffs-qx0-mw");
+		sprintf(filename_qy0,   "%s%s", prefix, "-scale-coeffs-qy0-mw");
+		sprintf(filename_z0,    "%s%s", prefix, "-scale-coeffs-z0-mw");
+		sprintf(filename_eta1x, "%s%s", prefix, "-scale-coeffs-eta1x-mw");
+		sprintf(filename_qx1x,  "%s%s", prefix, "-scale-coeffs-qx1x-mw");
+		sprintf(filename_qy1x,  "%s%s", prefix, "-scale-coeffs-qy1x-mw");
+		sprintf(filename_z1x,   "%s%s", prefix, "-scale-coeffs-z1x-mw");
+		sprintf(filename_eta1y, "%s%s", prefix, "-scale-coeffs-eta1y-mw");
+		sprintf(filename_qx1y,  "%s%s", prefix, "-scale-coeffs-qx1y-mw");
+		sprintf(filename_qy1y,  "%s%s", prefix, "-scale-coeffs-qy1y-mw");
+		sprintf(filename_z1y,   "%s%s", prefix, "-scale-coeffs-z1y-mw");
+		
+		real* d_eta0_verified  = read_hierarchy_array_real(this->levels, dirroot, filename_eta0);
+		real* d_qx0_verified   = read_hierarchy_array_real(this->levels, dirroot, filename_qx0);
+		real* d_qy0_verified   = read_hierarchy_array_real(this->levels, dirroot, filename_qy0);
+		real* d_z0_verified    = read_hierarchy_array_real(this->levels, dirroot, filename_z0);
+		real* d_eta1x_verified = read_hierarchy_array_real(this->levels, dirroot, filename_eta1x);
+		real* d_qx1x_verified  = read_hierarchy_array_real(this->levels, dirroot, filename_qx1x);
+		real* d_qy1x_verified  = read_hierarchy_array_real(this->levels, dirroot, filename_qy1x);
+		real* d_z1x_verified   = read_hierarchy_array_real(this->levels, dirroot, filename_z1x);
+		real* d_eta1y_verified = read_hierarchy_array_real(this->levels, dirroot, filename_eta1y);
+		real* d_qx1y_verified  = read_hierarchy_array_real(this->levels, dirroot, filename_qx1y);
+		real* d_qy1y_verified  = read_hierarchy_array_real(this->levels, dirroot, filename_qy1y);
+		real* d_z1y_verified   = read_hierarchy_array_real(this->levels, dirroot, filename_z1y);
+
+		const int num_scale_coeffs = get_lvl_idx(this->levels + 1);
+
+		const real error_eta0  = compute_error(this->eta0,  d_eta0_verified,  num_scale_coeffs);
+		const real error_qx0   = compute_error(this->qx0,   d_qx0_verified,   num_scale_coeffs);
+		const real error_qy0   = compute_error(this->qy0,   d_qy0_verified,   num_scale_coeffs);
+		const real error_z0    = compute_error(this->z0,    d_z0_verified,    num_scale_coeffs);
+		const real error_eta1x = compute_error(this->eta1x, d_eta1x_verified, num_scale_coeffs);
+		const real error_qx1x  = compute_error(this->qx1x,  d_qx1x_verified,  num_scale_coeffs);
+		const real error_qy1x  = compute_error(this->qy1x,  d_qy1x_verified,  num_scale_coeffs);
+		const real error_z1x   = compute_error(this->z1x,   d_z1x_verified,   num_scale_coeffs);
+		const real error_eta1y = compute_error(this->eta1y, d_eta1y_verified, num_scale_coeffs);
+		const real error_qx1y  = compute_error(this->qx1y,  d_qx1y_verified,  num_scale_coeffs);
+		const real error_qy1y  = compute_error(this->qy1y,  d_qy1y_verified,  num_scale_coeffs);
+		const real error_z1y   = compute_error(this->z1y,   d_z1y_verified,   num_scale_coeffs);
+
+		free_device(d_eta0_verified);
+		free_device(d_qx0_verified);
+		free_device(d_qy0_verified);
+		free_device(d_z0_verified);
+		free_device(d_eta1x_verified);
+		free_device(d_qx1x_verified);
+		free_device(d_qy1x_verified);
+		free_device(d_z1x_verified);
+		free_device(d_eta1y_verified);
+		free_device(d_qx1y_verified);
+		free_device(d_qy1y_verified);
+		free_device(d_z1y_verified);
+
+		const real error_0  = (error_eta0  + error_qx0  + error_qy0  + error_z0)  / C(4.0);
+		const real error_1x = (error_eta1x + error_qx1x + error_qy1x + error_z1x) / C(4.0);
+		const real error_1y = (error_eta1y + error_qx1y + error_qy1y + error_z1y) / C(4.0);
+
+		const real error = (error_0 + error_1x + error_1y) / C(3.0);
+
+		return error;
 	}
 }

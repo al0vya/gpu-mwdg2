@@ -6,10 +6,14 @@
 
 void unit_test_scale_coeffs_CONSTRUCTOR_LEVELS_HW();
 void unit_test_scale_coeffs_CONSTRUCTOR_FILES_HW();
-void unit_test_scale_coeffs_CONSTRUCTOR_COPY_HW();
 void unit_test_scale_coeffs_WRITE_TO_FILE_HW();
 void unit_test_scale_coeffs_VERIFY_HW();
 
 void unit_test_scale_coeffs_CONSTRUCTOR_LEVELS_MW();
+void unit_test_scale_coeffs_CONSTRUCTOR_FILES_MW();
+void unit_test_scale_coeffs_WRITE_TO_FILE_MW();
+void unit_test_scale_coeffs_VERIFY_MW();
+
+void unit_test_scale_coeffs_CONSTRUCTOR_COPY();
 
 void run_unit_tests_classes();
