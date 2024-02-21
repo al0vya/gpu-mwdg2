@@ -64,10 +64,56 @@ void unit_test_compute_error()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_compare_array_on_device_vs_host_real()
+{
+	const int array_length = 100;
+	const size_t bytes = array_length * sizeof(real);
+	real* h_array = new real[array_length];
+	real* d_array = (real*)malloc_device(bytes);
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_array[i] = i;
+	}
+
+	copy_cuda(d_array, h_array, bytes);
+
+	bool passed = compare_array_on_device_vs_host_real(h_array, d_array, array_length);
+
+	delete[] h_array;
+	free_device(d_array);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_compare_array_with_file_real()
+{
+	const int array_length = 100;
+	real* h_array = new real[array_length];
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_array[i] = i;
+	}
+
+	const char* dirroot  = "unittestdata";
+	const char* filename = "unit_test_compare_array_with_file_real";
+
+	bool passed = compare_array_with_file_real(dirroot, filename, h_array, array_length);
+
+	delete[] h_array;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void run_unit_tests_utilities()
 {
 	unit_test_get_mean_from_array();
 	unit_test_compute_error();
+	unit_test_compare_array_on_device_vs_host_real();
+	unit_test_compare_array_with_file_real();
 }
 
 #endif

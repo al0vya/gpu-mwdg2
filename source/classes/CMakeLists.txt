@@ -3,5 +3,6 @@ target_sources(
 		PRIVATE
 		Details.cu
 		ScaleCoefficients.cu
+		SolverParams.cu
 		SubDetails.cu
 	)

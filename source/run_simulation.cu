@@ -658,9 +658,6 @@ void run_simulation
 	
 	printf("Loop time: %f s\n", run_time);
 
-	printf("Average time step: %f s\n", sim_params.time / steps);
-	printf("Average kernel time: %f ms\n", avg_cuda_time);
-
 	CHECK_CUDA_ERROR( free_device(d_morton_codes) );
 	CHECK_CUDA_ERROR( free_device(d_sorted_morton_codes) );
 	CHECK_CUDA_ERROR( free_device(d_indices) );

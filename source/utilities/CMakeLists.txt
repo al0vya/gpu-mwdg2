@@ -6,6 +6,8 @@ target_sources(
 		get_mean_from_array
 		get_num_blocks.cpp
 		are_reals_equal.cpp
+		compare_array_on_device_vs_host_real.cu
+		compare_array_with_file_real.cpp
 		compute_error.cu
         compute_error_kernel.cu
 	)

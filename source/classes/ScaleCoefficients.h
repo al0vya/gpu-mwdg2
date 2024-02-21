@@ -17,7 +17,8 @@ public:
 	ScaleCoefficients
 	(
 		const SolverParams& solver_params,
-		const char*         dirroot
+		const char*         dirroot,
+		const char*         prefix
 	);
     
 	ScaleCoefficients

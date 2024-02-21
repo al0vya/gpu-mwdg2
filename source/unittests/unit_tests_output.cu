@@ -24,41 +24,7 @@ void unit_test_write_hierarchy_array_real()
 
 	write_hierarchy_array_real(dirroot, filename, d_hierarchy, levels);
 
-	char fullpath[255] = {'\0'};
-
-	sprintf(fullpath, "%s%c%s%s", dirroot, '/', filename, ".txt");
-
-	FILE* fp = fopen(fullpath, "r");
-
-	if (NULL == fp)
-	{
-		fprintf(stderr, "Error opening file %s, failed %s\n.", fullpath, __func__);
-		return;
-	}
-
-	bool passed = false;
-
-	real host_value = C(0.0);
-	real file_value = C(0.0);
-
-	for (int i = 0; i < array_length; i++)
-	{
-		host_value = h_hierarchy[i];
-		
-		fscanf(fp, "%f", &file_value);
-
-		if ( are_reals_equal(host_value, file_value) )
-		{
-			passed = true;
-		}
-		else
-		{
-			passed = false;
-			break;
-		}
-	}
-
-	fclose(fp);
+	bool passed = compare_array_with_file_real(dirroot, filename, h_hierarchy, array_length);
 
 	delete[]    h_hierarchy;
 	free_device(d_hierarchy);
