@@ -1,3 +1,4 @@
+add_subdirectory(classes)
 add_subdirectory(input)
 add_subdirectory(mra)
 add_subdirectory(neighbours)

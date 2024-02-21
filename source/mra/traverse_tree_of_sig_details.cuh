@@ -6,14 +6,13 @@
 #include "cub/block/block_store.cuh"
 
 #include "../utilities/BLOCK_VAR_MACROS.cuh"
+#include "../utilities/get_lvl_idx.cuh"
 
 #include "../types/HierarchyIndex.h"
-#include "../classes/AssembledSolution.h"
 #include "../types/MortonCode.h"
+#include "../classes/AssembledSolution.h"
 #include "../classes/SolverParams.h"
 #include "../classes/ScaleCoefficients.h"
-
-#include "../utilities/get_lvl_idx.cuh"
 
 __global__
 void traverse_tree_of_sig_details
