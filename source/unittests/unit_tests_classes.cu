@@ -653,6 +653,170 @@ void unit_test_details_VERIFY_HW()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_details_CONSTRUCTOR_LEVELS_MW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 1;
+	solver_params.solver_type = MWDG2;
+
+	Details d_details(solver_params);
+
+	bool init_eta0  = test_subdetails_CONSTRUCTOR_LEVELS(d_details.eta0);
+	bool init_qx0   = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qx0);
+	bool init_qy0   = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qy0);
+	bool init_z0    = test_subdetails_CONSTRUCTOR_LEVELS(d_details.z0);
+	
+	bool init_eta1x = test_subdetails_CONSTRUCTOR_LEVELS(d_details.eta1x);
+	bool init_qx1x  = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qx1x);
+	bool init_qy1x  = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qy1x);
+	bool init_z1x   = test_subdetails_CONSTRUCTOR_LEVELS(d_details.z1x);
+	
+	bool init_eta1y = test_subdetails_CONSTRUCTOR_LEVELS(d_details.eta1y);
+	bool init_qx1y  = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qx1y);
+	bool init_qy1y  = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qy1y);
+	bool init_z1y   = test_subdetails_CONSTRUCTOR_LEVELS(d_details.z1y);
+
+	bool subdetails_correctly_initialised =
+	(
+		init_eta0  && init_qx0  && init_qy0  && init_z0 &&
+		init_eta1x && init_qx1x && init_qy1x && init_z1x &&
+		init_eta1y && init_qx1y && init_qy1y && init_z1y
+	);
+
+	if (subdetails_correctly_initialised && d_details.solver_type == solver_params.solver_type)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_details_CONSTRUCTOR_FILES_MW()
+{
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_details_CONSTRUCTOR_FILES_MW";
+	
+	SolverParams solver_params;
+
+	solver_params.L           = 3;
+	solver_params.solver_type = MWDG2;
+
+	Details d_details(solver_params, dirroot, prefix);
+
+	const int num_details = get_lvl_idx(d_details.eta0.levels + 1);
+	real* h_details = new real[num_details];
+
+	for (int i = 0; i < num_details; i++)
+	{
+		h_details[i] = i;
+	}
+
+	bool passed_eta0  = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.eta0,  num_details);
+	bool passed_qx0   = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.qx0,   num_details);
+	bool passed_qy0   = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.qy0,   num_details);
+	bool passed_z0    = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.z0,    num_details);
+	bool passed_eta1x = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.eta1x, num_details);
+	bool passed_qx1x  = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.qx1x,  num_details);
+	bool passed_qy1x  = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.qy1x,  num_details);
+	bool passed_z1x   = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.z1x,   num_details);
+	bool passed_eta1y = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.eta1y, num_details);
+	bool passed_qx1y  = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.qx1y,  num_details);
+	bool passed_qy1y  = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.qy1y,  num_details);
+	bool passed_z1y   = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.z1y,   num_details);
+
+	bool passed =
+	(
+		passed_eta0  && passed_qx0  && passed_qy0  && passed_z0 &&
+		passed_eta1x && passed_qx1x && passed_qy1x && passed_z1x &&
+		passed_eta1y && passed_qx1y && passed_qy1y && passed_z1y
+	);
+
+	delete[] h_details;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_details_WRITE_TO_FILE_MW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 3;
+	solver_params.solver_type = MWDG2;
+
+	Details d_details(solver_params);
+
+	const int num_details = get_lvl_idx(d_details.eta0.levels + 1);
+	const size_t bytes = num_details * sizeof(real);
+	real* h_details = new real[num_details];
+
+	for (int i = 0; i < num_details; i++)
+	{
+		h_details[i] = i;
+	}
+
+	init_details(h_details, d_details, bytes);
+
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_details_WRITE_TO_FILE_MW";
+
+	d_details.write_to_file(dirroot, prefix);
+
+	bool passed_eta0  = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "eta0-mw",  h_details, num_details);
+	bool passed_qx0   = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "qx0-mw",   h_details, num_details);
+	bool passed_qy0   = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "qy0-mw",   h_details, num_details);
+	bool passed_z0    = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "z0-mw",    h_details, num_details);
+	bool passed_eta1x = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "eta1x-mw", h_details, num_details);
+	bool passed_qx1x  = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "qx1x-mw",  h_details, num_details);
+	bool passed_qy1x  = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "qy1x-mw",  h_details, num_details);
+	bool passed_z1x   = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "z1x-mw",   h_details, num_details);
+	bool passed_eta1y = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "eta1y-mw", h_details, num_details);
+	bool passed_qx1y  = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "qx1y-mw",  h_details, num_details);
+	bool passed_qy1y  = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "qy1y-mw",  h_details, num_details);
+	bool passed_z1y   = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "z1y-mw",   h_details, num_details);
+
+	bool passed =
+	(
+		passed_eta0  && passed_qx0  && passed_qy0  && passed_z0 &&
+		passed_eta1x && passed_qx1x && passed_qy1x && passed_z1x &&
+		passed_eta1y && passed_qx1y && passed_qy1y && passed_z1y
+	);
+
+	delete[] h_details;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_details_VERIFY_MW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 3;
+	solver_params.solver_type = MWDG2;
+
+	Details d_details(solver_params);
+
+	const int num_details = get_lvl_idx(d_details.eta0.levels + 1);
+	const size_t bytes = num_details * sizeof(real);
+	real* h_details = new real[num_details];
+
+	for (int i = 0; i < num_details; i++)
+	{
+		h_details[i] = i;
+	}
+
+	init_details(h_details, d_details, bytes);
+
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_details_VERIFY_MW";
+
+	const real actual_error = d_details.verify(dirroot, prefix);
+	const real expected_error = C(0.0);
+
+	delete[] h_details;
+
+	if ( are_reals_equal(actual_error, expected_error) )
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void run_unit_tests_classes()
 {
 	unit_test_scale_coeffs_CONSTRUCTOR_LEVELS_HW();
@@ -679,10 +843,10 @@ void run_unit_tests_classes()
 	unit_test_details_WRITE_TO_FILE_HW();
 	unit_test_details_VERIFY_HW();
 
-	//unit_test_details_CONSTRUCTOR_LEVELS_MW();
-	//unit_test_details_CONSTRUCTOR_FILES_MW();
-	//unit_test_details_WRITE_TO_FILE_MW();
-	//unit_test_details_VERIFY_MW();
+	unit_test_details_CONSTRUCTOR_LEVELS_MW();
+	unit_test_details_CONSTRUCTOR_FILES_MW();
+	unit_test_details_WRITE_TO_FILE_MW();
+	unit_test_details_VERIFY_MW();
 }
 
 bool test_subdetails_CONSTRUCTOR_LEVELS(SubDetails d_subdetails)
