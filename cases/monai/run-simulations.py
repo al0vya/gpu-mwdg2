@@ -183,7 +183,7 @@ class SimulationMonai:
                 "initial_tstep 1\n" +
                 "fpfric        0.01\n" +
                 "sim_time      22.5\n" +
-                "massint       0.2\n" +
+                "massint       0.1\n" +
                 "saveint       22.5\n" +
                 "DEMfile       monai.dem\n" +
                 "startfile     monai.start\n" +

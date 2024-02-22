@@ -11,7 +11,7 @@ wall_height   0.5
 initial_tstep 1
 fpfric        0.01
 sim_time      22.5
-massint       0.2
+massint       0.1
 saveint       22.5
 DEMfile       monai.dem
 startfile     monai.start

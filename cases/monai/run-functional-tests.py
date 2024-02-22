@@ -42,19 +42,19 @@ def write_par_file(
     with open(input_file, 'w') as fp:
         params = (
             "monai\n" +
-            f"{self.solver}\n" +
+            f"{solver}\n" +
             "cuda\n" +
             "raster_out\n" +
             "cumulative\n" +
             "refine_wall\n" +
             "ref_thickness 16\n" +
             "max_ref_lvl   9\n" +
-            "epsilon       0\n" +
+            f"epsilon       {epsilon}\n" +
             "wall_height   0.5\n" +
             "initial_tstep 1\n" +
             "fpfric        0.01\n" +
             "sim_time      22.5\n" +
-            "massint       0.2\n" +
+            "massint       0.1\n" +
             "saveint       22.5\n" +
             "DEMfile       monai.dem\n" +
             "startfile     monai.start\n" +
@@ -111,7 +111,7 @@ def compute_error(
 ):
     print(f"Running simulation, solver: {solver}, eps: {epsilon}")
     
-    input_file = "test.par"
+    input_file = "functional-test.par"
     
     write_par_file(
         epsilon=epsilon,
