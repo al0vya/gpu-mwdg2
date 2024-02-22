@@ -41,24 +41,26 @@ def write_par_file(
 ):
     with open(input_file, 'w') as fp:
         params = (
+            "monai\n" +
+            f"{self.solver}\n" +
+            "cuda\n" +
+            "raster_out\n" +
+            "cumulative\n" +
+            "refine_wall\n" +
+            "ref_thickness 16\n" +
             "max_ref_lvl   9\n" +
+            "epsilon       0\n" +
+            "wall_height   0.5\n" +
             "initial_tstep 1\n" +
-            f"epsilon       {epsilon}\n" +
             "fpfric        0.01\n" +
+            "sim_time      22.5\n" +
+            "massint       0.2\n" +
+            "saveint       22.5\n" +
             "DEMfile       monai.dem\n" +
             "startfile     monai.start\n" +
             "bcifile       monai.bci\n" +
             "bdyfile       monai.bdy\n" +
-            "stagefile     monai.stage\n" +
-            "saveint       5\n" +
-            "massint       0.1\n" +
-            "sim_time      22.5\n" +
-            f"{solver}\n"
-            "cuda\n" +
-            "monai\n" +
-            "refine_wall\n" +
-            "ref_thickness 16\n" +
-            "wall_height   0.5"
+            "stagefile     monai.stage\n"
         )
         
         fp.write(params)

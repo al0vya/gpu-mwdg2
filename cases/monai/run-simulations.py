@@ -170,8 +170,8 @@ class SimulationMonai:
     def write_par_file(self):
         with open(self.input_file, 'w') as fp:
             params = (
-                f"{self.solver}\n" +
                 "monai\n" +
+                f"{self.solver}\n" +
                 "cuda\n" +
                 "raster_out\n" +
                 "cumulative\n" +
