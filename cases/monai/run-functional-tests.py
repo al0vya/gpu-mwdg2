@@ -44,7 +44,6 @@ def write_par_file(
             "monai\n" +
             f"{solver}\n" +
             "cuda\n" +
-            "raster_out\n" +
             "cumulative\n" +
             "refine_wall\n" +
             "ref_thickness 16\n" +

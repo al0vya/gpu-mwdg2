@@ -230,9 +230,9 @@ void unit_test_encode_detail_gamma_1y()
 void unit_test_preflag_topo_HW()
 {
 	// monai.par file looks like:
+	// monai
 	// hwfv1
 	// cuda
-	// raster_out
 	// cumulative
 	// refine_wall
 	// ref_thickness 16
@@ -241,31 +241,36 @@ void unit_test_preflag_topo_HW()
 	// wall_height   0.5
 	// initial_tstep 1
 	// fpfric        0.01
-	// sim_time      22.5
-	// massint       0.2
-	// saveint       22.5
+	// sim_time      0.1
+	// massint       0.1
+	// saveint       0.1
 	// DEMfile       monai.txt <- CAREFUL
 	// startfile     monai.start
 	// bcifile       monai.bci
 	// bdyfile       monai.bdy
 	// stagefile     monai.stage
-	
-	const char* dirroot = "unittestdata/unit_test_preflag_topo_hw";
-	const char* prefix  = "unit_test_preflag_topo_HW";
-	
+
+	const char* dirroot  = "unittestdata";
+	const char* prefix   = "unit_test_preflag_topo_HW";
+	const char* par_file = "unit_tests_HW.par";
+
+	char input_filename[255] = {'\0'};
+
+	sprintf(input_filename, "%s%c%s", dirroot, '/', par_file);
+
 	Maxes             maxes = { C(1.0), C(1.0), C(1.0), C(1.0), C(1.0) };
-	SolverParams      solver_params("unittestdata/unit_test_preflag_topo_hw/monai.par");
+	SolverParams      solver_params(input_filename);
 	SimulationParams  sim_params;
-	ScaleCoefficients d_scale_coeffs(solver_params, dirroot, prefix);
-	Details           d_details     (solver_params, dirroot, prefix);
-	bool*             d_preflagged_details = read_hierarchy_array_bool(solver_params.L - 1, dirroot, "input-preflagged-details");
+	ScaleCoefficients d_scale_coeffs(solver_params, dirroot, "unit_test_preflag_topo_HW-input");
+	Details           d_details     (solver_params, dirroot, "unit_test_preflag_topo_HW-input");
+	bool*             d_preflagged_details = read_hierarchy_array_bool(solver_params.L - 1, dirroot, "unit_test_preflag_topo_HW-input-preflagged-details");
 	bool              first_timestep       = true;
 
 	preflag_topo
 	(
 		d_scale_coeffs, 
 		d_details,  
-		d_preflagged_details, 
+		d_preflagged_details,
 		maxes,
 		solver_params,
 		sim_params,
@@ -301,7 +306,7 @@ void run_unit_tests_mra()
 	unit_test_encode_detail_beta_1y();
 	unit_test_encode_detail_gamma_1y();
 
-	//unit_test_preflag_topo_HW();
+	unit_test_preflag_topo_HW();
 }
 
 #endif

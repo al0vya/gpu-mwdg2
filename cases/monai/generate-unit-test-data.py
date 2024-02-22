@@ -21,6 +21,8 @@ def main():
         
     for input_file in input_files:
         shutil.copy( input_file, os.path.join("res", input_file) )
+        
+    write_dummy_dem_file()
 
 def generate_input_files():
     print("Generating input files...")
@@ -38,7 +40,6 @@ def write_par_file(
             "monai\n" +
             f"{solver}\n" +
             "cuda\n" +
-            "raster_out\n" +
             "cumulative\n" +
             "refine_wall\n" +
             "ref_thickness 16\n" +
@@ -58,6 +59,19 @@ def write_par_file(
         )
         
         fp.write(params)
+
+def write_dummy_dem_file():
+    dummy_dem_file = (
+        "ncols        392\n" +
+        "nrows        243\n" +
+        "xllcorner    0\n" +
+        "yllcorner    0\n" +
+        "cellsize     0.014\n" +
+        "NODATA_value -9999\n"
+    )
+    
+    with open(os.path.join("res", "monai.txt"), 'w') as fp:
+        fp.write(dummy_dem_file)
         
 if __name__ == "__main__":
     main()

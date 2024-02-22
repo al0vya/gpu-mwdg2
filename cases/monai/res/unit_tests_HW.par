@@ -1,7 +1,6 @@
 monai
 hwfv1
 cuda
-raster_out
 cumulative
 refine_wall
 ref_thickness 16
