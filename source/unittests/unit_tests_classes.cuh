@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../classes/ScaleCoefficients.h"
-#include "../classes/SubDetails.h"
+#include "../classes/Details.h"
 #include "../utilities/compare_array_with_file_real.h"
 #include "../utilities/compare_array_on_device_vs_host_real.cuh"
 
@@ -35,3 +35,28 @@ void unit_test_details_WRITE_TO_FILE_MW();
 void unit_test_details_VERIFY_MW();
 
 void run_unit_tests_classes();
+
+bool test_subdetails_CONSTRUCTOR_LEVELS(SubDetails d_subdetails);
+
+bool test_subdetails_CONSTRUCTOR_FILES
+(
+	real*      h_subdetails,
+	SubDetails d_subdetails,
+	const int& num_details
+);
+
+bool test_subdetails_WRITE_TO_FILE
+(
+	const char* dirroot,
+	const char* prefix,
+	const char* suffix,
+	real* h_subdetails,
+	const int& num_details
+);
+
+void init_details
+(
+	real*   h_details,
+	Details d_details,
+	const   size_t& bytes
+);

@@ -52,6 +52,6 @@ public:
 	real* beta  = nullptr;
 	real* gamma = nullptr;
 
-	int   levels       = 0;
+	int   levels       = -1;
 	bool  is_copy_cuda = false;
 };

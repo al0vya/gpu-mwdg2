@@ -385,7 +385,7 @@ void unit_test_subdetails_CONSTRUCTOR_DEFAULT()
 		d_subdetails.alpha        == nullptr &&
 		d_subdetails.beta         == nullptr &&
 		d_subdetails.gamma        == nullptr &&
-		d_subdetails.levels       == 0 &&
+		d_subdetails.levels       == -1 &&
 		d_subdetails.is_copy_cuda == false
 	);
 
@@ -397,16 +397,9 @@ void unit_test_subdetails_CONSTRUCTOR_LEVELS()
 {
 	SubDetails d_subdetails(0);
 
-	bool passed =
-	(
-		d_subdetails.alpha        != nullptr &&
-		d_subdetails.beta         != nullptr &&
-		d_subdetails.gamma        != nullptr &&
-		d_subdetails.levels       == 0 &&
-		d_subdetails.is_copy_cuda == false
-	);
+	bool initialised = test_subdetails_CONSTRUCTOR_LEVELS(d_subdetails);
 
-	if (passed)
+	if (initialised)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -427,12 +420,13 @@ void unit_test_subdetails_CONSTRUCTOR_FILES()
 	{
 		h_subdetails[i] = i;
 	}
-
-	bool passed_alpha = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.alpha, num_details);
-	bool passed_beta  = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.beta,  num_details);
-	bool passed_gamma = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.gamma, num_details);
 	
-	bool passed = (passed_alpha && passed_beta && passed_gamma);
+	bool passed = test_subdetails_CONSTRUCTOR_FILES
+	(
+		h_subdetails,
+		d_subdetails,
+		num_details
+	);
 
 	delete[] h_subdetails;
 
@@ -464,19 +458,14 @@ void unit_test_subdetails_WRITE_TO_FILE()
 
 	d_subdetails.write_to_file(dirroot, prefix, suffix);
 
-	char filename_alpha[255] = {'\0'};
-	char filename_beta[255]  = {'\0'};
-	char filename_gamma[255] = {'\0'};
-
-	sprintf(filename_alpha, "%s%s%s", prefix, "-details-alpha-", suffix);
-	sprintf(filename_beta,  "%s%s%s", prefix, "-details-beta-",  suffix);
-	sprintf(filename_gamma, "%s%s%s", prefix, "-details-gamma-", suffix);
-
-	bool passed_alpha = compare_array_with_file_real(dirroot, filename_alpha, h_subdetails, num_details);
-	bool passed_beta  = compare_array_with_file_real(dirroot, filename_beta,  h_subdetails, num_details);
-	bool passed_gamma = compare_array_with_file_real(dirroot, filename_gamma, h_subdetails, num_details);
-
-	bool passed = passed_alpha && passed_beta && passed_gamma;
+	bool passed = test_subdetails_WRITE_TO_FILE
+	(
+		dirroot,
+		prefix,
+		suffix,
+		h_subdetails,
+		num_details
+	);
 
 	delete[] h_subdetails;
 
@@ -529,10 +518,139 @@ void unit_test_details_CONSTRUCTOR_LEVELS_HW()
 {
 	SolverParams solver_params;
 
-	solver_params.L = 1;
+	solver_params.L           = 1;
 	solver_params.solver_type = HWFV1;
 
+	Details d_details(solver_params);
 
+	bool init_eta0  = test_subdetails_CONSTRUCTOR_LEVELS(d_details.eta0);
+	bool init_qx0   = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qx0);
+	bool init_qy0   = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qy0);
+	bool init_z0    = test_subdetails_CONSTRUCTOR_LEVELS(d_details.z0);
+	
+	bool init_eta1x = test_subdetails_CONSTRUCTOR_LEVELS(d_details.eta1x);
+	bool init_qx1x  = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qx1x);
+	bool init_qy1x  = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qy1x);
+	bool init_z1x   = test_subdetails_CONSTRUCTOR_LEVELS(d_details.z1x);
+	
+	bool init_eta1y = test_subdetails_CONSTRUCTOR_LEVELS(d_details.eta1y);
+	bool init_qx1y  = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qx1y);
+	bool init_qy1y  = test_subdetails_CONSTRUCTOR_LEVELS(d_details.qy1y);
+	bool init_z1y   = test_subdetails_CONSTRUCTOR_LEVELS(d_details.z1y);
+
+	bool subdetails_correctly_initialised =
+	(
+		init_eta0   && init_qx0   && init_qy0   && init_z0 &&
+		!init_eta1x && !init_qx1x && !init_qy1x && !init_z1x &&
+		!init_eta1y && !init_qx1y && !init_qy1y && !init_z1y
+	);
+
+	if (subdetails_correctly_initialised && d_details.solver_type == solver_params.solver_type)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+
+}
+
+void unit_test_details_CONSTRUCTOR_FILES_HW()
+{
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_details_CONSTRUCTOR_FILES_HW";
+	
+	SolverParams solver_params;
+
+	solver_params.L           = 3;
+	solver_params.solver_type = HWFV1;
+
+	Details d_details(solver_params, dirroot, prefix);
+
+	const int num_details = get_lvl_idx(d_details.eta0.levels + 1);
+	real* h_details = new real[num_details];
+
+	for (int i = 0; i < num_details; i++)
+	{
+		h_details[i] = i;
+	}
+
+	bool passed_eta0 = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.eta0, num_details);
+	bool passed_qx0  = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.qx0,  num_details);
+	bool passed_qy0  = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.qy0,  num_details);
+	bool passed_z0   = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.z0,   num_details);
+
+	bool passed = passed_eta0 && passed_qx0 && passed_qy0 && passed_z0;
+
+	delete[] h_details;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_details_WRITE_TO_FILE_HW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 3;
+	solver_params.solver_type = HWFV1;
+
+	Details d_details(solver_params);
+
+	const int num_details = get_lvl_idx(d_details.eta0.levels + 1);
+	const size_t bytes = num_details * sizeof(real);
+	real* h_details = new real[num_details];
+
+	for (int i = 0; i < num_details; i++)
+	{
+		h_details[i] = i;
+	}
+
+	init_details(h_details, d_details, bytes);
+
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_details_WRITE_TO_FILE_HW";
+
+	d_details.write_to_file(dirroot, prefix);
+
+	bool passed_eta0 = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "eta0-hw", h_details, num_details);
+	bool passed_qx0  = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "qx0-hw",  h_details, num_details);
+	bool passed_qy0  = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "qy0-hw",  h_details, num_details);
+	bool passed_z0   = test_subdetails_WRITE_TO_FILE(dirroot, prefix, "z0-hw",   h_details, num_details);
+
+	bool passed = passed_eta0 && passed_qx0 && passed_qy0 && passed_z0;
+
+	delete[] h_details;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_details_VERIFY_HW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 3;
+	solver_params.solver_type = HWFV1;
+
+	Details d_details(solver_params);
+
+	const int num_details = get_lvl_idx(d_details.eta0.levels + 1);
+	const size_t bytes = num_details * sizeof(real);
+	real* h_details = new real[num_details];
+
+	for (int i = 0; i < num_details; i++)
+	{
+		h_details[i] = i;
+	}
+
+	init_details(h_details, d_details, bytes);
+
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_details_VERIFY_HW";
+
+	const real actual_error = d_details.verify(dirroot, prefix);
+	const real expected_error = C(0.0);
+
+	delete[] h_details;
+
+	if ( are_reals_equal(actual_error, expected_error) )
+		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
 void run_unit_tests_classes()
@@ -557,14 +675,151 @@ void run_unit_tests_classes()
 	unit_test_subdetails_CONSTRUCTOR_COPY();
 
 	unit_test_details_CONSTRUCTOR_LEVELS_HW();
-	//unit_test_details_CONSTRUCTOR_FILES_HW();
-	//unit_test_details_WRITE_TO_FILE_HW();
-	//unit_test_details_VERIFY_HW();
+	unit_test_details_CONSTRUCTOR_FILES_HW();
+	unit_test_details_WRITE_TO_FILE_HW();
+	unit_test_details_VERIFY_HW();
 
 	//unit_test_details_CONSTRUCTOR_LEVELS_MW();
 	//unit_test_details_CONSTRUCTOR_FILES_MW();
 	//unit_test_details_WRITE_TO_FILE_MW();
 	//unit_test_details_VERIFY_MW();
+}
+
+bool test_subdetails_CONSTRUCTOR_LEVELS(SubDetails d_subdetails)
+{
+	bool initialised =
+	(
+		d_subdetails.alpha        != nullptr &&
+		d_subdetails.beta         != nullptr &&
+		d_subdetails.gamma        != nullptr &&
+		d_subdetails.levels        > -1
+	);
+
+	return initialised;
+}
+
+bool test_subdetails_CONSTRUCTOR_FILES
+(
+	real*      h_subdetails,
+	SubDetails d_subdetails,
+	const int& num_details
+)
+{
+	bool passed_alpha = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.alpha, num_details);
+	bool passed_beta  = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.beta,  num_details);
+	bool passed_gamma = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.gamma, num_details);
+	
+	bool passed = (passed_alpha && passed_beta && passed_gamma);
+
+	return passed;
+}
+
+bool test_subdetails_WRITE_TO_FILE
+(
+	const char* dirroot,
+	const char* prefix,
+	const char* suffix,
+	real*       h_subdetails,
+	const int&  num_details
+)
+{
+	char filename_alpha[255] = {'\0'};
+	char filename_beta[255]  = {'\0'};
+	char filename_gamma[255] = {'\0'};
+
+	sprintf(filename_alpha, "%s%s%s", prefix, "-details-alpha-", suffix);
+	sprintf(filename_beta,  "%s%s%s", prefix, "-details-beta-",  suffix);
+	sprintf(filename_gamma, "%s%s%s", prefix, "-details-gamma-", suffix);
+
+	bool passed_alpha = compare_array_with_file_real(dirroot, filename_alpha, h_subdetails, num_details);
+	bool passed_beta  = compare_array_with_file_real(dirroot, filename_beta,  h_subdetails, num_details);
+	bool passed_gamma = compare_array_with_file_real(dirroot, filename_gamma, h_subdetails, num_details);
+
+	bool passed = passed_alpha && passed_beta && passed_gamma;
+
+	return passed;
+}
+
+void init_details
+(
+	real*   h_details,
+	Details d_details,
+	const size_t& bytes
+)
+{
+	if (d_details.solver_type == HWFV1)
+	{
+		copy_cuda(d_details.eta0.alpha, h_details, bytes);
+		copy_cuda(d_details.eta0.beta,  h_details, bytes);
+		copy_cuda(d_details.eta0.gamma, h_details, bytes);
+
+		copy_cuda(d_details.qx0.alpha,  h_details, bytes);
+		copy_cuda(d_details.qx0.beta,   h_details, bytes);
+		copy_cuda(d_details.qx0.gamma,  h_details, bytes);
+
+		copy_cuda(d_details.qy0.alpha,  h_details, bytes);
+		copy_cuda(d_details.qy0.beta,   h_details, bytes);
+		copy_cuda(d_details.qy0.gamma,  h_details, bytes);
+
+		copy_cuda(d_details.z0.alpha,   h_details, bytes);
+		copy_cuda(d_details.z0.beta,    h_details, bytes);
+		copy_cuda(d_details.z0.gamma,   h_details, bytes);
+	}
+	else if (d_details.solver_type == MWDG2)
+	{
+		copy_cuda(d_details.eta0.alpha, h_details, bytes);
+		copy_cuda(d_details.eta0.beta,  h_details, bytes);
+		copy_cuda(d_details.eta0.gamma, h_details, bytes);
+
+		copy_cuda(d_details.qx0.alpha,  h_details, bytes);
+		copy_cuda(d_details.qx0.beta,   h_details, bytes);
+		copy_cuda(d_details.qx0.gamma,  h_details, bytes);
+
+		copy_cuda(d_details.qy0.alpha,  h_details, bytes);
+		copy_cuda(d_details.qy0.beta,   h_details, bytes);
+		copy_cuda(d_details.qy0.gamma,  h_details, bytes);
+
+		copy_cuda(d_details.z0.alpha,   h_details, bytes);
+		copy_cuda(d_details.z0.beta,    h_details, bytes);
+		copy_cuda(d_details.z0.gamma,   h_details, bytes);
+
+		copy_cuda(d_details.eta1x.alpha, h_details, bytes);
+		copy_cuda(d_details.eta1x.beta,  h_details, bytes);
+		copy_cuda(d_details.eta1x.gamma, h_details, bytes);
+
+		copy_cuda(d_details.qx1x.alpha,  h_details, bytes);
+		copy_cuda(d_details.qx1x.beta,   h_details, bytes);
+		copy_cuda(d_details.qx1x.gamma,  h_details, bytes);
+
+		copy_cuda(d_details.qy1x.alpha,  h_details, bytes);
+		copy_cuda(d_details.qy1x.beta,   h_details, bytes);
+		copy_cuda(d_details.qy1x.gamma,  h_details, bytes);
+
+		copy_cuda(d_details.z1x.alpha,   h_details, bytes);
+		copy_cuda(d_details.z1x.beta,    h_details, bytes);
+		copy_cuda(d_details.z1x.gamma,   h_details, bytes);
+
+		copy_cuda(d_details.eta1y.alpha, h_details, bytes);
+		copy_cuda(d_details.eta1y.beta,  h_details, bytes);
+		copy_cuda(d_details.eta1y.gamma, h_details, bytes);
+
+		copy_cuda(d_details.qx1y.alpha,  h_details, bytes);
+		copy_cuda(d_details.qx1y.beta,   h_details, bytes);
+		copy_cuda(d_details.qx1y.gamma,  h_details, bytes);
+
+		copy_cuda(d_details.qy1y.alpha,  h_details, bytes);
+		copy_cuda(d_details.qy1y.beta,   h_details, bytes);
+		copy_cuda(d_details.qy1y.gamma,  h_details, bytes);
+
+		copy_cuda(d_details.z1y.alpha,   h_details, bytes);
+		copy_cuda(d_details.z1y.beta,    h_details, bytes);
+		copy_cuda(d_details.z1y.gamma,   h_details, bytes);
+	}
+	else
+	{
+		fprintf(stderr, "Solver type other than HWFV1 and MWDG2 for Details in %s.\n", __FILE__);
+		return;
+	}
 }
 
 #endif
