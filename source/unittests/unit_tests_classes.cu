@@ -368,14 +368,160 @@ void unit_test_scale_coeffs_CONSTRUCTOR_COPY()
 {
 	SolverParams solver_params;
 
-	solver_params.L           = 3;
-	solver_params.solver_type = HWFV1;
-
 	ScaleCoefficients d_scale_coeffs(solver_params);
 
 	ScaleCoefficients d_scale_coeffs_copy(d_scale_coeffs);
 
-	if (d_scale_coeffs.is_copy_cuda == false)
+	if (d_scale_coeffs_copy.is_copy_cuda)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_subdetails_CONSTRUCTOR_DEFAULT()
+{
+	SubDetails d_subdetails;
+
+	bool passed =
+	(
+		d_subdetails.alpha        == nullptr &&
+		d_subdetails.beta         == nullptr &&
+		d_subdetails.gamma        == nullptr &&
+		d_subdetails.levels       == 0 &&
+		d_subdetails.is_copy_cuda == false
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_subdetails_CONSTRUCTOR_LEVELS()
+{
+	SubDetails d_subdetails(0);
+
+	bool passed =
+	(
+		d_subdetails.alpha        != nullptr &&
+		d_subdetails.beta         != nullptr &&
+		d_subdetails.gamma        != nullptr &&
+		d_subdetails.levels       == 0 &&
+		d_subdetails.is_copy_cuda == false
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_subdetails_CONSTRUCTOR_FILES()
+{
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_subdetails_CONSTRUCTOR_FILES";
+	const char* suffix  = "theta";
+
+	const int levels = 3;
+
+	SubDetails d_subdetails(levels, dirroot, prefix, suffix);
+
+	const int num_details = get_lvl_idx(levels + 1);
+	real* h_subdetails = new real[num_details];
+
+	for (int i = 0; i < num_details; i++)
+	{
+		h_subdetails[i] = i;
+	}
+
+	bool passed_alpha = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.alpha, num_details);
+	bool passed_beta  = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.beta,  num_details);
+	bool passed_gamma = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.gamma, num_details);
+	
+	bool passed = (passed_alpha && passed_beta && passed_gamma);
+
+	delete[] h_subdetails;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_subdetails_WRITE_TO_FILE()
+{
+	const int levels = 3;
+	const int num_details = get_lvl_idx(levels + 1);
+	const size_t bytes = num_details * sizeof(real);
+	real* h_subdetails = new real[num_details];
+
+	for (int i = 0; i < num_details; i++)
+	{
+		h_subdetails[i] = i;
+	}
+
+	SubDetails d_subdetails(levels);
+
+	copy_cuda(d_subdetails.alpha, h_subdetails, bytes);
+	copy_cuda(d_subdetails.beta , h_subdetails, bytes);
+	copy_cuda(d_subdetails.gamma, h_subdetails, bytes);
+	
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_subdetails_WRITE_TO_FILE";
+	const char* suffix  = "theta";
+
+	d_subdetails.write_to_file(dirroot, prefix, suffix);
+
+	char filename_alpha[255] = {'\0'};
+	char filename_beta[255]  = {'\0'};
+	char filename_gamma[255] = {'\0'};
+
+	sprintf(filename_alpha, "%s%s%s", prefix, "-details-alpha-", suffix);
+	sprintf(filename_beta,  "%s%s%s", prefix, "-details-beta-",  suffix);
+	sprintf(filename_gamma, "%s%s%s", prefix, "-details-gamma-", suffix);
+
+	bool passed_alpha = compare_array_with_file_real(dirroot, filename_alpha, h_subdetails, num_details);
+	bool passed_beta  = compare_array_with_file_real(dirroot, filename_beta,  h_subdetails, num_details);
+	bool passed_gamma = compare_array_with_file_real(dirroot, filename_gamma, h_subdetails, num_details);
+
+	bool passed = passed_alpha && passed_beta && passed_gamma;
+
+	delete[] h_subdetails;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_subdetails_VERIFY()
+{
+	const int levels      = 3;
+	const int num_details = get_lvl_idx(levels + 1);
+	const size_t bytes    = num_details * sizeof(real);
+	real* h_subdetails    = new real[num_details];
+
+	for (int i = 0; i < num_details; i++)
+	{
+		h_subdetails[i] = i;
+	}
+
+	SubDetails d_subdetails(levels);
+
+	copy_cuda(d_subdetails.alpha, h_subdetails, bytes);
+	copy_cuda(d_subdetails.beta,  h_subdetails, bytes);
+	copy_cuda(d_subdetails.gamma, h_subdetails, bytes);
+	
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_subdetails_VERIFY";
+	const char* suffix  = "theta";
+
+	const real actual_error   = d_subdetails.verify(dirroot, prefix, suffix);
+	const real expected_error = C(0.0);
+
+	delete[] h_subdetails;
+
+	if ( are_reals_equal(actual_error, expected_error) )
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_subdetails_CONSTRUCTOR_COPY()
+{
+	SubDetails d_subdetails;
+
+	SubDetails d_subdetails_copy(d_subdetails);
+
+	if (d_subdetails_copy.is_copy_cuda)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -392,6 +538,13 @@ void run_unit_tests_classes()
 	unit_test_scale_coeffs_VERIFY_MW();
 
 	unit_test_scale_coeffs_CONSTRUCTOR_COPY();
+
+	unit_test_subdetails_CONSTRUCTOR_DEFAULT();
+	unit_test_subdetails_CONSTRUCTOR_LEVELS();
+	unit_test_subdetails_CONSTRUCTOR_FILES();
+	unit_test_subdetails_WRITE_TO_FILE();
+	unit_test_subdetails_VERIFY();
+	unit_test_subdetails_CONSTRUCTOR_COPY();
 }
 
 #endif

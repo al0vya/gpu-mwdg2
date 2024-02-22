@@ -7,11 +7,23 @@ real compute_error
 	const int&  array_length
 )
 {
+	const size_t bytes = array_length * sizeof(real);
+
+	real* d_errors = (real*)malloc_device(bytes);
+	
 	const int num_blocks = get_num_blocks(array_length, THREADS_PER_BLOCK);
 
-	compute_error_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(d_computed, d_verified, array_length);
+	compute_error_kernel<<<num_blocks, THREADS_PER_BLOCK>>>
+	(
+		d_computed,
+		d_verified,
+		d_errors,
+		array_length
+	);
 
-	real mean_error = get_mean_from_array(d_verified, array_length);
+	real mean_error = get_mean_from_array(d_errors, array_length);
+
+	free_device(d_errors);
 
 	return mean_error;
 }

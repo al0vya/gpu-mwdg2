@@ -5,20 +5,20 @@ Details::Details
 	const SolverParams& solver_params
 )
 :
-	eta0(solver_params),
-	qx0 (solver_params),
-	qy0 (solver_params),
-	z0  (solver_params),
+	eta0(solver_params.L - 1),
+	qx0 (solver_params.L - 1),
+	qy0 (solver_params.L - 1),
+	z0  (solver_params.L - 1),
 
-	eta1x( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
-	qx1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
-	qy1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
-	z1x  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
+	eta1x( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1 ),
+	qx1x ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1 ),
+	qy1x ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1 ),
+	z1x  ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1 ),
 	
-	eta1y( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
-	qx1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
-	qy1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
-	z1y  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams() ),
+	eta1y( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1 ),
+	qx1y ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1 ),
+	qy1y ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1 ),
+	z1y  ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1 ),
 
 	solver_type(solver_params.solver_type)
 {}
@@ -26,23 +26,24 @@ Details::Details
 Details::Details
 (
 	const SolverParams& solver_params,
-	const char*         dirroot
+	const char*         dirroot,
+	const char*         prefix
 )
 :
-	eta0( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "eta0-mw" : "eta0-hw"),
-	qx0 ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "qx0-mw"  : "qx0-hw"),
-	qy0 ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "qy0-mw"  : "qy0-hw"),
-	z0  ( solver_params, dirroot, (solver_params.solver_type == MWDG2) ? "z0-mw"   : "z0-hw"),
+	eta0( solver_params.L - 1, dirroot, prefix, (solver_params.solver_type == MWDG2) ? "eta0-mw" : "eta0-hw"),
+	qx0 ( solver_params.L - 1, dirroot, prefix, (solver_params.solver_type == MWDG2) ? "qx0-mw"  : "qx0-hw"),
+	qy0 ( solver_params.L - 1, dirroot, prefix, (solver_params.solver_type == MWDG2) ? "qy0-mw"  : "qy0-hw"),
+	z0  ( solver_params.L - 1, dirroot, prefix, (solver_params.solver_type == MWDG2) ? "z0-mw"   : "z0-hw"),
 	
-	eta1x( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "eta1x-mw"),
-	qx1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "qx1x-mw" ),
-	qy1x ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "qy1x-mw" ),
-	z1x  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "z1x-mw"  ),
-	
-	eta1y( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "eta1y-mw"),
-	qx1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "qx1y-mw" ),
-	qy1y ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "qy1y-mw" ),
-	z1y  ( (solver_params.solver_type == MWDG2) ? solver_params : SolverParams(), dirroot, "z1y-mw"  ),
+	eta1x( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1, dirroot, prefix, "eta1x-mw"),
+	qx1x ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1, dirroot, prefix, "qx1x-mw" ),
+	qy1x ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1, dirroot, prefix, "qy1x-mw" ),
+	z1x  ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1, dirroot, prefix, "z1x-mw"  ),
+
+	eta1y( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1, dirroot, prefix, "eta1y-mw"),
+	qx1y ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1, dirroot, prefix, "qx1y-mw" ),
+	qy1y ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1, dirroot, prefix, "qy1y-mw" ),
+	z1y  ( (solver_params.solver_type == MWDG2) ? solver_params.L - 1 : -1, dirroot, prefix, "z1y-mw"  ),
 	
 	solver_type(solver_params.solver_type)
 {}

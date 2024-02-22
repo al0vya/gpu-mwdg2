@@ -12,5 +12,6 @@ void compute_error_kernel
 (
 	real* d_computed,
 	real* d_verified,
+	real* d_errors,
 	int   array_length
 );

@@ -280,6 +280,12 @@ real ScaleCoefficients::verify
 		const real error_qy1y  = compute_error(this->qy1y,  d_qy1y_verified,  num_scale_coeffs);
 		const real error_z1y   = compute_error(this->z1y,   d_z1y_verified,   num_scale_coeffs);
 
+		const real error_0  = (error_eta0  + error_qx0  + error_qy0  + error_z0)  / C(4.0);
+		const real error_1x = (error_eta1x + error_qx1x + error_qy1x + error_z1x) / C(4.0);
+		const real error_1y = (error_eta1y + error_qx1y + error_qy1y + error_z1y) / C(4.0);
+
+		const real error = (error_0 + error_1x + error_1y) / C(3.0);
+
 		free_device(d_eta0_verified);
 		free_device(d_qx0_verified);
 		free_device(d_qy0_verified);
@@ -292,12 +298,6 @@ real ScaleCoefficients::verify
 		free_device(d_qx1y_verified);
 		free_device(d_qy1y_verified);
 		free_device(d_z1y_verified);
-
-		const real error_0  = (error_eta0  + error_qx0  + error_qy0  + error_z0)  / C(4.0);
-		const real error_1x = (error_eta1x + error_qx1x + error_qy1x + error_z1x) / C(4.0);
-		const real error_1y = (error_eta1y + error_qx1y + error_qy1y + error_z1y) / C(4.0);
-
-		const real error = (error_0 + error_1x + error_1y) / C(3.0);
 
 		return error;
 	}

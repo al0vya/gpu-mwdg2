@@ -14,7 +14,8 @@ public:
 	Details
 	(
 		const SolverParams& solver_params,
-		const char*         dirroot
+		const char*         dirroot,
+		const char*         prefix
 	);
 
 	void write_to_file

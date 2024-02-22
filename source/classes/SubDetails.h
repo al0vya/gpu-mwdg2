@@ -16,14 +16,15 @@ public:
 
 	SubDetails
 	(
-		const SolverParams& solver_params
+		const int& levels
 	);
 
 	SubDetails
 	(
-		const SolverParams& solver_params,
-		const char*         dirroot,
-		const char*         suffix
+		const int&  levels,
+		const char* dirroot,
+		const char* prefix,
+		const char* suffix
 	);
 
 	SubDetails
