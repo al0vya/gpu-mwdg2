@@ -525,6 +525,16 @@ void unit_test_subdetails_CONSTRUCTOR_COPY()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_details_CONSTRUCTOR_LEVELS_HW()
+{
+	SolverParams solver_params;
+
+	solver_params.L = 1;
+	solver_params.solver_type = HWFV1;
+
+
+}
+
 void run_unit_tests_classes()
 {
 	unit_test_scale_coeffs_CONSTRUCTOR_LEVELS_HW();
@@ -545,6 +555,16 @@ void run_unit_tests_classes()
 	unit_test_subdetails_WRITE_TO_FILE();
 	unit_test_subdetails_VERIFY();
 	unit_test_subdetails_CONSTRUCTOR_COPY();
+
+	unit_test_details_CONSTRUCTOR_LEVELS_HW();
+	//unit_test_details_CONSTRUCTOR_FILES_HW();
+	//unit_test_details_WRITE_TO_FILE_HW();
+	//unit_test_details_VERIFY_HW();
+
+	//unit_test_details_CONSTRUCTOR_LEVELS_MW();
+	//unit_test_details_CONSTRUCTOR_FILES_MW();
+	//unit_test_details_WRITE_TO_FILE_MW();
+	//unit_test_details_VERIFY_MW();
 }
 
 #endif

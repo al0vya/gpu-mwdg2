@@ -24,6 +24,14 @@ void unit_test_subdetails_WRITE_TO_FILE();
 void unit_test_subdetails_VERIFY();
 void unit_test_subdetails_CONSTRUCTOR_COPY();
 
-void unit_test_details_CONSTRUCTOR_LEVELS();
+void unit_test_details_CONSTRUCTOR_LEVELS_HW();
+void unit_test_details_CONSTRUCTOR_FILES_HW();
+void unit_test_details_WRITE_TO_FILE_HW();
+void unit_test_details_VERIFY_HW();
+
+void unit_test_details_CONSTRUCTOR_LEVELS_MW();
+void unit_test_details_CONSTRUCTOR_FILES_MW();
+void unit_test_details_WRITE_TO_FILE_MW();
+void unit_test_details_VERIFY_MW();
 
 void run_unit_tests_classes();
