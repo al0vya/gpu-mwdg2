@@ -55,6 +55,7 @@ def write_par_file(
             "sim_time      22.5\n" +
             f"{solver}\n"
             "cuda\n" +
+            "monai\n" +
             "refine_wall\n" +
             "ref_thickness 16\n" +
             "wall_height   0.5"

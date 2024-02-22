@@ -1,7 +1,8 @@
 target_sources(
 	    gpu-mwdg2
 		PRIVATE
-		run_unit_tests.cu
+		generate_data_unit_tests.cu
+        run_unit_tests.cu
         unit_tests_classes.cu
         unit_tests_output.cu
         unit_tests_input.cu

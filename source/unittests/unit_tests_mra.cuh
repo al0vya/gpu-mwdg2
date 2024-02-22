@@ -27,8 +27,6 @@ void unit_test_encode_detail_alpha_1y();
 void unit_test_encode_detail_beta_1y();
 void unit_test_encode_detail_gamma_1y();
 
-void unit_test_preflag_topo_hw();
-
-void unit_test_get_mean_from_array();
+void unit_test_preflag_topo_HW();
 
 void run_unit_tests_mra();

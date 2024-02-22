@@ -191,9 +191,15 @@ void run_simulation
 	maxes = get_max_scale_coeffs(d_assem_sol, d_eta_temp);
 
 	#if _RUN_UNIT_TESTS
-	d_scale_coeffs.write_to_file("res", "unit_test_preflag_topo-input");
-	d_details.write_to_file("res", "unit_test_preflag_topo-input");
-	write_hierarchy_array_bool("res", "unit_test_preflag_topo-input-preflagged-details", d_preflagged_details, solver_params.L - 1);
+	generate_data_unit_test_preflag_topo
+	(
+		plot_params.dirroot,
+		"input",
+		d_scale_coeffs,
+		d_details,
+		d_preflagged_details,
+		solver_params
+	);
 	#endif
 
 	preflag_topo
@@ -208,9 +214,15 @@ void run_simulation
 	);
 
 	#if _RUN_UNIT_TESTS
-	d_scale_coeffs.write_to_file("res", "unit_test_preflag_topo-output");
-	d_details.write_to_file("res", "unit_test_preflag_topo-output");
-	write_hierarchy_array_bool("res", "unit_test_preflag_topo-output-preflagged-details", d_preflagged_details, solver_params.L - 1);
+	generate_data_unit_test_preflag_topo
+	(
+		plot_params.dirroot,
+		"output",
+		d_scale_coeffs,
+		d_details,
+		d_preflagged_details,
+		solver_params
+	);
 	#endif
 
 	// main solver loop

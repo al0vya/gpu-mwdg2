@@ -171,6 +171,7 @@ class SimulationMonai:
         with open(self.input_file, 'w') as fp:
             params = (
                 f"{self.solver}\n" +
+                "monai\n" +
                 "cuda\n" +
                 "raster_out\n" +
                 "cumulative\n" +

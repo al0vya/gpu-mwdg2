@@ -337,6 +337,7 @@ def write_par_file(solver):
     params = (
         f"{solver}\n" +
         "cuda\n" +
+        "oregon-seaside\n" +
         "cumulative\n" +
         "raster_out\n" +
         "max_ref_lvl   12\n" +

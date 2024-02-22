@@ -52,6 +52,10 @@
 // Sorting
 #include "zorder/get_sorting_indices.cuh"
 
+// Unit tests
+#include "unittests/generate_data_unit_tests.cuh"
+#include "unittests/run_unit_tests.cuh"
+
 void run_simulation
 (
 	int    argc,

@@ -1,5 +1,4 @@
 #include "run_simulation.cuh"
-#include "unittests/run_unit_tests.cuh"
 
 int main
 (

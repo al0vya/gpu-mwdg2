@@ -3,6 +3,7 @@ target_sources(
 		PRIVATE
 		Details.cu
 		ScaleCoefficients.cu
+		SimulationParams.cpp
 		SolverParams.cu
 		SubDetails.cu
 	)

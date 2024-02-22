@@ -227,7 +227,7 @@ void unit_test_encode_detail_gamma_1y()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_preflag_topo_hw()
+void unit_test_preflag_topo_HW()
 {
 	// monai.par file looks like:
 	// hwfv1
@@ -251,11 +251,11 @@ void unit_test_preflag_topo_hw()
 	// stagefile     monai.stage
 	
 	const char* dirroot = "unittestdata/unit_test_preflag_topo_hw";
-	const char* prefix  = "unit_test_preflag_topo_hw";
+	const char* prefix  = "unit_test_preflag_topo_HW";
 	
 	Maxes             maxes = { C(1.0), C(1.0), C(1.0), C(1.0), C(1.0) };
 	SolverParams      solver_params("unittestdata/unit_test_preflag_topo_hw/monai.par");
-	SimulationParams  sim_params{};
+	SimulationParams  sim_params;
 	ScaleCoefficients d_scale_coeffs(solver_params, dirroot, prefix);
 	Details           d_details     (solver_params, dirroot, prefix);
 	bool*             d_preflagged_details = read_hierarchy_array_bool(solver_params.L - 1, dirroot, "input-preflagged-details");
@@ -272,8 +272,8 @@ void unit_test_preflag_topo_hw()
 		first_timestep
 	);
 
-	const real error_scale   = d_scale_coeffs.verify(dirroot, "output");
-	const real error_details = d_details.verify(dirroot, "output");
+	const real error_scale   = d_scale_coeffs.verify(dirroot, "unit_test_preflag_topo_HW-output");
+	const real error_details = d_details.verify(dirroot, "unit_test_preflag_topo_HW-output");
 
 	const real epsilon = C(1e-5);
 
@@ -301,7 +301,7 @@ void run_unit_tests_mra()
 	unit_test_encode_detail_beta_1y();
 	unit_test_encode_detail_gamma_1y();
 
-	//unit_test_preflag_topo_hw();
+	//unit_test_preflag_topo_HW();
 }
 
 #endif

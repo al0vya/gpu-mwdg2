@@ -12,6 +12,7 @@ massint       0.1
 sim_time      22.5
 mwdg2
 cuda
+monai
 refine_wall
 ref_thickness 16
 wall_height   0.5

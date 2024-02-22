@@ -65,7 +65,7 @@ void unit_test_write_hierarchy_array_bool()
 		return;
 	}
 
-	bool passed = false;
+	bool passed = true;
 
 	int host_value = 0;
 	int file_value = 0;
@@ -76,11 +76,7 @@ void unit_test_write_hierarchy_array_bool()
 		
 		fscanf(fp, "%d", &file_value);
 
-		if (host_value == file_value)
-		{
-			passed = true;
-		}
-		else
+		if (host_value != file_value)
 		{
 			passed = false;
 			break;
