@@ -102,5 +102,9 @@ real SubDetails::verify
 	free_device(d_beta );
 	free_device(d_gamma);
 
-	return (error_alpha + error_beta + error_gamma) / C(3.0);
+	// mean
+	// return (error_alpha + error_beta + error_gamma) / C(3.0);
+
+	// max
+	return max( error_alpha, max(error_beta, error_gamma) );
 }

@@ -17,11 +17,11 @@ Maxes get_max_scale_coeffs
 		d_eta_temp
 	);
 
-	maxes.eta = get_max_from_array(d_eta_temp,      d_assem_sol.length);
-	maxes.h   = get_max_from_array(d_assem_sol.h0,  d_assem_sol.length);
-	maxes.qx  = get_max_from_array(d_assem_sol.qx0, d_assem_sol.length);
-	maxes.qy  = get_max_from_array(d_assem_sol.qx0, d_assem_sol.length);
-	maxes.z   = get_max_from_array(d_assem_sol.z0,  d_assem_sol.length);
+	maxes.eta = max( C(1.0), get_max_from_array(d_eta_temp,      d_assem_sol.length) );
+	maxes.h   = max( C(1.0), get_max_from_array(d_assem_sol.h0,  d_assem_sol.length) );
+	maxes.qx  = max( C(1.0), get_max_from_array(d_assem_sol.qx0, d_assem_sol.length) );
+	maxes.qy  = max( C(1.0), get_max_from_array(d_assem_sol.qx0, d_assem_sol.length) );
+	maxes.z   = max( C(1.0), get_max_from_array(d_assem_sol.z0,  d_assem_sol.length) );
 
 	return maxes;
 }

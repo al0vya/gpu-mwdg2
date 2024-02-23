@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "../classes/SolverParams.h"
 #include "../utilities/get_lvl_idx.cuh"
 #include "../utilities/compute_error.cuh"

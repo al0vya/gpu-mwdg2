@@ -47,6 +47,7 @@ void generate_data_unit_test_encoding_all
 	Details           d_details,
 	real*             d_norm_details,
 	bool*             d_sig_details,
+	bool*             d_preflagged_details,
 	SolverParams      solver_params,
 	const int&        timestep
 )
@@ -59,7 +60,8 @@ void generate_data_unit_test_encoding_all
 	
 	d_scale_coeffs.write_to_file( dirroot, prefix.c_str() );
 	d_details.write_to_file( dirroot, prefix.c_str() );
-	write_hierarchy_array_real(dirroot, (prefix + "-norm-details").c_str(), d_norm_details, solver_params.L - 1);
-	write_hierarchy_array_bool(dirroot, (prefix + "-sig-details").c_str(),  d_sig_details,  solver_params.L - 1);
+	write_hierarchy_array_real(dirroot, (prefix + "-norm-details").c_str(),       d_norm_details,        solver_params.L - 1);
+	write_hierarchy_array_bool(dirroot, (prefix + "-sig-details").c_str(),        d_sig_details,         solver_params.L - 1);
+	write_hierarchy_array_bool(dirroot, (prefix + "-preflagged-details").c_str(), d_preflagged_details,  solver_params.L - 1);
 
 }

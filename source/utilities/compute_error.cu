@@ -21,9 +21,9 @@ real compute_error
 		array_length
 	);
 
-	real mean_error = get_mean_from_array(d_errors, array_length);
+	real max_error = get_max_from_array(d_errors, array_length);
 
 	free_device(d_errors);
 
-	return mean_error;
+	return max_error;
 }

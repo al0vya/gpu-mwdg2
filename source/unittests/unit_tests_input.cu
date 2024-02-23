@@ -145,7 +145,7 @@ void unit_test_read_hierarchy_array_bool()
 
 	copy_cuda(h_hierarchy, d_hierarchy, bytes);
 
-	bool passed = false;
+	bool passed = true;
 
 	bool dummy = 0;
 
@@ -153,11 +153,7 @@ void unit_test_read_hierarchy_array_bool()
 	{
 		dummy = (i % 2 == 0);
 		
-		if ( dummy == h_hierarchy[i] )
-		{
-			passed = true;
-		}
-		else
+		if ( dummy != h_hierarchy[i] )
 		{
 			passed = false;
 			break;
