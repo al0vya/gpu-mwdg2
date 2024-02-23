@@ -1,11 +1,5 @@
 #include "run_simulation.cuh"
-// Conflict?
 
-// Comment.
-// Another.
-// Loads.
-// Stuff.
-// Longer.
 void run_simulation
 (
 	int    argc,
