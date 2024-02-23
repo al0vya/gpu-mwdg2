@@ -1,5 +1,6 @@
 #include "run_simulation.cuh"
 // Comment.
+// Another.
 void run_simulation
 (
 	int    argc,
