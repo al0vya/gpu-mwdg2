@@ -7,10 +7,7 @@
 #include "../types/HierarchyIndex.h"
 
 #include "encode_and_thresh_topo.cuh"
-// More refactoring.
-// Another dummy comment.
-// Here's another change.
-// More changes.
+
 __host__
 void preflag_topo
 (
