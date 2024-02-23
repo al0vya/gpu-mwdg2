@@ -93,7 +93,11 @@ real Details::verify
 		const real error_qy0  = this->qy0.verify(dirroot, prefix, "qy0-hw");
 		const real error_z0   = this->z0.verify(dirroot, prefix, "z0-hw");
 
-		return (error_eta0 + error_qx0 + error_qy0 + error_z0) / C(4.0);
+		// mean
+		// return (error_eta0 + error_qx0 + error_qy0 + error_z0) / C(4.0);
+
+		// max
+		return std::max({error_eta0, error_qx0, error_qy0, error_z0});
 	}
 	else if (this->solver_type == MWDG2)
 	{
@@ -112,11 +116,18 @@ real Details::verify
 		const real error_qy1y  = this->qy1y.verify(dirroot, prefix, "qy1y-mw");
 		const real error_z1y   = this->z1y.verify(dirroot, prefix, "z1y-mw");
 
-		const real error_0  = (error_eta0  + error_qx0  + error_qy0  + error_z0 ) / C(4.0);
-		const real error_1x = (error_eta1x + error_qx1x + error_qy1x + error_z1x) / C(4.0);
-		const real error_1y = (error_eta1y + error_qx1y + error_qy1y + error_z1y) / C(4.0);
+		// mean
+		// const real error_0  = (error_eta0  + error_qx0  + error_qy0  + error_z0 ) / C(4.0);
+		// const real error_1x = (error_eta1x + error_qx1x + error_qy1x + error_z1x) / C(4.0);
+		// const real error_1y = (error_eta1y + error_qx1y + error_qy1y + error_z1y) / C(4.0);
+		// const real error = error_0 + error_1x + error_1y) / C(3.0);
 
-		return (error_0 + error_1x + error_1y) / C(3.0);
+		// max
+		const real error = std::max({error_eta0,  error_qx0,  error_qy0,  error_z0,
+                                     error_eta1x, error_qx1x, error_qy1x, error_z1x,
+                                     error_eta1y, error_qx1y, error_qy1y, error_z1y});
+
+		return error;
 	}
 	else
 	{

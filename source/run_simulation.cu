@@ -287,6 +287,7 @@ void run_simulation
 				d_details,
 				d_norm_details,
 				d_sig_details,
+				d_preflagged_details,
 				solver_params,
 				timestep
 			);
@@ -313,6 +314,7 @@ void run_simulation
 				d_details,
 				d_norm_details,
 				d_sig_details,
+				d_preflagged_details,
 				solver_params,
 				timestep
 			);

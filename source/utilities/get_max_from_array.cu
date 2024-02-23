@@ -54,7 +54,7 @@ real get_max_from_array
 		sizeof(real)
 	);
 
-	real max_from_array = max( *h_max_out, C(1.0) );
+	real max_from_array = *h_max_out;
 
 	free_device(d_temp_storage);
 	free_device(d_max_out);

@@ -322,6 +322,44 @@ void unit_test_encoding_all_TIMESTEP_1_HW()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_encoding_all_TIMESTEP_2_HW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_encoding_all_TIMESTEP_2_HW";
+	const std::string par_file = "unit_tests_HW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	Maxes             maxes = { C(1.0), C(1.0), C(1.0), C(1.0), C(1.0) };
+	SolverParams      solver_params(input_filename.c_str());
+	ScaleCoefficients d_scale_coeffs(solver_params, dirroot.c_str(), (prefix + "-input").c_str());
+	Details           d_details     (solver_params, dirroot.c_str(), (prefix + "-input").c_str());
+	real*             d_norm_details       = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
+	bool*             d_sig_details        = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	bool*             d_preflagged_details = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-preflagged-details").c_str() );
+	bool              for_nghbrs           = false;
+	
+	encoding_all
+	(
+		d_scale_coeffs,
+		d_details,
+		d_norm_details,
+		d_sig_details,
+		d_preflagged_details,
+		maxes,
+		solver_params,
+		for_nghbrs
+	);
+
+	const real error_scale   = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+
+	const real epsilon = C(1e-5);
+
+	if (error_scale < epsilon && error_details < epsilon)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void run_unit_tests_mra()
 {
 	unit_test_encode_scale();
@@ -343,8 +381,8 @@ void run_unit_tests_mra()
 	unit_test_encode_detail_gamma_1y();
 
 	unit_test_preflag_topo_HW();
-
 	unit_test_encoding_all_TIMESTEP_1_HW();
+	unit_test_encoding_all_TIMESTEP_2_HW();
 }
 
 #endif

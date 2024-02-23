@@ -24,6 +24,7 @@ void generate_data_unit_test_encoding_all
 	Details           d_details,
 	real*             d_norm_details,
 	bool*             d_sig_details,
+	bool*             d_preflagged_details,
 	SolverParams      solver_params,
 	const int&        timestep
 );

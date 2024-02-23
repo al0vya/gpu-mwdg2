@@ -7,7 +7,10 @@ target_sources(
 		get_num_blocks.cpp
 		are_reals_equal.cpp
 		compare_array_on_device_vs_host_real.cu
+		compare_array_with_file_bool.cpp
 		compare_array_with_file_real.cpp
+		compare_d_array_with_file_bool.cu
+		compare_d_array_with_file_real.cu
 		compute_error.cu
         compute_error_kernel.cu
 	)
