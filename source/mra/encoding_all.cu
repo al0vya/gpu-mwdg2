@@ -19,7 +19,7 @@ void encoding_all
 	{
 	    int num_threads = 1 << (2 * level);
 		int num_blocks  = get_num_blocks(num_threads, THREADS_PER_BLOCK);
-
+		
 		encode_and_thresh_flow<false><<<num_blocks, THREADS_PER_BLOCK>>>
 		(
 			d_scale_coeffs,

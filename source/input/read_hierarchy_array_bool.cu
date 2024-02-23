@@ -20,6 +20,13 @@ bool* read_hierarchy_array_bool
 
 	FILE* fp = fopen(fullpath, "r");
 
+	if (NULL == fp)
+	{
+		fprintf(stderr, "Error opening file %s for reading hierarchy array.\n", fullpath);
+		fclose(fp);
+		exit(-1);
+	}
+
 	bool dummy = 0;
 
 	for (int i = 0; i < num_all_elems; i++)

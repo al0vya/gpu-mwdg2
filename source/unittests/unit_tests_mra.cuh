@@ -2,9 +2,11 @@
 
 #include <cmath>
 #include <cstdio>
+#include <string>
 
 #include "../types/real.h"
 #include "../mra/preflag_topo.cuh"
+#include "../mra/encoding_all.cuh"
 #include "../utilities/are_reals_equal.h"
 #include "../input/read_hierarchy_array_bool.cuh"
 #include "../output/write_hierarchy_array_bool.cuh"
@@ -28,5 +30,7 @@ void unit_test_encode_detail_beta_1y();
 void unit_test_encode_detail_gamma_1y();
 
 void unit_test_preflag_topo_HW();
+
+void unit_test_encoding_all_TIMESTEP_1_HW();
 
 void run_unit_tests_mra();

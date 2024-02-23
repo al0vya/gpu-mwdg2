@@ -68,7 +68,7 @@ void run_simulation
 	bool    for_nghbrs      = false;
 	bool    rkdg2           = false;
 	float   avg_cuda_time   = 0.0f;
-	int     steps           = 0;
+	int     timestep        = 1;
 	real    compression     = C(0.0);
 
 	NodalValues       d_nodal_vals      (interface_dim);
@@ -278,6 +278,20 @@ void run_simulation
 		{
 		    for_nghbrs = false;
 		    
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_encoding_all
+			(
+				plot_params.dirroot,
+				"input",
+				d_scale_coeffs,
+				d_details,
+				d_norm_details,
+				d_sig_details,
+				solver_params,
+				timestep
+			);
+			#endif
+
 		    encoding_all
 		    (
 		    	d_scale_coeffs,
@@ -290,6 +304,20 @@ void run_simulation
 		    	for_nghbrs
 		    );
 		    
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_encoding_all
+			(
+				plot_params.dirroot,
+				"output",
+				d_scale_coeffs,
+				d_details,
+				d_norm_details,
+				d_sig_details,
+				solver_params,
+				timestep
+			);
+			#endif
+
 		    get_reg_tree
 		    (
 		    	d_sig_details,
@@ -642,18 +670,27 @@ void run_simulation
 			);
 		}
 
-		if (steps++ % 10000 == 0)
+		if (timestep % 10000 == 1)
 		{
 			compression = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
 
 			printf
 			(
-				"Elements: %d, compression: %f%%, time step: %.15f, steps: %d, sim time: %f\n",
-				d_assem_sol.length, compression, dt, steps, current_time
+				"Elements: %d, compression: %f%%, time step: %f, timestep: %d, sim time: %f\n",
+				d_assem_sol.length, compression, dt, timestep, current_time
 			);
 		}
+
+		timestep++;
 		
  		first_timestep = false;
+
+		#if _RUN_UNIT_TESTS
+		if (timestep > 2)
+		{
+			break;
+		}
+		#endif
 	}
 
 	end = clock();
@@ -662,8 +699,8 @@ void run_simulation
 
 	printf
 	(
-		"Elements: %d, compression: %f%%, time step: %.15f, steps: %d, sim time: %f\n",
-		d_assem_sol.length, compression, dt, steps, current_time
+		"Elements: %d, compression: %f%%, time step: %f, timestep: %d, sim time: %f\n",
+		d_assem_sol.length, compression, dt, timestep, current_time
 	);
 	
 	run_time = (real)(end - start) / CLOCKS_PER_SEC;
