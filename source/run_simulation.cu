@@ -2,6 +2,7 @@
 // Comment.
 // Another.
 // Loads.
+
 void run_simulation
 (
 	int    argc,
