@@ -1,7 +1,5 @@
 #include "run_simulation.cuh"
-// Refactoring your master branch.
-// THIS IS A BIG CHANGE!
-// HERE'S ANOTHER BIG CHANGE!
+
 void run_simulation
 (
 	int    argc,
