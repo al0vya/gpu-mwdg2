@@ -8,6 +8,7 @@
 
 #include "encode_and_thresh_topo.cuh"
 // More refactoring.
+// Another dummy comment.
 __host__
 void preflag_topo
 (
