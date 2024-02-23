@@ -12,8 +12,8 @@ void preflag_topo
 	int                first_time_step
 )
 {
-	// comment
 	// another
+	// comment
 	for (int level = solver_params.L - 1; level >= 0; level--)
 	{	
 		int num_threads = 1 << (2 * level);
