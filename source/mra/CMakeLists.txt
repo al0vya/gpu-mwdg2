@@ -3,10 +3,13 @@ target_sources(
 		PRIVATE
 		decoding.cu
 		decoding_all.cu
-		encode_and_thresh_flow.cu
+		encode_flow_kernel_hw.cu
+		encode_flow_kernel_single_block_hw.cu
+		encode_flow_kernel_mw.cu
+		encode_flow_kernel_single_block_mw.cu
+		encode_flow.cu
 		encode_topography_kernel_hw.cu
 		encode_topography_kernel_mw.cu
-		encode_flow.cu
 		extra_significance.cu
 		get_max_scale_coeffs.cu
 		get_modal_values.cu

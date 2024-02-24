@@ -22,7 +22,7 @@
 #include "encode_details.cuh"
 
 __global__
-void encode_flow_kernel
+void encode_flow_kernel_single_block_hw
 (
 	ScaleCoefficients d_scale_coeffs,
 	Details           d_details,

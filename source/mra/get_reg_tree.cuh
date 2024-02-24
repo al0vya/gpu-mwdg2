@@ -14,6 +14,6 @@
 __host__
 void get_reg_tree
 (
-	bool*            d_sig_details,
+	bool*        d_sig_details,
 	SolverParams solver_params
 );

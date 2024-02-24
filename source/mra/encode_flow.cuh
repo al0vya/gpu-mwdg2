@@ -8,8 +8,10 @@
 
 #include "../utilities/get_num_blocks.h"
 
-#include "encode_and_thresh_flow.cuh"
-
+#include "encode_flow_kernel_hw.cuh"
+#include "encode_flow_kernel_single_block_hw.cuh"
+#include "encode_flow_kernel_mw.cuh"
+#include "encode_flow_kernel_single_block_mw.cuh"
 
 __host__
 void encode_flow
