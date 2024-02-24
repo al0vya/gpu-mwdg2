@@ -1,6 +1,6 @@
 #include "compare_array_on_device_vs_host_real.cuh"
 
-bool compare_array_on_device_vs_host_real
+real compare_array_on_device_vs_host_real
 (
 	real*      h_array,
 	real*      d_array,
@@ -12,18 +12,23 @@ bool compare_array_on_device_vs_host_real
 
 	copy_cuda(h_array_copied, d_array, bytes);
 
-	bool passed = true;
+	real error      = C(0.0);
+	real max_error  = C(0.0);
+	real host_value = C(0.0);
+	real file_value = C(0.0);
 
 	for (int i = 0; i < array_length; i++)
 	{
-		if ( !are_reals_equal( h_array[i], h_array_copied[i] ) )
-		{
-			passed = false;
-			break;
-		}
+		host_value = h_array[i];
+
+		file_value = h_array_copied[i];
+
+		error = std::abs(host_value - file_value);
+
+		max_error = std::max(max_error, error);
 	}
 
 	delete[] h_array_copied;
 
-	return passed;
+	return max_error;
 }

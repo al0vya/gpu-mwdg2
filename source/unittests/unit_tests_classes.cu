@@ -56,12 +56,20 @@ void unit_test_scale_coeffs_CONSTRUCTOR_FILES_HW()
 		h_scale_coeffs[i] = i;
 	}
 
-	bool passed_eta0 = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta0, array_length);
-	bool passed_qx0  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qx0,  array_length);
-	bool passed_qy0  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qy0,  array_length);
-	bool passed_z0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.z0,   array_length);
+	const real error_eta0  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta0,  array_length);
+	const real error_qx0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qx0,   array_length);
+	const real error_qy0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qy0,   array_length);
+	const real error_z0    = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.z0,    array_length);
+	
+	const real expected_error = C(1e-6);
 
-	bool passed = (passed_eta0 && passed_qx0 && passed_qy0 && passed_z0);
+	bool passed = 
+	(
+		are_reals_equal(error_eta0,  expected_error) &&
+		are_reals_equal(error_qx0,   expected_error) &&
+		are_reals_equal(error_qy0,   expected_error) &&
+		are_reals_equal(error_z0,    expected_error)
+	);
 
 	delete[] h_scale_coeffs;
 
@@ -80,17 +88,17 @@ void unit_test_scale_coeffs_WRITE_TO_FILE_HW()
 
 	const int array_length = get_lvl_idx(solver_params.L + 1);
 	const size_t bytes     = array_length * sizeof(real);
-	real* h_scale_coeff    = new real[array_length];
+	real* h_scale_coeffs    = new real[array_length];
 
 	for (int i = 0; i < array_length; i++)
 	{
-		h_scale_coeff[i] = i;
+		h_scale_coeffs[i] = i;
 	}
 
-	copy_cuda(d_scale_coeffs.eta0, h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qx0,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qy0,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.z0,   h_scale_coeff, bytes);
+	copy_cuda(d_scale_coeffs.eta0, h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qx0,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qy0,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.z0,   h_scale_coeffs, bytes);
 
 	const char* dirroot = "unittestdata";
 	const char* prefix  = "unit_test_scale_coeffs_WRITE_TO_FILE_HW";
@@ -107,14 +115,22 @@ void unit_test_scale_coeffs_WRITE_TO_FILE_HW()
 	sprintf(filename_qy0,  "%s%s", prefix, "-scale-coeffs-qy0-hw");
 	sprintf(filename_z0,   "%s%s", prefix, "-scale-coeffs-z0-hw");
 
-	bool passed_eta0 = compare_array_with_file_real(dirroot, filename_eta0, h_scale_coeff, array_length);
-	bool passed_qx0  = compare_array_with_file_real(dirroot, filename_qx0,  h_scale_coeff, array_length);
-	bool passed_qy0  = compare_array_with_file_real(dirroot, filename_qy0,  h_scale_coeff, array_length);
-	bool passed_z0   = compare_array_with_file_real(dirroot, filename_z0,   h_scale_coeff, array_length);
+	const real error_eta0 = compare_array_with_file_real(dirroot, filename_eta0, h_scale_coeffs, array_length);
+	const real error_qx0  = compare_array_with_file_real(dirroot, filename_qx0,  h_scale_coeffs, array_length);
+	const real error_qy0  = compare_array_with_file_real(dirroot, filename_qy0,  h_scale_coeffs, array_length);
+	const real error_z0   = compare_array_with_file_real(dirroot, filename_z0,   h_scale_coeffs, array_length);
 
-	bool passed = (passed_eta0 && passed_qx0 && passed_qy0 && passed_z0);
+	const real expected_error = C(1e-6);
 
-	delete[] h_scale_coeff;
+	bool passed = 
+	(
+		are_reals_equal(error_eta0, expected_error) &&
+		are_reals_equal(error_qx0,  expected_error) &&
+		are_reals_equal(error_qy0,  expected_error) &&
+		are_reals_equal(error_z0,   expected_error)
+	);
+
+	delete[] h_scale_coeffs;
 
 	if (passed)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
@@ -131,17 +147,17 @@ void unit_test_scale_coeffs_VERIFY_HW()
 
 	const int array_length = get_lvl_idx(solver_params.L + 1);
 	const size_t bytes     = array_length * sizeof(real);
-	real* h_scale_coeff    = new real[array_length];
+	real* h_scale_coeffs    = new real[array_length];
 
 	for (int i = 0; i < array_length; i++)
 	{
-		h_scale_coeff[i] = i;
+		h_scale_coeffs[i] = i;
 	}
 
-	copy_cuda(d_scale_coeffs.eta0, h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qx0,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qy0,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.z0,   h_scale_coeff, bytes);
+	copy_cuda(d_scale_coeffs.eta0, h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qx0,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qy0,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.z0,   h_scale_coeffs, bytes);
 	
 	const char* dirroot = "unittestdata";
 	const char* prefix  = "unit_test_scale_coeffs_VERIFY_HW";
@@ -149,7 +165,7 @@ void unit_test_scale_coeffs_VERIFY_HW()
 	const real actual_error   = d_scale_coeffs.verify(dirroot, prefix);
 	const real expected_error = C(0.0);
 
-	delete[] h_scale_coeff;
+	delete[] h_scale_coeffs;
 
 	if ( are_reals_equal(actual_error, expected_error) )
 		TEST_MESSAGE_PASSED_ELSE_FAILED
@@ -207,24 +223,35 @@ void unit_test_scale_coeffs_CONSTRUCTOR_FILES_MW()
 		h_scale_coeffs[i] = i;
 	}
 
-	bool passed_eta0  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta0,  array_length);
-	bool passed_qx0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qx0,   array_length);
-	bool passed_qy0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qy0,   array_length);
-	bool passed_z0    = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.z0,    array_length);
-	bool passed_eta1x = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta1x, array_length);
-	bool passed_qx1x  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qx1x,  array_length);
-	bool passed_qy1x  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qy1x,  array_length);
-	bool passed_z1x   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.z1x,   array_length);
-	bool passed_eta1y = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta1y, array_length);
-	bool passed_qx1y  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qx1y,  array_length);
-	bool passed_qy1y  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qy1y,  array_length);
-	bool passed_z1y   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.z1y,   array_length);
+	const real error_eta0  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta0,  array_length);
+	const real error_qx0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qx0,   array_length);
+	const real error_qy0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qy0,   array_length);
+	const real error_z0    = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.z0,    array_length);
+	const real error_eta1x = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta1x, array_length);
+	const real error_qx1x  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qx1x,  array_length);
+	const real error_qy1x  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qy1x,  array_length);
+	const real error_z1x   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.z1x,   array_length);
+	const real error_eta1y = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta1y, array_length);
+	const real error_qx1y  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qx1y,  array_length);
+	const real error_qy1y  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qy1y,  array_length);
+	const real error_z1y   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.z1y,   array_length);
 
-	bool passed =
+	const real expected_error = C(1e-6);
+
+	bool passed = 
 	(
-		passed_eta0  && passed_qx0  && passed_qy0  && passed_z0 &&
-		passed_eta1x && passed_qx1x && passed_qy1x && passed_z1x &&
-		passed_eta1y && passed_qx1y && passed_qy1y && passed_z1y
+		are_reals_equal(error_eta0,  expected_error) &&
+		are_reals_equal(error_qx0,   expected_error) &&
+		are_reals_equal(error_qy0,   expected_error) &&
+		are_reals_equal(error_z0,    expected_error) &&
+		are_reals_equal(error_eta1x, expected_error) &&
+		are_reals_equal(error_qx1x,  expected_error) &&
+		are_reals_equal(error_qy1x,  expected_error) &&
+		are_reals_equal(error_z1x,   expected_error) &&
+		are_reals_equal(error_eta1y, expected_error) &&
+		are_reals_equal(error_qx1y,  expected_error) &&
+		are_reals_equal(error_qy1y,  expected_error) &&
+		are_reals_equal(error_z1y,   expected_error) 
 	);
 
 	delete[] h_scale_coeffs;
@@ -244,28 +271,28 @@ void unit_test_scale_coeffs_WRITE_TO_FILE_MW()
 
 	const int array_length = get_lvl_idx(solver_params.L + 1);
 	const size_t bytes     = array_length * sizeof(real);
-	real* h_scale_coeff    = new real[array_length];
+	real* h_scale_coeffs    = new real[array_length];
 
 	for (int i = 0; i < array_length; i++)
 	{
-		h_scale_coeff[i] = i;
+		h_scale_coeffs[i] = i;
 	}
 
-	copy_cuda(d_scale_coeffs.eta0,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qx0,   h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qy0,   h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.z0,    h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.eta1x, h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qx1x,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qy1x,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.z1x,   h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.eta1y, h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qx1y,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qy1y,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.z1y,   h_scale_coeff, bytes);
+	copy_cuda(d_scale_coeffs.eta0,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qx0,   h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qy0,   h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.z0,    h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.eta1x, h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qx1x,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qy1x,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.z1x,   h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.eta1y, h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qx1y,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qy1y,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.z1y,   h_scale_coeffs, bytes);
 
 	const char* dirroot = "unittestdata";
-	const char* prefix  = "unit_test_scale_coeffs_CONSTRUCTOR_FILES_MW";
+	const char* prefix  = "unit_test_scale_coeffs_WRITE_TO_FILE_MW";
 
 	d_scale_coeffs.write_to_file(dirroot, prefix);
 	
@@ -295,27 +322,38 @@ void unit_test_scale_coeffs_WRITE_TO_FILE_MW()
 	sprintf(filename_qy1y,  "%s%s", prefix, "-scale-coeffs-qy1y-mw");
 	sprintf(filename_z1y,   "%s%s", prefix, "-scale-coeffs-z1y-mw");
 
-	bool passed_eta0  = compare_array_with_file_real(dirroot, filename_eta0,  h_scale_coeff, array_length);
-	bool passed_qx0   = compare_array_with_file_real(dirroot, filename_qx0,   h_scale_coeff, array_length);
-	bool passed_qy0   = compare_array_with_file_real(dirroot, filename_qy0,   h_scale_coeff, array_length);
-	bool passed_z0    = compare_array_with_file_real(dirroot, filename_z0,    h_scale_coeff, array_length);
-	bool passed_eta1x = compare_array_with_file_real(dirroot, filename_eta1x, h_scale_coeff, array_length);
-	bool passed_qx1x  = compare_array_with_file_real(dirroot, filename_qx1x,  h_scale_coeff, array_length);
-	bool passed_qy1x  = compare_array_with_file_real(dirroot, filename_qy1x,  h_scale_coeff, array_length);
-	bool passed_z1x   = compare_array_with_file_real(dirroot, filename_z1x,   h_scale_coeff, array_length);
-	bool passed_eta1y = compare_array_with_file_real(dirroot, filename_eta1y, h_scale_coeff, array_length);
-	bool passed_qx1y  = compare_array_with_file_real(dirroot, filename_qx1y,  h_scale_coeff, array_length);
-	bool passed_qy1y  = compare_array_with_file_real(dirroot, filename_qy1y,  h_scale_coeff, array_length);
-	bool passed_z1y   = compare_array_with_file_real(dirroot, filename_z1y,   h_scale_coeff, array_length);
+	const real error_eta0  = compare_array_with_file_real(dirroot, filename_eta0,  h_scale_coeffs, array_length);
+	const real error_qx0   = compare_array_with_file_real(dirroot, filename_qx0,   h_scale_coeffs, array_length);
+	const real error_qy0   = compare_array_with_file_real(dirroot, filename_qy0,   h_scale_coeffs, array_length);
+	const real error_z0    = compare_array_with_file_real(dirroot, filename_z0,    h_scale_coeffs, array_length);
+	const real error_eta1x = compare_array_with_file_real(dirroot, filename_eta1x, h_scale_coeffs, array_length);
+	const real error_qx1x  = compare_array_with_file_real(dirroot, filename_qx1x,  h_scale_coeffs, array_length);
+	const real error_qy1x  = compare_array_with_file_real(dirroot, filename_qy1x,  h_scale_coeffs, array_length);
+	const real error_z1x   = compare_array_with_file_real(dirroot, filename_z1x,   h_scale_coeffs, array_length);
+	const real error_eta1y = compare_array_with_file_real(dirroot, filename_eta1y, h_scale_coeffs, array_length);
+	const real error_qx1y  = compare_array_with_file_real(dirroot, filename_qx1y,  h_scale_coeffs, array_length);
+	const real error_qy1y  = compare_array_with_file_real(dirroot, filename_qy1y,  h_scale_coeffs, array_length);
+	const real error_z1y   = compare_array_with_file_real(dirroot, filename_z1y,   h_scale_coeffs, array_length);
 
-	bool passed =
+	const real expected_error = C(1e-6);
+
+	bool passed = 
 	(
-		passed_eta0  && passed_qx0  && passed_qy0  && passed_z0 &&
-		passed_eta1x && passed_qx1x && passed_qy1x && passed_z1x &&
-		passed_eta1y && passed_qx1y && passed_qy1y && passed_z1y
+		are_reals_equal(error_eta0,  expected_error) &&
+		are_reals_equal(error_qx0,   expected_error) &&
+		are_reals_equal(error_qy0,   expected_error) &&
+		are_reals_equal(error_z0,    expected_error) &&
+		are_reals_equal(error_eta1x, expected_error) &&
+		are_reals_equal(error_qx1x,  expected_error) &&
+		are_reals_equal(error_qy1x,  expected_error) &&
+		are_reals_equal(error_z1x,   expected_error) &&
+		are_reals_equal(error_eta1y, expected_error) &&
+		are_reals_equal(error_qx1y,  expected_error) &&
+		are_reals_equal(error_qy1y,  expected_error) &&
+		are_reals_equal(error_z1y,   expected_error) 
 	);
 
-	delete[] h_scale_coeff;
+	delete[] h_scale_coeffs;
 
 	if (passed)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
@@ -332,25 +370,25 @@ void unit_test_scale_coeffs_VERIFY_MW()
 
 	const int array_length = get_lvl_idx(solver_params.L + 1);
 	const size_t bytes     = array_length * sizeof(real);
-	real* h_scale_coeff    = new real[array_length];
+	real* h_scale_coeffs    = new real[array_length];
 
 	for (int i = 0; i < array_length; i++)
 	{
-		h_scale_coeff[i] = i;
+		h_scale_coeffs[i] = i;
 	}
 
-	copy_cuda(d_scale_coeffs.eta0,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qx0,   h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qy0,   h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.z0,    h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.eta1x, h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qx1x,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qy1x,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.z1x,   h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.eta1y, h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qx1y,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.qy1y,  h_scale_coeff, bytes);
-	copy_cuda(d_scale_coeffs.z1y,   h_scale_coeff, bytes);
+	copy_cuda(d_scale_coeffs.eta0,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qx0,   h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qy0,   h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.z0,    h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.eta1x, h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qx1x,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qy1x,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.z1x,   h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.eta1y, h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qx1y,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.qy1y,  h_scale_coeffs, bytes);
+	copy_cuda(d_scale_coeffs.z1y,   h_scale_coeffs, bytes);
 	
 	const char* dirroot = "unittestdata";
 	const char* prefix  = "unit_test_scale_coeffs_VERIFY_MW";
@@ -358,7 +396,7 @@ void unit_test_scale_coeffs_VERIFY_MW()
 	const real actual_error   = d_scale_coeffs.verify(dirroot, prefix);
 	const real expected_error = C(0.0);
 
-	delete[] h_scale_coeff;
+	delete[] h_scale_coeffs;
 
 	if ( are_reals_equal(actual_error, expected_error) )
 		TEST_MESSAGE_PASSED_ELSE_FAILED
@@ -869,11 +907,18 @@ bool test_subdetails_CONSTRUCTOR_FILES
 	const int& num_details
 )
 {
-	bool passed_alpha = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.alpha, num_details);
-	bool passed_beta  = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.beta,  num_details);
-	bool passed_gamma = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.gamma, num_details);
+	const real error_alpha = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.alpha, num_details);
+	const real error_beta  = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.beta,  num_details);
+	const real error_gamma = compare_array_on_device_vs_host_real(h_subdetails, d_subdetails.gamma, num_details);
 	
-	bool passed = (passed_alpha && passed_beta && passed_gamma);
+	const real expected_error = C(1e-6);
+
+	bool passed =
+	(
+		are_reals_equal(error_alpha, expected_error) &&
+		are_reals_equal(error_beta,  expected_error) &&
+		are_reals_equal(error_gamma, expected_error) 
+	);
 
 	return passed;
 }
@@ -895,11 +940,18 @@ bool test_subdetails_WRITE_TO_FILE
 	sprintf(filename_beta,  "%s%s%s", prefix, "-details-beta-",  suffix);
 	sprintf(filename_gamma, "%s%s%s", prefix, "-details-gamma-", suffix);
 
-	bool passed_alpha = compare_array_with_file_real(dirroot, filename_alpha, h_subdetails, num_details);
-	bool passed_beta  = compare_array_with_file_real(dirroot, filename_beta,  h_subdetails, num_details);
-	bool passed_gamma = compare_array_with_file_real(dirroot, filename_gamma, h_subdetails, num_details);
+	const real error_alpha = compare_array_with_file_real(dirroot, filename_alpha, h_subdetails, num_details);
+	const real error_beta  = compare_array_with_file_real(dirroot, filename_beta,  h_subdetails, num_details);
+	const real error_gamma = compare_array_with_file_real(dirroot, filename_gamma, h_subdetails, num_details);
+	
+	const real expected_error = C(1e-6);
 
-	bool passed = passed_alpha && passed_beta && passed_gamma;
+	bool passed = 
+	(
+		are_reals_equal(error_alpha,  expected_error) &&
+		are_reals_equal(error_beta,   expected_error) &&
+		are_reals_equal(error_gamma,  expected_error) 
+	);
 
 	return passed;
 }

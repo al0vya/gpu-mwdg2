@@ -18,7 +18,7 @@ void unit_test_get_max_from_array()
 
 	copy_cuda(d_array, h_array, bytes);
 
-	const real expected = C(100000.0);
+	const real expected = array_length;
 	const real actual   = get_max_from_array(d_array, array_length);
 
 	delete[] h_array;
@@ -76,7 +76,7 @@ void unit_test_compute_error()
 	// i.e. the integers from 1 to 100000
 	// sum S of integers 1 to n is S = n * (n+1) / 2
 	// therefore, the mean M = S / n = (n+1)/2
-	const real expected_error = C(100000.0);
+	const real expected_error = array_length;
 	const real actual_error   = compute_error(d_computed, d_verified, array_length);
 
 	delete[] h_computed;
@@ -102,12 +102,13 @@ void unit_test_compare_array_on_device_vs_host_real()
 
 	copy_cuda(d_array, h_array, bytes);
 
-	bool passed = compare_array_on_device_vs_host_real(h_array, d_array, array_length);
+	const real actual_error   = compare_array_on_device_vs_host_real(h_array, d_array, array_length);
+	const real expected_error = C(1e-6);
 
 	delete[] h_array;
 	free_device(d_array);
 
-	if (passed)
+	if ( are_reals_equal(actual_error, expected_error) )
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -124,11 +125,11 @@ void unit_test_compare_array_with_file_bool()
 	const char* dirroot  = "unittestdata";
 	const char* filename = "unit_test_compare_array_with_file_bool";
 
-	bool passed = compare_array_with_file_bool(dirroot, filename, h_array, array_length);
+	const int differences = compare_array_with_file_bool(dirroot, filename, h_array, array_length);
 
 	delete[] h_array;
 
-	if (passed)
+	if (differences == 0)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -145,11 +146,12 @@ void unit_test_compare_array_with_file_real()
 	const char* dirroot  = "unittestdata";
 	const char* filename = "unit_test_compare_array_with_file_real";
 
-	bool passed = compare_array_with_file_real(dirroot, filename, h_array, array_length);
+	const real actual_error   = compare_array_with_file_real(dirroot, filename, h_array, array_length);
+	const real expected_error = C(1e-6);
 
 	delete[] h_array;
 
-	if (passed)
+	if ( are_reals_equal(actual_error, expected_error) )
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -170,12 +172,12 @@ void unit_test_compare_d_array_with_file_bool()
 
 	copy_cuda(d_array, h_array, bytes);
 
-	bool passed = compare_d_array_with_file_bool(dirroot, filename, d_array, array_length);
+	const int differences = compare_d_array_with_file_bool(dirroot, filename, d_array, array_length);
 
 	delete[] h_array;
 	free_device(d_array);
 
-	if (passed)
+	if (differences == 0)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -196,12 +198,13 @@ void unit_test_compare_d_array_with_file_real()
 
 	copy_cuda(d_array, h_array, bytes);
 
-	bool passed = compare_d_array_with_file_real(dirroot, filename, d_array, array_length);
+	const real actual_error   = compare_d_array_with_file_real(dirroot, filename, d_array, array_length);
+	const real expected_error = C(1e-6);
 
 	delete[] h_array;
 	free_device(d_array);
 
-	if (passed)
+	if ( are_reals_equal(actual_error, expected_error) )
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 

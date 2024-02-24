@@ -1,6 +1,6 @@
 #include "compare_d_array_with_file_real.cuh"
 
-bool compare_d_array_with_file_real
+real compare_d_array_with_file_real
 (
 	const char* dirroot,
 	const char* filename,
@@ -13,9 +13,9 @@ bool compare_d_array_with_file_real
 	
 	copy_cuda(h_array, d_array, bytes);
 
-	bool passed = compare_array_with_file_real(dirroot, filename, h_array, array_length);
+	real error = compare_array_with_file_real(dirroot, filename, h_array, array_length);
 
 	delete[] h_array;
 
-	return passed;
+	return error;
 }

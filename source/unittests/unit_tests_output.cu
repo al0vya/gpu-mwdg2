@@ -24,12 +24,13 @@ void unit_test_write_hierarchy_array_real()
 
 	write_hierarchy_array_real(dirroot, filename, d_hierarchy, levels);
 
-	bool passed = compare_array_with_file_real(dirroot, filename, h_hierarchy, array_length);
+	const real actual_error   = compare_array_with_file_real(dirroot, filename, h_hierarchy, array_length);
+	const real expected_error = C(1e-6);
 
 	delete[]    h_hierarchy;
 	free_device(d_hierarchy);
 
-	if (passed)
+	if ( are_reals_equal(actual_error, expected_error) )
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 

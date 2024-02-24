@@ -271,12 +271,22 @@ void unit_test_preflag_topo_HW()
 		solver_params
 	);
 
-	const real error_scale   = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
-	const real error_details = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real max_error = C(1e-5);
+	const int  max_diffs = 5;
+	
+	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
 
-	const real epsilon = C(1e-5);
+	const bool passed =
+	(
+		error_scale      < max_error &&
+		error_details    < max_error &&
+		diffs_preflagged < max_diffs
+	);
 
-	if (error_scale < epsilon && error_details < epsilon)
+	if (passed)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -309,12 +319,26 @@ void unit_test_encode_flow_TIMESTEP_1_HW()
 		for_nghbrs
 	);
 
-	const real error_scale   = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
-	const real error_details = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real max_error = C(1e-5);
+	const int  max_diffs = 5;
+	
+	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
 
-	const real epsilon = C(1e-5);
+	const bool passed =
+	(
+		error_scale        < max_error &&
+		error_details      < max_error &&
+		error_norm_details < max_error &&
+		diffs_sig          < max_diffs &&
+		diffs_preflagged   < max_diffs
+	);
 
-	if (error_scale < epsilon && error_details < epsilon)
+	if (passed)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -347,12 +371,26 @@ void unit_test_encode_flow_TIMESTEP_2_HW()
 		for_nghbrs
 	);
 
-	const real error_scale   = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
-	const real error_details = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real max_error = C(1e-5);
+	const int  max_diffs = 5;
+	
+	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
 
-	const real epsilon = C(1e-5);
+	const bool passed =
+	(
+		error_scale        < max_error &&
+		error_details      < max_error &&
+		error_norm_details < max_error &&
+		diffs_sig          < max_diffs &&
+		diffs_preflagged   < max_diffs
+	);
 
-	if (error_scale < epsilon && error_details < epsilon)
+	if (passed)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -400,12 +438,22 @@ void unit_test_preflag_topo_MW()
 		solver_params
 	);
 
-	const real error_scale   = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
-	const real error_details = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real max_error = C(1e-5);
+	const int  max_diffs = 5;
+	
+	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
 
-	const real epsilon = C(1e-5);
+	const bool passed =
+	(
+		error_scale      < max_error &&
+		error_details    < max_error &&
+		diffs_preflagged < max_diffs
+	);
 
-	if (error_scale < epsilon && error_details < epsilon)
+	if (passed)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -438,12 +486,26 @@ void unit_test_encode_flow_TIMESTEP_1_MW()
 		for_nghbrs
 	);
 
-	const real error_scale   = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
-	const real error_details = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real max_error = C(1e-5);
+	const int  max_diffs = 5;
+	
+	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
 
-	const real epsilon = C(1e-5);
+	const bool passed =
+	(
+		error_scale        < max_error &&
+		error_details      < max_error &&
+		error_norm_details < max_error &&
+		diffs_sig          < max_diffs &&
+		diffs_preflagged   < max_diffs
+	);
 
-	if (error_scale < epsilon && error_details < epsilon)
+	if (passed)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -476,12 +538,26 @@ void unit_test_encode_flow_TIMESTEP_2_MW()
 		for_nghbrs
 	);
 
-	const real error_scale   = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
-	const real error_details = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real max_error = C(1e-5);
+	const int  max_diffs = 5;
+	
+	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
 
-	const real epsilon = C(1e-5);
+	const bool passed =
+	(
+		error_scale        < max_error &&
+		error_details      < max_error &&
+		error_norm_details < max_error &&
+		diffs_sig          < max_diffs &&
+		diffs_preflagged   < max_diffs
+	);
 
-	if (error_scale < epsilon && error_details < epsilon)
+	if (passed)
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
@@ -491,7 +567,7 @@ void run_unit_tests_mra()
 	unit_test_encode_scale_0();
 	unit_test_encode_scale_1x();
 	unit_test_encode_scale_1y();
-
+	
 	unit_test_encode_detail_alpha();
 	unit_test_encode_detail_beta();
 	unit_test_encode_detail_gamma();

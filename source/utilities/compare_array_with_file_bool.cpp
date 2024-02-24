@@ -1,6 +1,6 @@
 #include "compare_array_with_file_bool.h"
 
-bool compare_array_with_file_bool
+int compare_array_with_file_bool
 (
 	const char* dirroot,
 	const char* filename,
@@ -20,10 +20,9 @@ bool compare_array_with_file_bool
 		return false;
 	}
 
-	bool passed = true;
-
-	int host_value = 0;
-	int file_value = 0;
+	int differences = 0;
+	int host_value  = 0;
+	int file_value  = 0;
 
 	for (int i = 0; i < array_length; i++)
 	{
@@ -31,14 +30,10 @@ bool compare_array_with_file_bool
 		
 		fscanf(fp, "%d", &file_value);
 
-		if (host_value != file_value)
-		{
-			passed = false;
-			break;
-		}
+		differences += (host_value - file_value) != 0;
 	}
 
 	fclose(fp);
 
-	return passed;
+	return differences;
 }
