@@ -39,7 +39,7 @@ void generate_data_unit_test_preflag_topo
 	write_hierarchy_array_bool(dirroot, filename_preflagged_details, d_preflagged_details, solver_params.L - 1);
 }
 
-void generate_data_unit_test_encoding_all
+void generate_data_unit_test_encode_flow
 (
 	const char*       dirroot,
 	const char*       input_or_output_str,
@@ -56,7 +56,7 @@ void generate_data_unit_test_encoding_all
 
 	const std::string solver_str = (solver_params.solver_type == HWFV1) ? "_HW-" : "_MW-";
 	
-	const std::string prefix = "unit_test_encoding_all_TIMESTEP_" + timestep_str + solver_str + input_or_output_str;
+	const std::string prefix = "unit_test_encode_flow_TIMESTEP_" + timestep_str + solver_str + input_or_output_str;
 	
 	d_scale_coeffs.write_to_file( dirroot, prefix.c_str() );
 	d_details.write_to_file( dirroot, prefix.c_str() );

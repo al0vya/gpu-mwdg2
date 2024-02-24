@@ -16,7 +16,7 @@ void generate_data_unit_test_preflag_topo
 	SolverParams      solver_params
 );
 
-void generate_data_unit_test_encoding_all
+void generate_data_unit_test_encode_flow
 (
 	const char*       dirroot,
 	const char*       input_or_output_str,

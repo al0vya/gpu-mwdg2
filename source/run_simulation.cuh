@@ -23,7 +23,7 @@
 #include "zorder/sort_finest_scale_coeffs_z_order.cuh"
 #include "mra/get_max_scale_coeffs.cuh"
 #include "mra/preflag_topo.cuh"
-#include "mra/encoding_all.cuh"
+#include "mra/encode_flow.cuh"
 #include "mra/get_reg_tree.cuh"
 #include "mra/decoding_all.cuh"
 #include "zorder/rev_z_order_act_idcs.cuh"

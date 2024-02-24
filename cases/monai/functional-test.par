@@ -5,7 +5,7 @@ cumulative
 refine_wall
 ref_thickness 16
 max_ref_lvl   9
-epsilon       0
+epsilon       0.001
 wall_height   0.5
 initial_tstep 1
 fpfric        0.01

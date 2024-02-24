@@ -277,7 +277,7 @@ void run_simulation
 		    for_nghbrs = false;
 		    
 			#if _RUN_UNIT_TESTS
-			generate_data_unit_test_encoding_all
+			generate_data_unit_test_encode_flow
 			(
 				plot_params.dirroot,
 				"input",
@@ -291,7 +291,7 @@ void run_simulation
 			);
 			#endif
 
-		    encoding_all
+		    encode_flow
 		    (
 		    	d_scale_coeffs,
 		    	d_details,
@@ -304,7 +304,7 @@ void run_simulation
 		    );
 		    
 			#if _RUN_UNIT_TESTS
-			generate_data_unit_test_encoding_all
+			generate_data_unit_test_encode_flow
 			(
 				plot_params.dirroot,
 				"output",
@@ -494,7 +494,7 @@ void run_simulation
 			{
 				for_nghbrs = true;
 
-				encoding_all
+				encode_flow
 				(
 					d_scale_coeffs,
 					d_details,

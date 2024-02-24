@@ -6,7 +6,7 @@ target_sources(
 		encode_and_thresh_flow.cu
 		encode_topography_kernel_hw.cu
 		encode_topography_kernel_mw.cu
-		encoding_all.cu
+		encode_flow.cu
 		extra_significance.cu
 		get_max_scale_coeffs.cu
 		get_modal_values.cu

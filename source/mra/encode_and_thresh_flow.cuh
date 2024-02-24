@@ -21,9 +21,8 @@
 #include "encode_scale_coeffs.cuh"
 #include "encode_details.cuh"
 
-template<bool SINGLE_BLOCK>
 __global__
-void encode_and_thresh_flow
+void encode_flow_kernel
 (
 	ScaleCoefficients d_scale_coeffs,
 	Details           d_details,
@@ -31,7 +30,22 @@ void encode_and_thresh_flow
 	bool*             d_sig_details,
 	bool*             d_preflagged_details,
 	Maxes             maxes,
-	SolverParams  solver_params,
+	SolverParams      solver_params,
+	int               level,
+	int               num_threads,
+	bool              for_nghbrs
+);
+
+__global__
+void encode_flow_kernel_single_block
+(
+	ScaleCoefficients d_scale_coeffs,
+	Details           d_details,
+	real*             d_norm_details,
+	bool*             d_sig_details,
+	bool*             d_preflagged_details,
+	Maxes             maxes,
+	SolverParams      solver_params,
 	int               level,
 	int               num_threads,
 	bool              for_nghbrs
