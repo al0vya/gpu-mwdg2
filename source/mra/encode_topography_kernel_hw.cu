@@ -47,5 +47,5 @@ void encode_topography_kernel_hw
 
 	d_scale_coeffs.z0[parent_idx] = encode_scale(z_children);
 
-	d_preflagged_details[parent_idx] = ( (z_details.get_max() / maxes.z) >= epsilon_local ) ? SIGNIFICANT : INSIGNIFICANT;
+	if ( (z_details.get_max() / maxes.z) >= epsilon_local ) d_preflagged_details[parent_idx] = SIGNIFICANT;
 }

@@ -53,5 +53,5 @@ void encode_topography_kernel_mw
 	d_details.z1y.beta[parent_idx]  = z_details._1y.beta;
 	d_details.z1y.gamma[parent_idx] = z_details._1y.gamma;
 
-	d_preflagged_details[parent_idx] = ( (z_details.get_max() / maxes.z) >= epsilon_local ) ? SIGNIFICANT : INSIGNIFICANT;
+	if ( (z_details.get_max() / maxes.z) >= epsilon_local ) d_preflagged_details[parent_idx] = SIGNIFICANT;
 }
