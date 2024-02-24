@@ -7,28 +7,37 @@ void preflag_topo
 	Details&           d_details,
 	bool*              d_preflagged_details,
 	Maxes&             maxes, 
-	SolverParams&      solver_params,
-	SimulationParams&  sim_params,
-	int                first_time_step
+	SolverParams&      solver_params
 )
 {
-	// 2
-	// 1
 	for (int level = solver_params.L - 1; level >= 0; level--)
 	{	
 		int num_threads = 1 << (2 * level);
 		int num_blocks  = get_num_blocks(num_threads, THREADS_PER_BLOCK);
 
-		encode_and_thresh_topo<<<num_blocks, THREADS_PER_BLOCK>>>
-		(
-			d_scale_coeffs,
-			d_details,
-			d_preflagged_details,
-			maxes,
-			solver_params,
-			sim_params,
-			level,
-			first_time_step
-		);
+		if (solver_params.solver_type == HWFV1)
+		{
+			encode_topography_kernel_hw<<<num_blocks, THREADS_PER_BLOCK>>>
+			(
+				d_scale_coeffs,
+				d_details,
+				d_preflagged_details,
+				maxes,
+				solver_params,
+				level
+			);
+		}
+		else if (solver_params.solver_type == MWDG2)
+		{
+			encode_topography_kernel_mw<<<num_blocks, THREADS_PER_BLOCK>>>
+			(
+				d_scale_coeffs,
+				d_details,
+				d_preflagged_details,
+				maxes,
+				solver_params,
+				level
+			);
+		}
 	}
 }

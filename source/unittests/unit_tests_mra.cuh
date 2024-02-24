@@ -36,6 +36,7 @@ void unit_test_encoding_all_TIMESTEP_1_HW();
 void unit_test_encoding_all_TIMESTEP_2_HW();
 
 void unit_test_preflag_topo_MW();
-
+void unit_test_encoding_all_TIMESTEP_1_MW();
+void unit_test_encoding_all_TIMESTEP_2_MW();
 
 void run_unit_tests_mra();

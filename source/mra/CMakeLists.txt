@@ -4,7 +4,8 @@ target_sources(
 		decoding.cu
 		decoding_all.cu
 		encode_and_thresh_flow.cu
-		encode_and_thresh_topo.cu
+		encode_topography_kernel_hw.cu
+		encode_topography_kernel_mw.cu
 		encoding_all.cu
 		extra_significance.cu
 		get_max_scale_coeffs.cu

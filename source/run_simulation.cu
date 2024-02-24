@@ -208,9 +208,7 @@ void run_simulation
 		d_details,  
 		d_preflagged_details, 
 		maxes,
-		solver_params,
-		sim_params,
-		first_timestep
+		solver_params
 	);
 
 	#if _RUN_UNIT_TESTS
