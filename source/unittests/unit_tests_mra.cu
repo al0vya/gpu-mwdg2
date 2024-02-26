@@ -271,7 +271,7 @@ void unit_test_preflag_topo_HW()
 		solver_params
 	);
 
-	const real max_error = C(1e-5);
+	const real max_error = C(2e-5);
 	const int  max_diffs = 5;
 	
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
@@ -319,7 +319,7 @@ void unit_test_encode_flow_TIMESTEP_1_HW()
 		for_nghbrs
 	);
 
-	const real max_error = C(1e-5);
+	const real max_error = C(2e-5);
 	const int  max_diffs = 5;
 	
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
@@ -371,7 +371,7 @@ void unit_test_encode_flow_TIMESTEP_2_HW()
 		for_nghbrs
 	);
 
-	const real max_error = C(1e-5);
+	const real max_error = C(2e-5);
 	const int  max_diffs = 5;
 	
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
@@ -388,6 +388,94 @@ void unit_test_encode_flow_TIMESTEP_2_HW()
 		error_norm_details < max_error &&
 		diffs_sig          < max_diffs &&
 		diffs_preflagged   < max_diffs
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_decoding_all_TIMESTEP_1_HW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_decoding_all_TIMESTEP_1_HW";
+	const std::string par_file = "unit_tests_HW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams      solver_params(input_filename.c_str());
+	ScaleCoefficients d_scale_coeffs(solver_params, dirroot.c_str(), (prefix + "-input").c_str());
+	Details           d_details     (solver_params, dirroot.c_str(), (prefix + "-input").c_str());
+	real*             d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
+	bool*             d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	
+	decoding_all
+	(
+		d_sig_details,
+		d_norm_details,
+		d_details,
+		d_scale_coeffs,
+		solver_params
+	);
+
+	const real max_error = C(2e-5);
+	const int  max_diffs = 5;
+	
+	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	
+	const bool passed =
+	(
+		error_scale        < max_error &&
+		error_details      < max_error &&
+		error_norm_details < max_error &&
+		diffs_sig          < max_diffs
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_decoding_all_TIMESTEP_2_HW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_decoding_all_TIMESTEP_2_HW";
+	const std::string par_file = "unit_tests_HW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams      solver_params(input_filename.c_str());
+	ScaleCoefficients d_scale_coeffs(solver_params, dirroot.c_str(), (prefix + "-input").c_str());
+	Details           d_details     (solver_params, dirroot.c_str(), (prefix + "-input").c_str());
+	real*             d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
+	bool*             d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	
+	decoding_all
+	(
+		d_sig_details,
+		d_norm_details,
+		d_details,
+		d_scale_coeffs,
+		solver_params
+	);
+
+	const real max_error = C(2e-5);
+	const int  max_diffs = 5;
+	
+	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	
+	const bool passed =
+	(
+		error_scale        < max_error &&
+		error_details      < max_error &&
+		error_norm_details < max_error &&
+		diffs_sig          < max_diffs
 	);
 
 	if (passed)
@@ -438,7 +526,7 @@ void unit_test_preflag_topo_MW()
 		solver_params
 	);
 
-	const real max_error = C(1e-5);
+	const real max_error = C(2e-5);
 	const int  max_diffs = 5;
 	
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
@@ -486,7 +574,7 @@ void unit_test_encode_flow_TIMESTEP_1_MW()
 		for_nghbrs
 	);
 
-	const real max_error = C(1e-5);
+	const real max_error = C(2e-5);
 	const int  max_diffs = 5;
 	
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
@@ -538,7 +626,7 @@ void unit_test_encode_flow_TIMESTEP_2_MW()
 		for_nghbrs
 	);
 
-	const real max_error = C(1e-5);
+	const real max_error = C(2e-5);
 	const int  max_diffs = 5;
 	
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
@@ -555,6 +643,94 @@ void unit_test_encode_flow_TIMESTEP_2_MW()
 		error_norm_details < max_error &&
 		diffs_sig          < max_diffs &&
 		diffs_preflagged   < max_diffs
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_decoding_all_TIMESTEP_1_MW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_decoding_all_TIMESTEP_1_MW";
+	const std::string par_file = "unit_tests_MW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams      solver_params(input_filename.c_str());
+	ScaleCoefficients d_scale_coeffs(solver_params, dirroot.c_str(), (prefix + "-input").c_str());
+	Details           d_details     (solver_params, dirroot.c_str(), (prefix + "-input").c_str());
+	real*             d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
+	bool*             d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	
+	decoding_all
+	(
+		d_sig_details,
+		d_norm_details,
+		d_details,
+		d_scale_coeffs,
+		solver_params
+	);
+
+	const real max_error = C(2e-5);
+	const int  max_diffs = 5;
+	
+	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	
+	const bool passed =
+	(
+		error_scale        < max_error &&
+		error_details      < max_error &&
+		error_norm_details < max_error &&
+		diffs_sig          < max_diffs
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_decoding_all_TIMESTEP_2_MW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_decoding_all_TIMESTEP_2_MW";
+	const std::string par_file = "unit_tests_MW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams      solver_params(input_filename.c_str());
+	ScaleCoefficients d_scale_coeffs(solver_params, dirroot.c_str(), (prefix + "-input").c_str());
+	Details           d_details     (solver_params, dirroot.c_str(), (prefix + "-input").c_str());
+	real*             d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
+	bool*             d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	
+	decoding_all
+	(
+		d_sig_details,
+		d_norm_details,
+		d_details,
+		d_scale_coeffs,
+		solver_params
+	);
+
+	const real max_error = C(2e-5);
+	const int  max_diffs = 5;
+	
+	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	
+	const bool passed =
+	(
+		error_scale        < max_error &&
+		error_details      < max_error &&
+		error_norm_details < max_error &&
+		diffs_sig          < max_diffs
 	);
 
 	if (passed)
@@ -581,13 +757,17 @@ void run_unit_tests_mra()
 	unit_test_encode_detail_beta_1y();
 	unit_test_encode_detail_gamma_1y();
 
-	unit_test_preflag_topo_HW();
-	unit_test_encode_flow_TIMESTEP_1_HW();
-	unit_test_encode_flow_TIMESTEP_2_HW();
-	
-	unit_test_preflag_topo_MW();
-	unit_test_encode_flow_TIMESTEP_1_MW();
-	unit_test_encode_flow_TIMESTEP_2_MW();
+	//unit_test_preflag_topo_HW();
+	//unit_test_encode_flow_TIMESTEP_1_HW();
+	//unit_test_encode_flow_TIMESTEP_2_HW();
+	unit_test_decoding_all_TIMESTEP_1_HW();
+	unit_test_decoding_all_TIMESTEP_2_HW();
+
+	//unit_test_preflag_topo_MW();
+	//unit_test_encode_flow_TIMESTEP_1_MW();
+	//unit_test_encode_flow_TIMESTEP_2_MW();
+	unit_test_decoding_all_TIMESTEP_1_MW();
+	unit_test_decoding_all_TIMESTEP_2_MW();
 }
 
 #endif

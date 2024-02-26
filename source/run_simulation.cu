@@ -324,6 +324,20 @@ void run_simulation
 		    	solver_params
 		    );
 		    
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_decoding_all
+			(
+				plot_params.dirroot,
+				"input",
+				d_sig_details,
+				d_norm_details,
+				d_details,
+				d_scale_coeffs,
+				solver_params,
+				timestep
+			);
+			#endif
+
 		    decoding_all // contains extra sig
 		    (
 		    	d_sig_details,
@@ -332,6 +346,20 @@ void run_simulation
 		    	d_scale_coeffs,
 		    	solver_params
 		    );
+
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_decoding_all
+			(
+				plot_params.dirroot,
+				"output",
+				d_sig_details,
+				d_norm_details,
+				d_details,
+				d_scale_coeffs,
+				solver_params,
+				timestep
+			);
+			#endif
 		    
 		    traverse_tree_of_sig_details<<<num_blocks_traversal, THREADS_PER_BLOCK>>>
 		    (

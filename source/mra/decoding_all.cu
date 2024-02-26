@@ -6,7 +6,7 @@ void decoding_all
 	real*              d_norm_details,
 	Details&           d_details,
 	ScaleCoefficients& d_scale_coeffs,
-	SolverParams&  solver_params
+	SolverParams&      solver_params
 )
 {	
 	extra_significance<true><<<1, THREADS_PER_BLOCK>>>

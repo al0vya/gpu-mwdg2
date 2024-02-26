@@ -28,3 +28,15 @@ void generate_data_unit_test_encode_flow
 	SolverParams      solver_params,
 	const int&        timestep
 );
+
+void generate_data_unit_test_decoding_all
+(
+	const char*       dirroot,
+	const char*       input_or_output_str,
+	bool*             d_sig_details,
+	real*             d_norm_details,
+	Details           d_details,
+	ScaleCoefficients d_scale_coeffs,
+	SolverParams      solver_params,
+	const int&        timestep
+);
