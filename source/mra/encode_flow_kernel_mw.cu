@@ -10,15 +10,15 @@
  * Thereafter, each thread loads four child coefficients from shared memory to encode the parent and detail.
  * A block size that is a multiple of 4 is used to ensure enough child coefficients are loaded.
  * For the block sizes below, there is a refinement level at which only one thread block is launched:
- * 
+ *
  * Block size: 64.   Level at which only a single block is launched (LVL_SINGLE_BLOCK): 3.
  * Block size: 256.  Level at which only a single block is launched (LVL_SINGLE_BLOCK): 4.
  * Block size: 1024. Level at which only a single block is launched (LVL_SINGLE_BLOCK): 5.
- * 
+ *
  * In this scenario, the kernel is not relaunched, as a single block has enough threads for all subsequent levels.
  * Instead, there is an internal for-loop across levels, which writes the scale coefficients to shared memory.
  * The threads in the next iteration of the loop access the shared memory, which is visible to all threads within a block.
- * 
+ *
  */
 
 __global__
@@ -26,9 +26,9 @@ void encode_flow_kernel_mw
 (
 	ScaleCoefficients d_scale_coeffs,
 	Details           d_details,
-	real*             d_norm_details,
-	bool*             d_sig_details,
-	bool*             d_preflagged_details,
+	real* d_norm_details,
+	bool* d_sig_details,
+	bool* d_preflagged_details,
 	Maxes             maxes,
 	SolverParams      solver_params,
 	int               level,
@@ -37,18 +37,16 @@ void encode_flow_kernel_mw
 )
 {
 	HierarchyIndex t_idx = threadIdx.x;
-	HierarchyIndex idx   = blockIdx.x * blockDim.x + t_idx;
+	HierarchyIndex idx = blockIdx.x * blockDim.x + t_idx;
 
 	if (idx >= num_threads) return;
-	
-	real norm_detail   = C(0.0);
-	real epsilon_local = solver_params.epsilon / ( 1 << (solver_params.L - level) );
+
+	real norm_detail = C(0.0);
+	real epsilon_local = solver_params.epsilon / (1 << (solver_params.L - level));
 
 	HierarchyIndex prev_lvl_idx = get_lvl_idx(level - 1);
 	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
 	HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
-
-	real tol_q = solver_params.tol_q;
 
 	typedef cub::BlockScan<int, THREADS_PER_BLOCK> block_scan;
 
@@ -58,11 +56,11 @@ void encode_flow_kernel_mw
 		real     coeffs[THREADS_PER_BLOCK];
 
 	} shared;
-	
-	__shared__ HierarchyIndex parents[THREADS_PER_BLOCK]; 
+
+	__shared__ HierarchyIndex parents[THREADS_PER_BLOCK];
 
 	HierarchyIndex parent_idx = curr_lvl_idx + idx;
-	HierarchyIndex child_idx  = next_lvl_idx + 4 * idx;
+	HierarchyIndex child_idx = next_lvl_idx + 4 * idx;
 
 	int is_sig = d_sig_details[parent_idx];
 
@@ -89,188 +87,101 @@ void encode_flow_kernel_mw
 
 	parent_idx = parents[t_idx];
 
-	HierarchyIndex shared_idx = 0;
+	child_idx = next_lvl_idx + 4 * (parent_idx - curr_lvl_idx);
 
-	real eta0[4];
-	real eta1x[4];
-	real eta1y[4];
+	// Encoding eta
+	real* s0 = &d_scale_coeffs.eta0[child_idx + 0];
+	real* s1x = &d_scale_coeffs.eta1x[child_idx + 0];
+	real* s1y = &d_scale_coeffs.eta1y[child_idx + 0];
 
-	real qx0[4];
-	real qx1x[4];
-	real qx1y[4];
-
-	real qy0[4];
-	real qy1x[4];
-	real qy1y[4];
-
-#pragma unroll
-	for (int i = 0; i < 4; i++)
+	ScaleChildrenMW children =
 	{
-		shared_idx = t_idx + i * num_sig_details;
-		child_idx = next_lvl_idx + 4 * (parents[shared_idx / 4] - curr_lvl_idx) + shared_idx % 4;
-
-		// LOADING AVG COEFFS //
-
-		// loading eta
-		shared.coeffs[t_idx] = d_scale_coeffs.eta0[child_idx];
-		__syncthreads();
-#pragma unroll
-		for (int j = 0; j < 4; j++) if ((4 * t_idx + j) / num_sig_details == i) eta0[j] = shared.coeffs[4 * t_idx + j - (i * num_sig_details)];
-		__syncthreads();
-
-		// loading qx
-		shared.coeffs[t_idx] = d_scale_coeffs.qx0[child_idx];
-		__syncthreads();
-#pragma unroll
-		for (int j = 0; j < 4; j++) if ((4 * t_idx + j) / num_sig_details == i) qx0[j] = shared.coeffs[4 * t_idx + j - (i * num_sig_details)];
-		__syncthreads();
-
-		// loading qy
-		shared.coeffs[t_idx] = d_scale_coeffs.qy0[child_idx];
-		__syncthreads();
-#pragma unroll
-		for (int j = 0; j < 4; j++) if ((4 * t_idx + j) / num_sig_details == i) qy0[j] = shared.coeffs[4 * t_idx + j - (i * num_sig_details)];
-		__syncthreads();
-
-		// ------------------ //
-
-		// LOADING X SLOPE COEFFS //
-
-		// loading eta
-		shared.coeffs[t_idx] = d_scale_coeffs.eta1x[child_idx];
-		__syncthreads();
-#pragma unroll
-		for (int j = 0; j < 4; j++) if ((4 * t_idx + j) / num_sig_details == i) eta1x[j] = shared.coeffs[4 * t_idx + j - (i * num_sig_details)];
-		__syncthreads();
-
-		// loading qx
-		shared.coeffs[t_idx] = d_scale_coeffs.qx1x[child_idx];
-		__syncthreads();
-#pragma unroll
-		for (int j = 0; j < 4; j++) if ((4 * t_idx + j) / num_sig_details == i) qx1x[j] = shared.coeffs[4 * t_idx + j - (i * num_sig_details)];
-		__syncthreads();
-
-		// loading qy
-		shared.coeffs[t_idx] = d_scale_coeffs.qy1x[child_idx];
-		__syncthreads();
-#pragma unroll
-		for (int j = 0; j < 4; j++) if ((4 * t_idx + j) / num_sig_details == i) qy1x[j] = shared.coeffs[4 * t_idx + j - (i * num_sig_details)];
-		__syncthreads();
-
-		// ---------------------- //
-
-		// LOADING Y SLOPE COEFFS //
-
-		// loading eta
-		shared.coeffs[t_idx] = d_scale_coeffs.eta1y[child_idx];
-		__syncthreads();
-#pragma unroll
-		for (int j = 0; j < 4; j++) if ((4 * t_idx + j) / num_sig_details == i) eta1y[j] = shared.coeffs[4 * t_idx + j - (i * num_sig_details)];
-		__syncthreads();
-
-		// loading qx
-		shared.coeffs[t_idx] = d_scale_coeffs.qx1y[child_idx];
-		__syncthreads();
-#pragma unroll
-		for (int j = 0; j < 4; j++) if ((4 * t_idx + j) / num_sig_details == i) qx1y[j] = shared.coeffs[4 * t_idx + j - (i * num_sig_details)];
-		__syncthreads();
-
-		// loading qy
-		shared.coeffs[t_idx] = d_scale_coeffs.qy1y[child_idx];
-		__syncthreads();
-#pragma unroll
-		for (int j = 0; j < 4; j++) if ((4 * t_idx + j) / num_sig_details == i) qy1y[j] = shared.coeffs[4 * t_idx + j - (i * num_sig_details)];
-		__syncthreads();
-
-		// ---------------------- //
-	}
-
-	ChildScaleCoeffsMW child_coeffs =
-	{
-		{
-			{  eta0[0],  eta0[1],  eta0[2],  eta0[3] },
-			{ eta1x[0], eta1x[1], eta1x[2], eta1x[3] },
-			{ eta1y[0], eta1y[1], eta1y[2], eta1y[3] }
-		},
-		{
-			{
-				(abs(qx0[0]) > tol_q) ? qx0[0] : C(0.0),
-				(abs(qx0[1]) > tol_q) ? qx0[1] : C(0.0),
-				(abs(qx0[2]) > tol_q) ? qx0[2] : C(0.0),
-				(abs(qx0[3]) > tol_q) ? qx0[3] : C(0.0)
-			},
-			{
-				(abs(qx1x[0]) > tol_q) ? qx1x[0] : C(0.0),
-				(abs(qx1x[1]) > tol_q) ? qx1x[1] : C(0.0),
-				(abs(qx1x[2]) > tol_q) ? qx1x[2] : C(0.0),
-				(abs(qx1x[3]) > tol_q) ? qx1x[3] : C(0.0)
-			},
-			{
-				(abs(qx1y[0]) > tol_q) ? qx1y[0] : C(0.0),
-				(abs(qx1y[1]) > tol_q) ? qx1y[1] : C(0.0),
-				(abs(qx1y[2]) > tol_q) ? qx1y[2] : C(0.0),
-				(abs(qx1y[3]) > tol_q) ? qx1y[3] : C(0.0)
-			}
-		},
-		{
-			{
-				(abs(qy0[0]) > tol_q) ? qy0[0] : C(0.0),
-				(abs(qy0[1]) > tol_q) ? qy0[1] : C(0.0),
-				(abs(qy0[2]) > tol_q) ? qy0[2] : C(0.0),
-				(abs(qy0[3]) > tol_q) ? qy0[3] : C(0.0)
-			},
-			{
-				(abs(qy1x[0]) > tol_q) ? qy1x[0] : C(0.0),
-				(abs(qy1x[1]) > tol_q) ? qy1x[1] : C(0.0),
-				(abs(qy1x[2]) > tol_q) ? qy1x[2] : C(0.0),
-				(abs(qy1x[3]) > tol_q) ? qy1x[3] : C(0.0)
-			},
-			{
-				(abs(qy1y[0]) > tol_q) ? qy1y[0] : C(0.0),
-				(abs(qy1y[1]) > tol_q) ? qy1y[1] : C(0.0),
-				(abs(qy1y[2]) > tol_q) ? qy1y[2] : C(0.0),
-				(abs(qy1y[3]) > tol_q) ? qy1y[3] : C(0.0)
-			}
-		},
-		{
-			{ C(0.0), C(0.0), C(0.0), C(0.0) },
-			{ C(0.0), C(0.0), C(0.0), C(0.0) },
-			{ C(0.0), C(0.0), C(0.0), C(0.0) }
-		}
+		{  s0[0],  s0[1],  s0[2],  s0[3] },
+		{ s1x[0], s1x[1], s1x[2], s1x[3] },
+		{ s1y[0], s1y[1], s1y[2], s1y[3] }
 	};
 
-	ParentScaleCoeffsMW parent_coeffs = encode_scale_coeffs(child_coeffs);
-	DetailMW            detail = (!for_nghbrs) ? encode_details(child_coeffs) : DetailMW{};
+	d_scale_coeffs.eta0[parent_idx] = encode_scale_0(children);
+	d_scale_coeffs.eta1x[parent_idx] = encode_scale_1x(children);
+	d_scale_coeffs.eta1y[parent_idx] = encode_scale_1y(children);
 
-	parent_coeffs._0.qx *= (abs(parent_coeffs._0.qx) > tol_q);
-	parent_coeffs._1x.qx *= (abs(parent_coeffs._1x.qx) > tol_q);
-	parent_coeffs._1y.qx *= (abs(parent_coeffs._1y.qx) > tol_q);
-	parent_coeffs._0.qy *= (abs(parent_coeffs._0.qy) > tol_q);
-	parent_coeffs._1x.qy *= (abs(parent_coeffs._1x.qy) > tol_q);
-	parent_coeffs._1y.qy *= (abs(parent_coeffs._1y.qy) > tol_q);
+	SubDetailMW subdetail = encode_detail(children);
 
-	norm_detail = detail.get_norm_detail(maxes);
-
-	store_scale_coeffs
+	store_details
 	(
-		parent_coeffs,
-		d_scale_coeffs,
+		d_details.eta0,
+		d_details.eta1x,
+		d_details.eta1y,
+		subdetail,
 		parent_idx
 	);
 
+	norm_detail = max(norm_detail, subdetail.get_max() / maxes.eta);
+
+	// encoding qx
+	s0 = &d_scale_coeffs.qx0[child_idx + 0];
+	s1x = &d_scale_coeffs.qx1x[child_idx + 0];
+	s1y = &d_scale_coeffs.qx1y[child_idx + 0];
+
+	children =
+	{
+		{  s0[0],  s0[1],  s0[2],  s0[3] },
+		{ s1x[0], s1x[1], s1x[2], s1x[3] },
+		{ s1y[0], s1y[1], s1y[2], s1y[3] }
+	};
+
+	d_scale_coeffs.qx0[parent_idx] = encode_scale_0(children);
+	d_scale_coeffs.qx1x[parent_idx] = encode_scale_1x(children);
+	d_scale_coeffs.qx1y[parent_idx] = encode_scale_1y(children);
+
+	subdetail = encode_detail(children);
+
+	store_details
+	(
+		d_details.qx0,
+		d_details.qx1x,
+		d_details.qx1y,
+		subdetail,
+		parent_idx
+	);
+
+	norm_detail = max(norm_detail, subdetail.get_max() / maxes.qx);
+
+	// encoding qy
+	s0 = &d_scale_coeffs.qy0[child_idx + 0];
+	s1x = &d_scale_coeffs.qy1x[child_idx + 0];
+	s1y = &d_scale_coeffs.qy1y[child_idx + 0];
+
+	children =
+	{
+		{  s0[0],  s0[1],  s0[2],  s0[3] },
+		{ s1x[0], s1x[1], s1x[2], s1x[3] },
+		{ s1y[0], s1y[1], s1y[2], s1y[3] }
+	};
+
+	d_scale_coeffs.qy0[parent_idx] = encode_scale_0(children);
+	d_scale_coeffs.qy1x[parent_idx] = encode_scale_1x(children);
+	d_scale_coeffs.qy1y[parent_idx] = encode_scale_1y(children);
+
+	subdetail = encode_detail(children);
+
+	store_details
+	(
+		d_details.qy0,
+		d_details.qy1x,
+		d_details.qy1y,
+		subdetail,
+		parent_idx
+	);
+
+	norm_detail = max(norm_detail, subdetail.get_max() / maxes.qy);
+
 	if (!for_nghbrs)
 	{
-		store_details
-		(
-			detail,
-			d_details,
-			parent_idx
-		);
-
 		d_norm_details[parent_idx] = norm_detail;
 
-		d_sig_details[parent_idx] = (norm_detail >= epsilon_local) ? SIGNIFICANT : INSIGNIFICANT;
-
-		if (d_preflagged_details[parent_idx] == SIGNIFICANT) d_sig_details[parent_idx] = SIGNIFICANT;
+		d_sig_details[parent_idx] = (norm_detail >= epsilon_local || d_preflagged_details[parent_idx] == SIGNIFICANT)
+			? SIGNIFICANT
+			: INSIGNIFICANT;
 	}
 }

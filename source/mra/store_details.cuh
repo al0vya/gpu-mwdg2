@@ -84,3 +84,24 @@ void store_details
 	d_details.z1y.gamma[h_idx] = detail.z._1y.gamma;
 	*/
 }
+
+__device__ __forceinline__
+void store_details
+(
+	const SubDetails&     _0,
+	const SubDetails&     _1x,
+	const SubDetails&     _1y,
+	const SubDetailMW&    subdetail,
+	const HierarchyIndex& parent_idx
+)
+{
+	_0.alpha [parent_idx] = subdetail._0.alpha;
+	_0.beta  [parent_idx] = subdetail._0.beta;
+	_0.gamma [parent_idx] = subdetail._0.gamma;
+	_1x.alpha[parent_idx] = subdetail._1x.alpha;
+	_1x.beta [parent_idx] = subdetail._1x.beta;
+	_1x.gamma[parent_idx] = subdetail._1x.gamma;
+	_1y.alpha[parent_idx] = subdetail._1y.alpha;
+	_1y.beta [parent_idx] = subdetail._1y.beta;
+	_1y.gamma[parent_idx] = subdetail._1y.gamma;
+}

@@ -14,7 +14,13 @@ void encode_flow
 )
 {
 	TRACE("This is encoding.");
+	cudaError_t status = cudaFuncSetCacheConfig(encode_flow_kernel_mw, cudaFuncCachePreferL1);
 	
+	if (status != cudaSuccess)
+	{
+		printf("Error about L1 encoding.\n");
+	}
+
 	for (int level = solver_params.L - 1; level >= LVL_SINGLE_BLOCK; level--)
 	{
 	    int num_threads = 1 << (2 * level);

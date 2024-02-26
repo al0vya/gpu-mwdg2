@@ -32,7 +32,12 @@ void decoding
 			num_threads
 		);
 	}
-	
+	cudaError_t status = cudaFuncSetCacheConfig(decoding_kernel_mw, cudaFuncCachePreferL1);
+
+	if (status != cudaSuccess)
+	{
+		printf("Error about L1, decoding.\n");
+	}
 	if (solver_params.solver_type == HWFV1)
 	{
 		decoding_kernel_single_block_hw<<<1, THREADS_PER_BLOCK>>>
