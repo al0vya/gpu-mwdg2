@@ -126,29 +126,13 @@ void encode_flow_kernel_hw
 	ChildScaleCoeffsHW child_coeffs =
 	{
 		{ eta[0], eta[1], eta[2], eta[3] },
-
-		{
-			(abs(qx[0]) > tol_q) ? qx[0] : C(0.0),
-			(abs(qx[1]) > tol_q) ? qx[1] : C(0.0),
-			(abs(qx[2]) > tol_q) ? qx[2] : C(0.0),
-			(abs(qx[3]) > tol_q) ? qx[3] : C(0.0)
-		},
-
-		{
-			(abs(qy[0]) > tol_q) ? qy[0] : C(0.0),
-			(abs(qy[1]) > tol_q) ? qy[1] : C(0.0),
-			(abs(qy[2]) > tol_q) ? qy[2] : C(0.0),
-			(abs(qy[3]) > tol_q) ? qy[3] : C(0.0)
-		},
-
+		{ qx[0], qx[1], qx[2], qx[3] },
+		{ qy[0], qy[1], qy[2], qy[3] },
 		{ C(0.0), C(0.0), C(0.0), C(0.0) }
 	};
 
 	ParentScaleCoeffsHW parent_coeffs = encode_scale_coeffs(child_coeffs);
 	DetailHW            detail = encode_details(child_coeffs);
-
-	parent_coeffs.qx *= (abs(parent_coeffs.qx) > tol_q);
-	parent_coeffs.qy *= (abs(parent_coeffs.qy) > tol_q);
 
 	norm_detail = detail.get_norm_detail(maxes);
 
