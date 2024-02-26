@@ -757,16 +757,16 @@ void run_unit_tests_mra()
 	unit_test_encode_detail_beta_1y();
 	unit_test_encode_detail_gamma_1y();
 
-	//unit_test_preflag_topo_HW();
-	//unit_test_encode_flow_TIMESTEP_1_HW();
-	//unit_test_encode_flow_TIMESTEP_2_HW();
-	//unit_test_decoding_TIMESTEP_1_HW();
-	//unit_test_decoding_TIMESTEP_2_HW();
+	unit_test_preflag_topo_HW();
+	unit_test_encode_flow_TIMESTEP_1_HW();
+	unit_test_encode_flow_TIMESTEP_2_HW();
+	unit_test_decoding_TIMESTEP_1_HW();
+	unit_test_decoding_TIMESTEP_2_HW();
 
-	//unit_test_preflag_topo_MW();
-	//unit_test_encode_flow_TIMESTEP_1_MW();
+	unit_test_preflag_topo_MW();
+	unit_test_encode_flow_TIMESTEP_1_MW();
 	unit_test_encode_flow_TIMESTEP_2_MW();
-	//unit_test_decoding_TIMESTEP_1_MW();
+	unit_test_decoding_TIMESTEP_1_MW();
 	unit_test_decoding_TIMESTEP_2_MW();
 }
 

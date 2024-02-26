@@ -10,15 +10,15 @@
  * Thereafter, each thread loads four child coefficients from shared memory to encode the parent and detail.
  * A block size that is a multiple of 4 is used to ensure enough child coefficients are loaded.
  * For the block sizes below, there is a refinement level at which only one thread block is launched:
- *
+ * 
  * Block size: 64.   Level at which only a single block is launched (LVL_SINGLE_BLOCK): 3.
  * Block size: 256.  Level at which only a single block is launched (LVL_SINGLE_BLOCK): 4.
  * Block size: 1024. Level at which only a single block is launched (LVL_SINGLE_BLOCK): 5.
- *
+ * 
  * In this scenario, the kernel is not relaunched, as a single block has enough threads for all subsequent levels.
  * Instead, there is an internal for-loop across levels, which writes the scale coefficients to shared memory.
  * The threads in the next iteration of the loop access the shared memory, which is visible to all threads within a block.
- *
+ * 
  */
 
 __global__
@@ -26,9 +26,9 @@ void encode_flow_kernel_mw
 (
 	ScaleCoefficients d_scale_coeffs,
 	Details           d_details,
-	real* d_norm_details,
-	bool* d_sig_details,
-	bool* d_preflagged_details,
+	real*             d_norm_details,
+	bool*             d_sig_details,
+	bool*             d_preflagged_details,
 	Maxes             maxes,
 	SolverParams      solver_params,
 	int               level,
@@ -37,12 +37,12 @@ void encode_flow_kernel_mw
 )
 {
 	HierarchyIndex t_idx = threadIdx.x;
-	HierarchyIndex idx = blockIdx.x * blockDim.x + t_idx;
+	HierarchyIndex idx   = blockIdx.x * blockDim.x + t_idx;
 
 	if (idx >= num_threads) return;
-
-	real norm_detail = C(0.0);
-	real epsilon_local = solver_params.epsilon / (1 << (solver_params.L - level));
+	
+	real norm_detail   = C(0.0);
+	real epsilon_local = solver_params.epsilon / ( 1 << (solver_params.L - level) );
 
 	HierarchyIndex prev_lvl_idx = get_lvl_idx(level - 1);
 	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
@@ -56,11 +56,11 @@ void encode_flow_kernel_mw
 		real     coeffs[THREADS_PER_BLOCK];
 
 	} shared;
-
-	__shared__ HierarchyIndex parents[THREADS_PER_BLOCK];
+	
+	__shared__ HierarchyIndex parents[THREADS_PER_BLOCK]; 
 
 	HierarchyIndex parent_idx = curr_lvl_idx + idx;
-	HierarchyIndex child_idx = next_lvl_idx + 4 * idx;
+	HierarchyIndex child_idx  = next_lvl_idx + 4 * idx;
 
 	int is_sig = d_sig_details[parent_idx];
 
@@ -86,11 +86,11 @@ void encode_flow_kernel_mw
 	if (t_idx >= num_sig_details) return;
 
 	parent_idx = parents[t_idx];
-
+	
 	child_idx = next_lvl_idx + 4 * (parent_idx - curr_lvl_idx);
 
 	// Encoding eta
-	real* s0 = &d_scale_coeffs.eta0[child_idx + 0];
+	real* s0  = &d_scale_coeffs.eta0 [child_idx + 0];
 	real* s1x = &d_scale_coeffs.eta1x[child_idx + 0];
 	real* s1y = &d_scale_coeffs.eta1y[child_idx + 0];
 
@@ -101,7 +101,7 @@ void encode_flow_kernel_mw
 		{ s1y[0], s1y[1], s1y[2], s1y[3] }
 	};
 
-	d_scale_coeffs.eta0[parent_idx] = encode_scale_0(children);
+	d_scale_coeffs.eta0[parent_idx]  = encode_scale_0 (children);
 	d_scale_coeffs.eta1x[parent_idx] = encode_scale_1x(children);
 	d_scale_coeffs.eta1y[parent_idx] = encode_scale_1y(children);
 
@@ -119,7 +119,7 @@ void encode_flow_kernel_mw
 	norm_detail = max(norm_detail, subdetail.get_max() / maxes.eta);
 
 	// encoding qx
-	s0 = &d_scale_coeffs.qx0[child_idx + 0];
+	s0  = &d_scale_coeffs.qx0 [child_idx + 0];
 	s1x = &d_scale_coeffs.qx1x[child_idx + 0];
 	s1y = &d_scale_coeffs.qx1y[child_idx + 0];
 
@@ -130,7 +130,7 @@ void encode_flow_kernel_mw
 		{ s1y[0], s1y[1], s1y[2], s1y[3] }
 	};
 
-	d_scale_coeffs.qx0[parent_idx] = encode_scale_0(children);
+	d_scale_coeffs.qx0[parent_idx]  = encode_scale_0 (children);
 	d_scale_coeffs.qx1x[parent_idx] = encode_scale_1x(children);
 	d_scale_coeffs.qx1y[parent_idx] = encode_scale_1y(children);
 
@@ -148,7 +148,7 @@ void encode_flow_kernel_mw
 	norm_detail = max(norm_detail, subdetail.get_max() / maxes.qx);
 
 	// encoding qy
-	s0 = &d_scale_coeffs.qy0[child_idx + 0];
+	s0  = &d_scale_coeffs.qy0 [child_idx + 0];
 	s1x = &d_scale_coeffs.qy1x[child_idx + 0];
 	s1y = &d_scale_coeffs.qy1y[child_idx + 0];
 
@@ -159,7 +159,7 @@ void encode_flow_kernel_mw
 		{ s1y[0], s1y[1], s1y[2], s1y[3] }
 	};
 
-	d_scale_coeffs.qy0[parent_idx] = encode_scale_0(children);
+	d_scale_coeffs.qy0[parent_idx]  = encode_scale_0 (children);
 	d_scale_coeffs.qy1x[parent_idx] = encode_scale_1x(children);
 	d_scale_coeffs.qy1y[parent_idx] = encode_scale_1y(children);
 
@@ -181,7 +181,7 @@ void encode_flow_kernel_mw
 		d_norm_details[parent_idx] = norm_detail;
 
 		d_sig_details[parent_idx] = (norm_detail >= epsilon_local || d_preflagged_details[parent_idx] == SIGNIFICANT)
-			? SIGNIFICANT
+			? SIGNIFICANT 
 			: INSIGNIFICANT;
 	}
 }
