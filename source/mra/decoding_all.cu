@@ -33,7 +33,7 @@ void decoding_all
 		);
 	}
 	
-	decoding<true><<<1, THREADS_PER_BLOCK>>>
+	decoding_kernel_single_block<<<1, THREADS_PER_BLOCK>>>
 	(
 		d_sig_details, 
 		d_details, 
@@ -48,7 +48,7 @@ void decoding_all
 		int num_threads = 1 << (2 * level);
 		int num_blocks  = get_num_blocks(num_threads, THREADS_PER_BLOCK);
 
-		decoding<false><<<num_blocks, THREADS_PER_BLOCK>>>
+		decoding_kernel<<<num_blocks, THREADS_PER_BLOCK>>>
 		(
 			d_sig_details, 
 			d_details, 

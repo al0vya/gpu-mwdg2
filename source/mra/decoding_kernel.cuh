@@ -17,14 +17,13 @@
 #include "decode_scale_coeffs.cuh"
 #include "store_scale_coeffs.cuh"
 
-template <bool SINGLE_BLOCK>
 __global__
-void decoding
+void decoding_kernel
 (
 	bool*             d_sig_details,
 	Details           d_details,
 	ScaleCoefficients d_scale_coeffs,
-	SolverParams  solver_params,
+	SolverParams      solver_params,
 	int               level,
 	int               num_threads
 );
