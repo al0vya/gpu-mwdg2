@@ -48,6 +48,8 @@ void encode_flow_kernel_hw
 	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
 	HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
 
+	real tol_q = solver_params.tol_q;
+
 	typedef cub::BlockScan<int, THREADS_PER_BLOCK> block_scan;
 
 	__shared__ union
