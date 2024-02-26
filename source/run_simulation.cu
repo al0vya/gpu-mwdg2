@@ -325,7 +325,7 @@ void run_simulation
 		    );
 		    
 			#if _RUN_UNIT_TESTS
-			generate_data_unit_test_decoding_all
+			generate_data_unit_test_decoding
 			(
 				plot_params.dirroot,
 				"input",
@@ -338,7 +338,7 @@ void run_simulation
 			);
 			#endif
 
-		    decoding_all // contains extra sig
+		    decoding // contains extra sig
 		    (
 		    	d_sig_details,
 		    	d_norm_details,
@@ -348,7 +348,7 @@ void run_simulation
 		    );
 
 			#if _RUN_UNIT_TESTS
-			generate_data_unit_test_decoding_all
+			generate_data_unit_test_decoding
 			(
 				plot_params.dirroot,
 				"output",

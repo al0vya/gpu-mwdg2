@@ -25,7 +25,7 @@
 #include "mra/preflag_topo.cuh"
 #include "mra/encode_flow.cuh"
 #include "mra/get_reg_tree.cuh"
-#include "mra/decoding_all.cuh"
+#include "mra/decoding.cuh"
 #include "zorder/rev_z_order_act_idcs.cuh"
 #include "zorder/rev_z_order_reals.cuh"
 #include "zorder/sort_neighbours_z_order.cuh"

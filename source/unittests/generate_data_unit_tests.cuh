@@ -29,7 +29,7 @@ void generate_data_unit_test_encode_flow
 	const int&        timestep
 );
 
-void generate_data_unit_test_decoding_all
+void generate_data_unit_test_decoding
 (
 	const char*       dirroot,
 	const char*       input_or_output_str,

@@ -1,9 +1,11 @@
 target_sources(
 	    gpu-mwdg2
 		PRIVATE
-		decoding_kernel.cu
-		decoding_kernel_single_block.cu
-		decoding_all.cu
+		decoding_kernel_hw.cu
+		decoding_kernel_single_block_hw.cu
+		decoding_kernel_mw.cu
+		decoding_kernel_single_block_mw.cu
+		decoding.cu
 		encode_flow_kernel_hw.cu
 		encode_flow_kernel_single_block_hw.cu
 		encode_flow_kernel_mw.cu

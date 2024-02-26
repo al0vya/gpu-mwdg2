@@ -394,10 +394,10 @@ void unit_test_encode_flow_TIMESTEP_2_HW()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_decoding_all_TIMESTEP_1_HW()
+void unit_test_decoding_TIMESTEP_1_HW()
 {
 	const std::string dirroot  = "unittestdata";
-	const std::string prefix   = "unit_test_decoding_all_TIMESTEP_1_HW";
+	const std::string prefix   = "unit_test_decoding_TIMESTEP_1_HW";
 	const std::string par_file = "unit_tests_HW.par";
 
 	const std::string input_filename = dirroot + "/" + par_file;
@@ -408,7 +408,7 @@ void unit_test_decoding_all_TIMESTEP_1_HW()
 	real*             d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
 	bool*             d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
 	
-	decoding_all
+	decoding
 	(
 		d_sig_details,
 		d_norm_details,
@@ -438,10 +438,10 @@ void unit_test_decoding_all_TIMESTEP_1_HW()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_decoding_all_TIMESTEP_2_HW()
+void unit_test_decoding_TIMESTEP_2_HW()
 {
 	const std::string dirroot  = "unittestdata";
-	const std::string prefix   = "unit_test_decoding_all_TIMESTEP_2_HW";
+	const std::string prefix   = "unit_test_decoding_TIMESTEP_2_HW";
 	const std::string par_file = "unit_tests_HW.par";
 
 	const std::string input_filename = dirroot + "/" + par_file;
@@ -452,7 +452,7 @@ void unit_test_decoding_all_TIMESTEP_2_HW()
 	real*             d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
 	bool*             d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
 	
-	decoding_all
+	decoding
 	(
 		d_sig_details,
 		d_norm_details,
@@ -649,10 +649,10 @@ void unit_test_encode_flow_TIMESTEP_2_MW()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_decoding_all_TIMESTEP_1_MW()
+void unit_test_decoding_TIMESTEP_1_MW()
 {
 	const std::string dirroot  = "unittestdata";
-	const std::string prefix   = "unit_test_decoding_all_TIMESTEP_1_MW";
+	const std::string prefix   = "unit_test_decoding_TIMESTEP_1_MW";
 	const std::string par_file = "unit_tests_MW.par";
 
 	const std::string input_filename = dirroot + "/" + par_file;
@@ -663,7 +663,7 @@ void unit_test_decoding_all_TIMESTEP_1_MW()
 	real*             d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
 	bool*             d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
 	
-	decoding_all
+	decoding
 	(
 		d_sig_details,
 		d_norm_details,
@@ -693,10 +693,10 @@ void unit_test_decoding_all_TIMESTEP_1_MW()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_decoding_all_TIMESTEP_2_MW()
+void unit_test_decoding_TIMESTEP_2_MW()
 {
 	const std::string dirroot  = "unittestdata";
-	const std::string prefix   = "unit_test_decoding_all_TIMESTEP_2_MW";
+	const std::string prefix   = "unit_test_decoding_TIMESTEP_2_MW";
 	const std::string par_file = "unit_tests_MW.par";
 
 	const std::string input_filename = dirroot + "/" + par_file;
@@ -707,7 +707,7 @@ void unit_test_decoding_all_TIMESTEP_2_MW()
 	real*             d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
 	bool*             d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
 	
-	decoding_all
+	decoding
 	(
 		d_sig_details,
 		d_norm_details,
@@ -760,14 +760,14 @@ void run_unit_tests_mra()
 	//unit_test_preflag_topo_HW();
 	//unit_test_encode_flow_TIMESTEP_1_HW();
 	//unit_test_encode_flow_TIMESTEP_2_HW();
-	unit_test_decoding_all_TIMESTEP_1_HW();
-	unit_test_decoding_all_TIMESTEP_2_HW();
+	unit_test_decoding_TIMESTEP_1_HW();
+	unit_test_decoding_TIMESTEP_2_HW();
 
 	//unit_test_preflag_topo_MW();
 	//unit_test_encode_flow_TIMESTEP_1_MW();
 	//unit_test_encode_flow_TIMESTEP_2_MW();
-	unit_test_decoding_all_TIMESTEP_1_MW();
-	unit_test_decoding_all_TIMESTEP_2_MW();
+	unit_test_decoding_TIMESTEP_1_MW();
+	unit_test_decoding_TIMESTEP_2_MW();
 }
 
 #endif
