@@ -48,7 +48,7 @@ def write_par_file(
             "wall_height   0.5\n" +
             "initial_tstep 1\n" +
             "fpfric        0.01\n" +
-            "sim_time      0.1\n" +
+            "sim_time      1\n" +
             "massint       0.1\n" +
             "saveint       0.1\n" +
             "DEMfile       monai.dem\n" +

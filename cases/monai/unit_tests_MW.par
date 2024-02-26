@@ -9,7 +9,7 @@ epsilon       1e-3
 wall_height   0.5
 initial_tstep 1
 fpfric        0.01
-sim_time      0.1
+sim_time      1
 massint       0.1
 saveint       0.1
 DEMfile       monai.dem

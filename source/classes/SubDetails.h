@@ -26,7 +26,7 @@ public:
 		const char* prefix,
 		const char* suffix
 	);
-
+	
 	SubDetails
 	(
 		const SubDetails& original
