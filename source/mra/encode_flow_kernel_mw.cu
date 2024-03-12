@@ -85,27 +85,55 @@ void encode_flow_kernel_mw
 
 	if (t_idx >= num_sig_details) return;
 
+	const int warp_id   = idx / 32;
+	const int lane_id   = t_idx % 32;
+	const int num_warps = num_sig_details / 32;
+
 	parent_idx = parents[t_idx];
 	
 	child_idx = next_lvl_idx + 4 * (parent_idx - curr_lvl_idx);
+	
+	real* s0  = nullptr;
+	real* s1x = nullptr;
+	real* s1y = nullptr;
+	
+	ScaleChildrenMW children;
+	SubDetailMW     subdetail;
 
 	// Encoding eta
-	real* s0  = &d_scale_coeffs.eta0 [child_idx + 0];
-	real* s1x = &d_scale_coeffs.eta1x[child_idx + 0];
-	real* s1y = &d_scale_coeffs.eta1y[child_idx + 0];
-
-	ScaleChildrenMW children =
+	if (warp_id < num_warps)
 	{
-		{  s0[0],  s0[1],  s0[2],  s0[3] },
-		{ s1x[0], s1x[1], s1x[2], s1x[3] },
-		{ s1y[0], s1y[1], s1y[2], s1y[3] }
-	};
+		load_children_warp
+		(
+			children,
+			d_scale_coeffs.eta0,
+			d_scale_coeffs.eta1x,
+			d_scale_coeffs.eta1y,
+			parent_idx,
+			curr_lvl_idx,
+			next_lvl_idx,
+			lane_id
+		);
+	}
+	else
+	{
+		s0  = &d_scale_coeffs.eta0[child_idx + 0];
+		s1x = &d_scale_coeffs.eta1x[child_idx + 0];
+		s1y = &d_scale_coeffs.eta1y[child_idx + 0];
 
+		children =
+		{
+			{  s0[0],  s0[1],  s0[2],  s0[3] },
+			{ s1x[0], s1x[1], s1x[2], s1x[3] },
+			{ s1y[0], s1y[1], s1y[2], s1y[3] }
+		};
+	}
+	
 	d_scale_coeffs.eta0[parent_idx]  = encode_scale_0 (children);
 	d_scale_coeffs.eta1x[parent_idx] = encode_scale_1x(children);
 	d_scale_coeffs.eta1y[parent_idx] = encode_scale_1y(children);
 
-	SubDetailMW subdetail = encode_detail(children);
+	subdetail = encode_detail(children);
 
 	store_details
 	(
@@ -119,16 +147,33 @@ void encode_flow_kernel_mw
 	norm_detail = max(norm_detail, subdetail.get_max() / maxes.eta);
 
 	// encoding qx
-	s0  = &d_scale_coeffs.qx0 [child_idx + 0];
-	s1x = &d_scale_coeffs.qx1x[child_idx + 0];
-	s1y = &d_scale_coeffs.qx1y[child_idx + 0];
-
-	children =
+	if (warp_id < num_warps)
 	{
-		{  s0[0],  s0[1],  s0[2],  s0[3] },
-		{ s1x[0], s1x[1], s1x[2], s1x[3] },
-		{ s1y[0], s1y[1], s1y[2], s1y[3] }
-	};
+		load_children_warp
+		(
+			children,
+			d_scale_coeffs.qx0,
+			d_scale_coeffs.qx1x,
+			d_scale_coeffs.qx1y,
+			parent_idx,
+			curr_lvl_idx,
+			next_lvl_idx,
+			lane_id
+		);
+	}
+	else
+	{
+		s0  = &d_scale_coeffs.qx0[child_idx + 0];
+		s1x = &d_scale_coeffs.qx1x[child_idx + 0];
+		s1y = &d_scale_coeffs.qx1y[child_idx + 0];
+
+		children =
+		{
+			{  s0[0],  s0[1],  s0[2],  s0[3] },
+			{ s1x[0], s1x[1], s1x[2], s1x[3] },
+			{ s1y[0], s1y[1], s1y[2], s1y[3] }
+		};
+	}
 
 	d_scale_coeffs.qx0[parent_idx]  = encode_scale_0 (children);
 	d_scale_coeffs.qx1x[parent_idx] = encode_scale_1x(children);
@@ -148,16 +193,33 @@ void encode_flow_kernel_mw
 	norm_detail = max(norm_detail, subdetail.get_max() / maxes.qx);
 
 	// encoding qy
-	s0  = &d_scale_coeffs.qy0 [child_idx + 0];
-	s1x = &d_scale_coeffs.qy1x[child_idx + 0];
-	s1y = &d_scale_coeffs.qy1y[child_idx + 0];
-
-	children =
+	if (warp_id < num_warps)
 	{
-		{  s0[0],  s0[1],  s0[2],  s0[3] },
-		{ s1x[0], s1x[1], s1x[2], s1x[3] },
-		{ s1y[0], s1y[1], s1y[2], s1y[3] }
-	};
+		load_children_warp
+		(
+			children,
+			d_scale_coeffs.qy0,
+			d_scale_coeffs.qy1x,
+			d_scale_coeffs.qy1y,
+			parent_idx,
+			curr_lvl_idx,
+			next_lvl_idx,
+			lane_id
+		);
+	}
+	else
+	{
+		s0  = &d_scale_coeffs.qy0[child_idx + 0];
+		s1x = &d_scale_coeffs.qy1x[child_idx + 0];
+		s1y = &d_scale_coeffs.qy1y[child_idx + 0];
+
+		children =
+		{
+			{  s0[0],  s0[1],  s0[2],  s0[3] },
+			{ s1x[0], s1x[1], s1x[2], s1x[3] },
+			{ s1y[0], s1y[1], s1y[2], s1y[3] }
+		};
+	}
 
 	d_scale_coeffs.qy0[parent_idx]  = encode_scale_0 (children);
 	d_scale_coeffs.qy1x[parent_idx] = encode_scale_1x(children);

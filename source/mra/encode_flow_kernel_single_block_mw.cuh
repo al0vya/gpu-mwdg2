@@ -18,8 +18,8 @@
 #include "../utilities/get_lvl_idx.cuh"
 #include "store_details.cuh"
 #include "store_scale_coeffs.cuh"
-#include "encode_scale_coeffs.cuh"
 #include "encode_details.cuh"
+#include "encode_scale_coeffs.cuh"
 
 __global__
 void encode_flow_kernel_single_block_mw

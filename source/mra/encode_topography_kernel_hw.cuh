@@ -14,8 +14,8 @@
 #include "../classes/Maxes.h"
 #include "store_details.cuh"
 #include "store_scale_coeffs.cuh"
-#include "encode_scale_coeffs.cuh"
 #include "encode_details.cuh"
+#include "encode_scale_coeffs.cuh"
 #include "../zorder/compact.cuh"
 #include "../zorder/generate_morton_code.cuh"
 
