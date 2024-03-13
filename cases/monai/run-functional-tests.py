@@ -23,14 +23,14 @@ def main():
     if option == "fast":
         error = compute_error(epsilon=1e-3, solver="hwfv1")
         
-        print(f"Mean absolute error for hwfv1 solver, epsilon = 1e-3: {error}")
+        print(f"Mean absolute error for hwfv1 solver, epsilon = 1e-3: {error:.1e}")
     elif option == "slow":
         errors = compute_all_errors()
         
-        print(f"Mean absolute error for hwfv1 solver, epsilon = 1e-3: {errors['hwfv1'][1e-3]}")
-        print(f"Mean absolute error for hwfv1 solver, epsilon = 0:    {errors['hwfv1'][0]}")
-        print(f"Mean absolute error for mwdg2 solver, epsilon = 1e-3: {errors['mwdg2'][1e-3]}")
-        print(f"Mean absolute error for mwdg2 solver, epsilon = 0:    {errors['mwdg2'][0]}")
+        print(f"Mean absolute error for hwfv1 solver, epsilon = 1e-3: {errors['hwfv1'][1e-3]:.1e}")
+        print(f"Mean absolute error for hwfv1 solver, epsilon = 0:    {errors['hwfv1'][0]:.1e}")
+        print(f"Mean absolute error for mwdg2 solver, epsilon = 1e-3: {errors['mwdg2'][1e-3]:.1e}")
+        print(f"Mean absolute error for mwdg2 solver, epsilon = 0:    {errors['mwdg2'][0]:.1e}")
     else:
         EXIT_HELP()
         

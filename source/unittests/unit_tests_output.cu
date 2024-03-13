@@ -14,7 +14,7 @@ void unit_test_write_hierarchy_array_real()
 
 	for (int i = 0; i < array_length; i++)
 	{
-		h_hierarchy[i] = i;
+		h_hierarchy[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	copy_cuda(d_hierarchy, h_hierarchy, bytes);
@@ -24,7 +24,8 @@ void unit_test_write_hierarchy_array_real()
 
 	write_hierarchy_array_real(dirroot, filename, d_hierarchy, levels);
 
-	const real actual_error   = compare_array_with_file_real(dirroot, filename, h_hierarchy, array_length);
+	// skip the first three elems of the hierarchy array
+	const real actual_error   = compare_array_with_file_real(dirroot, filename, h_hierarchy + PADDING_MRA, array_length - PADDING_MRA);
 	const real expected_error = C(1e-6);
 
 	delete[]    h_hierarchy;
@@ -44,7 +45,7 @@ void unit_test_write_hierarchy_array_bool()
 
 	for (int i = 0; i < array_length; i++)
 	{
-		h_hierarchy[i] = (i % 2 == 0);
+		h_hierarchy[i] = (i < PADDING_MRA) ? 0 : ( (i - PADDING_MRA) % 2 == 0 );
 	}
 
 	copy_cuda(d_hierarchy, h_hierarchy, bytes);
@@ -71,9 +72,10 @@ void unit_test_write_hierarchy_array_bool()
 	int host_value = 0;
 	int file_value = 0;
 
-	for (int i = 0; i < array_length; i++)
+	// skip the first three elems of the hierarchy array
+	for (int i = 0; i < array_length - PADDING_MRA; i++)
 	{
-		host_value = h_hierarchy[i];
+		host_value = h_hierarchy[i + PADDING_MRA];
 		
 		fscanf(fp, "%d", &file_value);
 

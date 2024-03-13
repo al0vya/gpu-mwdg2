@@ -10,5 +10,6 @@ int compare_d_array_with_file_bool
 	const char* dirroot,
 	const char* filename,
 	bool*       d_array,
-	const int&  array_length
+	const int&  array_length,
+	const int&  offset
 );

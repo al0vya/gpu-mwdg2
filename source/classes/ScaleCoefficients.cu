@@ -15,15 +15,35 @@ ScaleCoefficients::ScaleCoefficients
 	this->qy0  = (real*)malloc_device(bytes);
 	this->z0   = (real*)malloc_device(bytes);
 
-	this->eta1x = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-	this->qx1x  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-	this->qy1x  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-	this->z1x   = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
+	const int num_blocks = get_num_blocks(num_scale_coeffs, THREADS_PER_BLOCK);
 
-	this->eta1y = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-	this->qx1y  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-	this->qy1y  = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
-	this->z1y   = (solver_type == MWDG2) ? (real*)malloc_device(bytes) : nullptr;
+	zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->eta0, num_scale_coeffs);
+	zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx0,  num_scale_coeffs);
+	zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy0,  num_scale_coeffs);
+	zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->z0,   num_scale_coeffs);
+
+	if (this->solver_type == MWDG2)
+	{
+		this->eta1x = (real*)malloc_device(bytes);
+	    this->qx1x  = (real*)malloc_device(bytes);
+	    this->qy1x  = (real*)malloc_device(bytes);
+	    this->z1x   = (real*)malloc_device(bytes);
+	    
+	    this->eta1y = (real*)malloc_device(bytes);
+	    this->qx1y  = (real*)malloc_device(bytes);
+	    this->qy1y  = (real*)malloc_device(bytes);
+	    this->z1y   = (real*)malloc_device(bytes);
+
+		zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->eta1x, num_scale_coeffs);
+	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx1x,  num_scale_coeffs);
+	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy1x,  num_scale_coeffs);
+	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->z1x,   num_scale_coeffs);
+
+		zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->eta1y, num_scale_coeffs);
+	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx1y,  num_scale_coeffs);
+	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy1y,  num_scale_coeffs);
+	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->z1y,   num_scale_coeffs);
+	}
 }
 
 ScaleCoefficients::ScaleCoefficients
@@ -212,10 +232,10 @@ real ScaleCoefficients::verify
 
 		const int num_scale_coeffs = get_lvl_idx(this->levels + 1);
 
-		real error_eta0 = compute_error(this->eta0, d_eta0_verified, num_scale_coeffs);
-		real error_qx0  = compute_error(this->qx0,  d_qx0_verified,  num_scale_coeffs);
-		real error_qy0  = compute_error(this->qy0,  d_qy0_verified,  num_scale_coeffs);
-		real error_z0   = compute_error(this->z0,   d_z0_verified,   num_scale_coeffs);
+		real error_eta0 = compute_max_error(this->eta0, d_eta0_verified, num_scale_coeffs);
+		real error_qx0  = compute_max_error(this->qx0,  d_qx0_verified,  num_scale_coeffs);
+		real error_qy0  = compute_max_error(this->qy0,  d_qy0_verified,  num_scale_coeffs);
+		real error_z0   = compute_max_error(this->z0,   d_z0_verified,   num_scale_coeffs);
 
 		free_device(d_eta0_verified);
 		free_device(d_qx0_verified);
@@ -271,18 +291,18 @@ real ScaleCoefficients::verify
 
 		const int num_scale_coeffs = get_lvl_idx(this->levels + 1);
 
-		const real error_eta0  = compute_error(this->eta0,  d_eta0_verified,  num_scale_coeffs);
-		const real error_qx0   = compute_error(this->qx0,   d_qx0_verified,   num_scale_coeffs);
-		const real error_qy0   = compute_error(this->qy0,   d_qy0_verified,   num_scale_coeffs);
-		const real error_z0    = compute_error(this->z0,    d_z0_verified,    num_scale_coeffs);
-		const real error_eta1x = compute_error(this->eta1x, d_eta1x_verified, num_scale_coeffs);
-		const real error_qx1x  = compute_error(this->qx1x,  d_qx1x_verified,  num_scale_coeffs);
-		const real error_qy1x  = compute_error(this->qy1x,  d_qy1x_verified,  num_scale_coeffs);
-		const real error_z1x   = compute_error(this->z1x,   d_z1x_verified,   num_scale_coeffs);
-		const real error_eta1y = compute_error(this->eta1y, d_eta1y_verified, num_scale_coeffs);
-		const real error_qx1y  = compute_error(this->qx1y,  d_qx1y_verified,  num_scale_coeffs);
-		const real error_qy1y  = compute_error(this->qy1y,  d_qy1y_verified,  num_scale_coeffs);
-		const real error_z1y   = compute_error(this->z1y,   d_z1y_verified,   num_scale_coeffs);
+		const real error_eta0  = compute_max_error(this->eta0,  d_eta0_verified,  num_scale_coeffs);
+		const real error_qx0   = compute_max_error(this->qx0,   d_qx0_verified,   num_scale_coeffs);
+		const real error_qy0   = compute_max_error(this->qy0,   d_qy0_verified,   num_scale_coeffs);
+		const real error_z0    = compute_max_error(this->z0,    d_z0_verified,    num_scale_coeffs);
+		const real error_eta1x = compute_max_error(this->eta1x, d_eta1x_verified, num_scale_coeffs);
+		const real error_qx1x  = compute_max_error(this->qx1x,  d_qx1x_verified,  num_scale_coeffs);
+		const real error_qy1x  = compute_max_error(this->qy1x,  d_qy1x_verified,  num_scale_coeffs);
+		const real error_z1x   = compute_max_error(this->z1x,   d_z1x_verified,   num_scale_coeffs);
+		const real error_eta1y = compute_max_error(this->eta1y, d_eta1y_verified, num_scale_coeffs);
+		const real error_qx1y  = compute_max_error(this->qx1y,  d_qx1y_verified,  num_scale_coeffs);
+		const real error_qy1y  = compute_max_error(this->qy1y,  d_qy1y_verified,  num_scale_coeffs);
+		const real error_z1y   = compute_max_error(this->z1y,   d_z1y_verified,   num_scale_coeffs);
 
 		// mean
 		// const real error_0  = (error_eta0  + error_qx0  + error_qy0  + error_z0)  / C(4.0);

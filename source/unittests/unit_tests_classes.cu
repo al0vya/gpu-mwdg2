@@ -51,9 +51,14 @@ void unit_test_scale_coeffs_CONSTRUCTOR_FILES_HW()
 	const int array_length = get_lvl_idx(solver_params.L + 1);
 	real* h_scale_coeffs = new real[array_length];
 
-	for (int i = 0; i < array_length; i++)
+	for (int i = 0; i < PADDING_MRA; i++)
 	{
-		h_scale_coeffs[i] = i;
+		h_scale_coeffs[i] = 0;
+	}
+
+	for (int i = 0; i < array_length - PADDING_MRA; i++)
+	{
+		h_scale_coeffs[i + PADDING_MRA] = i;
 	}
 
 	const real error_eta0  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta0,  array_length);
@@ -115,10 +120,10 @@ void unit_test_scale_coeffs_WRITE_TO_FILE_HW()
 	sprintf(filename_qy0,  "%s%s", prefix, "-scale-coeffs-qy0-hw");
 	sprintf(filename_z0,   "%s%s", prefix, "-scale-coeffs-z0-hw");
 
-	const real error_eta0 = compare_array_with_file_real(dirroot, filename_eta0, h_scale_coeffs, array_length);
-	const real error_qx0  = compare_array_with_file_real(dirroot, filename_qx0,  h_scale_coeffs, array_length);
-	const real error_qy0  = compare_array_with_file_real(dirroot, filename_qy0,  h_scale_coeffs, array_length);
-	const real error_z0   = compare_array_with_file_real(dirroot, filename_z0,   h_scale_coeffs, array_length);
+	const real error_eta0 = compare_array_with_file_real(dirroot, filename_eta0, h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_qx0  = compare_array_with_file_real(dirroot, filename_qx0,  h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_qy0  = compare_array_with_file_real(dirroot, filename_qy0,  h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_z0   = compare_array_with_file_real(dirroot, filename_z0,   h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
 
 	const real expected_error = C(1e-6);
 
@@ -151,7 +156,7 @@ void unit_test_scale_coeffs_VERIFY_HW()
 
 	for (int i = 0; i < array_length; i++)
 	{
-		h_scale_coeffs[i] = i;
+		h_scale_coeffs[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	copy_cuda(d_scale_coeffs.eta0, h_scale_coeffs, bytes);
@@ -220,7 +225,7 @@ void unit_test_scale_coeffs_CONSTRUCTOR_FILES_MW()
 
 	for (int i = 0; i < array_length; i++)
 	{
-		h_scale_coeffs[i] = i;
+		h_scale_coeffs[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	const real error_eta0  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta0,  array_length);
@@ -271,11 +276,11 @@ void unit_test_scale_coeffs_WRITE_TO_FILE_MW()
 
 	const int array_length = get_lvl_idx(solver_params.L + 1);
 	const size_t bytes     = array_length * sizeof(real);
-	real* h_scale_coeffs    = new real[array_length];
+	real* h_scale_coeffs   = new real[array_length];
 
 	for (int i = 0; i < array_length; i++)
 	{
-		h_scale_coeffs[i] = i;
+		h_scale_coeffs[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	copy_cuda(d_scale_coeffs.eta0,  h_scale_coeffs, bytes);
@@ -322,18 +327,18 @@ void unit_test_scale_coeffs_WRITE_TO_FILE_MW()
 	sprintf(filename_qy1y,  "%s%s", prefix, "-scale-coeffs-qy1y-mw");
 	sprintf(filename_z1y,   "%s%s", prefix, "-scale-coeffs-z1y-mw");
 
-	const real error_eta0  = compare_array_with_file_real(dirroot, filename_eta0,  h_scale_coeffs, array_length);
-	const real error_qx0   = compare_array_with_file_real(dirroot, filename_qx0,   h_scale_coeffs, array_length);
-	const real error_qy0   = compare_array_with_file_real(dirroot, filename_qy0,   h_scale_coeffs, array_length);
-	const real error_z0    = compare_array_with_file_real(dirroot, filename_z0,    h_scale_coeffs, array_length);
-	const real error_eta1x = compare_array_with_file_real(dirroot, filename_eta1x, h_scale_coeffs, array_length);
-	const real error_qx1x  = compare_array_with_file_real(dirroot, filename_qx1x,  h_scale_coeffs, array_length);
-	const real error_qy1x  = compare_array_with_file_real(dirroot, filename_qy1x,  h_scale_coeffs, array_length);
-	const real error_z1x   = compare_array_with_file_real(dirroot, filename_z1x,   h_scale_coeffs, array_length);
-	const real error_eta1y = compare_array_with_file_real(dirroot, filename_eta1y, h_scale_coeffs, array_length);
-	const real error_qx1y  = compare_array_with_file_real(dirroot, filename_qx1y,  h_scale_coeffs, array_length);
-	const real error_qy1y  = compare_array_with_file_real(dirroot, filename_qy1y,  h_scale_coeffs, array_length);
-	const real error_z1y   = compare_array_with_file_real(dirroot, filename_z1y,   h_scale_coeffs, array_length);
+	const real error_eta0  = compare_array_with_file_real(dirroot, filename_eta0,  h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_qx0   = compare_array_with_file_real(dirroot, filename_qx0,   h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_qy0   = compare_array_with_file_real(dirroot, filename_qy0,   h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_z0    = compare_array_with_file_real(dirroot, filename_z0,    h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_eta1x = compare_array_with_file_real(dirroot, filename_eta1x, h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_qx1x  = compare_array_with_file_real(dirroot, filename_qx1x,  h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_qy1x  = compare_array_with_file_real(dirroot, filename_qy1x,  h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_z1x   = compare_array_with_file_real(dirroot, filename_z1x,   h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_eta1y = compare_array_with_file_real(dirroot, filename_eta1y, h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_qx1y  = compare_array_with_file_real(dirroot, filename_qx1y,  h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_qy1y  = compare_array_with_file_real(dirroot, filename_qy1y,  h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
+	const real error_z1y   = compare_array_with_file_real(dirroot, filename_z1y,   h_scale_coeffs + PADDING_MRA, array_length - PADDING_MRA);
 
 	const real expected_error = C(1e-6);
 
@@ -374,7 +379,7 @@ void unit_test_scale_coeffs_VERIFY_MW()
 
 	for (int i = 0; i < array_length; i++)
 	{
-		h_scale_coeffs[i] = i;
+		h_scale_coeffs[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	copy_cuda(d_scale_coeffs.eta0,  h_scale_coeffs, bytes);
@@ -456,7 +461,7 @@ void unit_test_subdetails_CONSTRUCTOR_FILES()
 
 	for (int i = 0; i < num_details; i++)
 	{
-		h_subdetails[i] = i;
+		h_subdetails[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 	
 	bool passed = test_subdetails_CONSTRUCTOR_FILES
@@ -520,7 +525,7 @@ void unit_test_subdetails_VERIFY()
 
 	for (int i = 0; i < num_details; i++)
 	{
-		h_subdetails[i] = i;
+		h_subdetails[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	SubDetails d_subdetails(levels);
@@ -605,7 +610,7 @@ void unit_test_details_CONSTRUCTOR_FILES_HW()
 
 	for (int i = 0; i < num_details; i++)
 	{
-		h_details[i] = i;
+		h_details[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	bool passed_eta0 = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.eta0, num_details);
@@ -636,7 +641,7 @@ void unit_test_details_WRITE_TO_FILE_HW()
 
 	for (int i = 0; i < num_details; i++)
 	{
-		h_details[i] = i;
+		h_details[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	init_details(h_details, d_details, bytes);
@@ -674,7 +679,7 @@ void unit_test_details_VERIFY_HW()
 
 	for (int i = 0; i < num_details; i++)
 	{
-		h_details[i] = i;
+		h_details[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	init_details(h_details, d_details, bytes);
@@ -743,7 +748,7 @@ void unit_test_details_CONSTRUCTOR_FILES_MW()
 
 	for (int i = 0; i < num_details; i++)
 	{
-		h_details[i] = i;
+		h_details[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	bool passed_eta0  = test_subdetails_CONSTRUCTOR_FILES(h_details, d_details.eta0,  num_details);
@@ -838,7 +843,7 @@ void unit_test_details_VERIFY_MW()
 
 	for (int i = 0; i < num_details; i++)
 	{
-		h_details[i] = i;
+		h_details[i] = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA;
 	}
 
 	init_details(h_details, d_details, bytes);
@@ -940,9 +945,9 @@ bool test_subdetails_WRITE_TO_FILE
 	sprintf(filename_beta,  "%s%s%s", prefix, "-details-beta-",  suffix);
 	sprintf(filename_gamma, "%s%s%s", prefix, "-details-gamma-", suffix);
 
-	const real error_alpha = compare_array_with_file_real(dirroot, filename_alpha, h_subdetails, num_details);
-	const real error_beta  = compare_array_with_file_real(dirroot, filename_beta,  h_subdetails, num_details);
-	const real error_gamma = compare_array_with_file_real(dirroot, filename_gamma, h_subdetails, num_details);
+	const real error_alpha = compare_array_with_file_real(dirroot, filename_alpha, h_subdetails + PADDING_MRA, num_details - PADDING_MRA);
+	const real error_beta  = compare_array_with_file_real(dirroot, filename_beta,  h_subdetails + PADDING_MRA, num_details - PADDING_MRA);
+	const real error_gamma = compare_array_with_file_real(dirroot, filename_gamma, h_subdetails + PADDING_MRA, num_details - PADDING_MRA);
 	
 	const real expected_error = C(1e-6);
 

@@ -101,7 +101,7 @@ void encode_flow_kernel_mw
 	SubDetailMW     subdetail;
 
 	// Encoding eta
-	if (warp_id < num_warps)
+	if (false /*warp_id < num_warps*/)
 	{
 		load_children_warp
 		(
@@ -133,21 +133,24 @@ void encode_flow_kernel_mw
 	d_scale_coeffs.eta1x[parent_idx] = encode_scale_1x(children);
 	d_scale_coeffs.eta1y[parent_idx] = encode_scale_1y(children);
 
-	subdetail = encode_detail(children);
+	if (!for_nghbrs)
+	{
+		subdetail = encode_detail(children);
 
-	store_details
-	(
-		d_details.eta0,
-		d_details.eta1x,
-		d_details.eta1y,
-		subdetail,
-		parent_idx
-	);
+		store_details
+		(
+			d_details.eta0,
+			d_details.eta1x,
+			d_details.eta1y,
+			subdetail,
+			parent_idx
+		);
 
-	norm_detail = max(norm_detail, subdetail.get_max() / maxes.eta);
+		norm_detail = max(norm_detail, subdetail.get_max() / maxes.eta);
+	}
 
 	// encoding qx
-	if (warp_id < num_warps)
+	if (false /*warp_id < num_warps*/)
 	{
 		load_children_warp
 		(
@@ -179,21 +182,24 @@ void encode_flow_kernel_mw
 	d_scale_coeffs.qx1x[parent_idx] = encode_scale_1x(children);
 	d_scale_coeffs.qx1y[parent_idx] = encode_scale_1y(children);
 
-	subdetail = encode_detail(children);
+	if (!for_nghbrs)
+	{
+		subdetail = encode_detail(children);
 
-	store_details
-	(
-		d_details.qx0,
-		d_details.qx1x,
-		d_details.qx1y,
-		subdetail,
-		parent_idx
-	);
+		store_details
+		(
+			d_details.qx0,
+			d_details.qx1x,
+			d_details.qx1y,
+			subdetail,
+			parent_idx
+		);
 
-	norm_detail = max(norm_detail, subdetail.get_max() / maxes.qx);
+		norm_detail = max(norm_detail, subdetail.get_max() / maxes.qx);
+	}
 
 	// encoding qy
-	if (warp_id < num_warps)
+	if (false /*warp_id < num_warps*/)
 	{
 		load_children_warp
 		(
@@ -225,18 +231,21 @@ void encode_flow_kernel_mw
 	d_scale_coeffs.qy1x[parent_idx] = encode_scale_1x(children);
 	d_scale_coeffs.qy1y[parent_idx] = encode_scale_1y(children);
 
-	subdetail = encode_detail(children);
+	if (!for_nghbrs)
+	{
+		subdetail = encode_detail(children);
 
-	store_details
-	(
-		d_details.qy0,
-		d_details.qy1x,
-		d_details.qy1y,
-		subdetail,
-		parent_idx
-	);
+		store_details
+		(
+			d_details.qy0,
+			d_details.qy1x,
+			d_details.qy1y,
+			subdetail,
+			parent_idx
+		);
 
-	norm_detail = max(norm_detail, subdetail.get_max() / maxes.qy);
+		norm_detail = max(norm_detail, subdetail.get_max() / maxes.qy);
+	}
 
 	if (!for_nghbrs)
 	{

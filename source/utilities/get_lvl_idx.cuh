@@ -2,6 +2,9 @@
 
 #include "../types/HierarchyIndex.h"
 
+// padding to make ensure aligned memory accesses to hierarchy arrays on GPU
+#define PADDING_MRA 3
+
 // gets the starting index of a grid at refinement level n within an array 
 // containing grids at refinement level n to L, mapped to 1D using Morton codes,
 // explained in comment: please grep 'ARRAY OF HIERARCHY OF GRIDS'
@@ -17,5 +20,5 @@ HierarchyIndex get_lvl_idx(int level)
      */
 
     // 1 << n = 2^n therefore 1 << (2 * n) = 2^(2*n) = 4^n
-    return ( ( 1 << (2 * level) ) - 1 ) / 3;
+    return ( ( 1 << (2 * level) ) - 1 ) / 3 + PADDING_MRA;
 }

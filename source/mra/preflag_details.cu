@@ -8,33 +8,32 @@ bool* preflag_details
 	const StagePoints&       stage_points,
 	const SimulationParams&  sim_params,
 	const SolverParams&      solver_params,
-	const int&               num_details,
 	const int&               max_ref_lvl,
 	const int&               test_case
 )
 {
-	size_t bytes = num_details * sizeof(bool);
+	const int    num_details = get_lvl_idx(max_ref_lvl);
+	const size_t bytes       = num_details * sizeof(bool);
 	
 	bool* h_preflagged_details = new bool[num_details]();
-
 	bool* d_preflagged_details = (bool*)malloc_device(bytes);
 
 	HierarchyIndex starting_idx = get_lvl_idx(max_ref_lvl - 1);
 
 	for (int i = 0; i < stage_points.num_points; i++)
 	{
-		MortonCode child_idx = stage_points.codes[i] / 4; // to get Morton code one level below
+		MortonCode child_code = stage_points.codes[i] / 4; // to get Morton code one level below
 
-		h_preflagged_details[starting_idx + child_idx] = true;
+		h_preflagged_details[starting_idx + child_code] = true;
 	}
 
 	if (nullptr != boundaries.north.codes)
 	{
 		for (int i = 0; i < boundaries.north.num_cells(); i++)
 		{
-			MortonCode child_idx = boundaries.north.codes[i] / 4;
+			MortonCode child_code = boundaries.north.codes[i] / 4;
 
-			h_preflagged_details[starting_idx + child_idx] = true;
+			h_preflagged_details[starting_idx + child_code] = true;
 		}
 	}
 
@@ -42,9 +41,9 @@ bool* preflag_details
 	{
 		for (int i = 0; i < boundaries.east.num_cells(); i++)
 		{
-			MortonCode child_idx = boundaries.east.codes[i] / 4;
+			MortonCode child_code = boundaries.east.codes[i] / 4;
 
-			h_preflagged_details[starting_idx + child_idx] = true;
+			h_preflagged_details[starting_idx + child_code] = true;
 		}
 	}
 
@@ -52,9 +51,9 @@ bool* preflag_details
 	{
 		for (int i = 0; i < boundaries.south.num_cells(); i++)
 		{
-			MortonCode child_idx = boundaries.south.codes[i] / 4;
+			MortonCode child_code = boundaries.south.codes[i] / 4;
 
-			h_preflagged_details[starting_idx + child_idx] = true;
+			h_preflagged_details[starting_idx + child_code] = true;
 		}
 	}
 
@@ -62,17 +61,17 @@ bool* preflag_details
 	{
 		for (int i = 0; i < boundaries.west.num_cells(); i++)
 		{
-			MortonCode child_idx = boundaries.west.codes[i] / 4;
+			MortonCode child_code = boundaries.west.codes[i] / 4;
 
-			h_preflagged_details[starting_idx + child_idx] = true;
+			h_preflagged_details[starting_idx + child_code] = true;
 		}
 	}
 
 	for (int i = 0; i < point_sources.num_srcs; i++)
 	{
-		MortonCode child_idx = point_sources.h_codes[i] / 4;
+		MortonCode child_code = point_sources.h_codes[i] / 4;
 
-		h_preflagged_details[starting_idx + child_idx] = true;
+		h_preflagged_details[starting_idx + child_code] = true;
 	}
 
 	if (test_case == 0 && solver_params.refine_wall)

@@ -106,19 +106,15 @@ void unit_test_read_hierarchy_array_real()
 
 	copy_cuda(h_hierarchy, d_hierarchy, bytes);
 
-	bool passed = false;
+	bool passed = true;
 
 	real dummy = C(0.0);
 
 	for (int i = 0; i < array_length; i++)
 	{
-		dummy = i;
+		dummy = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA; // to get a series of numbers with the first three being 0: 0, 0, 0, 0, 1, 2, ..
 		
-		if ( are_reals_equal( dummy, h_hierarchy[i] ) )
-		{
-			passed = true;
-		}
-		else
+		if ( !are_reals_equal( dummy, h_hierarchy[i] ) )
 		{
 			passed = false;
 			break;
@@ -151,7 +147,7 @@ void unit_test_read_hierarchy_array_bool()
 
 	for (int i = 0; i < array_length; i++)
 	{
-		dummy = (i % 2 == 0);
+		dummy = (i < PADDING_MRA) ? 0 : ( (i - PADDING_MRA) % 2 == 0 );
 		
 		if ( dummy != h_hierarchy[i] )
 		{

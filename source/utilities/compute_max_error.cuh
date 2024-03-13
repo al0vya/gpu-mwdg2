@@ -6,7 +6,7 @@
 #include "../utilities/get_max_from_array.cuh"
 #include "../utilities/get_mean_from_array.cuh"
 
-real compute_error
+real compute_max_error
 (
 	real*       d_computed,
 	real*       d_verified,

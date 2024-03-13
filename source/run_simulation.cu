@@ -105,7 +105,6 @@ void run_simulation
 		stage_points, 
 		sim_params, 
 		solver_params, 
-		num_details, 
 		solver_params.L, 
 		test_case
 	);
@@ -237,7 +236,7 @@ void run_simulation
 		
 		mra_start = clock();
 
-		zero_details<<<num_blocks_details, THREADS_PER_BLOCK>>>
+		zero_details
 		(
 			d_details,
 			d_norm_details,

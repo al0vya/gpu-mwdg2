@@ -5,7 +5,8 @@ int compare_d_array_with_file_bool
 	const char* dirroot,
 	const char* filename,
 	bool*       d_array,
-	const int&  array_length
+	const int&  array_length,
+	const int&  offset
 )
 {
 	bool* h_array = new bool[array_length];
@@ -13,7 +14,7 @@ int compare_d_array_with_file_bool
 	
 	copy_cuda(h_array, d_array, bytes);
 
-	int differences = compare_array_with_file_bool(dirroot, filename, h_array, array_length);
+	int differences = compare_array_with_file_bool(dirroot, filename, h_array + offset, array_length - offset);
 
 	delete[] h_array;
 

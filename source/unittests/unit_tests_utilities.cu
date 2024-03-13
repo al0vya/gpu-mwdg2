@@ -54,7 +54,7 @@ void unit_test_get_mean_from_array()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_compute_error()
+void unit_test_compute_max_error()
 {
 	const int array_length = 100000;
 	const size_t bytes = array_length * sizeof(real);
@@ -73,11 +73,9 @@ void unit_test_compute_error()
 	copy_cuda(d_verified, h_verified, bytes);
 
 	// array of errors = abs(d_computed - d_verified), which looks like abs(x - 2x) = x
-	// i.e. the integers from 1 to 100000
-	// sum S of integers 1 to n is S = n * (n+1) / 2
-	// therefore, the mean M = S / n = (n+1)/2
+	// i.e. the integers from 1 to 100000, therefore max error is 100000, i.e. array_length
 	const real expected_error = array_length;
-	const real actual_error   = compute_error(d_computed, d_verified, array_length);
+	const real actual_error   = compute_max_error(d_computed, d_verified, array_length);
 
 	delete[] h_computed;
 	delete[] h_verified;
@@ -155,7 +153,7 @@ void unit_test_compare_array_with_file_real()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_compare_d_array_with_file_bool()
+void unit_test_compare_d_array_with_file_bool_NO_OFFSET()
 {
 	const int array_length = 100;
 	const size_t bytes = array_length * sizeof(bool);
@@ -168,11 +166,11 @@ void unit_test_compare_d_array_with_file_bool()
 	}
 	
 	const char* dirroot  = "unittestdata";
-	const char* filename = "unit_test_compare_d_array_with_file_bool";
+	const char* filename = "unit_test_compare_d_array_with_file_bool_NO_OFFSET";
 
 	copy_cuda(d_array, h_array, bytes);
 
-	const int differences = compare_d_array_with_file_bool(dirroot, filename, d_array, array_length);
+	const int differences = compare_d_array_with_file_bool(dirroot, filename, d_array, array_length, 0);
 
 	delete[] h_array;
 	free_device(d_array);
@@ -181,7 +179,35 @@ void unit_test_compare_d_array_with_file_bool()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_compare_d_array_with_file_real()
+void unit_test_compare_d_array_with_file_bool_OFFSET()
+{
+	const int offset = 50;
+	const int array_length = 100;
+	const int array_length_offset = array_length + offset;
+	const size_t bytes = array_length_offset * sizeof(bool);
+	bool* h_array = new bool[array_length_offset];
+	bool* d_array = (bool*)malloc_device(bytes);
+
+	for (int i = 0; i < array_length_offset; i++)
+	{
+		h_array[i] = (i < offset) ? 0 : (i - offset) % 2 == 0;
+	}
+	
+	const char* dirroot  = "unittestdata";
+	const char* filename = "unit_test_compare_d_array_with_file_bool_OFFSET";
+
+	copy_cuda(d_array, h_array, bytes);
+
+	const int differences = compare_d_array_with_file_bool(dirroot, filename, d_array, array_length_offset, offset);
+
+	delete[] h_array;
+	free_device(d_array);
+
+	if (differences == 0)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_compare_d_array_with_file_real_NO_OFFSET()
 {
 	const int array_length = 100;
 	const size_t bytes = array_length * sizeof(real);
@@ -194,11 +220,11 @@ void unit_test_compare_d_array_with_file_real()
 	}
 	
 	const char* dirroot  = "unittestdata";
-	const char* filename = "unit_test_compare_d_array_with_file_real";
+	const char* filename = "unit_test_compare_d_array_with_file_real_NO_OFFSET";
 
 	copy_cuda(d_array, h_array, bytes);
 
-	const real actual_error   = compare_d_array_with_file_real(dirroot, filename, d_array, array_length);
+	const real actual_error   = compare_d_array_with_file_real(dirroot, filename, d_array, array_length, 0);
 	const real expected_error = C(1e-6);
 
 	delete[] h_array;
@@ -208,16 +234,78 @@ void unit_test_compare_d_array_with_file_real()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_compare_d_array_with_file_real_OFFSET()
+{
+	const int offset = 50;
+	const int array_length = 100;
+	const int array_length_offset = array_length + offset;
+	const size_t bytes = array_length_offset * sizeof(real);
+	real* h_array = new real[array_length_offset];
+	real* d_array = (real*)malloc_device(bytes);
+
+	for (int i = 0; i < array_length_offset; i++)
+	{
+		h_array[i] = (i < offset) ? C(0.0) : i - offset;
+	}
+	
+	const char* dirroot  = "unittestdata";
+	const char* filename = "unit_test_compare_d_array_with_file_real_OFFSET";
+
+	copy_cuda(d_array, h_array, bytes);
+
+	const real actual_error   = compare_d_array_with_file_real(dirroot, filename, d_array, array_length_offset, offset);
+	const real expected_error = C(1e-6);
+
+	delete[] h_array;
+	free_device(d_array);
+
+	if ( are_reals_equal(actual_error, expected_error) )
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_zero_array()
+{
+	const int array_length = 100000;
+	const int num_blocks = get_num_blocks(array_length, THREADS_PER_BLOCK);
+	const size_t bytes = array_length * sizeof(real);
+	real* h_array = new real[array_length];
+	real* d_array = (real*)malloc_device(bytes);
+
+	zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(d_array, array_length);
+
+	copy_cuda(h_array, d_array, bytes);
+
+	bool passed = true;
+
+	for (int i = 0; i < array_length; i++)
+	{
+		if ( h_array[i] != C(0.0) )
+		{
+			passed = false;
+			break;
+		}
+	}
+
+	delete[] h_array;
+	free_device(d_array);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void run_unit_tests_utilities()
 {
 	unit_test_get_max_from_array();
 	unit_test_get_mean_from_array();
-	unit_test_compute_error();
+	unit_test_compute_max_error();
 	unit_test_compare_array_on_device_vs_host_real();
 	unit_test_compare_array_with_file_bool();
 	unit_test_compare_array_with_file_real();
-	unit_test_compare_d_array_with_file_bool();
-	unit_test_compare_d_array_with_file_real();
+	unit_test_compare_d_array_with_file_bool_NO_OFFSET();
+	unit_test_compare_d_array_with_file_bool_OFFSET();
+	unit_test_compare_d_array_with_file_real_NO_OFFSET();
+	unit_test_compare_d_array_with_file_real_OFFSET();
+	unit_test_zero_array();
 }
 
 #endif

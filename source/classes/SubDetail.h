@@ -5,7 +5,9 @@
 #include <math.h>
 
 #include "../types/real.h"
-
+#include "../utilities/get_num_blocks.h"
+#include "../utilities/get_lvl_idx.cuh"
+#include "../utilities/zero_array.cuh"
 
 typedef struct SubDetailHW
 {

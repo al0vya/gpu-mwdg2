@@ -31,9 +31,16 @@ real* read_hierarchy_array_real
 
 	for (int i = 0; i < num_all_elems; i++)
 	{
-		fscanf(fp, "%" NUM_FRMT, &dummy);
-		
-		h_hierarchy[i] = dummy;
+		if (i < PADDING_MRA) // padded section of hierarchy array should be zero
+		{
+			h_hierarchy[i] = C(0.0);
+		}
+		else
+		{
+			fscanf(fp, "%" NUM_FRMT, &dummy);
+
+			h_hierarchy[i] = dummy;
+		}
 	}
 
 	// copying host hierarchy to device hierarchy

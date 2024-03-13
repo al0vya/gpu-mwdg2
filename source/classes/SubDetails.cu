@@ -8,13 +8,20 @@ SubDetails::SubDetails
 )
 	: levels(levels)
 {
-	const int num_details = get_lvl_idx(this->levels + 1);
-	
-	size_t bytes = sizeof(real) * num_details;
+	if (this->levels != -1)
+	{
+		const int num_details = get_lvl_idx(this->levels + 1);
+		const int num_blocks  = get_num_blocks(num_details, THREADS_PER_BLOCK);
+		size_t    bytes       = sizeof(real) * num_details;
 
-	alpha = (this->levels > -1) ? (real*)malloc_device(bytes) : nullptr;
-	beta  = (this->levels > -1) ? (real*)malloc_device(bytes) : nullptr;
-	gamma = (this->levels > -1) ? (real*)malloc_device(bytes) : nullptr;
+		this->alpha = (real*)malloc_device(bytes);
+		this->beta  = (real*)malloc_device(bytes);
+		this->gamma = (real*)malloc_device(bytes);
+
+		zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->alpha, num_details);
+		zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->beta,  num_details);
+		zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->gamma, num_details);
+	}
 }
 
 SubDetails::SubDetails
@@ -94,9 +101,9 @@ real SubDetails::verify
 
 	const int num_details = get_lvl_idx(this->levels + 1);
 
-	real error_alpha = compute_error(this->alpha, d_alpha, num_details);
-	real error_beta  = compute_error(this->beta , d_beta , num_details);
-	real error_gamma = compute_error(this->gamma, d_gamma, num_details);
+	real error_alpha = compute_max_error(this->alpha, d_alpha, num_details);
+	real error_beta  = compute_max_error(this->beta , d_beta , num_details);
+	real error_gamma = compute_max_error(this->gamma, d_gamma, num_details);
 
 	free_device(d_alpha);
 	free_device(d_beta );

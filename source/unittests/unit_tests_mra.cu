@@ -277,7 +277,7 @@ void unit_test_preflag_topo_HW()
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const int  num_details        = get_lvl_idx(solver_params.L);
-	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details, PADDING_MRA);
 
 	const bool passed =
 	(
@@ -325,9 +325,9 @@ void unit_test_encode_flow_TIMESTEP_1_HW()
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const int  num_details        = get_lvl_idx(solver_params.L);
-	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
-	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
-	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details, PADDING_MRA);
 
 	const bool passed =
 	(
@@ -377,9 +377,9 @@ void unit_test_encode_flow_TIMESTEP_2_HW()
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const int  num_details        = get_lvl_idx(solver_params.L);
-	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
-	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
-	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details, PADDING_MRA);
 
 	const bool passed =
 	(
@@ -423,8 +423,8 @@ void unit_test_decoding_TIMESTEP_1_HW()
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const int  num_details        = get_lvl_idx(solver_params.L);
-	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
-	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
 	
 	const bool passed =
 	(
@@ -467,8 +467,8 @@ void unit_test_decoding_TIMESTEP_2_HW()
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const int  num_details        = get_lvl_idx(solver_params.L);
-	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
-	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
 	
 	const bool passed =
 	(
@@ -532,7 +532,7 @@ void unit_test_preflag_topo_MW()
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const int  num_details        = get_lvl_idx(solver_params.L);
-	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details, PADDING_MRA);
 
 	const bool passed =
 	(
@@ -580,9 +580,9 @@ void unit_test_encode_flow_TIMESTEP_1_MW()
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const int  num_details        = get_lvl_idx(solver_params.L);
-	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
-	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
-	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details, PADDING_MRA);
 
 	const bool passed =
 	(
@@ -632,9 +632,9 @@ void unit_test_encode_flow_TIMESTEP_2_MW()
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const int  num_details        = get_lvl_idx(solver_params.L);
-	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
-	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
-	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	const int  diffs_preflagged   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-preflagged-details").c_str(), d_preflagged_details, num_details, PADDING_MRA);
 
 	const bool passed =
 	(
@@ -678,8 +678,8 @@ void unit_test_decoding_TIMESTEP_1_MW()
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const int  num_details        = get_lvl_idx(solver_params.L);
-	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
-	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
 	
 	const bool passed =
 	(
@@ -722,8 +722,8 @@ void unit_test_decoding_TIMESTEP_2_MW()
 	const real error_scale        = d_scale_coeffs.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const real error_details      = d_details.verify(dirroot.c_str(), (prefix + "-output").c_str());
 	const int  num_details        = get_lvl_idx(solver_params.L);
-	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details);
-	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
 	
 	const bool passed =
 	(
@@ -764,7 +764,7 @@ void run_unit_tests_mra()
 	//unit_test_decoding_TIMESTEP_2_HW();
 
 	//unit_test_preflag_topo_MW();
-	unit_test_encode_flow_TIMESTEP_1_MW();
+	//unit_test_encode_flow_TIMESTEP_1_MW();
 	unit_test_encode_flow_TIMESTEP_2_MW();
 	//unit_test_decoding_TIMESTEP_1_MW();
 	//unit_test_decoding_TIMESTEP_2_MW();

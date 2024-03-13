@@ -1,6 +1,6 @@
-#include "compute_error.cuh"
+#include "compute_max_error.cuh"
 
-real compute_error
+real compute_max_error
 (
 	real*       d_computed,
 	real*       d_verified,

@@ -3,8 +3,10 @@
 #include <algorithm>
 
 #include "../classes/SolverParams.h"
+#include "../utilities/get_num_blocks.h"
 #include "../utilities/get_lvl_idx.cuh"
-#include "../utilities/compute_error.cuh"
+#include "../utilities/zero_array.cuh"
+#include "../utilities/compute_max_error.cuh"
 #include "../output/write_hierarchy_array_real.cuh"
 #include "../input/read_hierarchy_array_real.cuh"
 

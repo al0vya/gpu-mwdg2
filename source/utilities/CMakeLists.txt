@@ -11,6 +11,7 @@ target_sources(
 		compare_array_with_file_real.cpp
 		compare_d_array_with_file_bool.cu
 		compare_d_array_with_file_real.cu
-		compute_error.cu
+		compute_max_error.cu
         compute_error_kernel.cu
+		zero_array.cu
 	)

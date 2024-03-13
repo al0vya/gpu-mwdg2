@@ -48,8 +48,6 @@ void encode_flow_kernel_single_block_mw
 	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
 	HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
 
-	real tol_q = solver_params.tol_q;
-
 	HierarchyIndex parent_idx = curr_lvl_idx + t_idx;
 	HierarchyIndex child_idx  = next_lvl_idx + 4 * t_idx;
 
@@ -77,44 +75,14 @@ void encode_flow_kernel_single_block_mw
 				{ eta1y[0], eta1y[1], eta1y[2], eta1y[3] }
 			},
 			{
-				{
-					(abs(qx0[0]) > tol_q) ? qx0[0] : C(0.0),
-					(abs(qx0[1]) > tol_q) ? qx0[1] : C(0.0),
-					(abs(qx0[2]) > tol_q) ? qx0[2] : C(0.0),
-					(abs(qx0[3]) > tol_q) ? qx0[3] : C(0.0)
-				},
-				{
-					(abs(qx1x[0]) > tol_q) ? qx1x[0] : C(0.0),
-					(abs(qx1x[1]) > tol_q) ? qx1x[1] : C(0.0),
-					(abs(qx1x[2]) > tol_q) ? qx1x[2] : C(0.0),
-					(abs(qx1x[3]) > tol_q) ? qx1x[3] : C(0.0)
-				},
-				{
-					(abs(qx1y[0]) > tol_q) ? qx1y[0] : C(0.0),
-					(abs(qx1y[1]) > tol_q) ? qx1y[1] : C(0.0),
-					(abs(qx1y[2]) > tol_q) ? qx1y[2] : C(0.0),
-					(abs(qx1y[3]) > tol_q) ? qx1y[3] : C(0.0)
-				}
+				{  qx0[0],  qx0[1],  qx0[2],  qx0[3] },
+				{ qx1x[0], qx1x[1], qx1x[2], qx1x[3] },
+				{ qx1y[0], qx1y[1], qx1y[2], qx1y[3] }
 			},
 			{
-				{
-					(abs(qy0[0]) > tol_q) ? qy0[0] : C(0.0),
-					(abs(qy0[1]) > tol_q) ? qy0[1] : C(0.0),
-					(abs(qy0[2]) > tol_q) ? qy0[2] : C(0.0),
-					(abs(qy0[3]) > tol_q) ? qy0[3] : C(0.0)
-				},
-				{
-					(abs(qy1x[0]) > tol_q) ? qy1x[0] : C(0.0),
-					(abs(qy1x[1]) > tol_q) ? qy1x[1] : C(0.0),
-					(abs(qy1x[2]) > tol_q) ? qy1x[2] : C(0.0),
-					(abs(qy1x[3]) > tol_q) ? qy1x[3] : C(0.0)
-				},
-				{
-					(abs(qy1y[0]) > tol_q) ? qy1y[0] : C(0.0),
-					(abs(qy1y[1]) > tol_q) ? qy1y[1] : C(0.0),
-					(abs(qy1y[2]) > tol_q) ? qy1y[2] : C(0.0),
-					(abs(qy1y[3]) > tol_q) ? qy1y[3] : C(0.0)
-				}
+				{  qy0[0],  qy0[1],  qy0[2],  qy0[3] },
+				{ qy1x[0], qy1x[1], qy1x[2], qy1x[3] },
+				{ qy1y[0], qy1y[1], qy1y[2], qy1y[3] }
 			},
 			{
 				{ C(0.0), C(0.0), C(0.0), C(0.0) },
@@ -125,13 +93,6 @@ void encode_flow_kernel_single_block_mw
 
 		ParentScaleCoeffsMW parent_coeffs = encode_scale_coeffs(child_coeffs);
 		DetailMW            detail = (!for_nghbrs) ? encode_details(child_coeffs) : DetailMW{};
-
-		parent_coeffs._0.qx *= (abs(parent_coeffs._0.qx) > tol_q);
-		parent_coeffs._1x.qx *= (abs(parent_coeffs._1x.qx) > tol_q);
-		parent_coeffs._1y.qx *= (abs(parent_coeffs._1y.qx) > tol_q);
-		parent_coeffs._0.qy *= (abs(parent_coeffs._0.qy) > tol_q);
-		parent_coeffs._1x.qy *= (abs(parent_coeffs._1x.qy) > tol_q);
-		parent_coeffs._1y.qy *= (abs(parent_coeffs._1y.qy) > tol_q);
 
 		norm_detail = detail.get_norm_detail(maxes);
 
