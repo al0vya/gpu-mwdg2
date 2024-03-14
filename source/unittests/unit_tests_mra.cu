@@ -394,6 +394,134 @@ void unit_test_encode_flow_TIMESTEP_2_HW()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_regularisation_TIMESTEP_1_HW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_regularisation_TIMESTEP_1_HW";
+	const std::string par_file = "unit_tests_HW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams solver_params(input_filename.c_str());
+	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	
+	get_reg_tree
+	(
+		d_sig_details,
+		solver_params
+	);
+
+	const int  max_diffs = 5;
+	
+	const int  num_details = get_lvl_idx(solver_params.L);
+	const int  diffs_sig   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	
+	const bool passed = diffs_sig < max_diffs;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_regularisation_TIMESTEP_2_HW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_regularisation_TIMESTEP_2_HW";
+	const std::string par_file = "unit_tests_HW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams solver_params(input_filename.c_str());
+	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	
+	get_reg_tree
+	(
+		d_sig_details,
+		solver_params
+	);
+
+	const int  max_diffs = 5;
+	
+	const int  num_details = get_lvl_idx(solver_params.L);
+	const int  diffs_sig   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	
+	const bool passed = diffs_sig < max_diffs;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_extra_significance_TIMESTEP_1_HW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_extra_significance_TIMESTEP_1_HW";
+	const std::string par_file = "unit_tests_HW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams solver_params(input_filename.c_str());
+	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	real*        d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
+	
+	extra_significance
+	(
+		d_sig_details,
+		d_norm_details,
+		solver_params
+	);
+
+	const real max_error = C(2e-5);
+	const int  max_diffs = 5;
+	
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	
+	const bool passed =
+	(
+		diffs_sig          < max_diffs &&
+		error_norm_details < max_error
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_extra_significance_TIMESTEP_2_HW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_extra_significance_TIMESTEP_2_HW";
+	const std::string par_file = "unit_tests_HW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams solver_params(input_filename.c_str());
+	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	real*        d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
+	
+	extra_significance
+	(
+		d_sig_details,
+		d_norm_details,
+		solver_params
+	);
+
+	const real max_error = C(2e-5);
+	const int  max_diffs = 5;
+	
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	
+	const bool passed =
+	(
+		diffs_sig          < max_diffs &&
+		error_norm_details < max_error
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void unit_test_decoding_TIMESTEP_1_HW()
 {
 	const std::string dirroot  = "unittestdata";
@@ -649,6 +777,134 @@ void unit_test_encode_flow_TIMESTEP_2_MW()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_regularisation_TIMESTEP_1_MW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_regularisation_TIMESTEP_1_MW";
+	const std::string par_file = "unit_tests_MW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams solver_params(input_filename.c_str());
+	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	
+	get_reg_tree
+	(
+		d_sig_details,
+		solver_params
+	);
+
+	const int  max_diffs = 5;
+	
+	const int  num_details = get_lvl_idx(solver_params.L);
+	const int  diffs_sig   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	
+	const bool passed = diffs_sig < max_diffs;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_regularisation_TIMESTEP_2_MW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_regularisation_TIMESTEP_2_MW";
+	const std::string par_file = "unit_tests_MW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams solver_params(input_filename.c_str());
+	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	
+	get_reg_tree
+	(
+		d_sig_details,
+		solver_params
+	);
+
+	const int  max_diffs = 5;
+	
+	const int  num_details = get_lvl_idx(solver_params.L);
+	const int  diffs_sig   = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	
+	const bool passed = diffs_sig < max_diffs;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_extra_significance_TIMESTEP_1_MW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_extra_significance_TIMESTEP_1_MW";
+	const std::string par_file = "unit_tests_MW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams solver_params(input_filename.c_str());
+	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	real*        d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
+	
+	extra_significance
+	(
+		d_sig_details,
+		d_norm_details,
+		solver_params
+	);
+
+	const real max_error = C(2e-5);
+	const int  max_diffs = 5;
+	
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	
+	const bool passed =
+	(
+		diffs_sig          < max_diffs &&
+		error_norm_details < max_error
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_extra_significance_TIMESTEP_2_MW()
+{
+	const std::string dirroot  = "unittestdata";
+	const std::string prefix   = "unit_test_extra_significance_TIMESTEP_2_MW";
+	const std::string par_file = "unit_tests_MW.par";
+
+	const std::string input_filename = dirroot + "/" + par_file;
+
+	SolverParams solver_params(input_filename.c_str());
+	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
+	real*        d_norm_details = read_hierarchy_array_real( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-norm-details").c_str() );
+	
+	extra_significance
+	(
+		d_sig_details,
+		d_norm_details,
+		solver_params
+	);
+
+	const real max_error = C(2e-5);
+	const int  max_diffs = 5;
+	
+	const int  num_details        = get_lvl_idx(solver_params.L);
+	const int  diffs_sig          = compare_d_array_with_file_bool(dirroot.c_str(), (prefix + "-output-sig-details").c_str(), d_sig_details, num_details, PADDING_MRA);
+	const real error_norm_details = compare_d_array_with_file_real(dirroot.c_str(), (prefix + "-output-norm-details").c_str(), d_norm_details, num_details, PADDING_MRA);
+	
+	const bool passed =
+	(
+		diffs_sig          < max_diffs &&
+		error_norm_details < max_error
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void unit_test_decoding_TIMESTEP_1_MW()
 {
 	const std::string dirroot  = "unittestdata";
@@ -760,12 +1016,20 @@ void run_unit_tests_mra()
 	unit_test_preflag_topo_HW();
 	unit_test_encode_flow_TIMESTEP_1_HW();
 	unit_test_encode_flow_TIMESTEP_2_HW();
+	unit_test_regularisation_TIMESTEP_1_HW();
+	unit_test_regularisation_TIMESTEP_2_HW();
+	unit_test_extra_significance_TIMESTEP_1_HW();
+	unit_test_extra_significance_TIMESTEP_2_HW();
 	unit_test_decoding_TIMESTEP_1_HW();
 	unit_test_decoding_TIMESTEP_2_HW();
 	
 	unit_test_preflag_topo_MW();
 	unit_test_encode_flow_TIMESTEP_1_MW();
 	unit_test_encode_flow_TIMESTEP_2_MW();
+	unit_test_regularisation_TIMESTEP_1_MW();
+	unit_test_regularisation_TIMESTEP_2_MW();
+	unit_test_extra_significance_TIMESTEP_1_MW();
+	unit_test_extra_significance_TIMESTEP_2_MW();
 	unit_test_decoding_TIMESTEP_1_MW();
 	unit_test_decoding_TIMESTEP_2_MW();
 }

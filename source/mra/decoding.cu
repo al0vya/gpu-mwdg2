@@ -9,35 +9,6 @@ void decoding
 	SolverParams&      solver_params
 )
 {	
-	extra_significance<true><<<1, THREADS_PER_BLOCK>>>
-	(
-		d_sig_details, 
-		d_norm_details, 
-		solver_params, 
-		0,
-		THREADS_PER_BLOCK
-	);
-	
-	for (int level = LVL_SINGLE_BLOCK; level < solver_params.L - 1; level++)
-	{
-		int num_threads = 1 << (2 * level);
-		int num_blocks  = get_num_blocks(num_threads, THREADS_PER_BLOCK);
-
-		extra_significance<false><<<num_blocks, THREADS_PER_BLOCK>>>
-		(
-			d_sig_details,
-			d_norm_details,
-			solver_params,
-			level,
-			num_threads
-		);
-	}
-	cudaError_t status = cudaFuncSetCacheConfig(decoding_kernel_mw, cudaFuncCachePreferL1);
-
-	if (status != cudaSuccess)
-	{
-		printf("Error about L1, decoding.\n");
-	}
 	if (solver_params.solver_type == HWFV1)
 	{
 		decoding_kernel_single_block_hw<<<1, THREADS_PER_BLOCK>>>

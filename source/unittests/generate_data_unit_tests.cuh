@@ -40,3 +40,22 @@ void generate_data_unit_test_decoding
 	SolverParams      solver_params,
 	const int&        timestep
 );
+
+void generate_data_unit_test_regularisation
+(
+	const char*  dirroot,
+	const char*  input_or_output_str,
+	bool*        d_sig_details,
+	SolverParams solver_params,	
+	const int&   timestep
+);
+
+void generate_data_unit_test_extra_significance
+(
+	const char*  dirroot,
+	const char*  input_or_output_str,
+	bool*        d_sig_details,
+	real*        d_norm_details,
+	SolverParams solver_params,	
+	const int&   timestep
+);

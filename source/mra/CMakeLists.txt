@@ -14,6 +14,8 @@ target_sources(
 		encode_topography_kernel_hw.cu
 		encode_topography_kernel_mw.cu
 		extra_significance.cu
+		extra_significance_kernel.cu
+		extra_significance_kernel_single_block.cu
 		get_max_scale_coeffs.cu
 		get_modal_values.cu
 		get_nodal_values.cu
@@ -26,6 +28,8 @@ target_sources(
 		preflag_details.cu
 		preflag_topo.cu
 		regularisation.cu
+		regularisation_kernel.cu
+		regularisation_kernel_single_block.cu
 		refine_high_wall.cu
 		reinsert_assem_sol.cu
 		reinsert_point_srcs.cu

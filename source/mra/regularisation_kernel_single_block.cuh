@@ -12,8 +12,7 @@
 #include "get_child_details.cuh"
 #include "../utilities/get_lvl_idx.cuh"
 
-template <bool SINGLE_BLOCK>
-__global__ void regularisation_kernel
+__global__ void regularisation_kernel_single_block
 (
 	bool*    d_sig_details,
 	int      level,

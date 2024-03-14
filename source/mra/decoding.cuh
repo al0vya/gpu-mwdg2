@@ -7,7 +7,6 @@
 #include "decoding_kernel_single_block_hw.cuh"
 #include "decoding_kernel_mw.cuh"
 #include "decoding_kernel_single_block_mw.cuh"
-#include "extra_significance.cuh"
 
 void decoding
 (

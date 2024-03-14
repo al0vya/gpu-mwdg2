@@ -9,7 +9,8 @@
 
 #include "../utilities/get_num_blocks.h"
 
-#include "regularisation.cuh"
+#include "regularisation_kernel.cuh"
+#include "regularisation_kernel_single_block.cuh"
 
 __host__
 void get_reg_tree

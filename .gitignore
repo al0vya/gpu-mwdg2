@@ -362,7 +362,9 @@ cases/monai/eps*/
 cases/monai/res
 cases/unittestdata/unit_test_decoding*
 cases/unittestdata/unit_test_encode_flow*
+cases/unittestdata/unit_test_extra_significance*
 cases/unittestdata/unit_test_preflag_topo*
+cases/unittestdata/unit_test_regularisation*
 build/
 *.vl
 *.gif

@@ -317,12 +317,65 @@ void run_simulation
 			);
 			#endif
 
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_regularisation
+			(
+				plot_params.dirroot,
+				"input",
+				d_sig_details,
+				solver_params,
+				timestep
+			);
+			#endif
+
 		    get_reg_tree
 		    (
 		    	d_sig_details,
 		    	solver_params
 		    );
+
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_regularisation
+			(
+				plot_params.dirroot,
+				"output",
+				d_sig_details,
+				solver_params,
+				timestep
+			);
+			#endif
 		    
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_extra_significance
+			(
+				plot_params.dirroot,
+				"input",
+				d_sig_details,
+				d_norm_details,
+				solver_params,
+				timestep
+			);
+			#endif
+
+			extra_significance
+            (
+            	d_sig_details,
+            	d_norm_details,
+            	solver_params
+            );
+
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_extra_significance
+			(
+				plot_params.dirroot,
+				"output",
+				d_sig_details,
+				d_norm_details,
+				solver_params,
+				timestep
+			);
+			#endif
+			
 			#if _RUN_UNIT_TESTS
 			generate_data_unit_test_decoding
 			(
@@ -337,7 +390,7 @@ void run_simulation
 			);
 			#endif
 
-		    decoding // contains extra sig
+		    decoding
 		    (
 		    	d_sig_details,
 		    	d_norm_details,
