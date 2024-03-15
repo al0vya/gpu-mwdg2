@@ -33,6 +33,5 @@ void encode_flow_kernel_hw
 	Maxes             maxes,
 	SolverParams      solver_params,
 	int               level,
-	int               num_threads,
-	bool              for_nghbrs
+	int               num_threads
 );

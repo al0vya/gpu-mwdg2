@@ -32,8 +32,7 @@ void encode_flow
 				maxes,
 				solver_params,
 				level,
-				num_threads,
-				for_nghbrs
+				num_threads
 			);
 		}
 		else if (solver_params.solver_type == MWDG2)
@@ -54,35 +53,28 @@ void encode_flow
 		}
 	}
 
+	const int level = LVL_SINGLE_BLOCK - 1;
+	const int num_threads = 1 << (2 * level);
+	const int num_blocks = 1;
+	const int block_size = num_threads / num_blocks;
+
 	if (solver_params.solver_type == HWFV1)
 	{
-		for (int level = LVL_SINGLE_BLOCK - 1; level >= 0; level--)
-		{
-			int num_threads = 1 << (2 * level);
-			int num_blocks = get_num_blocks(num_threads, THREADS_PER_BLOCK);
-
-			encode_flow_kernel_single_block_hw<<<num_blocks, THREADS_PER_BLOCK>>>
-			(
-				d_scale_coeffs,
-				d_details,
-				d_norm_details,
-				d_sig_details,
-				d_preflagged_details,
-				maxes,
-				solver_params,
-				level,
-				num_threads,
-				for_nghbrs
-			);
-		}
+		encode_flow_kernel_single_block_hw<<<num_blocks, block_size>>>
+		(
+			d_scale_coeffs,
+			d_details,
+			d_norm_details,
+			d_sig_details,
+			d_preflagged_details,
+			maxes,
+			solver_params,
+			level,
+			num_threads
+		);
 	}
 	else if (solver_params.solver_type == MWDG2)
 	{
-		const int level = LVL_SINGLE_BLOCK - 1;
-		const int num_threads = 1 << (2 * level);
-		const int num_blocks = 1;
-		const int block_size = num_threads / num_blocks;
-		
 		encode_flow_kernel_single_block_mw<<<num_blocks, block_size>>>
 		(
 			d_scale_coeffs,

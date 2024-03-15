@@ -32,8 +32,7 @@ void encode_flow_kernel_hw
 	Maxes             maxes,
 	SolverParams      solver_params,
 	int               level,
-	int               num_threads,
-	bool              for_nghbrs
+	int               num_threads
 )
 {
 	HierarchyIndex t_idx = threadIdx.x;
@@ -75,7 +74,7 @@ void encode_flow_kernel_hw
 
 	__syncthreads();
 
-	if (!for_nghbrs) d_sig_details[parent_idx] = INSIGNIFICANT;
+	d_sig_details[parent_idx] = INSIGNIFICANT;
 
 	if (is_sig) shared.parents[thread_prefix_sum] = parent_idx;
 

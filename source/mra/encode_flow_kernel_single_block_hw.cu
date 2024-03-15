@@ -32,82 +32,109 @@ void encode_flow_kernel_single_block_hw
 	Maxes             maxes,
 	SolverParams      solver_params,
 	int               level,
-	int               num_threads,
-	bool              for_nghbrs
+	int               num_threads
 )
 {
-	HierarchyIndex t_idx = threadIdx.x;
-	HierarchyIndex idx   = blockIdx.x * blockDim.x + t_idx;
-
-	if (idx >= num_threads) return;
-	
-	real norm_detail   = C(0.0);
-	real epsilon_local = solver_params.epsilon / ( 1 << (solver_params.L - level) );
-
-	HierarchyIndex prev_lvl_idx = get_lvl_idx(level - 1);
-	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
-	HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
-
-	real tol_q = solver_params.tol_q;
-
-	HierarchyIndex parent_idx = curr_lvl_idx + t_idx;
-	HierarchyIndex child_idx  = next_lvl_idx + 4 * t_idx;
-
-	bool is_sig = d_sig_details[parent_idx];
-
-	if (is_sig)
+	for (int level_kernel = level; level_kernel >= 0; level_kernel--)
 	{
-		real* eta = &d_scale_coeffs.eta0[child_idx];
-		real* qx = &d_scale_coeffs.qx0[child_idx];
-		real* qy = &d_scale_coeffs.qy0[child_idx];
+		const int num_threads_active = 1 << (2 * level_kernel);
 
-		ChildScaleCoeffsHW child_coeffs =
+		const int tidx = threadIdx.x;
+
+		if (tidx < num_threads_active)
 		{
-			{ eta[0], eta[1], eta[2], eta[3] },
+			real norm_detail   = C(0.0);
+			real epsilon_local = solver_params.epsilon / (1 << (solver_params.L - level));
+			
+			const HierarchyIndex curr_lvl_idx = get_lvl_idx(level_kernel);
+			const HierarchyIndex next_lvl_idx = get_lvl_idx(level_kernel + 1);
+			const HierarchyIndex parent_idx   = curr_lvl_idx + tidx;
+			const HierarchyIndex child_idx    = next_lvl_idx + 4 * tidx;
 
+			ScaleChildrenHW children;
+			SubDetailHW     subdetail;
+
+			bool is_sig = d_sig_details[parent_idx];
+
+			if (is_sig)
 			{
-				(abs(qx[0]) > tol_q) ? qx[0] : C(0.0),
-				(abs(qx[1]) > tol_q) ? qx[1] : C(0.0),
-				(abs(qx[2]) > tol_q) ? qx[2] : C(0.0),
-				(abs(qx[3]) > tol_q) ? qx[3] : C(0.0)
-			},
+				// Encoding eta
+				load_children_vector
+				(
+					children,
+					d_scale_coeffs.eta0,
+					child_idx
+				);
 
-			{
-				(abs(qy[0]) > tol_q) ? qy[0] : C(0.0),
-				(abs(qy[1]) > tol_q) ? qy[1] : C(0.0),
-				(abs(qy[2]) > tol_q) ? qy[2] : C(0.0),
-				(abs(qy[3]) > tol_q) ? qy[3] : C(0.0)
-			},
+				d_scale_coeffs.eta0[parent_idx] = encode_scale(children);
 
-			{ C(0.0), C(0.0), C(0.0), C(0.0) }
-		};
+				subdetail =
+				{
+					encode_detail_alpha(children),
+					encode_detail_beta(children),
+					encode_detail_gamma(children)
+				};
 
-		ParentScaleCoeffsHW parent_coeffs = encode_scale_coeffs(child_coeffs);
-		DetailHW            detail = encode_details(child_coeffs);
+				d_details.eta0.alpha[parent_idx] = subdetail.alpha;
+				d_details.eta0.beta[parent_idx] = subdetail.beta;
+				d_details.eta0.gamma[parent_idx] = subdetail.gamma;
 
-		parent_coeffs.qx *= (abs(parent_coeffs.qx) > tol_q);
-		parent_coeffs.qy *= (abs(parent_coeffs.qy) > tol_q);
+				norm_detail = max(norm_detail, subdetail.get_max() / maxes.eta);
 
-		norm_detail = detail.get_norm_detail(maxes);
+				// encoding qx
+				load_children_vector
+				(
+					children,
+					d_scale_coeffs.qx0,
+					child_idx
+				);
 
-		store_scale_coeffs
-		(
-			parent_coeffs,
-			d_scale_coeffs,
-			parent_idx
-		);
+				d_scale_coeffs.qx0[parent_idx] = encode_scale(children);
 
-		store_details
-		(
-			detail,
-			d_details,
-			parent_idx
-		);
+				subdetail =
+				{
+					encode_detail_alpha(children),
+					encode_detail_beta(children),
+					encode_detail_gamma(children)
+				};
 
-		d_norm_details[parent_idx] = norm_detail;
+				d_details.qx0.alpha[parent_idx] = subdetail.alpha;
+				d_details.qx0.beta[parent_idx] = subdetail.beta;
+				d_details.qx0.gamma[parent_idx] = subdetail.gamma;
 
-		d_sig_details[parent_idx] = (norm_detail >= epsilon_local) ? SIGNIFICANT : INSIGNIFICANT;
+				norm_detail = max(norm_detail, subdetail.get_max() / maxes.qx);
 
-		if (d_preflagged_details[parent_idx] == SIGNIFICANT) d_sig_details[parent_idx] = SIGNIFICANT;
+				// encoding qy
+				load_children_vector
+				(
+					children,
+					d_scale_coeffs.qy0,
+					child_idx
+				);
+
+				d_scale_coeffs.qy0[parent_idx] = encode_scale(children);
+
+				subdetail =
+				{
+					encode_detail_alpha(children),
+					encode_detail_beta(children),
+					encode_detail_gamma(children)
+				};
+
+				d_details.qy0.alpha[parent_idx] = subdetail.alpha;
+				d_details.qy0.beta[parent_idx] = subdetail.beta;
+				d_details.qy0.gamma[parent_idx] = subdetail.gamma;
+
+				norm_detail = max(norm_detail, subdetail.get_max() / maxes.qy);
+
+				d_norm_details[parent_idx] = norm_detail;
+
+				d_sig_details[parent_idx] = (norm_detail >= epsilon_local || d_preflagged_details[parent_idx] == SIGNIFICANT)
+					? SIGNIFICANT
+					: INSIGNIFICANT;
+			}
+		}
+
+		__syncthreads();
 	}
 }

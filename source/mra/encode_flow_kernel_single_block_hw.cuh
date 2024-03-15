@@ -16,6 +16,7 @@
 #include "../classes/ParentScaleCoeffs.h"
 
 #include "../utilities/get_lvl_idx.cuh"
+#include "load_children_vector.cuh"
 #include "store_details.cuh"
 #include "store_scale_coeffs.cuh"
 #include "encode_scale_coeffs.cuh"
@@ -32,21 +33,5 @@ void encode_flow_kernel_single_block_hw
 	Maxes             maxes,
 	SolverParams      solver_params,
 	int               level,
-	int               num_threads,
-	bool              for_nghbrs
-);
-
-__global__
-void encode_flow_kernel_single_block
-(
-	ScaleCoefficients d_scale_coeffs,
-	Details           d_details,
-	real*             d_norm_details,
-	bool*             d_sig_details,
-	bool*             d_preflagged_details,
-	Maxes             maxes,
-	SolverParams      solver_params,
-	int               level,
-	int               num_threads,
-	bool              for_nghbrs
+	int               num_threads
 );
