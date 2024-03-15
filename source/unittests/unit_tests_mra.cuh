@@ -7,7 +7,7 @@
 #include "../types/real.h"
 #include "../mra/preflag_topo.cuh"
 #include "../mra/encode_flow.cuh"
-#include "../mra/get_reg_tree.cuh"
+#include "../mra/regularisation.cuh"
 #include "../mra/extra_significance.cuh"
 #include "../mra/decoding.cuh"
 #include "../utilities/are_reals_equal.h"

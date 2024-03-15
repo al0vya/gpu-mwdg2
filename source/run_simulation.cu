@@ -328,7 +328,7 @@ void run_simulation
 			);
 			#endif
 
-		    get_reg_tree
+		    regularisation
 		    (
 		    	d_sig_details,
 		    	solver_params

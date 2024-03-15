@@ -405,7 +405,7 @@ void unit_test_regularisation_TIMESTEP_1_HW()
 	SolverParams solver_params(input_filename.c_str());
 	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
 	
-	get_reg_tree
+	regularisation
 	(
 		d_sig_details,
 		solver_params
@@ -433,7 +433,7 @@ void unit_test_regularisation_TIMESTEP_2_HW()
 	SolverParams solver_params(input_filename.c_str());
 	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
 	
-	get_reg_tree
+	regularisation
 	(
 		d_sig_details,
 		solver_params
@@ -788,7 +788,7 @@ void unit_test_regularisation_TIMESTEP_1_MW()
 	SolverParams solver_params(input_filename.c_str());
 	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
 	
-	get_reg_tree
+	regularisation
 	(
 		d_sig_details,
 		solver_params
@@ -816,7 +816,7 @@ void unit_test_regularisation_TIMESTEP_2_MW()
 	SolverParams solver_params(input_filename.c_str());
 	bool*        d_sig_details  = read_hierarchy_array_bool( solver_params.L - 1, dirroot.c_str(), (prefix + "-input-sig-details").c_str() );
 	
-	get_reg_tree
+	regularisation
 	(
 		d_sig_details,
 		solver_params
@@ -1017,7 +1017,7 @@ void run_unit_tests_mra()
 	//unit_test_encode_flow_TIMESTEP_1_HW();
 	//unit_test_encode_flow_TIMESTEP_2_HW();
 	//unit_test_regularisation_TIMESTEP_1_HW();
-	unit_test_regularisation_TIMESTEP_2_HW();
+	//unit_test_regularisation_TIMESTEP_2_HW();
 	//unit_test_extra_significance_TIMESTEP_1_HW();
 	//unit_test_extra_significance_TIMESTEP_2_HW();
 	//unit_test_decoding_TIMESTEP_1_HW();
@@ -1025,13 +1025,13 @@ void run_unit_tests_mra()
 	//
 	//unit_test_preflag_topo_MW();
 	//unit_test_encode_flow_TIMESTEP_1_MW();
-	unit_test_encode_flow_TIMESTEP_2_MW();
+	//unit_test_encode_flow_TIMESTEP_2_MW();
 	//unit_test_regularisation_TIMESTEP_1_MW();
 	//unit_test_regularisation_TIMESTEP_2_MW();
 	//unit_test_extra_significance_TIMESTEP_1_MW();
 	//unit_test_extra_significance_TIMESTEP_2_MW();
-	//unit_test_decoding_TIMESTEP_1_MW();
-	//unit_test_decoding_TIMESTEP_2_MW();
+	unit_test_decoding_TIMESTEP_1_MW();
+	unit_test_decoding_TIMESTEP_2_MW();
 }
 
 #endif

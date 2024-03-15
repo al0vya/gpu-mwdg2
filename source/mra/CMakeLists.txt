@@ -19,7 +19,6 @@ target_sources(
 		get_max_scale_coeffs.cu
 		get_modal_values.cu
 		get_nodal_values.cu
-		get_reg_tree.cu
 		init_eta_temp.cu
 		init_nodal_values.cu
 		init_sig_details.cu
