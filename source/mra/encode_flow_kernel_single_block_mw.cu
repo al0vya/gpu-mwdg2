@@ -55,103 +55,108 @@ void encode_flow_kernel_single_block_mw
 			ScaleChildrenMW children;
 			SubDetailMW     subdetail;
 
-			// Encoding eta
-			load_children_vector
-			(
-				children,
-				d_scale_coeffs.eta0,
-				d_scale_coeffs.eta1x,
-				d_scale_coeffs.eta1y,
-				child_idx
-			);
+			bool is_sig = d_sig_details[parent_idx];
 
-			d_scale_coeffs.eta0[parent_idx] = encode_scale_0(children);
-			d_scale_coeffs.eta1x[parent_idx] = encode_scale_1x(children);
-			d_scale_coeffs.eta1y[parent_idx] = encode_scale_1y(children);
-
-			if (!for_nghbrs)
+			if (is_sig)
 			{
-				subdetail = encode_detail(children);
-
-				store_details
+				// Encoding eta
+				load_children_vector
 				(
-					d_details.eta0,
-					d_details.eta1x,
-					d_details.eta1y,
-					subdetail,
-					parent_idx
+					children,
+					d_scale_coeffs.eta0,
+					d_scale_coeffs.eta1x,
+					d_scale_coeffs.eta1y,
+					child_idx
 				);
 
-				norm_detail = max(norm_detail, subdetail.get_max() / maxes.eta);
-			}
+				d_scale_coeffs.eta0[parent_idx] = encode_scale_0(children);
+				d_scale_coeffs.eta1x[parent_idx] = encode_scale_1x(children);
+				d_scale_coeffs.eta1y[parent_idx] = encode_scale_1y(children);
 
-			// encoding qx
-			load_children_vector
-			(
-				children,
-				d_scale_coeffs.qx0,
-				d_scale_coeffs.qx1x,
-				d_scale_coeffs.qx1y,
-				child_idx
-			);
+				if (!for_nghbrs)
+				{
+					subdetail = encode_detail(children);
 
-			d_scale_coeffs.qx0[parent_idx] = encode_scale_0(children);
-			d_scale_coeffs.qx1x[parent_idx] = encode_scale_1x(children);
-			d_scale_coeffs.qx1y[parent_idx] = encode_scale_1y(children);
+					store_details
+					(
+						d_details.eta0,
+						d_details.eta1x,
+						d_details.eta1y,
+						subdetail,
+						parent_idx
+					);
 
-			if (!for_nghbrs)
-			{
-				subdetail = encode_detail(children);
+					norm_detail = max(norm_detail, subdetail.get_max() / maxes.eta);
+				}
 
-				store_details
+				// encoding qx
+				load_children_vector
 				(
-					d_details.qx0,
-					d_details.qx1x,
-					d_details.qx1y,
-					subdetail,
-					parent_idx
+					children,
+					d_scale_coeffs.qx0,
+					d_scale_coeffs.qx1x,
+					d_scale_coeffs.qx1y,
+					child_idx
 				);
 
-				norm_detail = max(norm_detail, subdetail.get_max() / maxes.qx);
-			}
+				d_scale_coeffs.qx0[parent_idx] = encode_scale_0(children);
+				d_scale_coeffs.qx1x[parent_idx] = encode_scale_1x(children);
+				d_scale_coeffs.qx1y[parent_idx] = encode_scale_1y(children);
 
-			// encoding qy
-			load_children_vector
-			(
-				children,
-				d_scale_coeffs.qy0,
-				d_scale_coeffs.qy1x,
-				d_scale_coeffs.qy1y,
-				child_idx
-			);
+				if (!for_nghbrs)
+				{
+					subdetail = encode_detail(children);
 
-			d_scale_coeffs.qy0[parent_idx] = encode_scale_0(children);
-			d_scale_coeffs.qy1x[parent_idx] = encode_scale_1x(children);
-			d_scale_coeffs.qy1y[parent_idx] = encode_scale_1y(children);
+					store_details
+					(
+						d_details.qx0,
+						d_details.qx1x,
+						d_details.qx1y,
+						subdetail,
+						parent_idx
+					);
 
-			if (!for_nghbrs)
-			{
-				subdetail = encode_detail(children);
+					norm_detail = max(norm_detail, subdetail.get_max() / maxes.qx);
+				}
 
-				store_details
+				// encoding qy
+				load_children_vector
 				(
-					d_details.qy0,
-					d_details.qy1x,
-					d_details.qy1y,
-					subdetail,
-					parent_idx
+					children,
+					d_scale_coeffs.qy0,
+					d_scale_coeffs.qy1x,
+					d_scale_coeffs.qy1y,
+					child_idx
 				);
 
-				norm_detail = max(norm_detail, subdetail.get_max() / maxes.qy);
-			}
+				d_scale_coeffs.qy0[parent_idx] = encode_scale_0(children);
+				d_scale_coeffs.qy1x[parent_idx] = encode_scale_1x(children);
+				d_scale_coeffs.qy1y[parent_idx] = encode_scale_1y(children);
 
-			if (!for_nghbrs)
-			{
-				d_norm_details[parent_idx] = norm_detail;
+				if (!for_nghbrs)
+				{
+					subdetail = encode_detail(children);
 
-				d_sig_details[parent_idx] = (norm_detail >= epsilon_local || d_preflagged_details[parent_idx] == SIGNIFICANT)
-					? SIGNIFICANT
-					: INSIGNIFICANT;
+					store_details
+					(
+						d_details.qy0,
+						d_details.qy1x,
+						d_details.qy1y,
+						subdetail,
+						parent_idx
+					);
+
+					norm_detail = max(norm_detail, subdetail.get_max() / maxes.qy);
+				}
+
+				if (!for_nghbrs)
+				{
+					d_norm_details[parent_idx] = norm_detail;
+
+					d_sig_details[parent_idx] = (norm_detail >= epsilon_local || d_preflagged_details[parent_idx] == SIGNIFICANT)
+						? SIGNIFICANT
+						: INSIGNIFICANT;
+				}
 			}
 		}
 
