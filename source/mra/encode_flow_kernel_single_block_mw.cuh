@@ -16,6 +16,7 @@
 #include "../classes/ParentScaleCoeffs.h"
 
 #include "../utilities/get_lvl_idx.cuh"
+#include "load_children_vector.cuh"
 #include "store_details.cuh"
 #include "store_scale_coeffs.cuh"
 #include "encode_details.cuh"

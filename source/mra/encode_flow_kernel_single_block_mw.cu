@@ -36,90 +36,125 @@ void encode_flow_kernel_single_block_mw
 	bool              for_nghbrs
 )
 {
-	HierarchyIndex t_idx = threadIdx.x;
-	HierarchyIndex idx   = blockIdx.x * blockDim.x + t_idx;
-
-	if (idx >= num_threads) return;
-	
-	real norm_detail   = C(0.0);
-	real epsilon_local = solver_params.epsilon / ( 1 << (solver_params.L - level) );
-
-	HierarchyIndex prev_lvl_idx = get_lvl_idx(level - 1);
-	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
-	HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
-
-	HierarchyIndex parent_idx = curr_lvl_idx + t_idx;
-	HierarchyIndex child_idx  = next_lvl_idx + 4 * t_idx;
-
-	bool is_sig = d_sig_details[parent_idx];
-
-	if (is_sig)
+	for (int level_kernel = level; level_kernel >= 0; level_kernel--)
 	{
-		real* eta0 = &d_scale_coeffs.eta0[child_idx];
-		real* qx0 = &d_scale_coeffs.qx0[child_idx];
-		real* qy0 = &d_scale_coeffs.qy0[child_idx];
+		const int num_threads_active = 1 << (2 * level_kernel);
 
-		real* eta1x = &d_scale_coeffs.eta1x[child_idx];
-		real* qx1x = &d_scale_coeffs.qx1x[child_idx];
-		real* qy1x = &d_scale_coeffs.qy1x[child_idx];
+		const int tidx = threadIdx.x;
 
-		real* eta1y = &d_scale_coeffs.eta1y[child_idx];
-		real* qx1y = &d_scale_coeffs.qx1y[child_idx];
-		real* qy1y = &d_scale_coeffs.qy1y[child_idx];
-
-		ChildScaleCoeffsMW child_coeffs =
+		if (tidx < num_threads_active)
 		{
-			{
-				{  eta0[0],  eta0[1],  eta0[2],  eta0[3] },
-				{ eta1x[0], eta1x[1], eta1x[2], eta1x[3] },
-				{ eta1y[0], eta1y[1], eta1y[2], eta1y[3] }
-			},
-			{
-				{  qx0[0],  qx0[1],  qx0[2],  qx0[3] },
-				{ qx1x[0], qx1x[1], qx1x[2], qx1x[3] },
-				{ qx1y[0], qx1y[1], qx1y[2], qx1y[3] }
-			},
-			{
-				{  qy0[0],  qy0[1],  qy0[2],  qy0[3] },
-				{ qy1x[0], qy1x[1], qy1x[2], qy1x[3] },
-				{ qy1y[0], qy1y[1], qy1y[2], qy1y[3] }
-			},
-			{
-				{ C(0.0), C(0.0), C(0.0), C(0.0) },
-				{ C(0.0), C(0.0), C(0.0), C(0.0) },
-				{ C(0.0), C(0.0), C(0.0), C(0.0) }
-			}
-		};
+			real norm_detail   = C(0.0);
+			real epsilon_local = solver_params.epsilon / (1 << (solver_params.L - level));
+			
+			const HierarchyIndex curr_lvl_idx = get_lvl_idx(level_kernel);
+			const HierarchyIndex next_lvl_idx = get_lvl_idx(level_kernel + 1);
+			const HierarchyIndex parent_idx   = curr_lvl_idx + tidx;
+			const HierarchyIndex child_idx    = next_lvl_idx + 4 * tidx;
 
-		ParentScaleCoeffsMW parent_coeffs = encode_scale_coeffs(child_coeffs);
-		DetailMW            detail = (!for_nghbrs) ? encode_details(child_coeffs) : DetailMW{};
+			ScaleChildrenMW children;
+			SubDetailMW     subdetail;
 
-		norm_detail = detail.get_norm_detail(maxes);
-
-		store_scale_coeffs
-		(
-			parent_coeffs,
-			d_scale_coeffs,
-			parent_idx
-		);
-
-		if (!for_nghbrs)
-		{
-			store_details
+			// Encoding eta
+			load_children_vector
 			(
-				detail,
-				d_details,
-				parent_idx
+				children,
+				d_scale_coeffs.eta0,
+				d_scale_coeffs.eta1x,
+				d_scale_coeffs.eta1y,
+				child_idx
 			);
+
+			d_scale_coeffs.eta0[parent_idx] = encode_scale_0(children);
+			d_scale_coeffs.eta1x[parent_idx] = encode_scale_1x(children);
+			d_scale_coeffs.eta1y[parent_idx] = encode_scale_1y(children);
+
+			if (!for_nghbrs)
+			{
+				subdetail = encode_detail(children);
+
+				store_details
+				(
+					d_details.eta0,
+					d_details.eta1x,
+					d_details.eta1y,
+					subdetail,
+					parent_idx
+				);
+
+				norm_detail = max(norm_detail, subdetail.get_max() / maxes.eta);
+			}
+
+			// encoding qx
+			load_children_vector
+			(
+				children,
+				d_scale_coeffs.qx0,
+				d_scale_coeffs.qx1x,
+				d_scale_coeffs.qx1y,
+				child_idx
+			);
+
+			d_scale_coeffs.qx0[parent_idx] = encode_scale_0(children);
+			d_scale_coeffs.qx1x[parent_idx] = encode_scale_1x(children);
+			d_scale_coeffs.qx1y[parent_idx] = encode_scale_1y(children);
+
+			if (!for_nghbrs)
+			{
+				subdetail = encode_detail(children);
+
+				store_details
+				(
+					d_details.qx0,
+					d_details.qx1x,
+					d_details.qx1y,
+					subdetail,
+					parent_idx
+				);
+
+				norm_detail = max(norm_detail, subdetail.get_max() / maxes.qx);
+			}
+
+			// encoding qy
+			load_children_vector
+			(
+				children,
+				d_scale_coeffs.qy0,
+				d_scale_coeffs.qy1x,
+				d_scale_coeffs.qy1y,
+				child_idx
+			);
+
+			d_scale_coeffs.qy0[parent_idx] = encode_scale_0(children);
+			d_scale_coeffs.qy1x[parent_idx] = encode_scale_1x(children);
+			d_scale_coeffs.qy1y[parent_idx] = encode_scale_1y(children);
+
+			if (!for_nghbrs)
+			{
+				subdetail = encode_detail(children);
+
+				store_details
+				(
+					d_details.qy0,
+					d_details.qy1x,
+					d_details.qy1y,
+					subdetail,
+					parent_idx
+				);
+
+				norm_detail = max(norm_detail, subdetail.get_max() / maxes.qy);
+			}
+
+			if (!for_nghbrs)
+			{
+				d_norm_details[parent_idx] = norm_detail;
+
+				d_sig_details[parent_idx] = (norm_detail >= epsilon_local || d_preflagged_details[parent_idx] == SIGNIFICANT)
+					? SIGNIFICANT
+					: INSIGNIFICANT;
+			}
 		}
-	}
 
-	if (!for_nghbrs)
-	{
-		d_norm_details[parent_idx] = norm_detail;
-
-		d_sig_details[parent_idx] = (norm_detail >= epsilon_local) ? SIGNIFICANT : INSIGNIFICANT;
-
-		if (d_preflagged_details[parent_idx] == SIGNIFICANT) d_sig_details[parent_idx] = SIGNIFICANT;
+		__syncthreads();
 	}
 }

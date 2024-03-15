@@ -53,12 +53,10 @@ void encode_flow_kernel_mw
 	__shared__ union
 	{
 		typename block_scan::TempStorage temp_storage;
-		real     coeffs[THREADS_PER_BLOCK];
+		HierarchyIndex parents[THREADS_PER_BLOCK];
 
 	} shared;
 	
-	__shared__ HierarchyIndex parents[THREADS_PER_BLOCK]; 
-
 	HierarchyIndex parent_idx = curr_lvl_idx + idx;
 	HierarchyIndex child_idx  = next_lvl_idx + 4 * idx;
 
@@ -79,55 +77,28 @@ void encode_flow_kernel_mw
 
 	if (!for_nghbrs) d_sig_details[parent_idx] = INSIGNIFICANT;
 
-	if (is_sig) parents[thread_prefix_sum] = parent_idx;
+	if (is_sig) shared.parents[thread_prefix_sum] = parent_idx;
 
 	__syncthreads();
 
 	if (t_idx >= num_sig_details) return;
 
-	const int warp_id   = idx / 32;
-	const int lane_id   = t_idx % 32;
-	const int num_warps = num_sig_details / 32;
-
-	parent_idx = parents[t_idx];
+	parent_idx = shared.parents[t_idx];
 	
 	child_idx = next_lvl_idx + 4 * (parent_idx - curr_lvl_idx);
-	
-	real* s0  = nullptr;
-	real* s1x = nullptr;
-	real* s1y = nullptr;
-	
+
 	ScaleChildrenMW children;
 	SubDetailMW     subdetail;
 
 	// Encoding eta
-	if (false /*warp_id < num_warps*/)
-	{
-		load_children_warp
-		(
-			children,
-			d_scale_coeffs.eta0,
-			d_scale_coeffs.eta1x,
-			d_scale_coeffs.eta1y,
-			parent_idx,
-			curr_lvl_idx,
-			next_lvl_idx,
-			lane_id
-		);
-	}
-	else
-	{
-		s0  = &d_scale_coeffs.eta0[child_idx + 0];
-		s1x = &d_scale_coeffs.eta1x[child_idx + 0];
-		s1y = &d_scale_coeffs.eta1y[child_idx + 0];
-
-		children =
-		{
-			{  s0[0],  s0[1],  s0[2],  s0[3] },
-			{ s1x[0], s1x[1], s1x[2], s1x[3] },
-			{ s1y[0], s1y[1], s1y[2], s1y[3] }
-		};
-	}
+	load_children_vector
+	(
+		children,
+		d_scale_coeffs.eta0,
+		d_scale_coeffs.eta1x,
+		d_scale_coeffs.eta1y,
+		child_idx
+	);
 	
 	d_scale_coeffs.eta0[parent_idx]  = encode_scale_0 (children);
 	d_scale_coeffs.eta1x[parent_idx] = encode_scale_1x(children);
@@ -150,33 +121,14 @@ void encode_flow_kernel_mw
 	}
 
 	// encoding qx
-	if (false /*warp_id < num_warps*/)
-	{
-		load_children_warp
-		(
-			children,
-			d_scale_coeffs.qx0,
-			d_scale_coeffs.qx1x,
-			d_scale_coeffs.qx1y,
-			parent_idx,
-			curr_lvl_idx,
-			next_lvl_idx,
-			lane_id
-		);
-	}
-	else
-	{
-		s0  = &d_scale_coeffs.qx0[child_idx + 0];
-		s1x = &d_scale_coeffs.qx1x[child_idx + 0];
-		s1y = &d_scale_coeffs.qx1y[child_idx + 0];
-
-		children =
-		{
-			{  s0[0],  s0[1],  s0[2],  s0[3] },
-			{ s1x[0], s1x[1], s1x[2], s1x[3] },
-			{ s1y[0], s1y[1], s1y[2], s1y[3] }
-		};
-	}
+	load_children_vector
+	(
+		children,
+		d_scale_coeffs.qx0,
+		d_scale_coeffs.qx1x,
+		d_scale_coeffs.qx1y,
+		child_idx
+	);
 
 	d_scale_coeffs.qx0[parent_idx]  = encode_scale_0 (children);
 	d_scale_coeffs.qx1x[parent_idx] = encode_scale_1x(children);
@@ -199,33 +151,14 @@ void encode_flow_kernel_mw
 	}
 
 	// encoding qy
-	if (false /*warp_id < num_warps*/)
-	{
-		load_children_warp
-		(
-			children,
-			d_scale_coeffs.qy0,
-			d_scale_coeffs.qy1x,
-			d_scale_coeffs.qy1y,
-			parent_idx,
-			curr_lvl_idx,
-			next_lvl_idx,
-			lane_id
-		);
-	}
-	else
-	{
-		s0  = &d_scale_coeffs.qy0[child_idx + 0];
-		s1x = &d_scale_coeffs.qy1x[child_idx + 0];
-		s1y = &d_scale_coeffs.qy1y[child_idx + 0];
-
-		children =
-		{
-			{  s0[0],  s0[1],  s0[2],  s0[3] },
-			{ s1x[0], s1x[1], s1x[2], s1x[3] },
-			{ s1y[0], s1y[1], s1y[2], s1y[3] }
-		};
-	}
+	load_children_vector
+	(
+		children,
+		d_scale_coeffs.qy0,
+		d_scale_coeffs.qy1x,
+		d_scale_coeffs.qy1y,
+		child_idx
+	);
 
 	d_scale_coeffs.qy0[parent_idx]  = encode_scale_0 (children);
 	d_scale_coeffs.qy1x[parent_idx] = encode_scale_1x(children);
