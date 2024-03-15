@@ -38,9 +38,9 @@ void encode_flow_kernel_single_block_mw
 {
 	for (int level_kernel = level; level_kernel >= 0; level_kernel--)
 	{
-		const int num_threads_active = 1 << (2 * level_kernel);
+		int num_threads_active = 1 << (2 * level_kernel);
 
-		const int tidx = threadIdx.x;
+		int tidx = threadIdx.x;
 
 		if (tidx < num_threads_active)
 		{

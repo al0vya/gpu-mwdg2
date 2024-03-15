@@ -11,32 +11,29 @@ void decoding_kernel_single_block_mw
 	int               num_threads
 )
 {
-	HierarchyIndex t_idx = threadIdx.x;
-	HierarchyIndex idx   = blockIdx.x * blockDim.x + t_idx;
-
-	if (idx >= num_threads) return;
-
 	for (int level_block = 0; level_block < LVL_SINGLE_BLOCK; level_block++)
 	{
 		int num_threads_block = 1 << (2 * level_block);
+		
+		int tidx = threadIdx.x; 
 
-		if (idx < num_threads_block)
+		if (tidx < num_threads_block)
 		{
 			HierarchyIndex curr_lvl_idx = get_lvl_idx(level_block);
 			HierarchyIndex next_lvl_idx = get_lvl_idx(level_block + 1);
 
-			HierarchyIndex parent = curr_lvl_idx + idx;
-			HierarchyIndex child = next_lvl_idx + 4 * idx;
+			HierarchyIndex parent = curr_lvl_idx + tidx;
+			HierarchyIndex child = next_lvl_idx + 4 * tidx;
 
 			bool is_sig = d_sig_details[parent];
 
 			if (is_sig)
 			{
-				ParentScaleCoeffsMW parents = load_parent_scale_coeffs_mw(d_scale_coeffs, parent);
-				DetailMW            detail = load_details_mw(d_details, parent);
+				ParentScaleCoeffsMW parents  = load_parent_scale_coeffs_mw(d_scale_coeffs, parent);
+				DetailMW            detail   = load_details_mw(d_details, parent);
 				ChildScaleCoeffsMW  children = decode_scale_coeffs(parents, detail);
 
-				store_scale_coeffs(children, d_scale_coeffs, child);
+				store_scale_coeffs_vector(children, d_scale_coeffs, child);
 			}
 		}
 
