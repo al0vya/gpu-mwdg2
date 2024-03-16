@@ -16,6 +16,9 @@ def main():
     
     dummy, option = sys.argv
     
+    if option != "fast" and option != "slow":
+        EXIT_HELP()
+    
     generate_input_files()
     
     print("Running verification test...")
