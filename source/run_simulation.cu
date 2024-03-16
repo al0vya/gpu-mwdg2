@@ -55,21 +55,21 @@ void run_simulation
 	Boundaries   boundaries   (input_filename, sim_params, dx_finest, test_case);
 	PointSources point_sources(input_filename, sim_params, dx_finest, test_case, dt);
 	
-	clock_t end             = clock();
-	clock_t mra_start       = clock();
-	clock_t mra_end         = clock();
-	clock_t solver_start    = clock();
-	clock_t solver_end      = clock();
-	real    run_time        = C(0.0);
-	real    current_time    = C(0.0);
-	real    time_mra        = C(0.0);
-	real    time_solver     = C(0.0);
-	bool    first_timestep  = true;
-	bool    for_nghbrs      = false;
-	bool    rkdg2           = false;
-	float   avg_cuda_time   = 0.0f;
-	int     timestep        = 1;
-	real    compression     = C(0.0);
+	clock_t end            = clock();
+	clock_t mra_start      = clock();
+	clock_t mra_end        = clock();
+	clock_t solver_start   = clock();
+	clock_t solver_end     = clock();
+	real    run_time       = C(0.0);
+	real    current_time   = C(0.0);
+	real    time_mra       = C(0.0);
+	real    time_solver    = C(0.0);
+	bool    first_timestep = true;
+	bool    for_nghbrs     = false;
+	bool    rkdg2          = false;
+	float   avg_cuda_time  = 0.0f;
+	int     timestep       = 1;
+	real    compression    = C(0.0);
 
 	NodalValues       d_nodal_vals      (interface_dim);
 	AssembledSolution d_assem_sol       (num_finest_elems, solver_params.solver_type);
