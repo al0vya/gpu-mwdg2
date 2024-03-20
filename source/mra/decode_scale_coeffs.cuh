@@ -6,6 +6,7 @@
 #include "../classes/ParentScaleCoeffs.h"
 #include "../classes/ChildScaleCoeffs.h"
 #include "../classes/Detail.h"
+#include "../classes/PlanarCoefficients.h"
 #include "decode_scale_children.cuh"
 
 __device__ __forceinline__
@@ -103,6 +104,36 @@ ChildScaleCoeffsMW decode_scale_coeffs
 			{
 				C(0.0), C(0.0), C(0.0), C(0.0)
 			}
+		}
+	};
+}
+
+__device__ __forceinline__
+ScaleChildrenMW decode_scale_coeffs
+(
+	const PlanarCoefficients& s,
+	const SubDetailMW&        d
+)
+{
+	return
+	{
+		{
+			decode_0_0(s, d), // child_0.0
+			decode_1_0(s, d), // child_0.1	
+			decode_2_0(s, d), // child_0.2
+			decode_3_0(s, d)  // child_0.3
+		},
+		{
+			decode_0_1x(s, d), // child_1x.0
+			decode_1_1x(s, d), // child_1x.1
+			decode_2_1x(s, d), // child_1x.2
+			decode_3_1x(s, d)  // child_1x.3
+		},
+		{
+			decode_0_1y(s, d), // child_1y.0
+			decode_1_1y(s, d), // child_1y.1
+			decode_2_1y(s, d), // child_1y.2
+			decode_3_1y(s, d)  // child_1y.3
 		}
 	};
 }

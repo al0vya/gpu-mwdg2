@@ -53,16 +53,90 @@ void decoding_kernel_mw
 
 	parent_idx = shared.parents[t_idx];
 
-	ParentScaleCoeffsMW parents  = load_parent_scale_coeffs_mw(d_scale_coeffs, parent_idx);
-	DetailMW            detail   = load_details_mw(d_details, parent_idx);
-	ChildScaleCoeffsMW  children = decode_scale_coeffs(parents, detail);
-
 	HierarchyIndex child_idx = next_lvl_idx + 4 * (parent_idx - curr_lvl_idx);
+	
+	PlanarCoefficients planar_coeffs;
+	ScaleChildrenMW    children;
+	SubDetailMW        subdetails;
 
-	store_scale_coeffs_vector
+	// Decoding eta
+	planar_coeffs =
+	{
+		d_scale_coeffs.eta0[parent_idx],
+		d_scale_coeffs.eta1x[parent_idx],
+		d_scale_coeffs.eta1y[parent_idx],
+	};
+
+	subdetails = load_subdetails_mw
+	(
+		d_details.eta0,
+		d_details.eta1x,
+		d_details.eta1y,
+		parent_idx
+	);
+
+	children = decode_scale_coeffs(planar_coeffs, subdetails);
+
+	store_children_vector
 	(
 		children,
-		d_scale_coeffs,
+		d_scale_coeffs.eta0,
+		d_scale_coeffs.eta1x,
+		d_scale_coeffs.eta1y,
+		child_idx
+	);
+
+	// Decoding qx
+	planar_coeffs =
+	{
+		d_scale_coeffs.qx0[parent_idx],
+		d_scale_coeffs.qx1x[parent_idx],
+		d_scale_coeffs.qx1y[parent_idx],
+	};
+
+	subdetails = load_subdetails_mw
+	(
+		d_details.qx0,
+		d_details.qx1x,
+		d_details.qx1y,
+		parent_idx
+	);
+
+	children = decode_scale_coeffs(planar_coeffs, subdetails);
+
+	store_children_vector
+	(
+		children,
+		d_scale_coeffs.qx0,
+		d_scale_coeffs.qx1x,
+		d_scale_coeffs.qx1y,
+		child_idx
+	);
+
+	// Decoding qy
+	planar_coeffs =
+	{
+		d_scale_coeffs.qy0[parent_idx],
+		d_scale_coeffs.qy1x[parent_idx],
+		d_scale_coeffs.qy1y[parent_idx],
+	};
+
+	subdetails = load_subdetails_mw
+	(
+		d_details.qy0,
+		d_details.qy1x,
+		d_details.qy1y,
+		parent_idx
+	);
+
+	children = decode_scale_coeffs(planar_coeffs, subdetails);
+
+	store_children_vector
+	(
+		children,
+		d_scale_coeffs.qy0,
+		d_scale_coeffs.qy1x,
+		d_scale_coeffs.qy1y,
 		child_idx
 	);
 }

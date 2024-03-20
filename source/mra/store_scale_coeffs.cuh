@@ -204,3 +204,38 @@ void store_scale_coeffs_vector
 		child_coeffs.qy._1y.child_3
 	};
 }
+
+__device__ __forceinline__
+void store_children_vector
+(
+	const ScaleChildrenMW& children,
+	      real*            d_0,
+	      real*            d_1x,
+	      real*            d_1y,
+	const HierarchyIndex&  child_idx
+)
+{
+	reinterpret_cast<real4*>(d_0 + child_idx)[0] =
+	{
+		children._0.child_0, 
+		children._0.child_1,
+		children._0.child_2,
+		children._0.child_3
+	};
+
+	reinterpret_cast<real4*>(d_1x + child_idx)[0] =
+	{
+		children._1x.child_0,
+		children._1x.child_1,
+		children._1x.child_2,
+		children._1x.child_3
+	};
+
+	reinterpret_cast<real4*>(d_1y + child_idx)[0] =
+	{
+		children._1y.child_0,
+		children._1y.child_1,
+		children._1y.child_2,
+		children._1y.child_3
+	};
+}

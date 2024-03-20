@@ -34,6 +34,19 @@ void unit_test_encode_detail_alpha_1y();
 void unit_test_encode_detail_beta_1y();
 void unit_test_encode_detail_gamma_1y();
 
+void unit_test_decode_0_0();
+void unit_test_decode_0_1x();
+void unit_test_decode_0_1y();
+void unit_test_decode_1_0();
+void unit_test_decode_1_1x();
+void unit_test_decode_1_1y();
+void unit_test_decode_2_0();
+void unit_test_decode_2_1x();
+void unit_test_decode_2_1y();
+void unit_test_decode_3_0();
+void unit_test_decode_3_1x();
+void unit_test_decode_3_1y();
+
 void unit_test_preflag_topo_HW();
 void unit_test_encode_flow_TIMESTEP_1_HW();
 void unit_test_encode_flow_TIMESTEP_2_HW();
