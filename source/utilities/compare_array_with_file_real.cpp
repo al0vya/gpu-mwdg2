@@ -16,7 +16,7 @@ real compare_array_with_file_real
 
 	if (NULL == fp)
 	{
-		fprintf(stderr, "Error opening file %s\n.", fullpath);
+		fprintf(stderr, "Error opening file %s.\n", fullpath);
 		return C(999.0);
 	}
 

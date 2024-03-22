@@ -4,6 +4,938 @@
 
 #define TEST_MESSAGE_PASSED_ELSE_FAILED { printf("Passed %s!\n", __func__); } else { printf("Failed %s.\n", __func__); }
 
+void unit_test_assem_sol_CONSTRUCTOR_LEVELS_NO_NAME_HW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 1;
+	solver_params.solver_type = HWFV1;
+
+	AssembledSolution d_assem_sol(solver_params);
+
+	bool passed =
+	(
+		d_assem_sol.is_copy_cuda == false &&
+		d_assem_sol.length       == 1 << (2 * solver_params.L) &&
+		d_assem_sol.solver_type  == solver_params.solver_type &&
+		d_assem_sol.name         == "" &&
+		d_assem_sol.h0           != nullptr &&
+		d_assem_sol.qx0          != nullptr &&
+		d_assem_sol.qy0          != nullptr &&
+		d_assem_sol.z0           != nullptr &&
+		d_assem_sol.h1x          == nullptr &&
+		d_assem_sol.qx1x         == nullptr &&
+		d_assem_sol.qy1x         == nullptr &&
+		d_assem_sol.z1x          == nullptr &&
+		d_assem_sol.h1y          == nullptr &&
+		d_assem_sol.qx1y         == nullptr &&
+		d_assem_sol.qy1y         == nullptr &&
+		d_assem_sol.z1y          == nullptr &&
+		d_assem_sol.act_idcs     != nullptr &&
+		d_assem_sol.levels       != nullptr
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_CONSTRUCTOR_FILES_NO_NAME_HW()
+{
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_CONSTRUCTOR_FILES_NO_NAME_HW";
+
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = HWFV1;
+
+	AssembledSolution d_assem_sol(solver_params, dirroot, prefix);
+
+	const int array_length = 1 << (2 * solver_params.L);
+	real* h_assem_sol_real = new real[array_length];
+	int*  h_assem_sol_int  = new int[array_length];
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i]  = i;
+	}
+
+	const real error_h0       = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.h0,       array_length);
+	const real error_qx0      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qx0,      array_length);
+	const real error_qy0      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qy0,      array_length);
+	const real error_z0       = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.z0,       array_length);
+	const int  diffs_levels   = compare_array_on_device_vs_host_int (h_assem_sol_int,  d_assem_sol.levels,   array_length);
+	const int  diffs_act_idcs = compare_array_on_device_vs_host_int (h_assem_sol_int,  d_assem_sol.act_idcs, array_length);
+	
+	const real expected_error = C(1e-6);
+
+	bool passed = 
+	(
+		are_reals_equal(error_h0,  expected_error) &&
+		are_reals_equal(error_qx0, expected_error) &&
+		are_reals_equal(error_qy0, expected_error) &&
+		are_reals_equal(error_z0,  expected_error) &&
+		diffs_levels   == 0 &&
+		diffs_act_idcs == 0
+	);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_WRITE_TO_FILE_NO_NAME_HW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = HWFV1;
+
+	AssembledSolution d_assem_sol(solver_params);
+
+	const int array_length  = 1 << (2 * solver_params.L);
+	const size_t bytes_real = array_length * sizeof(real);
+	const size_t bytes_int  = array_length * sizeof(int);
+	real* h_assem_sol_real  = new real[array_length];
+	int*  h_assem_sol_int   = new int[array_length];
+	
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i] = i;
+	}
+
+	copy_cuda(d_assem_sol.h0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.levels,   h_assem_sol_int,  bytes_int);
+	copy_cuda(d_assem_sol.act_idcs, h_assem_sol_int,  bytes_int);
+
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_WRITE_TO_FILE_NO_NAME_HW";
+
+	d_assem_sol.write_to_file(dirroot, prefix);
+	
+	char filename_h0[255]       = {'\0'};
+	char filename_qx0[255]      = {'\0'};
+	char filename_qy0[255]      = {'\0'};
+	char filename_z0[255]       = {'\0'};
+	char filename_levels[255]   = {'\0'};
+	char filename_act_idcs[255] = {'\0'};
+
+	sprintf(filename_h0,       "%s%s", prefix, "-assem-sol-h0-hw");
+	sprintf(filename_qx0,      "%s%s", prefix, "-assem-sol-qx0-hw");
+	sprintf(filename_qy0,      "%s%s", prefix, "-assem-sol-qy0-hw");
+	sprintf(filename_z0,       "%s%s", prefix, "-assem-sol-z0-hw");
+	sprintf(filename_levels,   "%s%s", prefix, "-assem-sol-levels-hw");
+	sprintf(filename_act_idcs, "%s%s", prefix, "-assem-sol-act-idcs-hw");
+
+	const real error_h0       = compare_array_with_file_real(dirroot, filename_h0,       h_assem_sol_real, array_length);
+	const real error_qx0      = compare_array_with_file_real(dirroot, filename_qx0,      h_assem_sol_real, array_length);
+	const real error_qy0      = compare_array_with_file_real(dirroot, filename_qy0,      h_assem_sol_real, array_length);
+	const real error_z0       = compare_array_with_file_real(dirroot, filename_z0,       h_assem_sol_real, array_length);
+	const int  diffs_levels   = compare_array_with_file_int (dirroot, filename_levels,   h_assem_sol_int,  array_length);
+	const int  diffs_act_idcs = compare_array_with_file_int (dirroot, filename_act_idcs, h_assem_sol_int,  array_length);
+
+	const real expected_error = C(1e-6);
+
+	bool passed = 
+	(
+		are_reals_equal(error_h0,  expected_error) &&
+		are_reals_equal(error_qx0, expected_error) &&
+		are_reals_equal(error_qy0, expected_error) &&
+		are_reals_equal(error_z0,  expected_error) &&
+		diffs_levels   == 0 &&
+		diffs_act_idcs == 0
+	);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_VERIFY_NO_NAME_HW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = HWFV1;
+
+	AssembledSolution d_assem_sol(solver_params);
+
+	const int array_length  = 1 << (2 * solver_params.L);
+	const size_t bytes_real = array_length * sizeof(real);
+	const size_t bytes_int  = array_length * sizeof(int);
+	real* h_assem_sol_real  = new real[array_length];
+	int*  h_assem_sol_int   = new int[array_length];
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i]  = i;
+	}
+
+	copy_cuda(d_assem_sol.h0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.levels,   h_assem_sol_int,  bytes_int);
+	copy_cuda(d_assem_sol.act_idcs, h_assem_sol_int,  bytes_int);
+	
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_VERIFY_NO_NAME_HW";
+
+	const int  diffs          = d_assem_sol.verify_int(dirroot, prefix);
+	const real actual_error   = d_assem_sol.verify_real(dirroot, prefix);
+	const real expected_error = C(0.0);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (are_reals_equal(actual_error, expected_error) && diffs == 0)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_CONSTRUCTOR_LEVELS_WITH_NAME_HW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 1;
+	solver_params.solver_type = HWFV1;
+
+	AssembledSolution d_assem_sol(solver_params, "dummy");
+
+	bool passed =
+	(
+		d_assem_sol.is_copy_cuda == false &&
+		d_assem_sol.length       == 1 << (2 * solver_params.L) &&
+		d_assem_sol.solver_type  == solver_params.solver_type &&
+		d_assem_sol.name         == "-dummy" &&
+		d_assem_sol.h0           != nullptr &&
+		d_assem_sol.qx0          != nullptr &&
+		d_assem_sol.qy0          != nullptr &&
+		d_assem_sol.z0           != nullptr &&
+		d_assem_sol.h1x          == nullptr &&
+		d_assem_sol.qx1x         == nullptr &&
+		d_assem_sol.qy1x         == nullptr &&
+		d_assem_sol.z1x          == nullptr &&
+		d_assem_sol.h1y          == nullptr &&
+		d_assem_sol.qx1y         == nullptr &&
+		d_assem_sol.qy1y         == nullptr &&
+		d_assem_sol.z1y          == nullptr &&
+		d_assem_sol.act_idcs     != nullptr &&
+		d_assem_sol.levels       != nullptr
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_CONSTRUCTOR_FILES_WITH_NAME_HW()
+{
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_CONSTRUCTOR_FILES_WITH_NAME_HW";
+
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = HWFV1;
+
+	AssembledSolution d_assem_sol(solver_params, "dummy", dirroot, prefix);
+
+	const int array_length = 1 << (2 * solver_params.L);
+	real* h_assem_sol_real = new real[array_length];
+	int*  h_assem_sol_int  = new int[array_length];
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i]  = i;
+	}
+
+	const real error_h0       = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.h0,       array_length);
+	const real error_qx0      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qx0,      array_length);
+	const real error_qy0      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qy0,      array_length);
+	const real error_z0       = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.z0,       array_length);
+	const int  diffs_levels   = compare_array_on_device_vs_host_int (h_assem_sol_int,  d_assem_sol.levels,   array_length);
+	const int  diffs_act_idcs = compare_array_on_device_vs_host_int (h_assem_sol_int,  d_assem_sol.act_idcs, array_length);
+	
+	const real expected_error = C(1e-6);
+
+	bool passed = 
+	(
+		are_reals_equal(error_h0,  expected_error) &&
+		are_reals_equal(error_qx0, expected_error) &&
+		are_reals_equal(error_qy0, expected_error) &&
+		are_reals_equal(error_z0,  expected_error) &&
+		diffs_levels   == 0 &&
+		diffs_act_idcs == 0
+	);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_WRITE_TO_FILE_WITH_NAME_HW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = HWFV1;
+
+	AssembledSolution d_assem_sol(solver_params, "dummy");
+
+	const int array_length  = 1 << (2 * solver_params.L);
+	const size_t bytes_real = array_length * sizeof(real);
+	const size_t bytes_int  = array_length * sizeof(int);
+	real* h_assem_sol_real  = new real[array_length];
+	int*  h_assem_sol_int   = new int[array_length];
+	
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i] = i;
+	}
+
+	copy_cuda(d_assem_sol.h0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.levels,   h_assem_sol_int,  bytes_int);
+	copy_cuda(d_assem_sol.act_idcs, h_assem_sol_int,  bytes_int);
+
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_WRITE_TO_FILE_WITH_NAME_HW";
+
+	d_assem_sol.write_to_file(dirroot, prefix);
+	
+	char filename_h0[255]       = {'\0'};
+	char filename_qx0[255]      = {'\0'};
+	char filename_qy0[255]      = {'\0'};
+	char filename_z0[255]       = {'\0'};
+	char filename_levels[255]   = {'\0'};
+	char filename_act_idcs[255] = {'\0'};
+
+	sprintf(filename_h0,       "%s%s", prefix, "-dummy-assem-sol-h0-hw");
+	sprintf(filename_qx0,      "%s%s", prefix, "-dummy-assem-sol-qx0-hw");
+	sprintf(filename_qy0,      "%s%s", prefix, "-dummy-assem-sol-qy0-hw");
+	sprintf(filename_z0,       "%s%s", prefix, "-dummy-assem-sol-z0-hw");
+	sprintf(filename_levels,   "%s%s", prefix, "-dummy-assem-sol-levels-hw");
+	sprintf(filename_act_idcs, "%s%s", prefix, "-dummy-assem-sol-act-idcs-hw");
+
+	const real error_h0       = compare_array_with_file_real(dirroot, filename_h0,       h_assem_sol_real, array_length);
+	const real error_qx0      = compare_array_with_file_real(dirroot, filename_qx0,      h_assem_sol_real, array_length);
+	const real error_qy0      = compare_array_with_file_real(dirroot, filename_qy0,      h_assem_sol_real, array_length);
+	const real error_z0       = compare_array_with_file_real(dirroot, filename_z0,       h_assem_sol_real, array_length);
+	const int  diffs_levels   = compare_array_with_file_int (dirroot, filename_levels,   h_assem_sol_int,  array_length);
+	const int  diffs_act_idcs = compare_array_with_file_int (dirroot, filename_act_idcs, h_assem_sol_int,  array_length);
+
+	const real expected_error = C(1e-6);
+
+	bool passed = 
+	(
+		are_reals_equal(error_h0,  expected_error) &&
+		are_reals_equal(error_qx0, expected_error) &&
+		are_reals_equal(error_qy0, expected_error) &&
+		are_reals_equal(error_z0,  expected_error) &&
+		diffs_levels   == 0 &&
+		diffs_act_idcs == 0
+	);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_VERIFY_WITH_NAME_HW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = HWFV1;
+
+	AssembledSolution d_assem_sol(solver_params, "dummy");
+
+	const int array_length  = 1 << (2 * solver_params.L);
+	const size_t bytes_real = array_length * sizeof(real);
+	const size_t bytes_int  = array_length * sizeof(int);
+	real* h_assem_sol_real  = new real[array_length];
+	int*  h_assem_sol_int   = new int[array_length];
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i]  = i;
+	}
+
+	copy_cuda(d_assem_sol.h0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.levels,   h_assem_sol_int,  bytes_int);
+	copy_cuda(d_assem_sol.act_idcs, h_assem_sol_int,  bytes_int);
+	
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_VERIFY_WITH_NAME_HW";
+
+	const int  diffs          = d_assem_sol.verify_int(dirroot, prefix);
+	const real actual_error   = d_assem_sol.verify_real(dirroot, prefix);
+	const real expected_error = C(0.0);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (are_reals_equal(actual_error, expected_error) && diffs == 0)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_CONSTRUCTOR_LEVELS_NO_NAME_MW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 1;
+	solver_params.solver_type = MWDG2;
+
+	AssembledSolution d_assem_sol(solver_params);
+
+	bool passed =
+	(
+		d_assem_sol.is_copy_cuda == false &&
+		d_assem_sol.length       == 1 << (2 * solver_params.L) &&
+		d_assem_sol.solver_type  == solver_params.solver_type &&
+		d_assem_sol.name         == "" &&
+		d_assem_sol.h0           != nullptr &&
+		d_assem_sol.qx0          != nullptr &&
+		d_assem_sol.qy0          != nullptr &&
+		d_assem_sol.z0           != nullptr &&
+		d_assem_sol.h1x          != nullptr &&
+		d_assem_sol.qx1x         != nullptr &&
+		d_assem_sol.qy1x         != nullptr &&
+		d_assem_sol.z1x          != nullptr &&
+		d_assem_sol.h1y          != nullptr &&
+		d_assem_sol.qx1y         != nullptr &&
+		d_assem_sol.qy1y         != nullptr &&
+		d_assem_sol.z1y          != nullptr &&
+		d_assem_sol.act_idcs     != nullptr &&
+		d_assem_sol.levels       != nullptr
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_CONSTRUCTOR_FILES_NO_NAME_MW()
+{
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_CONSTRUCTOR_FILES_NO_NAME_MW";
+
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = MWDG2;
+
+	AssembledSolution d_assem_sol(solver_params, dirroot, prefix);
+
+	const int array_length = 1 << (2 * solver_params.L);
+	real* h_assem_sol_real = new real[array_length];
+	int*  h_assem_sol_int  = new int[array_length];
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i]  = i;
+	}
+
+	const real error_h0       = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.h0,       array_length);
+	const real error_qx0      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qx0,      array_length);
+	const real error_qy0      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qy0,      array_length);
+	const real error_z0       = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.z0,       array_length);
+	const real error_h1x      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.h1x,       array_length);
+	const real error_qx1x     = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qx1x,      array_length);
+	const real error_qy1x     = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qy1x,      array_length);
+	const real error_z1x      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.z1x,       array_length);
+	const real error_h1y      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.h1y,       array_length);
+	const real error_qx1y     = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qx1y,      array_length);
+	const real error_qy1y     = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qy1y,      array_length);
+	const real error_z1y      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.z1y,       array_length);
+	const int  diffs_levels   = compare_array_on_device_vs_host_int (h_assem_sol_int,  d_assem_sol.levels,   array_length);
+	const int  diffs_act_idcs = compare_array_on_device_vs_host_int (h_assem_sol_int,  d_assem_sol.act_idcs, array_length);
+	
+	const real expected_error = C(1e-6);
+
+	bool passed = 
+	(
+		are_reals_equal(error_h0,   expected_error) &&
+		are_reals_equal(error_qx0,  expected_error) &&
+		are_reals_equal(error_qy0,  expected_error) &&
+		are_reals_equal(error_z0,   expected_error) &&
+		are_reals_equal(error_h1x,  expected_error) &&
+		are_reals_equal(error_qx1x, expected_error) &&
+		are_reals_equal(error_qy1x, expected_error) &&
+		are_reals_equal(error_z1x,  expected_error) &&
+		are_reals_equal(error_h1y,  expected_error) &&
+		are_reals_equal(error_qx1y, expected_error) &&
+		are_reals_equal(error_qy1y, expected_error) &&
+		are_reals_equal(error_z1y,  expected_error) &&
+		diffs_levels   == 0 &&
+		diffs_act_idcs == 0
+	);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_WRITE_TO_FILE_NO_NAME_MW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = MWDG2;
+
+	AssembledSolution d_assem_sol(solver_params);
+
+	const int array_length  = 1 << (2 * solver_params.L);
+	const size_t bytes_real = array_length * sizeof(real);
+	const size_t bytes_int  = array_length * sizeof(int);
+	real* h_assem_sol_real  = new real[array_length];
+	int*  h_assem_sol_int   = new int[array_length];
+	
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i] = i;
+	}
+
+	copy_cuda(d_assem_sol.h0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.h1x,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx1x,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy1x,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z1x,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.h1y,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx1y,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy1y,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z1y,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.levels,   h_assem_sol_int,  bytes_int);
+	copy_cuda(d_assem_sol.act_idcs, h_assem_sol_int,  bytes_int);
+
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_VERIFY_NO_NAME_MW";
+
+	d_assem_sol.write_to_file(dirroot, prefix);
+	
+	char filename_h0[255]       = {'\0'};
+	char filename_qx0[255]      = {'\0'};
+	char filename_qy0[255]      = {'\0'};
+	char filename_z0[255]       = {'\0'};
+	char filename_h1x[255]      = {'\0'};
+	char filename_qx1x[255]     = {'\0'};
+	char filename_qy1x[255]     = {'\0'};
+	char filename_z1x[255]      = {'\0'};
+	char filename_h1y[255]      = {'\0'};
+	char filename_qx1y[255]     = {'\0'};
+	char filename_qy1y[255]     = {'\0'};
+	char filename_z1y[255]      = {'\0'};
+	char filename_levels[255]   = {'\0'};
+	char filename_act_idcs[255] = {'\0'};
+
+	sprintf(filename_h0,       "%s%s", prefix, "-assem-sol-h0-mw");
+	sprintf(filename_qx0,      "%s%s", prefix, "-assem-sol-qx0-mw");
+	sprintf(filename_qy0,      "%s%s", prefix, "-assem-sol-qy0-mw");
+	sprintf(filename_z0,       "%s%s", prefix, "-assem-sol-z0-mw");
+	sprintf(filename_h1x,      "%s%s", prefix, "-assem-sol-h1x-mw");
+	sprintf(filename_qx1x,     "%s%s", prefix, "-assem-sol-qx1x-mw");
+	sprintf(filename_qy1x,     "%s%s", prefix, "-assem-sol-qy1x-mw");
+	sprintf(filename_z1x,      "%s%s", prefix, "-assem-sol-z1x-mw");
+	sprintf(filename_h1y,      "%s%s", prefix, "-assem-sol-h1y-mw");
+	sprintf(filename_qx1y,     "%s%s", prefix, "-assem-sol-qx1y-mw");
+	sprintf(filename_qy1y,     "%s%s", prefix, "-assem-sol-qy1y-mw");
+	sprintf(filename_z1y,      "%s%s", prefix, "-assem-sol-z1y-mw");
+	sprintf(filename_levels,   "%s%s", prefix, "-assem-sol-levels-mw");
+	sprintf(filename_act_idcs, "%s%s", prefix, "-assem-sol-act-idcs-mw");
+
+	const real error_h0       = compare_array_with_file_real(dirroot, filename_h0,       h_assem_sol_real, array_length);
+	const real error_qx0      = compare_array_with_file_real(dirroot, filename_qx0,      h_assem_sol_real, array_length);
+	const real error_qy0      = compare_array_with_file_real(dirroot, filename_qy0,      h_assem_sol_real, array_length);
+	const real error_z0       = compare_array_with_file_real(dirroot, filename_z0,       h_assem_sol_real, array_length);
+	const real error_h1x      = compare_array_with_file_real(dirroot, filename_h1x,      h_assem_sol_real, array_length);
+	const real error_qx1x     = compare_array_with_file_real(dirroot, filename_qx1x,     h_assem_sol_real, array_length);
+	const real error_qy1x     = compare_array_with_file_real(dirroot, filename_qy1x,     h_assem_sol_real, array_length);
+	const real error_z1x      = compare_array_with_file_real(dirroot, filename_z1x,      h_assem_sol_real, array_length);
+	const real error_h1y      = compare_array_with_file_real(dirroot, filename_h1y,      h_assem_sol_real, array_length);
+	const real error_qx1y     = compare_array_with_file_real(dirroot, filename_qx1y,     h_assem_sol_real, array_length);
+	const real error_qy1y     = compare_array_with_file_real(dirroot, filename_qy1y,     h_assem_sol_real, array_length);
+	const real error_z1y      = compare_array_with_file_real(dirroot, filename_z1y,      h_assem_sol_real, array_length);
+	const int  diffs_levels   = compare_array_with_file_int (dirroot, filename_levels,   h_assem_sol_int,  array_length);
+	const int  diffs_act_idcs = compare_array_with_file_int (dirroot, filename_act_idcs, h_assem_sol_int,  array_length);
+
+	const real expected_error = C(1e-6);
+
+	bool passed = 
+	(
+		are_reals_equal(error_h0,   expected_error) &&
+		are_reals_equal(error_qx0,  expected_error) &&
+		are_reals_equal(error_qy0,  expected_error) &&
+		are_reals_equal(error_z0,   expected_error) &&
+		are_reals_equal(error_h1x,  expected_error) &&
+		are_reals_equal(error_qx1x, expected_error) &&
+		are_reals_equal(error_qy1x, expected_error) &&
+		are_reals_equal(error_z1x,  expected_error) &&
+		are_reals_equal(error_h1y,  expected_error) &&
+		are_reals_equal(error_qx1y, expected_error) &&
+		are_reals_equal(error_qy1y, expected_error) &&
+		are_reals_equal(error_z1y,  expected_error) &&
+		diffs_levels   == 0 &&
+		diffs_act_idcs == 0
+	);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_VERIFY_NO_NAME_MW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = MWDG2;
+
+	AssembledSolution d_assem_sol(solver_params);
+
+	const int array_length  = 1 << (2 * solver_params.L);
+	const size_t bytes_real = array_length * sizeof(real);
+	const size_t bytes_int  = array_length * sizeof(int);
+	real* h_assem_sol_real  = new real[array_length];
+	int*  h_assem_sol_int   = new int[array_length];
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i]  = i;
+	}
+
+	copy_cuda(d_assem_sol.h0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.h1x,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx1x,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy1x,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z1x,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.h1y,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx1y,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy1y,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z1y,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.levels,   h_assem_sol_int,  bytes_int);
+	copy_cuda(d_assem_sol.act_idcs, h_assem_sol_int,  bytes_int);
+	
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_VERIFY_NO_NAME_MW";
+
+	const int  diffs          = d_assem_sol.verify_int(dirroot, prefix);
+	const real actual_error   = d_assem_sol.verify_real(dirroot, prefix);
+	const real expected_error = C(0.0);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (are_reals_equal(actual_error, expected_error) && diffs == 0)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_CONSTRUCTOR_LEVELS_WITH_NAME_MW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 1;
+	solver_params.solver_type = MWDG2;
+
+	AssembledSolution d_assem_sol(solver_params, "dummy");
+
+	bool passed =
+	(
+		d_assem_sol.is_copy_cuda == false &&
+		d_assem_sol.length       == 1 << (2 * solver_params.L) &&
+		d_assem_sol.solver_type  == solver_params.solver_type &&
+		d_assem_sol.name         == "-dummy" &&
+		d_assem_sol.h0           != nullptr &&
+		d_assem_sol.qx0          != nullptr &&
+		d_assem_sol.qy0          != nullptr &&
+		d_assem_sol.z0           != nullptr &&
+		d_assem_sol.h1x          != nullptr &&
+		d_assem_sol.qx1x         != nullptr &&
+		d_assem_sol.qy1x         != nullptr &&
+		d_assem_sol.z1x          != nullptr &&
+		d_assem_sol.h1y          != nullptr &&
+		d_assem_sol.qx1y         != nullptr &&
+		d_assem_sol.qy1y         != nullptr &&
+		d_assem_sol.z1y          != nullptr &&
+		d_assem_sol.act_idcs     != nullptr &&
+		d_assem_sol.levels       != nullptr
+	);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_CONSTRUCTOR_FILES_WITH_NAME_MW()
+{
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_CONSTRUCTOR_FILES_WITH_NAME_MW";
+
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = MWDG2;
+
+	AssembledSolution d_assem_sol(solver_params, "dummy", dirroot, prefix);
+
+	const int array_length = 1 << (2 * solver_params.L);
+	real* h_assem_sol_real = new real[array_length];
+	int*  h_assem_sol_int  = new int[array_length];
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i]  = i;
+	}
+
+	const real error_h0       = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.h0,       array_length);
+	const real error_qx0      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qx0,      array_length);
+	const real error_qy0      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qy0,      array_length);
+	const real error_z0       = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.z0,       array_length);
+	const real error_h1x      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.h1x,       array_length);
+	const real error_qx1x     = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qx1x,      array_length);
+	const real error_qy1x     = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qy1x,      array_length);
+	const real error_z1x      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.z1x,       array_length);
+	const real error_h1y      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.h1y,       array_length);
+	const real error_qx1y     = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qx1y,      array_length);
+	const real error_qy1y     = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.qy1y,      array_length);
+	const real error_z1y      = compare_array_on_device_vs_host_real(h_assem_sol_real, d_assem_sol.z1y,       array_length);
+	const int  diffs_levels   = compare_array_on_device_vs_host_int (h_assem_sol_int,  d_assem_sol.levels,   array_length);
+	const int  diffs_act_idcs = compare_array_on_device_vs_host_int (h_assem_sol_int,  d_assem_sol.act_idcs, array_length);
+	
+	const real expected_error = C(1e-6);
+
+	bool passed = 
+	(
+		are_reals_equal(error_h0,   expected_error) &&
+		are_reals_equal(error_qx0,  expected_error) &&
+		are_reals_equal(error_qy0,  expected_error) &&
+		are_reals_equal(error_z0,   expected_error) &&
+		are_reals_equal(error_h1x,  expected_error) &&
+		are_reals_equal(error_qx1x, expected_error) &&
+		are_reals_equal(error_qy1x, expected_error) &&
+		are_reals_equal(error_z1x,  expected_error) &&
+		are_reals_equal(error_h1y,  expected_error) &&
+		are_reals_equal(error_qx1y, expected_error) &&
+		are_reals_equal(error_qy1y, expected_error) &&
+		are_reals_equal(error_z1y,  expected_error) &&
+		diffs_levels   == 0 &&
+		diffs_act_idcs == 0
+	);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_WRITE_TO_FILE_WITH_NAME_MW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = MWDG2;
+
+	AssembledSolution d_assem_sol(solver_params, "dummy");
+
+	const int array_length  = 1 << (2 * solver_params.L);
+	const size_t bytes_real = array_length * sizeof(real);
+	const size_t bytes_int  = array_length * sizeof(int);
+	real* h_assem_sol_real  = new real[array_length];
+	int*  h_assem_sol_int   = new int[array_length];
+	
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i] = i;
+	}
+
+	copy_cuda(d_assem_sol.h0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.h1x,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx1x,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy1x,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z1x,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.h1y,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx1y,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy1y,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z1y,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.levels,   h_assem_sol_int,  bytes_int);
+	copy_cuda(d_assem_sol.act_idcs, h_assem_sol_int,  bytes_int);
+
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_VERIFY_WITH_NAME_MW";
+
+	d_assem_sol.write_to_file(dirroot, prefix);
+	
+	char filename_h0[255]       = {'\0'};
+	char filename_qx0[255]      = {'\0'};
+	char filename_qy0[255]      = {'\0'};
+	char filename_z0[255]       = {'\0'};
+	char filename_h1x[255]      = {'\0'};
+	char filename_qx1x[255]     = {'\0'};
+	char filename_qy1x[255]     = {'\0'};
+	char filename_z1x[255]      = {'\0'};
+	char filename_h1y[255]      = {'\0'};
+	char filename_qx1y[255]     = {'\0'};
+	char filename_qy1y[255]     = {'\0'};
+	char filename_z1y[255]      = {'\0'};
+	char filename_levels[255]   = {'\0'};
+	char filename_act_idcs[255] = {'\0'};
+
+	sprintf(filename_h0,       "%s%s", prefix, "-dummy-assem-sol-h0-mw");
+	sprintf(filename_qx0,      "%s%s", prefix, "-dummy-assem-sol-qx0-mw");
+	sprintf(filename_qy0,      "%s%s", prefix, "-dummy-assem-sol-qy0-mw");
+	sprintf(filename_z0,       "%s%s", prefix, "-dummy-assem-sol-z0-mw");
+	sprintf(filename_h1x,      "%s%s", prefix, "-dummy-assem-sol-h1x-mw");
+	sprintf(filename_qx1x,     "%s%s", prefix, "-dummy-assem-sol-qx1x-mw");
+	sprintf(filename_qy1x,     "%s%s", prefix, "-dummy-assem-sol-qy1x-mw");
+	sprintf(filename_z1x,      "%s%s", prefix, "-dummy-assem-sol-z1x-mw");
+	sprintf(filename_h1y,      "%s%s", prefix, "-dummy-assem-sol-h1y-mw");
+	sprintf(filename_qx1y,     "%s%s", prefix, "-dummy-assem-sol-qx1y-mw");
+	sprintf(filename_qy1y,     "%s%s", prefix, "-dummy-assem-sol-qy1y-mw");
+	sprintf(filename_z1y,      "%s%s", prefix, "-dummy-assem-sol-z1y-mw");
+	sprintf(filename_levels,   "%s%s", prefix, "-dummy-assem-sol-levels-mw");
+	sprintf(filename_act_idcs, "%s%s", prefix, "-dummy-assem-sol-act-idcs-mw");
+
+	const real error_h0       = compare_array_with_file_real(dirroot, filename_h0,       h_assem_sol_real, array_length);
+	const real error_qx0      = compare_array_with_file_real(dirroot, filename_qx0,      h_assem_sol_real, array_length);
+	const real error_qy0      = compare_array_with_file_real(dirroot, filename_qy0,      h_assem_sol_real, array_length);
+	const real error_z0       = compare_array_with_file_real(dirroot, filename_z0,       h_assem_sol_real, array_length);
+	const real error_h1x      = compare_array_with_file_real(dirroot, filename_h1x,      h_assem_sol_real, array_length);
+	const real error_qx1x     = compare_array_with_file_real(dirroot, filename_qx1x,     h_assem_sol_real, array_length);
+	const real error_qy1x     = compare_array_with_file_real(dirroot, filename_qy1x,     h_assem_sol_real, array_length);
+	const real error_z1x      = compare_array_with_file_real(dirroot, filename_z1x,      h_assem_sol_real, array_length);
+	const real error_h1y      = compare_array_with_file_real(dirroot, filename_h1y,      h_assem_sol_real, array_length);
+	const real error_qx1y     = compare_array_with_file_real(dirroot, filename_qx1y,     h_assem_sol_real, array_length);
+	const real error_qy1y     = compare_array_with_file_real(dirroot, filename_qy1y,     h_assem_sol_real, array_length);
+	const real error_z1y      = compare_array_with_file_real(dirroot, filename_z1y,      h_assem_sol_real, array_length);
+	const int  diffs_levels   = compare_array_with_file_int (dirroot, filename_levels,   h_assem_sol_int,  array_length);
+	const int  diffs_act_idcs = compare_array_with_file_int (dirroot, filename_act_idcs, h_assem_sol_int,  array_length);
+
+	const real expected_error = C(1e-6);
+
+	bool passed = 
+	(
+		are_reals_equal(error_h0,   expected_error) &&
+		are_reals_equal(error_qx0,  expected_error) &&
+		are_reals_equal(error_qy0,  expected_error) &&
+		are_reals_equal(error_z0,   expected_error) &&
+		are_reals_equal(error_h1x,  expected_error) &&
+		are_reals_equal(error_qx1x, expected_error) &&
+		are_reals_equal(error_qy1x, expected_error) &&
+		are_reals_equal(error_z1x,  expected_error) &&
+		are_reals_equal(error_h1y,  expected_error) &&
+		are_reals_equal(error_qx1y, expected_error) &&
+		are_reals_equal(error_qy1y, expected_error) &&
+		are_reals_equal(error_z1y,  expected_error) &&
+		diffs_levels   == 0 &&
+		diffs_act_idcs == 0
+	);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_VERIFY_WITH_NAME_MW()
+{
+	SolverParams solver_params;
+
+	solver_params.L           = 2;
+	solver_params.solver_type = MWDG2;
+
+	AssembledSolution d_assem_sol(solver_params, "dummy");
+
+	const int array_length  = 1 << (2 * solver_params.L);
+	const size_t bytes_real = array_length * sizeof(real);
+	const size_t bytes_int  = array_length * sizeof(int);
+	real* h_assem_sol_real  = new real[array_length];
+	int*  h_assem_sol_int   = new int[array_length];
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_assem_sol_real[i] = i;
+		h_assem_sol_int[i]  = i;
+	}
+
+	copy_cuda(d_assem_sol.h0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy0,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z0,       h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.h1x,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx1x,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy1x,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z1x,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.h1y,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qx1y,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.qy1y,     h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.z1y,      h_assem_sol_real, bytes_real);
+	copy_cuda(d_assem_sol.levels,   h_assem_sol_int,  bytes_int);
+	copy_cuda(d_assem_sol.act_idcs, h_assem_sol_int,  bytes_int);
+	
+	const char* dirroot = "unittestdata";
+	const char* prefix  = "unit_test_assem_sol_VERIFY_WITH_NAME_MW";
+
+	const int  diffs          = d_assem_sol.verify_int(dirroot, prefix);
+	const real actual_error   = d_assem_sol.verify_real(dirroot, prefix);
+	const real expected_error = C(0.0);
+
+	delete[] h_assem_sol_real;
+	delete[] h_assem_sol_int;
+
+	if (are_reals_equal(actual_error, expected_error) && diffs == 0)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_assem_sol_CONSTRUCTOR_COPY()
+{
+	SolverParams solver_params;
+
+	AssembledSolution d_assem_sol(solver_params);
+
+	AssembledSolution d_assem_sol_copy(d_assem_sol);
+
+	if (d_assem_sol_copy.is_copy_cuda)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void unit_test_scale_coeffs_CONSTRUCTOR_LEVELS_HW()
 {
 	SolverParams solver_params;
@@ -61,19 +993,19 @@ void unit_test_scale_coeffs_CONSTRUCTOR_FILES_HW()
 		h_scale_coeffs[i + PADDING_MRA] = i;
 	}
 
-	const real error_eta0  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta0,  array_length);
-	const real error_qx0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qx0,   array_length);
-	const real error_qy0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qy0,   array_length);
-	const real error_z0    = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.z0,    array_length);
+	const real error_eta0  = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.eta0, array_length);
+	const real error_qx0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qx0,  array_length);
+	const real error_qy0   = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.qy0,  array_length);
+	const real error_z0    = compare_array_on_device_vs_host_real(h_scale_coeffs, d_scale_coeffs.z0,   array_length);
 	
 	const real expected_error = C(1e-6);
 
 	bool passed = 
 	(
-		are_reals_equal(error_eta0,  expected_error) &&
-		are_reals_equal(error_qx0,   expected_error) &&
-		are_reals_equal(error_qy0,   expected_error) &&
-		are_reals_equal(error_z0,    expected_error)
+		are_reals_equal(error_eta0, expected_error) &&
+		are_reals_equal(error_qx0,  expected_error) &&
+		are_reals_equal(error_qy0,  expected_error) &&
+		are_reals_equal(error_z0,   expected_error)
 	);
 
 	delete[] h_scale_coeffs;
@@ -862,6 +1794,28 @@ void unit_test_details_VERIFY_MW()
 
 void run_unit_tests_classes()
 {
+	unit_test_assem_sol_CONSTRUCTOR_LEVELS_NO_NAME_HW();
+	unit_test_assem_sol_CONSTRUCTOR_FILES_NO_NAME_HW();
+	unit_test_assem_sol_WRITE_TO_FILE_NO_NAME_HW();
+	unit_test_assem_sol_VERIFY_NO_NAME_HW();
+
+	unit_test_assem_sol_CONSTRUCTOR_LEVELS_WITH_NAME_HW();
+	unit_test_assem_sol_CONSTRUCTOR_FILES_WITH_NAME_HW();
+	unit_test_assem_sol_WRITE_TO_FILE_WITH_NAME_HW();
+	unit_test_assem_sol_VERIFY_WITH_NAME_HW();
+
+	unit_test_assem_sol_CONSTRUCTOR_LEVELS_NO_NAME_MW();
+	unit_test_assem_sol_CONSTRUCTOR_FILES_NO_NAME_MW();
+	unit_test_assem_sol_WRITE_TO_FILE_NO_NAME_MW();
+	unit_test_assem_sol_VERIFY_NO_NAME_MW();
+
+	unit_test_assem_sol_CONSTRUCTOR_LEVELS_WITH_NAME_MW();
+	unit_test_assem_sol_CONSTRUCTOR_FILES_WITH_NAME_MW();
+	unit_test_assem_sol_WRITE_TO_FILE_WITH_NAME_MW();
+	unit_test_assem_sol_VERIFY_WITH_NAME_MW();
+
+	unit_test_assem_sol_CONSTRUCTOR_COPY();
+
 	unit_test_scale_coeffs_CONSTRUCTOR_LEVELS_HW();
 	unit_test_scale_coeffs_CONSTRUCTOR_FILES_HW();
 	unit_test_scale_coeffs_WRITE_TO_FILE_HW();

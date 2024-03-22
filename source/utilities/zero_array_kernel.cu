@@ -1,7 +1,7 @@
-#include "zero_array.cuh"
+#include "zero_array_kernel.cuh"
 
 __global__
-void zero_array
+void zero_array_kernel
 (
 	real* d_array,
 	int   num_threads

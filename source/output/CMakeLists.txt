@@ -6,6 +6,8 @@ target_sources(
 		write_bool_to_file.cu
 		write_c_prop_data.cu
 		write_cumulative_data.cpp
+		write_d_array_int.cu
+		write_d_array_real.cu
 		write_stage_point_data.cu
 		write_int_to_file.cu
 		write_mesh_info.cpp

@@ -16,7 +16,7 @@ int compare_array_with_file_bool
 
 	if (NULL == fp)
 	{
-		fprintf(stderr, "Error opening file %s\n.", fullpath);
+		fprintf(stderr, "Error opening file %s.\n", fullpath);
 		return false;
 	}
 

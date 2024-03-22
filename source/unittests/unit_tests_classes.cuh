@@ -1,9 +1,34 @@
 #pragma once
 
+#include "../classes/AssembledSolution.h"
 #include "../classes/ScaleCoefficients.h"
 #include "../classes/Details.h"
+#include "../utilities/compare_array_with_file_int.h"
 #include "../utilities/compare_array_with_file_real.h"
+#include "../utilities/compare_array_on_device_vs_host_int.cuh"
 #include "../utilities/compare_array_on_device_vs_host_real.cuh"
+
+void unit_test_assem_sol_CONSTRUCTOR_LEVELS_NO_NAME_HW();
+void unit_test_assem_sol_CONSTRUCTOR_FILES_NO_NAME_HW();
+void unit_test_assem_sol_WRITE_TO_FILE_NO_NAME_HW();
+void unit_test_assem_sol_VERIFY_NO_NAME_HW();
+
+void unit_test_assem_sol_CONSTRUCTOR_LEVELS_WITH_NAME_HW();
+void unit_test_assem_sol_CONSTRUCTOR_FILES_WITH_NAME_HW();
+void unit_test_assem_sol_WRITE_TO_FILE_WITH_NAME_HW();
+void unit_test_assem_sol_VERIFY_WITH_NAME_HW();
+
+void unit_test_assem_sol_CONSTRUCTOR_LEVELS_NO_NAME_MW();
+void unit_test_assem_sol_CONSTRUCTOR_FILES_NO_NAME_MW();
+void unit_test_assem_sol_WRITE_TO_FILE_NO_NAME_MW();
+void unit_test_assem_sol_VERIFY_NO_NAME_MW();
+
+void unit_test_assem_sol_CONSTRUCTOR_LEVELS_WITH_NAME_MW();
+void unit_test_assem_sol_CONSTRUCTOR_FILES_WITH_NAME_MW();
+void unit_test_assem_sol_WRITE_TO_FILE_WITH_NAME_MW();
+void unit_test_assem_sol_VERIFY_WITH_NAME_MW();
+
+void unit_test_assem_sol_CONSTRUCTOR_COPY();
 
 void unit_test_scale_coeffs_CONSTRUCTOR_LEVELS_HW();
 void unit_test_scale_coeffs_CONSTRUCTOR_FILES_HW();
@@ -50,8 +75,8 @@ bool test_subdetails_WRITE_TO_FILE
 	const char* dirroot,
 	const char* prefix,
 	const char* suffix,
-	real* h_subdetails,
-	const int& num_details
+	real*       h_subdetails,
+	const int&  num_details
 );
 
 void init_details

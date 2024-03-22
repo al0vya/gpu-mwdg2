@@ -1,83 +1,101 @@
 #pragma once
 
+#include <string>
+
 #include "../utilities/cuda_utils.cuh"
-
-#include "../types/real.h"
+#include "../utilities/compare_d_array_with_file_int.cuh"
+#include "../utilities/compute_max_error.cuh"
 #include "../types/HierarchyIndex.h"
-#include "../types/SolverTypes.h"
+#include "../classes/SolverParams.h"
+#include "../input/read_d_array_int.cuh"
+#include "../input/read_d_array_real.cuh"
+#include "../output/write_d_array_int.cuh"
+#include "../output/write_d_array_real.cuh"
 
-typedef struct AssembledSolution
+class AssembledSolution
 {
-	real* h0;
-	real* qx0;
-	real* qy0;
-	real* z0;
+public:
+	AssembledSolution
+	(
+		const SolverParams& solver_params
+	);
 
-	real* h1x;
-	real* qx1x;
-	real* qy1x;
-	real* z1x;
+	AssembledSolution
+	(
+		const SolverParams& solver_params,
+		const std::string&  name
+	);
 	
-	real* h1y;
-	real* qx1y;
-	real* qy1y;
-	real* z1y;
-	
-	HierarchyIndex* act_idcs;
+	AssembledSolution
+	(
+		const SolverParams& solver_params,
+		const char*         dirroot,
+		const char*         prefix
+	);
 
-	int* levels;
-	int  length;
+	AssembledSolution
+	(
+		const SolverParams& solver_params,
+		const std::string&  name,
+		const char*         dirroot,
+		const char*         prefix
+	);
+
+	AssembledSolution
+	(
+		const AssembledSolution& original
+	);
+
+	~AssembledSolution();
+
+	void write_to_file
+	(
+		const char* dirroot,
+		const char* prefix
+	);
+    
+	real verify_real
+	(
+		const char* dirroot,
+		const char* prefix
+	);
+
+	int verify_int
+	(
+		const char* dirroot,
+		const char* prefix
+	);
+
+	real* h0  = nullptr;
+	real* qx0 = nullptr;
+	real* qy0 = nullptr;
+	real* z0  = nullptr;
+
+	real* h1x  = nullptr;
+	real* qx1x = nullptr;
+	real* qy1x = nullptr;
+	real* z1x  = nullptr;
+
+	real* h1y  = nullptr;
+	real* qx1y = nullptr;
+	real* qy1y = nullptr;
+	real* z1y  = nullptr; 
+
+	HierarchyIndex* act_idcs = nullptr;
+
+	int* levels = nullptr;
+	
+	int length = 0;
+	int solver_type = 0;
 	bool is_copy_cuda = false;
+	std::string name = "";
 
-	AssembledSolution(const int& num_finest_elems, const int& solver_type)
-	{
-		size_t bytes_real = num_finest_elems * sizeof(real);
-		size_t bytes_int  = num_finest_elems * sizeof(HierarchyIndex);
+private:
+	void initialise();
 
-		h0  = (real*)malloc_device(bytes_real);
-		qx0 = (real*)malloc_device(bytes_real);
-		qy0 = (real*)malloc_device(bytes_real);
-		z0  = (real*)malloc_device(bytes_real);
-
-		h1x  = (solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-		qx1x = (solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-		qy1x = (solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-		z1x  = (solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-
-		h1y  = (solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-		qx1y = (solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-		qy1y = (solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-		z1y  = (solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-
-		act_idcs = (HierarchyIndex*)malloc_device(bytes_int);
-		levels   = (int*)malloc_device(bytes_int);
-		length   = num_finest_elems;
-	}
-
-	AssembledSolution(const AssembledSolution& original) { *this = original; is_copy_cuda = true; }
-
-	~AssembledSolution()
-	{
-		if (!is_copy_cuda)
-		{
-			CHECK_CUDA_ERROR( free_device(h0) );
-			CHECK_CUDA_ERROR( free_device(qx0) );
-			CHECK_CUDA_ERROR( free_device(qy0) );
-			CHECK_CUDA_ERROR( free_device(z0) );
-
-			CHECK_CUDA_ERROR( free_device(h1x) );
-			CHECK_CUDA_ERROR( free_device(qx1x) );
-			CHECK_CUDA_ERROR( free_device(qy1x) );
-			CHECK_CUDA_ERROR( free_device(z1x) );
-
-			CHECK_CUDA_ERROR( free_device(h1y) );
-			CHECK_CUDA_ERROR( free_device(qx1y) );
-			CHECK_CUDA_ERROR( free_device(qy1y) );
-			CHECK_CUDA_ERROR( free_device(z1y) );
-
-			CHECK_CUDA_ERROR( free_device(act_idcs) );
-			CHECK_CUDA_ERROR( free_device(levels) );
-		}
-	}
-
-} AssembledSolution;
+	void initialise_from_file
+	(
+		const char* dirroot,
+		const char* prefix
+	);
+};

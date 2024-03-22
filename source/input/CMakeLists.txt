@@ -3,6 +3,8 @@ target_sources(
 		PRIVATE
 		read_and_project_modes_dg2.cu
 		read_and_project_modes_fv1.cu
+		read_d_array_int.cu
+		read_d_array_real.cu
 		read_cell_size.cpp
 		read_command_line_params.cpp
 		read_keyword_bool.cpp

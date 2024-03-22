@@ -17,10 +17,10 @@ ScaleCoefficients::ScaleCoefficients
 
 	const int num_blocks = get_num_blocks(num_scale_coeffs, THREADS_PER_BLOCK);
 
-	zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->eta0, num_scale_coeffs);
-	zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx0,  num_scale_coeffs);
-	zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy0,  num_scale_coeffs);
-	zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->z0,   num_scale_coeffs);
+	zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->eta0, num_scale_coeffs);
+	zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx0,  num_scale_coeffs);
+	zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy0,  num_scale_coeffs);
+	zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->z0,   num_scale_coeffs);
 
 	if (this->solver_type == MWDG2)
 	{
@@ -34,15 +34,15 @@ ScaleCoefficients::ScaleCoefficients
 	    this->qy1y  = (real*)malloc_device(bytes);
 	    this->z1y   = (real*)malloc_device(bytes);
 
-		zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->eta1x, num_scale_coeffs);
-	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx1x,  num_scale_coeffs);
-	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy1x,  num_scale_coeffs);
-	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->z1x,   num_scale_coeffs);
+		zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->eta1x, num_scale_coeffs);
+	    zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx1x,  num_scale_coeffs);
+	    zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy1x,  num_scale_coeffs);
+	    zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->z1x,   num_scale_coeffs);
 
-		zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->eta1y, num_scale_coeffs);
-	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx1y,  num_scale_coeffs);
-	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy1y,  num_scale_coeffs);
-	    zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(this->z1y,   num_scale_coeffs);
+		zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->eta1y, num_scale_coeffs);
+	    zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx1y,  num_scale_coeffs);
+	    zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy1y,  num_scale_coeffs);
+	    zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->z1y,   num_scale_coeffs);
 	}
 }
 

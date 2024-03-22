@@ -6,12 +6,15 @@ target_sources(
 		get_mean_from_array
 		get_num_blocks.cpp
 		are_reals_equal.cpp
+		compare_array_on_device_vs_host_int.cu
 		compare_array_on_device_vs_host_real.cu
 		compare_array_with_file_bool.cpp
+		compare_array_with_file_int.cpp
 		compare_array_with_file_real.cpp
 		compare_d_array_with_file_bool.cu
+		compare_d_array_with_file_int.cu
 		compare_d_array_with_file_real.cu
 		compute_max_error.cu
         compute_error_kernel.cu
-		zero_array.cu
+		zero_array_kernel.cu
 	)

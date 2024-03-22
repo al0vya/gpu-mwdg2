@@ -72,11 +72,11 @@ void run_simulation
 	real    compression    = C(0.0);
 
 	NodalValues       d_nodal_vals      (interface_dim);
-	AssembledSolution d_assem_sol       (num_finest_elems, solver_params.solver_type);
-	AssembledSolution d_buf_assem_sol   (num_finest_elems, solver_params.solver_type);
-	AssembledSolution d_plot_assem_sol  (num_finest_elems, solver_params.solver_type);
-	Neighbours        d_neighbours      (num_finest_elems, solver_params.solver_type);
-	Neighbours        d_buf_neighbours  (num_finest_elems, solver_params.solver_type);
+	AssembledSolution d_assem_sol       (solver_params);
+	AssembledSolution d_buf_assem_sol   (solver_params);
+	AssembledSolution d_plot_assem_sol  (solver_params);
+	Neighbours        d_neighbours      (solver_params);
+	Neighbours        d_buf_neighbours  (solver_params);
 	ScaleCoefficients d_scale_coeffs    (solver_params);
 	Details           d_details         (solver_params);
 	CompactionFlags   d_compaction_flags(num_finest_elems);

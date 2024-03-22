@@ -86,6 +86,29 @@ void unit_test_compute_max_error()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_compare_array_on_device_vs_host_int()
+{
+	const int array_length = 100;
+	const size_t bytes = array_length * sizeof(int);
+	int* h_array = new int[array_length];
+	int* d_array = (int*)malloc_device(bytes);
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_array[i] = i % 2;
+	}
+
+	copy_cuda(d_array, h_array, bytes);
+
+	const int diffs = compare_array_on_device_vs_host_int(h_array, d_array, array_length);
+	
+	delete[] h_array;
+	free_device(d_array);
+
+	if (diffs == 0)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void unit_test_compare_array_on_device_vs_host_real()
 {
 	const int array_length = 100;
@@ -124,6 +147,27 @@ void unit_test_compare_array_with_file_bool()
 	const char* filename = "unit_test_compare_array_with_file_bool";
 
 	const int differences = compare_array_with_file_bool(dirroot, filename, h_array, array_length);
+
+	delete[] h_array;
+
+	if (differences == 0)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_compare_array_with_file_int()
+{
+	const int array_length = 100;
+	int* h_array = new int[array_length];
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_array[i] = i % 2 == 0;
+	}
+
+	const char* dirroot  = "unittestdata";
+	const char* filename = "unit_test_compare_array_with_file_int";
+
+	const int differences = compare_array_with_file_int(dirroot, filename, h_array, array_length);
 
 	delete[] h_array;
 
@@ -207,6 +251,32 @@ void unit_test_compare_d_array_with_file_bool_OFFSET()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_compare_d_array_with_file_int_NO_OFFSET()
+{
+	const int array_length = 100;
+	const size_t bytes = array_length * sizeof(int);
+	int* h_array = new int[array_length];
+	int* d_array = (int*)malloc_device(bytes);
+
+	for (int i = 0; i < array_length; i++)
+	{
+		h_array[i] = i % 2 == 0;
+	}
+	
+	const char* dirroot  = "unittestdata";
+	const char* filename = "unit_test_compare_d_array_with_file_int_NO_OFFSET";
+
+	copy_cuda(d_array, h_array, bytes);
+
+	const int differences = compare_d_array_with_file_int(dirroot, filename, d_array, array_length, 0);
+
+	delete[] h_array;
+	free_device(d_array);
+
+	if (differences == 0)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void unit_test_compare_d_array_with_file_real_NO_OFFSET()
 {
 	const int array_length = 100;
@@ -263,7 +333,7 @@ void unit_test_compare_d_array_with_file_real_OFFSET()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_zero_array()
+void unit_test_zero_array_kernel()
 {
 	const int array_length = 100000;
 	const int num_blocks = get_num_blocks(array_length, THREADS_PER_BLOCK);
@@ -271,7 +341,7 @@ void unit_test_zero_array()
 	real* h_array = new real[array_length];
 	real* d_array = (real*)malloc_device(bytes);
 
-	zero_array<<<num_blocks, THREADS_PER_BLOCK>>>(d_array, array_length);
+	zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(d_array, array_length);
 
 	copy_cuda(h_array, d_array, bytes);
 
@@ -298,14 +368,17 @@ void run_unit_tests_utilities()
 	unit_test_get_max_from_array();
 	unit_test_get_mean_from_array();
 	unit_test_compute_max_error();
+	unit_test_compare_array_on_device_vs_host_int();
 	unit_test_compare_array_on_device_vs_host_real();
 	unit_test_compare_array_with_file_bool();
+	unit_test_compare_array_with_file_int();
 	unit_test_compare_array_with_file_real();
 	unit_test_compare_d_array_with_file_bool_NO_OFFSET();
 	unit_test_compare_d_array_with_file_bool_OFFSET();
+	unit_test_compare_d_array_with_file_int_NO_OFFSET();
 	unit_test_compare_d_array_with_file_real_NO_OFFSET();
 	unit_test_compare_d_array_with_file_real_OFFSET();
-	unit_test_zero_array();
+	unit_test_zero_array_kernel();
 }
 
 #endif
