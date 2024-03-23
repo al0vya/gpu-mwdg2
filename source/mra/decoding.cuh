@@ -1,30 +1,18 @@
 #pragma once
 
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
+#include "../utilities/get_num_blocks.h"
 
-#include "cub/block/block_scan.cuh"
+#include "../utilities/cuda_utils.cuh"
+#include "decoding_kernel_hw.cuh"
+#include "decoding_kernel_single_block_hw.cuh"
+#include "decoding_kernel_mw.cuh"
+#include "decoding_kernel_single_block_mw.cuh"
 
-#include "../classes/SolverParams.h"
-#include "../types/HierarchyIndex.h"
-#include "../classes/Details.h"
-#include "../classes/ScaleCoefficients.h"
-#include "../utilities/BLOCK_VAR_MACROS.cuh"
-
-#include "../utilities/get_lvl_idx.cuh"
-#include "load_details.cuh"
-#include "load_parent_scale_coeffs.cuh"
-#include "decode_scale_coeffs.cuh"
-#include "store_scale_coeffs.cuh"
-
-template <bool SINGLE_BLOCK>
-__global__
 void decoding
 (
-	bool*             d_sig_details,
-	Details           d_details,
-	ScaleCoefficients d_scale_coeffs,
-	SolverParams  solver_params,
-	int               level,
-	int               num_threads
+	bool*              d_sig_details,
+	real*              d_norm_details,
+	Details&           d_details,
+	ScaleCoefficients& d_scale_coeffs,
+	SolverParams&      solver_params
 );

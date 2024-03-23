@@ -84,19 +84,6 @@ void find_neighbours
         code_south = active_idx_south - lvl_idx_south;
         code_west  = active_idx_west  - lvl_idx_west;
 
-        if (
-            lvl_north == 3 &&
-            lvl_east == 5 &&
-            lvl_south == 4 &&
-            lvl_west == 5
-            )
-        {
-            printf("active_idx_north: %d\n", active_idx_north);
-            printf("active_idx_east : %d\n", active_idx_east);
-            printf("active_idx_south: %d\n", active_idx_south);
-            printf("active_idx_west : %d\n", active_idx_west);
-        }
-
         // lvl_idx_east - lvl_idx_local is positive only if
         // eastern neighbour is finer, which is the only time
         // we want to shift; idx should stay the same otherwise

@@ -15,8 +15,8 @@ int main
 	
 	if (argc < 2)
 	{
-		fprintf(stderr, "\nNo parameter file specified in command line. Exiting.\n");
-		exit(-1);
+		printf("\nNo parameter file specified in command line. Exiting.\n");
+		return 0;
 	}
 
 	run_simulation(argc, argv);

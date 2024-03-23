@@ -93,6 +93,70 @@ void unit_test_read_cell_size_CELL_SIZE_FOUND()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_read_d_array_int()
+{
+	const char*  dirroot      = "unittestdata";
+	const char*  filename     = "unit_test_read_d_array_int";
+	const int    array_length = 10;
+	const size_t bytes        = array_length * sizeof(int);
+
+	int* d_hierarchy = read_d_array_int(array_length, dirroot, filename);
+	int* h_hierarchy = new int[array_length];
+
+	copy_cuda(h_hierarchy, d_hierarchy, bytes);
+
+	bool passed = true;
+
+	for (int i = 0; i < array_length; i++)
+	{
+		if ( i != h_hierarchy[i] )
+		{
+			passed = false;
+			break;
+		}
+	}
+
+	free_device(d_hierarchy);
+	delete[]    h_hierarchy;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_read_d_array_real()
+{
+	const char*  dirroot      = "unittestdata";
+	const char*  filename     = "unit_test_read_d_array_real";
+	const int    array_length = 10;
+	const size_t bytes        = array_length * sizeof(real);
+
+	real* d_hierarchy = read_d_array_real(array_length, dirroot, filename);
+	real* h_hierarchy = new real[array_length];
+
+	copy_cuda(h_hierarchy, d_hierarchy, bytes);
+
+	bool passed = true;
+
+	real dummy = C(0.0);
+
+	for (int i = 0; i < array_length; i++)
+	{
+		dummy = i;
+		
+		if ( !are_reals_equal( dummy, h_hierarchy[i] ) )
+		{
+			passed = false;
+			break;
+		}
+	}
+
+	free_device(d_hierarchy);
+	delete[]    h_hierarchy;
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void unit_test_read_hierarchy_array_real()
 {
 	const char*  dirroot      = "unittestdata";
@@ -106,19 +170,15 @@ void unit_test_read_hierarchy_array_real()
 
 	copy_cuda(h_hierarchy, d_hierarchy, bytes);
 
-	bool passed = false;
+	bool passed = true;
 
 	real dummy = C(0.0);
 
 	for (int i = 0; i < array_length; i++)
 	{
-		dummy = i;
+		dummy = (i < PADDING_MRA) ? C(0.0) : i - PADDING_MRA; // to get a series of numbers with the first three being 0: 0, 0, 0, 0, 1, 2, ..
 		
-		if ( are_reals_equal( dummy, h_hierarchy[i] ) )
-		{
-			passed = true;
-		}
-		else
+		if ( !are_reals_equal( dummy, h_hierarchy[i] ) )
 		{
 			passed = false;
 			break;
@@ -151,7 +211,7 @@ void unit_test_read_hierarchy_array_bool()
 
 	for (int i = 0; i < array_length; i++)
 	{
-		dummy = (i % 2 == 0);
+		dummy = (i < PADDING_MRA) ? 0 : ( (i - PADDING_MRA) % 2 == 0 );
 		
 		if ( dummy != h_hierarchy[i] )
 		{
@@ -174,6 +234,8 @@ void run_unit_tests_input()
 	unit_test_read_keyword_str_KEYWORD_NOT_FOUND();
 	unit_test_read_keyword_str_KEYWORD_FOUND();
 	unit_test_read_cell_size_CELL_SIZE_FOUND();
+	unit_test_read_d_array_int();
+	unit_test_read_d_array_real();
 	unit_test_read_hierarchy_array_real();
 	unit_test_read_hierarchy_array_bool();
 }

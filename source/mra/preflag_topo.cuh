@@ -6,7 +6,8 @@
 #include "../utilities/get_num_blocks.h"
 #include "../types/HierarchyIndex.h"
 
-#include "encode_and_thresh_topo.cuh"
+#include "encode_topography_kernel_hw.cuh"
+#include "encode_topography_kernel_mw.cuh"
 
 __host__
 void preflag_topo
@@ -15,7 +16,5 @@ void preflag_topo
 	Details&           d_details,
 	bool*              d_preflagged_details,
 	Maxes&             maxes, 
-	SolverParams&      solver_params,
-	SimulationParams&  sim_params,
-	int                first_time_step
+	SolverParams&      solver_params
 );

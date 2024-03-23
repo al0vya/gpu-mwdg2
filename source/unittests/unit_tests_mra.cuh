@@ -6,7 +6,10 @@
 
 #include "../types/real.h"
 #include "../mra/preflag_topo.cuh"
-#include "../mra/encoding_all.cuh"
+#include "../mra/encode_flow.cuh"
+#include "../mra/regularisation.cuh"
+#include "../mra/extra_significance.cuh"
+#include "../mra/decoding.cuh"
 #include "../utilities/are_reals_equal.h"
 #include "../utilities/compare_d_array_with_file_bool.cuh"
 #include "../utilities/compare_d_array_with_file_real.cuh"
@@ -31,11 +34,37 @@ void unit_test_encode_detail_alpha_1y();
 void unit_test_encode_detail_beta_1y();
 void unit_test_encode_detail_gamma_1y();
 
+void unit_test_decode_0_0();
+void unit_test_decode_0_1x();
+void unit_test_decode_0_1y();
+void unit_test_decode_1_0();
+void unit_test_decode_1_1x();
+void unit_test_decode_1_1y();
+void unit_test_decode_2_0();
+void unit_test_decode_2_1x();
+void unit_test_decode_2_1y();
+void unit_test_decode_3_0();
+void unit_test_decode_3_1x();
+void unit_test_decode_3_1y();
+
 void unit_test_preflag_topo_HW();
-void unit_test_encoding_all_TIMESTEP_1_HW();
-void unit_test_encoding_all_TIMESTEP_2_HW();
+void unit_test_encode_flow_TIMESTEP_1_HW();
+void unit_test_encode_flow_TIMESTEP_2_HW();
+void unit_test_regularisation_TIMESTEP_1_HW();
+void unit_test_regularisation_TIMESTEP_2_HW();
+void unit_test_extra_significance_TIMESTEP_1_HW();
+void unit_test_extra_significance_TIMESTEP_2_HW();
+void unit_test_decoding_TIMESTEP_1_HW();
+void unit_test_decoding_TIMESTEP_2_HW();
 
 void unit_test_preflag_topo_MW();
-
+void unit_test_encode_flow_TIMESTEP_1_MW();
+void unit_test_encode_flow_TIMESTEP_2_MW();
+void unit_test_regularisation_TIMESTEP_1_MW();
+void unit_test_regularisation_TIMESTEP_2_MW();
+void unit_test_extra_significance_TIMESTEP_1_MW();
+void unit_test_extra_significance_TIMESTEP_2_MW();
+void unit_test_decoding_TIMESTEP_1_MW();
+void unit_test_decoding_TIMESTEP_2_MW();
 
 void run_unit_tests_mra();

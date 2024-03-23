@@ -9,12 +9,12 @@ typedef struct Neighbours
     AssembledSolution south;
     AssembledSolution west;
 
-    Neighbours(const int& num_finest_elems, const int& solver_type)
+    Neighbours(const SolverParams& solver_params)
     :
-        north(num_finest_elems, solver_type),
-        east (num_finest_elems, solver_type),
-        south(num_finest_elems, solver_type),
-        west (num_finest_elems, solver_type)
+        north(solver_params),
+        east (solver_params),
+        south(solver_params),
+        west (solver_params)
     {}
 
 } Neighbours;

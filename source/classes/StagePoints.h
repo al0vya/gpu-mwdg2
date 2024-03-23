@@ -12,9 +12,9 @@ typedef struct StagePoints
 
 	StagePoints
 	(
-		const char*                input_filename,
+		const char*            input_filename,
 		const SimulationParams sim_params,
-		const real&                cell_size
+		const real&            cell_size
 
 	)
 	{

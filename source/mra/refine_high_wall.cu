@@ -48,9 +48,9 @@ void refine_high_wall
 
 	for (int i = 0; i < num_refined_cells; i++)
 	{
-		MortonCode child_idx = refined_high_wall_codes[i] / 4; // to get Morton code one level below
+		MortonCode child_code = refined_high_wall_codes[i] / 4; // to get Morton code one level below
 
-		h_preflagged_details[starting_idx + child_idx] = true;
+		h_preflagged_details[starting_idx + child_code] = true;
 	}
 
 	delete[] refined_high_wall_codes;

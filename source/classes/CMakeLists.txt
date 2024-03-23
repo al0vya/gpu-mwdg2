@@ -1,6 +1,7 @@
 target_sources(
 	    gpu-mwdg2
 		PRIVATE
+		AssembledSolution.cu
 		Details.cu
 		ScaleCoefficients.cu
 		SimulationParams.cpp

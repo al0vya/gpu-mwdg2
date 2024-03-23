@@ -2,16 +2,16 @@
 
 #include "cuda_runtime.h"
 
-#include "../classes/DetailChildren.h"
+#include "../classes/SigChildren.h"
 
 __device__ __forceinline__
-DetailChildren get_child_details
+SigChildren get_child_details
 (
 	bool* shared_child_details,
 	int   t_idx
 )
 {
-	DetailChildren child_details =
+	SigChildren child_details =
 	{
 		shared_child_details[t_idx + 0], // detail_0
 		shared_child_details[t_idx + 1], // detail_1

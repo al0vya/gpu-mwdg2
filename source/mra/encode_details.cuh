@@ -4,15 +4,23 @@
 #include "../classes/ChildScaleCoeffs.h"
 #include "../mra/Filters.h"
 
-// encodes the details alpha, beta and gamma for eta, qx, qy and z
 __host__ __device__ __forceinline__
-real encode_detail_alpha(const ScaleChildrenHW& u);
+real encode_detail_alpha(const ScaleChildrenHW& u)
+{
+	return C(0.5) * (H0 * (G0 * u.child_0 + G1 * u.child_2) + H1 * (G0 * u.child_1 + G1 * u.child_3));
+}
 
 __host__ __device__ __forceinline__
-real encode_detail_beta(const ScaleChildrenHW& u);
+real encode_detail_beta(const ScaleChildrenHW& u)
+{
+	return C(0.5) * (G0 * (H0 * u.child_0 + H1 * u.child_2) + G1 * (H0 * u.child_1 + H1 * u.child_3));
+}
 
 __host__ __device__ __forceinline__
-real encode_detail_gamma(const ScaleChildrenHW& u);
+real encode_detail_gamma(const ScaleChildrenHW& u)
+{
+	return C(0.5) * (G0 * (G0 * u.child_0 + G1 * u.child_2) + G1 * (G0 * u.child_1 + G1 * u.child_3));
+}
 
 __host__ __device__ __forceinline__
 DetailHW encode_details(const ChildScaleCoeffsHW& child_coeffs)
@@ -52,24 +60,6 @@ DetailHW encode_details(const ChildScaleCoeffsHW& child_coeffs)
 		qy,
 		z
 	};
-}
-
-__host__ __device__ __forceinline__
-real encode_detail_alpha(const ScaleChildrenHW& u)
-{
-	return C(0.5) * ( H0 * (G0 * u.child_0 + G1 * u.child_2) + H1 * (G0 * u.child_1 + G1 * u.child_3) );
-}
-
-__host__ __device__ __forceinline__
-real encode_detail_beta(const ScaleChildrenHW& u)
-{
-	return C(0.5) * ( G0 * (H0 * u.child_0 + H1 * u.child_2) + G1 * (H0 * u.child_1 + H1 * u.child_3) );
-}
-
-__host__ __device__ __forceinline__
-real encode_detail_gamma(const ScaleChildrenHW& u)
-{
-	return C(0.5) * ( G0 * (G0 * u.child_0 + G1 * u.child_2) + G1 * (G0 * u.child_1 + G1 * u.child_3) );
 }
 
 __host__ __device__ __forceinline__

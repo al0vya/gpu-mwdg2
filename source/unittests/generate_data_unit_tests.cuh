@@ -16,7 +16,7 @@ void generate_data_unit_test_preflag_topo
 	SolverParams      solver_params
 );
 
-void generate_data_unit_test_encoding_all
+void generate_data_unit_test_encode_flow
 (
 	const char*       dirroot,
 	const char*       input_or_output_str,
@@ -27,4 +27,35 @@ void generate_data_unit_test_encoding_all
 	bool*             d_preflagged_details,
 	SolverParams      solver_params,
 	const int&        timestep
+);
+
+void generate_data_unit_test_decoding
+(
+	const char*       dirroot,
+	const char*       input_or_output_str,
+	bool*             d_sig_details,
+	real*             d_norm_details,
+	Details           d_details,
+	ScaleCoefficients d_scale_coeffs,
+	SolverParams      solver_params,
+	const int&        timestep
+);
+
+void generate_data_unit_test_regularisation
+(
+	const char*  dirroot,
+	const char*  input_or_output_str,
+	bool*        d_sig_details,
+	SolverParams solver_params,	
+	const int&   timestep
+);
+
+void generate_data_unit_test_extra_significance
+(
+	const char*  dirroot,
+	const char*  input_or_output_str,
+	bool*        d_sig_details,
+	real*        d_norm_details,
+	SolverParams solver_params,	
+	const int&   timestep
 );

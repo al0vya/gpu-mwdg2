@@ -1,21 +1,20 @@
 #pragma once
 
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
+#include "../utilities/cuda_utils.cuh"
 
 #include "../utilities/BLOCK_VAR_MACROS.cuh"
 
-#include "../types/real.h"
-#include "../classes/DetailChildren.h"
 #include "../types/HierarchyIndex.h"
+#include "../classes/SolverParams.h"
 
-#include "get_child_details.cuh"
-#include "../utilities/get_lvl_idx.cuh"
+#include "../utilities/get_num_blocks.h"
 
-template <bool SINGLE_BLOCK>
-__global__ void regularisation
+#include "regularisation_kernel.cuh"
+#include "regularisation_kernel_single_block.cuh"
+
+__host__
+void regularisation
 (
-	bool*    d_sig_details,
-	int      level,
-	int      num_threads
+	bool*        d_sig_details,
+	SolverParams solver_params
 );

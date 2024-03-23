@@ -75,51 +75,167 @@ void store_scale_coeffs
 (
 	const ChildScaleCoeffsMW& child_coeffs, 
 	const ScaleCoefficients&  d_scale_coeffs,
-	const HierarchyIndex&     h_idx
+	const HierarchyIndex&     child_idx
 )
 {
-	d_scale_coeffs.eta0[h_idx + 0] = child_coeffs.eta._0.child_0;
-	d_scale_coeffs.eta0[h_idx + 1] = child_coeffs.eta._0.child_1;
-	d_scale_coeffs.eta0[h_idx + 2] = child_coeffs.eta._0.child_2;
-	d_scale_coeffs.eta0[h_idx + 3] = child_coeffs.eta._0.child_3;
+	d_scale_coeffs.eta0[child_idx + 0] = child_coeffs.eta._0.child_0;
+	d_scale_coeffs.eta0[child_idx + 1] = child_coeffs.eta._0.child_1;
+	d_scale_coeffs.eta0[child_idx + 2] = child_coeffs.eta._0.child_2;
+	d_scale_coeffs.eta0[child_idx + 3] = child_coeffs.eta._0.child_3;
 	
-	d_scale_coeffs.qx0[h_idx + 0] = child_coeffs.qx._0.child_0;
-	d_scale_coeffs.qx0[h_idx + 1] = child_coeffs.qx._0.child_1;
-	d_scale_coeffs.qx0[h_idx + 2] = child_coeffs.qx._0.child_2;
-	d_scale_coeffs.qx0[h_idx + 3] = child_coeffs.qx._0.child_3;
+	d_scale_coeffs.qx0[child_idx + 0] = child_coeffs.qx._0.child_0;
+	d_scale_coeffs.qx0[child_idx + 1] = child_coeffs.qx._0.child_1;
+	d_scale_coeffs.qx0[child_idx + 2] = child_coeffs.qx._0.child_2;
+	d_scale_coeffs.qx0[child_idx + 3] = child_coeffs.qx._0.child_3;
 
-	d_scale_coeffs.qy0[h_idx + 0] = child_coeffs.qy._0.child_0;
-	d_scale_coeffs.qy0[h_idx + 1] = child_coeffs.qy._0.child_1;
-	d_scale_coeffs.qy0[h_idx + 2] = child_coeffs.qy._0.child_2;
-	d_scale_coeffs.qy0[h_idx + 3] = child_coeffs.qy._0.child_3;
+	d_scale_coeffs.qy0[child_idx + 0] = child_coeffs.qy._0.child_0;
+	d_scale_coeffs.qy0[child_idx + 1] = child_coeffs.qy._0.child_1;
+	d_scale_coeffs.qy0[child_idx + 2] = child_coeffs.qy._0.child_2;
+	d_scale_coeffs.qy0[child_idx + 3] = child_coeffs.qy._0.child_3;
 
-	d_scale_coeffs.eta1x[h_idx + 0] = child_coeffs.eta._1x.child_0;
-	d_scale_coeffs.eta1x[h_idx + 1] = child_coeffs.eta._1x.child_1;
-	d_scale_coeffs.eta1x[h_idx + 2] = child_coeffs.eta._1x.child_2;
-	d_scale_coeffs.eta1x[h_idx + 3] = child_coeffs.eta._1x.child_3;
+	d_scale_coeffs.eta1x[child_idx + 0] = child_coeffs.eta._1x.child_0;
+	d_scale_coeffs.eta1x[child_idx + 1] = child_coeffs.eta._1x.child_1;
+	d_scale_coeffs.eta1x[child_idx + 2] = child_coeffs.eta._1x.child_2;
+	d_scale_coeffs.eta1x[child_idx + 3] = child_coeffs.eta._1x.child_3;
 
-	d_scale_coeffs.qx1x[h_idx + 0] = child_coeffs.qx._1x.child_0;
-	d_scale_coeffs.qx1x[h_idx + 1] = child_coeffs.qx._1x.child_1;
-	d_scale_coeffs.qx1x[h_idx + 2] = child_coeffs.qx._1x.child_2;
-	d_scale_coeffs.qx1x[h_idx + 3] = child_coeffs.qx._1x.child_3;
+	d_scale_coeffs.qx1x[child_idx + 0] = child_coeffs.qx._1x.child_0;
+	d_scale_coeffs.qx1x[child_idx + 1] = child_coeffs.qx._1x.child_1;
+	d_scale_coeffs.qx1x[child_idx + 2] = child_coeffs.qx._1x.child_2;
+	d_scale_coeffs.qx1x[child_idx + 3] = child_coeffs.qx._1x.child_3;
 
-	d_scale_coeffs.qy1x[h_idx + 0] = child_coeffs.qy._1x.child_0;
-	d_scale_coeffs.qy1x[h_idx + 1] = child_coeffs.qy._1x.child_1;
-	d_scale_coeffs.qy1x[h_idx + 2] = child_coeffs.qy._1x.child_2;
-	d_scale_coeffs.qy1x[h_idx + 3] = child_coeffs.qy._1x.child_3;
+	d_scale_coeffs.qy1x[child_idx + 0] = child_coeffs.qy._1x.child_0;
+	d_scale_coeffs.qy1x[child_idx + 1] = child_coeffs.qy._1x.child_1;
+	d_scale_coeffs.qy1x[child_idx + 2] = child_coeffs.qy._1x.child_2;
+	d_scale_coeffs.qy1x[child_idx + 3] = child_coeffs.qy._1x.child_3;
 
-	d_scale_coeffs.eta1y[h_idx + 0] = child_coeffs.eta._1y.child_0;
-	d_scale_coeffs.eta1y[h_idx + 1] = child_coeffs.eta._1y.child_1;
-	d_scale_coeffs.eta1y[h_idx + 2] = child_coeffs.eta._1y.child_2;
-	d_scale_coeffs.eta1y[h_idx + 3] = child_coeffs.eta._1y.child_3;
+	d_scale_coeffs.eta1y[child_idx + 0] = child_coeffs.eta._1y.child_0;
+	d_scale_coeffs.eta1y[child_idx + 1] = child_coeffs.eta._1y.child_1;
+	d_scale_coeffs.eta1y[child_idx + 2] = child_coeffs.eta._1y.child_2;
+	d_scale_coeffs.eta1y[child_idx + 3] = child_coeffs.eta._1y.child_3;
 
-	d_scale_coeffs.qx1y[h_idx + 0] = child_coeffs.qx._1y.child_0;
-	d_scale_coeffs.qx1y[h_idx + 1] = child_coeffs.qx._1y.child_1;
-	d_scale_coeffs.qx1y[h_idx + 2] = child_coeffs.qx._1y.child_2;
-	d_scale_coeffs.qx1y[h_idx + 3] = child_coeffs.qx._1y.child_3;
+	d_scale_coeffs.qx1y[child_idx + 0] = child_coeffs.qx._1y.child_0;
+	d_scale_coeffs.qx1y[child_idx + 1] = child_coeffs.qx._1y.child_1;
+	d_scale_coeffs.qx1y[child_idx + 2] = child_coeffs.qx._1y.child_2;
+	d_scale_coeffs.qx1y[child_idx + 3] = child_coeffs.qx._1y.child_3;
 
-	d_scale_coeffs.qy1y[h_idx + 0] = child_coeffs.qy._1y.child_0;
-	d_scale_coeffs.qy1y[h_idx + 1] = child_coeffs.qy._1y.child_1;
-	d_scale_coeffs.qy1y[h_idx + 2] = child_coeffs.qy._1y.child_2;
-	d_scale_coeffs.qy1y[h_idx + 3] = child_coeffs.qy._1y.child_3;
+	d_scale_coeffs.qy1y[child_idx + 0] = child_coeffs.qy._1y.child_0;
+	d_scale_coeffs.qy1y[child_idx + 1] = child_coeffs.qy._1y.child_1;
+	d_scale_coeffs.qy1y[child_idx + 2] = child_coeffs.qy._1y.child_2;
+	d_scale_coeffs.qy1y[child_idx + 3] = child_coeffs.qy._1y.child_3;
+}
+
+__device__ __forceinline__
+void store_scale_coeffs_vector
+(
+	const ChildScaleCoeffsMW& child_coeffs,
+	const ScaleCoefficients& d_scale_coeffs,
+	const HierarchyIndex& child_idx
+)
+{
+	reinterpret_cast<real4*>(d_scale_coeffs.eta0 + child_idx)[0] =
+	{
+		child_coeffs.eta._0.child_0, 
+		child_coeffs.eta._0.child_1,
+		child_coeffs.eta._0.child_2,
+		child_coeffs.eta._0.child_3
+	};
+
+	reinterpret_cast<real4*>(d_scale_coeffs.qx0 + child_idx)[0] =
+	{
+		child_coeffs.qx._0.child_0,
+		child_coeffs.qx._0.child_1,
+		child_coeffs.qx._0.child_2,
+		child_coeffs.qx._0.child_3
+	};
+
+	reinterpret_cast<real4*>(d_scale_coeffs.qy0 + child_idx)[0] =
+	{
+		child_coeffs.qy._0.child_0,
+		child_coeffs.qy._0.child_1,
+		child_coeffs.qy._0.child_2,
+		child_coeffs.qy._0.child_3
+	};
+
+	reinterpret_cast<real4*>(d_scale_coeffs.eta1x + child_idx)[0] =
+	{
+		child_coeffs.eta._1x.child_0,
+		child_coeffs.eta._1x.child_1,
+		child_coeffs.eta._1x.child_2,
+		child_coeffs.eta._1x.child_3
+	};
+
+	reinterpret_cast<real4*>(d_scale_coeffs.qx1x + child_idx)[0] =
+	{
+		child_coeffs.qx._1x.child_0,
+		child_coeffs.qx._1x.child_1,
+		child_coeffs.qx._1x.child_2,
+		child_coeffs.qx._1x.child_3
+	};
+
+	reinterpret_cast<real4*>(d_scale_coeffs.qy1x + child_idx)[0] =
+	{
+		child_coeffs.qy._1x.child_0,
+		child_coeffs.qy._1x.child_1,
+		child_coeffs.qy._1x.child_2,
+		child_coeffs.qy._1x.child_3
+	};
+
+	reinterpret_cast<real4*>(d_scale_coeffs.eta1y + child_idx)[0] =
+	{
+		child_coeffs.eta._1y.child_0,
+		child_coeffs.eta._1y.child_1,
+		child_coeffs.eta._1y.child_2,
+		child_coeffs.eta._1y.child_3
+	};
+
+	reinterpret_cast<real4*>(d_scale_coeffs.qx1y + child_idx)[0] =
+	{
+		child_coeffs.qx._1y.child_0,
+		child_coeffs.qx._1y.child_1,
+		child_coeffs.qx._1y.child_2,
+		child_coeffs.qx._1y.child_3
+	};
+
+	reinterpret_cast<real4*>(d_scale_coeffs.qy1y + child_idx)[0] =
+	{
+		child_coeffs.qy._1y.child_0,
+		child_coeffs.qy._1y.child_1,
+		child_coeffs.qy._1y.child_2,
+		child_coeffs.qy._1y.child_3
+	};
+}
+
+__device__ __forceinline__
+void store_children_vector
+(
+	const ScaleChildrenMW& children,
+	      real*            d_0,
+	      real*            d_1x,
+	      real*            d_1y,
+	const HierarchyIndex&  child_idx
+)
+{
+	reinterpret_cast<real4*>(d_0 + child_idx)[0] =
+	{
+		children._0.child_0, 
+		children._0.child_1,
+		children._0.child_2,
+		children._0.child_3
+	};
+
+	reinterpret_cast<real4*>(d_1x + child_idx)[0] =
+	{
+		children._1x.child_0,
+		children._1x.child_1,
+		children._1x.child_2,
+		children._1x.child_3
+	};
+
+	reinterpret_cast<real4*>(d_1y + child_idx)[0] =
+	{
+		children._1y.child_0,
+		children._1y.child_1,
+		children._1y.child_2,
+		children._1y.child_3
+	};
 }

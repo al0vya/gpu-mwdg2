@@ -1,6 +1,6 @@
 #include "compare_array_with_file_real.h"
 
-bool compare_array_with_file_real
+real compare_array_with_file_real
 (
 	const char* dirroot,
 	const char* filename,
@@ -16,12 +16,12 @@ bool compare_array_with_file_real
 
 	if (NULL == fp)
 	{
-		fprintf(stderr, "Error opening file %s\n.", fullpath);
-		return false;
+		fprintf(stderr, "Error opening file %s.\n", fullpath);
+		return C(999.0);
 	}
 
-	bool passed = true;
-
+	real error      = C(0.0);
+	real max_error  = C(0.0);
 	real host_value = C(0.0);
 	real file_value = C(0.0);
 
@@ -31,14 +31,12 @@ bool compare_array_with_file_real
 		
 		fscanf(fp, "%f", &file_value);
 
-		if ( !are_reals_equal(host_value, file_value) )
-		{
-			passed = false;
-			break;
-		}
+		error = std::abs(host_value - file_value);
+
+		max_error = std::max(max_error, error);
 	}
 
 	fclose(fp);
 
-	return passed;
+	return max_error;
 }

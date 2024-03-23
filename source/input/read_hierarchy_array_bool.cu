@@ -31,9 +31,16 @@ bool* read_hierarchy_array_bool
 
 	for (int i = 0; i < num_all_elems; i++)
 	{
-		fscanf(fp, "%d", &dummy);
-		
-		h_hierarchy[i] = dummy;
+		if (i < PADDING_MRA) // padded section of hierarchy array should be zero
+		{
+			h_hierarchy[i] = 0;
+		}
+		else
+		{
+			fscanf(fp, "%d", &dummy);
+
+			h_hierarchy[i] = dummy;
+		}
 	}
 
 	// copying host hierarchy to device hierarchy

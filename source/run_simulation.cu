@@ -55,28 +55,28 @@ void run_simulation
 	Boundaries   boundaries   (input_filename, sim_params, dx_finest, test_case);
 	PointSources point_sources(input_filename, sim_params, dx_finest, test_case, dt);
 	
-	clock_t end             = clock();
-	clock_t mra_start       = clock();
-	clock_t mra_end         = clock();
-	clock_t solver_start    = clock();
-	clock_t solver_end      = clock();
-	real    run_time        = C(0.0);
-	real    current_time    = C(0.0);
-	real    time_mra        = C(0.0);
-	real    time_solver     = C(0.0);
-	bool    first_timestep  = true;
-	bool    for_nghbrs      = false;
-	bool    rkdg2           = false;
-	float   avg_cuda_time   = 0.0f;
-	int     timestep        = 1;
-	real    compression     = C(0.0);
+	clock_t end            = clock();
+	clock_t mra_start      = clock();
+	clock_t mra_end        = clock();
+	clock_t solver_start   = clock();
+	clock_t solver_end     = clock();
+	real    run_time       = C(0.0);
+	real    current_time   = C(0.0);
+	real    time_mra       = C(0.0);
+	real    time_solver    = C(0.0);
+	bool    first_timestep = true;
+	bool    for_nghbrs     = false;
+	bool    rkdg2          = false;
+	float   avg_cuda_time  = 0.0f;
+	int     timestep       = 1;
+	real    compression    = C(0.0);
 
 	NodalValues       d_nodal_vals      (interface_dim);
-	AssembledSolution d_assem_sol       (num_finest_elems, solver_params.solver_type);
-	AssembledSolution d_buf_assem_sol   (num_finest_elems, solver_params.solver_type);
-	AssembledSolution d_plot_assem_sol  (num_finest_elems, solver_params.solver_type);
-	Neighbours        d_neighbours      (num_finest_elems, solver_params.solver_type);
-	Neighbours        d_buf_neighbours  (num_finest_elems, solver_params.solver_type);
+	AssembledSolution d_assem_sol       (solver_params);
+	AssembledSolution d_buf_assem_sol   (solver_params);
+	AssembledSolution d_plot_assem_sol  (solver_params);
+	Neighbours        d_neighbours      (solver_params);
+	Neighbours        d_buf_neighbours  (solver_params);
 	ScaleCoefficients d_scale_coeffs    (solver_params);
 	Details           d_details         (solver_params);
 	CompactionFlags   d_compaction_flags(num_finest_elems);
@@ -105,7 +105,6 @@ void run_simulation
 		stage_points, 
 		sim_params, 
 		solver_params, 
-		num_details, 
 		solver_params.L, 
 		test_case
 	);
@@ -208,9 +207,7 @@ void run_simulation
 		d_details,  
 		d_preflagged_details, 
 		maxes,
-		solver_params,
-		sim_params,
-		first_timestep
+		solver_params
 	);
 
 	#if _RUN_UNIT_TESTS
@@ -239,7 +236,7 @@ void run_simulation
 		
 		mra_start = clock();
 
-		zero_details<<<num_blocks_details, THREADS_PER_BLOCK>>>
+		zero_details
 		(
 			d_details,
 			d_norm_details,
@@ -279,7 +276,7 @@ void run_simulation
 		    for_nghbrs = false;
 		    
 			#if _RUN_UNIT_TESTS
-			generate_data_unit_test_encoding_all
+			generate_data_unit_test_encode_flow
 			(
 				plot_params.dirroot,
 				"input",
@@ -293,7 +290,7 @@ void run_simulation
 			);
 			#endif
 
-		    encoding_all
+		    encode_flow
 		    (
 		    	d_scale_coeffs,
 		    	d_details,
@@ -306,7 +303,7 @@ void run_simulation
 		    );
 		    
 			#if _RUN_UNIT_TESTS
-			generate_data_unit_test_encoding_all
+			generate_data_unit_test_encode_flow
 			(
 				plot_params.dirroot,
 				"output",
@@ -320,13 +317,80 @@ void run_simulation
 			);
 			#endif
 
-		    get_reg_tree
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_regularisation
+			(
+				plot_params.dirroot,
+				"input",
+				d_sig_details,
+				solver_params,
+				timestep
+			);
+			#endif
+
+		    regularisation
 		    (
 		    	d_sig_details,
 		    	solver_params
 		    );
+
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_regularisation
+			(
+				plot_params.dirroot,
+				"output",
+				d_sig_details,
+				solver_params,
+				timestep
+			);
+			#endif
 		    
-		    decoding_all // contains extra sig
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_extra_significance
+			(
+				plot_params.dirroot,
+				"input",
+				d_sig_details,
+				d_norm_details,
+				solver_params,
+				timestep
+			);
+			#endif
+
+			extra_significance
+            (
+            	d_sig_details,
+            	d_norm_details,
+            	solver_params
+            );
+
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_extra_significance
+			(
+				plot_params.dirroot,
+				"output",
+				d_sig_details,
+				d_norm_details,
+				solver_params,
+				timestep
+			);
+			#endif
+			
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_decoding
+			(
+				plot_params.dirroot,
+				"input",
+				d_sig_details,
+				d_norm_details,
+				d_details,
+				d_scale_coeffs,
+				solver_params,
+				timestep
+			);
+			#endif
+
+		    decoding
 		    (
 		    	d_sig_details,
 		    	d_norm_details,
@@ -334,6 +398,20 @@ void run_simulation
 		    	d_scale_coeffs,
 		    	solver_params
 		    );
+
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_decoding
+			(
+				plot_params.dirroot,
+				"output",
+				d_sig_details,
+				d_norm_details,
+				d_details,
+				d_scale_coeffs,
+				solver_params,
+				timestep
+			);
+			#endif
 		    
 		    traverse_tree_of_sig_details<<<num_blocks_traversal, THREADS_PER_BLOCK>>>
 		    (
@@ -496,7 +574,7 @@ void run_simulation
 			{
 				for_nghbrs = true;
 
-				encoding_all
+				encode_flow
 				(
 					d_scale_coeffs,
 					d_details,
