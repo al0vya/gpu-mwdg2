@@ -16,5 +16,6 @@ target_sources(
 		compare_d_array_with_file_real.cu
 		compute_max_error.cu
         compute_error_kernel.cu
-		zero_array_kernel.cu
+		zero_array_kernel_int.cu
+		zero_array_kernel_real.cu
 	)

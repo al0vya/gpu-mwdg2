@@ -4,6 +4,7 @@ target_sources(
 		generate_data_unit_tests.cu
         run_unit_tests.cu
         unit_tests_classes.cu
+        unit_tests_operators.cu
         unit_tests_output.cu
         unit_tests_input.cu
         unit_tests_mra.cu

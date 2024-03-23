@@ -18,9 +18,9 @@ SubDetails::SubDetails
 		this->beta  = (real*)malloc_device(bytes);
 		this->gamma = (real*)malloc_device(bytes);
 
-		zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->alpha, num_details);
-		zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->beta,  num_details);
-		zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(this->gamma, num_details);
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->alpha, num_details);
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->beta,  num_details);
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->gamma, num_details);
 	}
 }
 

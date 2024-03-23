@@ -333,7 +333,37 @@ void unit_test_compare_d_array_with_file_real_OFFSET()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
-void unit_test_zero_array_kernel()
+void unit_test_zero_array_kernel_int()
+{
+	const int array_length = 100000;
+	const int num_blocks = get_num_blocks(array_length, THREADS_PER_BLOCK);
+	const size_t bytes = array_length * sizeof(int);
+	int* h_array = new int[array_length];
+	int* d_array = (int*)malloc_device(bytes);
+
+	zero_array_kernel_int<<<num_blocks, THREADS_PER_BLOCK>>>(d_array, array_length);
+
+	copy_cuda(h_array, d_array, bytes);
+
+	bool passed = true;
+
+	for (int i = 0; i < array_length; i++)
+	{
+		if ( h_array[i] != 0 )
+		{
+			passed = false;
+			break;
+		}
+	}
+
+	delete[] h_array;
+	free_device(d_array);
+
+	if (passed)
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_zero_array_kernel_real()
 {
 	const int array_length = 100000;
 	const int num_blocks = get_num_blocks(array_length, THREADS_PER_BLOCK);
@@ -341,7 +371,7 @@ void unit_test_zero_array_kernel()
 	real* h_array = new real[array_length];
 	real* d_array = (real*)malloc_device(bytes);
 
-	zero_array_kernel<<<num_blocks, THREADS_PER_BLOCK>>>(d_array, array_length);
+	zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(d_array, array_length);
 
 	copy_cuda(h_array, d_array, bytes);
 
@@ -378,7 +408,8 @@ void run_unit_tests_utilities()
 	unit_test_compare_d_array_with_file_int_NO_OFFSET();
 	unit_test_compare_d_array_with_file_real_NO_OFFSET();
 	unit_test_compare_d_array_with_file_real_OFFSET();
-	unit_test_zero_array_kernel();
+	unit_test_zero_array_kernel_int();
+	unit_test_zero_array_kernel_real();
 }
 
 #endif

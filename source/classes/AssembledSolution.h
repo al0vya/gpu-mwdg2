@@ -5,6 +5,9 @@
 #include "../utilities/cuda_utils.cuh"
 #include "../utilities/compare_d_array_with_file_int.cuh"
 #include "../utilities/compute_max_error.cuh"
+#include "../utilities/zero_array_kernel_int.cuh"
+#include "../utilities/zero_array_kernel_real.cuh"
+#include "../utilities/compute_max_error.cuh"
 #include "../types/HierarchyIndex.h"
 #include "../classes/SolverParams.h"
 #include "../input/read_d_array_int.cuh"
@@ -86,6 +89,7 @@ public:
 	int* levels = nullptr;
 	
 	int length = 0;
+	int max_length = 0;
 	int solver_type = 0;
 	bool is_copy_cuda = false;
 	std::string name = "";

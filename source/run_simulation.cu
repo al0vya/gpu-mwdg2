@@ -73,7 +73,7 @@ void run_simulation
 
 	NodalValues       d_nodal_vals      (interface_dim);
 	AssembledSolution d_assem_sol       (solver_params);
-	AssembledSolution d_buf_assem_sol   (solver_params);
+	AssembledSolution d_buf_assem_sol   (solver_params, "buf");
 	AssembledSolution d_plot_assem_sol  (solver_params);
 	Neighbours        d_neighbours      (solver_params);
 	Neighbours        d_buf_neighbours  (solver_params);
@@ -547,6 +547,22 @@ void run_simulation
 
 			rkdg2 = false;
 
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_dg2_update_RK1
+			(
+				plot_params.dirroot,
+				"input",
+				d_neighbours,
+				d_assem_sol,
+				d_buf_assem_sol,
+				dx_finest,
+				dy_finest,
+				dt,
+				d_dt_CFL,
+				timestep
+			);
+			#endif
+
 			dg2_update<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(
 				d_neighbours, 
@@ -561,6 +577,22 @@ void run_simulation
 				d_dt_CFL,
 				rkdg2
 			);
+			
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_dg2_update_RK1
+			(
+				plot_params.dirroot,
+				"output",
+				d_neighbours,
+				d_assem_sol,
+				d_buf_assem_sol,
+				dx_finest,
+				dy_finest,
+				dt,
+				d_dt_CFL,
+				timestep
+			);
+			#endif
 
 			reinsert_assem_sol<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(

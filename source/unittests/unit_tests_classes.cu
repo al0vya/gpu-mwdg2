@@ -16,6 +16,7 @@ void unit_test_assem_sol_CONSTRUCTOR_LEVELS_NO_NAME_HW()
 	bool passed =
 	(
 		d_assem_sol.is_copy_cuda == false &&
+		d_assem_sol.max_length   == 1 << (2 * solver_params.L) &&
 		d_assem_sol.length       == 1 << (2 * solver_params.L) &&
 		d_assem_sol.solver_type  == solver_params.solver_type &&
 		d_assem_sol.name         == "" &&
@@ -215,6 +216,7 @@ void unit_test_assem_sol_CONSTRUCTOR_LEVELS_WITH_NAME_HW()
 	(
 		d_assem_sol.is_copy_cuda == false &&
 		d_assem_sol.length       == 1 << (2 * solver_params.L) &&
+		d_assem_sol.max_length   == 1 << (2 * solver_params.L) &&
 		d_assem_sol.solver_type  == solver_params.solver_type &&
 		d_assem_sol.name         == "-dummy" &&
 		d_assem_sol.h0           != nullptr &&
@@ -413,6 +415,7 @@ void unit_test_assem_sol_CONSTRUCTOR_LEVELS_NO_NAME_MW()
 	(
 		d_assem_sol.is_copy_cuda == false &&
 		d_assem_sol.length       == 1 << (2 * solver_params.L) &&
+		d_assem_sol.max_length   == 1 << (2 * solver_params.L) &&
 		d_assem_sol.solver_type  == solver_params.solver_type &&
 		d_assem_sol.name         == "" &&
 		d_assem_sol.h0           != nullptr &&
@@ -675,6 +678,7 @@ void unit_test_assem_sol_CONSTRUCTOR_LEVELS_WITH_NAME_MW()
 	(
 		d_assem_sol.is_copy_cuda == false &&
 		d_assem_sol.length       == 1 << (2 * solver_params.L) &&
+		d_assem_sol.max_length   == 1 << (2 * solver_params.L) &&
 		d_assem_sol.solver_type  == solver_params.solver_type &&
 		d_assem_sol.name         == "-dummy" &&
 		d_assem_sol.h0           != nullptr &&

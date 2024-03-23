@@ -13,7 +13,8 @@
 #include "../utilities/compare_d_array_with_file_bool.cuh"
 #include "../utilities/compare_d_array_with_file_int.cuh"
 #include "../utilities/compare_d_array_with_file_real.cuh"
-#include "../utilities/zero_array_kernel.cuh"
+#include "../utilities/zero_array_kernel_int.cuh"
+#include "../utilities/zero_array_kernel_real.cuh"
 
 void unit_test_get_max_from_array();
 void unit_test_get_mean_from_array();
@@ -27,5 +28,6 @@ void unit_test_compare_d_array_with_file_bool_NO_OFFSET();
 void unit_test_compare_d_array_with_file_bool_OFFSET();
 void unit_test_compare_d_array_with_file_real_NO_OFFSET();
 void unit_test_compare_d_array_with_file_real_OFFSET();
-void unit_test_zero_array_kernel();
+void unit_test_zero_array_kernel_int();
+void unit_test_zero_array_kernel_real();
 void run_unit_tests_utilities();

@@ -7,8 +7,8 @@
 #include "../utilities/compare_array_with_file_int.h"
 #include "../utilities/compare_array_with_file_real.h"
 
+void unit_test_write_d_array_int();
+void unit_test_write_d_array_real();
 void unit_test_write_hierarchy_array_real();
-
 void unit_test_write_hierarchy_array_bool();
-
 void run_unit_tests_output();

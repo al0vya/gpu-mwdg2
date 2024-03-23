@@ -127,3 +127,32 @@ void generate_data_unit_test_extra_significance
 	write_hierarchy_array_bool(dirroot, (prefix + "-sig-details").c_str(), d_sig_details, solver_params.L - 1);
 	write_hierarchy_array_real(dirroot, (prefix + "-norm-details").c_str(), d_norm_details, solver_params.L - 1);
 }
+
+void generate_data_unit_test_dg2_update_RK1
+(
+	const char*        dirroot,
+	const char*        input_or_output_str,
+	Neighbours&        d_neighbours,
+	AssembledSolution& d_assem_sol,
+	AssembledSolution& d_buf_assem_sol,
+	const real&        dx_finest,
+	const real&        dy_finest,
+	const real&        dt,
+	real*              d_dt_CFL,
+	const int&         timestep
+)
+{
+	const std::string timestep_str = std::to_string(timestep);
+	const std::string prefix       = "unit_test_dg2_update_RK1_TIMESTEP_" + timestep_str + "-" + input_or_output_str;
+
+	d_neighbours.write_to_file( dirroot, prefix.c_str() );
+	d_assem_sol.write_to_file( dirroot, prefix.c_str() );
+	d_buf_assem_sol.write_to_file( dirroot, prefix.c_str() );
+	write_d_array_real(dirroot, (prefix + "-dt-CFL").c_str(), d_dt_CFL, d_assem_sol.max_length);
+
+	printf("Variable data for %s:\n", prefix);
+	printf("dx_finest:          %f\n", dx_finest);
+	printf("dy_finest:          %f\n", dy_finest);
+	printf("dt:                 %f\n", dt);
+	printf("d_assem_sol.length: %d\n", d_assem_sol.length);
+}

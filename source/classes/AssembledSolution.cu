@@ -5,7 +5,7 @@ AssembledSolution::AssembledSolution
 	const SolverParams& solver_params
 )
 :
-	length( 1 << (2 * solver_params.L) ), solver_type(solver_params.solver_type)
+	length( 1 << (2 * solver_params.L) ), max_length( 1 << (2 * solver_params.L) ), solver_type(solver_params.solver_type)
 {
 	this->initialise();
 }
@@ -16,7 +16,7 @@ AssembledSolution::AssembledSolution
 	const std::string&  name
 )
 :
-	length( 1 << (2 * solver_params.L) ), solver_type(solver_params.solver_type), name("-" + name)
+	length( 1 << (2 * solver_params.L) ), max_length( 1 << (2 * solver_params.L) ), solver_type(solver_params.solver_type), name("-" + name)
 {
 	this->initialise();
 }
@@ -28,7 +28,7 @@ AssembledSolution::AssembledSolution
 	const char*         prefix
 )
 :
-	length( 1 << (2 * solver_params.L) ), solver_type(solver_params.solver_type)
+	length( 1 << (2 * solver_params.L) ), max_length( 1 << (2 * solver_params.L) ), solver_type(solver_params.solver_type)
 {
 	this->initialise_from_file(dirroot, prefix);
 }
@@ -41,7 +41,7 @@ AssembledSolution::AssembledSolution
 	const char*         prefix
 )
 :
-	length( 1 << (2 * solver_params.L) ), solver_type(solver_params.solver_type), name("-" + name)
+	length( 1 << (2 * solver_params.L) ), max_length( 1 << (2 * solver_params.L) ), solver_type(solver_params.solver_type), name("-" + name)
 {
 	this->initialise_from_file(dirroot, prefix);
 }
@@ -87,33 +87,33 @@ void AssembledSolution::write_to_file
 {
 	if (this->solver_type == HWFV1)
 	{
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-h0-hw" ).c_str(),  this->h0,  this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx0-hw" ).c_str(), this->qx0, this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy0-hw" ).c_str(), this->qy0, this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-z0-hw" ).c_str(),  this->z0,  this->length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-h0-hw" ).c_str(),  this->h0,  this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx0-hw" ).c_str(), this->qx0, this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy0-hw" ).c_str(), this->qy0, this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-z0-hw" ).c_str(),  this->z0,  this->max_length);
 
-		write_d_array_int(dirroot, ( std::string(prefix) + this->name + "-assem-sol-levels-hw" ).c_str(),   this->levels,   this->length);
-		write_d_array_int(dirroot, ( std::string(prefix) + this->name + "-assem-sol-act-idcs-hw" ).c_str(), this->act_idcs, this->length);
+		write_d_array_int(dirroot, ( std::string(prefix) + this->name + "-assem-sol-levels-hw" ).c_str(),   this->levels,   this->max_length);
+		write_d_array_int(dirroot, ( std::string(prefix) + this->name + "-assem-sol-act-idcs-hw" ).c_str(), this->act_idcs, this->max_length);
 	}
 	else if (this->solver_type == MWDG2)
 	{
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-h0-mw" ).c_str(),  this->h0,  this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx0-mw" ).c_str(), this->qx0, this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy0-mw" ).c_str(), this->qy0, this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-z0-mw" ).c_str(),  this->z0,  this->length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-h0-mw" ).c_str(),  this->h0,  this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx0-mw" ).c_str(), this->qx0, this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy0-mw" ).c_str(), this->qy0, this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-z0-mw" ).c_str(),  this->z0,  this->max_length);
 		
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-h1x-mw" ).c_str(),  this->h1x,  this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx1x-mw" ).c_str(), this->qx1x, this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy1x-mw" ).c_str(), this->qy1x, this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-z1x-mw" ).c_str(),  this->z1x,  this->length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-h1x-mw" ).c_str(),  this->h1x,  this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx1x-mw" ).c_str(), this->qx1x, this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy1x-mw" ).c_str(), this->qy1x, this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-z1x-mw" ).c_str(),  this->z1x,  this->max_length);
 		
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-h1y-mw" ).c_str(),  this->h1y,  this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx1y-mw" ).c_str(), this->qx1y, this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy1y-mw" ).c_str(), this->qy1y, this->length);
-		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-z1y-mw" ).c_str(),  this->z1y,  this->length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-h1y-mw" ).c_str(),  this->h1y,  this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx1y-mw" ).c_str(), this->qx1y, this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy1y-mw" ).c_str(), this->qy1y, this->max_length);
+		write_d_array_real(dirroot, ( std::string(prefix) + this->name + "-assem-sol-z1y-mw" ).c_str(),  this->z1y,  this->max_length);
 
-		write_d_array_int(dirroot, ( std::string(prefix) + this->name + "-assem-sol-levels-mw" ).c_str(),   this->levels,   this->length);
-		write_d_array_int(dirroot, ( std::string(prefix) + this->name + "-assem-sol-act-idcs-mw" ).c_str(), this->act_idcs, this->length);
+		write_d_array_int(dirroot, ( std::string(prefix) + this->name + "-assem-sol-levels-mw" ).c_str(),   this->levels,   this->max_length);
+		write_d_array_int(dirroot, ( std::string(prefix) + this->name + "-assem-sol-act-idcs-mw" ).c_str(), this->act_idcs, this->max_length);
 	}
 }
 
@@ -160,7 +160,6 @@ real AssembledSolution::verify_real
 		real* d_qx1y_verified = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx1y-mw" ).c_str() );
 		real* d_qy1y_verified = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy1y-mw" ).c_str() );
 		real* d_z1y_verified  = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-z1y-mw" ).c_str() );
-
 		
 		real error_h0   = compute_max_error(this->h0,   d_h0_verified,   this->length);
 		real error_qx0  = compute_max_error(this->qx0,  d_qx0_verified,  this->length);
@@ -227,26 +226,48 @@ int AssembledSolution::verify_int
 
 void AssembledSolution::initialise()
 {
-	size_t bytes_real = this->length * sizeof(real);
-	size_t bytes_int  = this->length * sizeof(HierarchyIndex);
+	size_t bytes_real = this->max_length * sizeof(real);
+	size_t bytes_int  = this->max_length * sizeof(HierarchyIndex);
 
 	this->h0  = (real*)malloc_device(bytes_real);
 	this->qx0 = (real*)malloc_device(bytes_real);
 	this->qy0 = (real*)malloc_device(bytes_real);
 	this->z0  = (real*)malloc_device(bytes_real);
 
-	this->h1x  = (this->solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-	this->qx1x = (this->solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-	this->qy1x = (this->solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-	this->z1x  = (this->solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-
-	this->h1y  = (this->solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-	this->qx1y = (this->solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-	this->qy1y = (this->solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-	this->z1y  = (this->solver_type == MWDG2) ? (real*)malloc_device(bytes_real) : nullptr;
-
 	this->act_idcs = (HierarchyIndex*)malloc_device(bytes_int);
 	this->levels   = (int*)malloc_device(bytes_int);
+
+	const int num_blocks = get_num_blocks(this->max_length, THREADS_PER_BLOCK);
+
+	zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->h0,       this->max_length);
+	zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx0,      this->max_length);
+	zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy0,      this->max_length);
+	zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->z0,       this->max_length);
+	zero_array_kernel_int<<<num_blocks,  THREADS_PER_BLOCK>>>(this->levels,   this->max_length);
+	zero_array_kernel_int<<<num_blocks,  THREADS_PER_BLOCK>>>(this->act_idcs, this->max_length);
+
+	if (this->solver_type == MWDG2)
+	{
+		this->h1x  = (real*)malloc_device(bytes_real);
+		this->qx1x = (real*)malloc_device(bytes_real);
+		this->qy1x = (real*)malloc_device(bytes_real);
+		this->z1x  = (real*)malloc_device(bytes_real);
+
+		this->h1y  = (real*)malloc_device(bytes_real);
+		this->qx1y = (real*)malloc_device(bytes_real);
+		this->qy1y = (real*)malloc_device(bytes_real);
+		this->z1y  = (real*)malloc_device(bytes_real);
+
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->h1x,  this->max_length);
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx1x, this->max_length);
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy1x, this->max_length);
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->z1x,  this->max_length);
+
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->h1y,  this->max_length);
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->qx1y, this->max_length);
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->qy1y, this->max_length);
+		zero_array_kernel_real<<<num_blocks, THREADS_PER_BLOCK>>>(this->z1y,  this->max_length);
+	}
 }
 
 void AssembledSolution::initialise_from_file
@@ -257,32 +278,32 @@ void AssembledSolution::initialise_from_file
 {
 	if (this->solver_type == HWFV1)
 	{
-		this->h0  = read_d_array_real( this->length, dirroot, (std::string(prefix) + this->name + "-assem-sol-h0-hw" ).c_str() );
-		this->qx0 = read_d_array_real( this->length, dirroot, (std::string(prefix) + this->name + "-assem-sol-qx0-hw").c_str() );
-		this->qy0 = read_d_array_real( this->length, dirroot, (std::string(prefix) + this->name + "-assem-sol-qy0-hw").c_str() );
-		this->z0  = read_d_array_real( this->length, dirroot, (std::string(prefix) + this->name + "-assem-sol-z0-hw" ).c_str() );
+		this->h0  = read_d_array_real( this->max_length, dirroot, (std::string(prefix) + this->name + "-assem-sol-h0-hw" ).c_str() );
+		this->qx0 = read_d_array_real( this->max_length, dirroot, (std::string(prefix) + this->name + "-assem-sol-qx0-hw").c_str() );
+		this->qy0 = read_d_array_real( this->max_length, dirroot, (std::string(prefix) + this->name + "-assem-sol-qy0-hw").c_str() );
+		this->z0  = read_d_array_real( this->max_length, dirroot, (std::string(prefix) + this->name + "-assem-sol-z0-hw" ).c_str() );
 
-		this->levels   = read_d_array_int( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-levels-hw"   ).c_str() );
-		this->act_idcs = read_d_array_int( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-act-idcs-hw" ).c_str() );
+		this->levels   = read_d_array_int( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-levels-hw"   ).c_str() );
+		this->act_idcs = read_d_array_int( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-act-idcs-hw" ).c_str() );
 	}
 	else if (this->solver_type == MWDG2)
 	{
-		this->h0  = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-h0-mw"  ).c_str() );
-		this->qx0 = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx0-mw" ).c_str() );
-		this->qy0 = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy0-mw" ).c_str() );
-		this->z0  = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-z0-mw"  ).c_str() );
+		this->h0  = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-h0-mw"  ).c_str() );
+		this->qx0 = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx0-mw" ).c_str() );
+		this->qy0 = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy0-mw" ).c_str() );
+		this->z0  = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-z0-mw"  ).c_str() );
 		
-		this->h1x  = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-h1x-mw"  ).c_str() );
-		this->qx1x = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx1x-mw" ).c_str() );
-		this->qy1x = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy1x-mw" ).c_str() );
-		this->z1x  = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-z1x-mw"  ).c_str() );
+		this->h1x  = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-h1x-mw"  ).c_str() );
+		this->qx1x = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx1x-mw" ).c_str() );
+		this->qy1x = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy1x-mw" ).c_str() );
+		this->z1x  = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-z1x-mw"  ).c_str() );
 		
-		this->h1y  = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-h1y-mw"  ).c_str() );
-		this->qx1y = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx1y-mw" ).c_str() );
-		this->qy1y = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy1y-mw" ).c_str() );
-		this->z1y  = read_d_array_real( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-z1y-mw"  ).c_str() );
+		this->h1y  = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-h1y-mw"  ).c_str() );
+		this->qx1y = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qx1y-mw" ).c_str() );
+		this->qy1y = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-qy1y-mw" ).c_str() );
+		this->z1y  = read_d_array_real( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-z1y-mw"  ).c_str() );
 
-		this->levels   = read_d_array_int( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-levels-mw"   ).c_str() );
-		this->act_idcs = read_d_array_int( this->length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-act-idcs-mw" ).c_str() );
+		this->levels   = read_d_array_int( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-levels-mw"   ).c_str() );
+		this->act_idcs = read_d_array_int( this->max_length, dirroot, ( std::string(prefix) + this->name + "-assem-sol-act-idcs-mw" ).c_str() );
 	}
 }

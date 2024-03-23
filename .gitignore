@@ -361,6 +361,7 @@ out/build/x64-Release/
 cases/monai/eps*/
 cases/monai/res
 cases/unittestdata/unit_test_decoding*
+cases/unittestdata/unit_test_dg2_update*
 cases/unittestdata/unit_test_encode_flow*
 cases/unittestdata/unit_test_extra_significance*
 cases/unittestdata/unit_test_preflag_topo*
