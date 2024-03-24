@@ -16,6 +16,8 @@
 #include "operators/limit_slopes.cuh"
 #include "operators/fv1_update.cuh"
 #include "operators/dg2_update.cuh"
+#include "operators/dg2_update_x.cuh"
+#include "operators/dg2_update_y.cuh"
 
 // Kernel wrappers
 #include "mra/get_nodal_values.cuh"

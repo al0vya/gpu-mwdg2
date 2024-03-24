@@ -578,6 +578,21 @@ void run_simulation
 				rkdg2
 			);
 			
+			/*dg2_update_y << <num_blocks_sol, THREADS_PER_BLOCK >> >
+			(
+				d_neighbours, 
+				d_assem_sol, 
+				d_buf_assem_sol, 
+				solver_params, 
+				sim_params, 
+				dx_finest, 
+				dy_finest, 
+				dt, 
+				test_case,
+				d_dt_CFL,
+				rkdg2
+			);*/
+			
 			#if _RUN_UNIT_TESTS
 			generate_data_unit_test_dg2_update_RK1
 			(
@@ -661,6 +676,22 @@ void run_simulation
 					maxes.h
 				);
 			}
+			
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_dg2_update_RK2
+			(
+				plot_params.dirroot,
+				"input",
+				d_neighbours,
+				d_buf_assem_sol,
+				d_assem_sol,
+				dx_finest,
+				dy_finest,
+				dt,
+				d_dt_CFL,
+				timestep
+			);
+			#endif
 
 			dg2_update<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 			(
@@ -676,7 +707,37 @@ void run_simulation
 				d_dt_CFL,
 				rkdg2
 			);
-
+			
+			/*dg2_update_y << <num_blocks_sol, THREADS_PER_BLOCK >> >
+			(
+				d_neighbours, 
+				d_buf_assem_sol, 
+				d_assem_sol, 
+				solver_params, 
+				sim_params, 
+				dx_finest, 
+				dy_finest, 
+				dt, 
+				test_case, 
+				d_dt_CFL,
+				rkdg2
+			);*/
+			
+			#if _RUN_UNIT_TESTS
+			generate_data_unit_test_dg2_update_RK2
+			(
+				plot_params.dirroot,
+				"output",
+				d_neighbours,
+				d_buf_assem_sol,
+				d_assem_sol,
+				dx_finest,
+				dy_finest,
+				dt,
+				d_dt_CFL,
+				timestep
+			);
+			#endif
 		}
 
 		dt = get_dt_CFL(d_dt_CFL, d_assem_sol.length);

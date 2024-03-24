@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../operators/dg2_update.cuh"
+#include "../operators/dg2_update_x.cuh"
+#include "../operators/dg2_update_y.cuh"
 
 void generate_data_unit_test_dg2_update_RK1
 (

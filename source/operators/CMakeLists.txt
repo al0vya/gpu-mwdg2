@@ -3,6 +3,8 @@ target_sources(
 		PRIVATE
 		copy_to_buf_assem_sol.cu
 		dg2_update.cu
+		dg2_update_x.cu
+		dg2_update_y.cu
 		friction_implicit.cu
 		fv1_update.cu
 		get_dt_CFL.cu
