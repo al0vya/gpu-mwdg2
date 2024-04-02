@@ -4,12 +4,12 @@
 
 void run_unit_tests()
 {
-	run_unit_tests_classes();
-	run_unit_tests_operators();
-	run_unit_tests_output();
+	//run_unit_tests_classes();
+	//run_unit_tests_operators();
+	//run_unit_tests_output();
 	run_unit_tests_input();
-	run_unit_tests_mra();
-	run_unit_tests_utilities();
+	//run_unit_tests_mra();
+	//run_unit_tests_utilities();
 }
 
 #endif

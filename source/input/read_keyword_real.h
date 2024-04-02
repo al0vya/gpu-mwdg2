@@ -11,3 +11,10 @@ real read_keyword_real
 	const char* filename,
 	const char* keyword
 );
+
+real read_keyword_real
+(
+	const char* filename,
+	const char* keyword,
+	const real  val_default
+);

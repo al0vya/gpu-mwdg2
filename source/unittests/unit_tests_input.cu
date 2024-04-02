@@ -36,6 +36,70 @@ void unit_test_read_keyword_int_KEYWORD_FOUND()
 		TEST_MESSAGE_PASSED_ELSE_FAILED
 }
 
+void unit_test_read_keyword_real_KEYWORD_NOT_FOUND_NO_DEFAULT()
+{
+	// file looks like:
+	// dummy 1
+	const char* filename = "unittestdata/unit_test_read_keyword_real_KEYWORD_NOT_FOUND_NO_DEFAULT.txt";
+
+	const char* keyword = "keyword";
+
+	const real expected = C(0.0); // read_keyword_real should return 0 if keyword not found
+
+	const real actual = read_keyword_real(filename, keyword);
+
+	if ( are_reals_equal(expected, actual) )
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_read_keyword_real_KEYWORD_FOUND_NO_DEFAULT()
+{
+	// file looks like:
+	// keyword 1
+	const char* filename = "unittestdata/unit_test_read_keyword_real_KEYWORD_FOUND_NO_DEFAULT.txt";
+
+	const char* keyword = "keyword";
+
+	const real expected = C(1.0);
+
+	const real actual = read_keyword_real(filename, keyword);
+
+	if ( are_reals_equal(expected, actual) )
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_read_keyword_real_KEYWORD_NOT_FOUND_DEFAULT()
+{
+	// file looks like:
+	// dummy 1
+	const char* filename = "unittestdata/unit_test_read_keyword_real_KEYWORD_NOT_FOUND_DEFAULT.txt";
+
+	const char* keyword = "keyword";
+
+	const real expected = C(2.0); // read_keyword_real should return default value of 2 since keyword not found
+
+	const real actual = read_keyword_real(filename, keyword, C(2.0));
+
+	if ( are_reals_equal(expected, actual) )
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
+void unit_test_read_keyword_real_KEYWORD_FOUND_DEFAULT()
+{
+	// file looks like:
+	// keyword 1
+	const char* filename = "unittestdata/unit_test_read_keyword_real_KEYWORD_FOUND_DEFAULT.txt";
+
+	const char* keyword = "keyword";
+
+	const real expected = C(1.0);
+
+	const real actual = read_keyword_real(filename, keyword, C(2.0));
+
+	if ( are_reals_equal(expected, actual) )
+		TEST_MESSAGE_PASSED_ELSE_FAILED
+}
+
 void unit_test_read_keyword_str_KEYWORD_NOT_FOUND()
 {
 	// file looks like:
@@ -231,6 +295,10 @@ void run_unit_tests_input()
 {
 	unit_test_read_keyword_int_KEYWORD_NOT_FOUND();
 	unit_test_read_keyword_int_KEYWORD_FOUND();
+	unit_test_read_keyword_real_KEYWORD_NOT_FOUND_NO_DEFAULT();
+	unit_test_read_keyword_real_KEYWORD_FOUND_NO_DEFAULT();
+	unit_test_read_keyword_real_KEYWORD_NOT_FOUND_DEFAULT();
+	unit_test_read_keyword_real_KEYWORD_FOUND_DEFAULT();
 	unit_test_read_keyword_str_KEYWORD_NOT_FOUND();
 	unit_test_read_keyword_str_KEYWORD_FOUND();
 	unit_test_read_cell_size_CELL_SIZE_FOUND();

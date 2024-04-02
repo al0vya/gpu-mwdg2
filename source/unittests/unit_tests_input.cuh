@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../input/read_keyword_int.h"
+#include "../input/read_keyword_real.h"
 #include "../input/read_keyword_str.h"
 #include "../input/read_cell_size.h"
 #include "../input/read_d_array_int.cuh"
@@ -12,6 +13,11 @@
 
 void unit_test_read_keyword_int_KEYWORD_NOT_FOUND();
 void unit_test_read_keyword_int_KEYWORD_FOUND();
+
+void unit_test_read_keyword_real_KEYWORD_NOT_FOUND_NO_DEFAULT();
+void unit_test_read_keyword_real_KEYWORD_FOUND_NO_DEFAULT();
+void unit_test_read_keyword_real_KEYWORD_NOT_FOUND_DEFAULT();
+void unit_test_read_keyword_real_KEYWORD_FOUND_DEFAULT();
 
 void unit_test_read_keyword_str_KEYWORD_NOT_FOUND();
 void unit_test_read_keyword_str_KEYWORD_FOUND();
