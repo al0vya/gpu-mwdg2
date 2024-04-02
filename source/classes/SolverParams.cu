@@ -10,6 +10,7 @@ SolverParams::SolverParams
     this->L             = read_keyword_int (input_filename, "max_ref_lvl");
     this->initial_tstep = read_keyword_real(input_filename, "initial_tstep");
     this->epsilon       = read_keyword_real(input_filename, "epsilon");
+    this->tol_h         = read_keyword_real(input_filename, "tol_h", C(1e-3));
     this->wall_height   = read_keyword_real(input_filename, "wall_height");
 
     if ( read_keyword_bool(input_filename, "hwfv1") )
