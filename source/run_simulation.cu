@@ -578,21 +578,6 @@ void run_simulation
 				rkdg2
 			);
 			
-			/*dg2_update_y << <num_blocks_sol, THREADS_PER_BLOCK >> >
-			(
-				d_neighbours, 
-				d_assem_sol, 
-				d_buf_assem_sol, 
-				solver_params, 
-				sim_params, 
-				dx_finest, 
-				dy_finest, 
-				dt, 
-				test_case,
-				d_dt_CFL,
-				rkdg2
-			);*/
-			
 			#if _RUN_UNIT_TESTS
 			generate_data_unit_test_dg2_update_RK1
 			(
@@ -707,21 +692,6 @@ void run_simulation
 				d_dt_CFL,
 				rkdg2
 			);
-			
-			/*dg2_update_y << <num_blocks_sol, THREADS_PER_BLOCK >> >
-			(
-				d_neighbours, 
-				d_buf_assem_sol, 
-				d_assem_sol, 
-				solver_params, 
-				sim_params, 
-				dx_finest, 
-				dy_finest, 
-				dt, 
-				test_case, 
-				d_dt_CFL,
-				rkdg2
-			);*/
 			
 			#if _RUN_UNIT_TESTS
 			generate_data_unit_test_dg2_update_RK2

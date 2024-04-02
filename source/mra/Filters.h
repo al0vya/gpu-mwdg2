@@ -2,7 +2,7 @@
 
 #include "../types/real.h"
 
-/*#define H0  C(1.0) / sqrt( C(2.0) )
+#define H0  C(1.0) / sqrt( C(2.0) )
 #define H1  C(1.0) / sqrt( C(2.0) )
 #define G0  C(1.0) / sqrt( C(2.0) )
 #define G1 -C(1.0) / sqrt( C(2.0) )
@@ -197,9 +197,9 @@
 
 #define GC3_31 ( sqrt( C(21.0) ) / C(28.0) )
 #define GC3_32 ( C(2.0) * sqrt( C(7.0) ) / C(14.0) )
-#define GC3_33 ( -C(3.0) * sqrt( C(7.0) ) / C(28.0) )*/
+#define GC3_33 ( -C(3.0) * sqrt( C(7.0) ) / C(28.0) )
 
-#define H0     C(0.7071067811865475)
+/*#define H0     C(0.7071067811865475)
 #define H1     C(0.7071067811865475)
 #define G0     C(0.7071067811865475)
 #define G1     C(-0.7071067811865475)
@@ -394,4 +394,4 @@
 
 #define GC3_31 C(0.16366341767699427)
 #define GC3_32 C(0.37796447300922725)
-#define GC3_33 C(-0.2834733547569204)
+#define GC3_33 C(-0.2834733547569204)*/

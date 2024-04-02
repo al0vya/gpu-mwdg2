@@ -24,7 +24,7 @@ void unit_test_dg2_update_RK1_TIMESTEP_1()
 	const int&        num_blocks_sol = get_num_blocks(d_assem_sol.length, THREADS_PER_BLOCK);
 	const bool        rkdg2 = false;
 
-	dg2_update_x<<<num_blocks_sol, THREADS_PER_BLOCK>>>
+	dg2_update<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 	(
 		d_neighbours, 
 		d_assem_sol, 
@@ -39,21 +39,6 @@ void unit_test_dg2_update_RK1_TIMESTEP_1()
 		rkdg2
 	);
 	
-	dg2_update_y<<<num_blocks_sol, THREADS_PER_BLOCK>>>
-	(
-		d_neighbours, 
-		d_assem_sol, 
-		d_buf_assem_sol, 
-		solver_params, 
-		sim_params, 
-		dx_finest, 
-		dy_finest, 
-		dt, 
-		test_case,
-		d_dt_CFL,
-		rkdg2
-	);
-
 	const real max_error = C(2e-5);
 	const int  max_diffs = 5;
 
@@ -98,12 +83,12 @@ void unit_test_dg2_update_RK2_TIMESTEP_1()
 	real*             d_dt_CFL = read_d_array_real(d_assem_sol.length, dirroot.c_str(), (prefix + "-input-dt-CFL").c_str() );
 	const int&        num_blocks_sol = get_num_blocks(d_assem_sol.length, THREADS_PER_BLOCK);
 	const bool        rkdg2 = true;
-
-	dg2_update_x<<<num_blocks_sol, THREADS_PER_BLOCK>>>
+	
+	dg2_update<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 	(
 		d_neighbours, 
-		d_buf_assem_sol, 
 		d_assem_sol, 
+		d_buf_assem_sol, 
 		solver_params, 
 		sim_params, 
 		dx_finest, 
@@ -114,21 +99,6 @@ void unit_test_dg2_update_RK2_TIMESTEP_1()
 		rkdg2
 	);
 	
-	dg2_update_y<<<num_blocks_sol, THREADS_PER_BLOCK>>>
-	(
-		d_neighbours, 
-		d_buf_assem_sol, 
-		d_assem_sol, 
-		solver_params, 
-		sim_params, 
-		dx_finest, 
-		dy_finest, 
-		dt, 
-		test_case,
-		d_dt_CFL,
-		rkdg2
-	);
-
 	const real max_error = C(2e-5);
 	const int  max_diffs = 5;
 
@@ -174,7 +144,7 @@ void unit_test_dg2_update_RK1_TIMESTEP_2()
 	const int&        num_blocks_sol = get_num_blocks(d_assem_sol.length, THREADS_PER_BLOCK);
 	const bool        rkdg2 = false;
 	
-	dg2_update_x<<<num_blocks_sol, THREADS_PER_BLOCK>>>
+	dg2_update<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 	(
 		d_neighbours, 
 		d_assem_sol, 
@@ -189,21 +159,6 @@ void unit_test_dg2_update_RK1_TIMESTEP_2()
 		rkdg2
 	);
 	
-	dg2_update_y<<<num_blocks_sol, THREADS_PER_BLOCK>>>
-	(
-		d_neighbours, 
-		d_assem_sol, 
-		d_buf_assem_sol, 
-		solver_params, 
-		sim_params, 
-		dx_finest, 
-		dy_finest, 
-		dt, 
-		test_case,
-		d_dt_CFL,
-		rkdg2
-	);
-
 	const real max_error = C(2e-5);
 	const int  max_diffs = 5;
 
@@ -249,12 +204,12 @@ void unit_test_dg2_update_RK2_TIMESTEP_2()
 	real*             d_dt_CFL = read_d_array_real(d_assem_sol.length, dirroot.c_str(), (prefix + "-input-dt-CFL").c_str() );
 	const int&        num_blocks_sol = get_num_blocks(d_assem_sol.length, THREADS_PER_BLOCK);
 	const bool        rkdg2 = true;
-
-	dg2_update_x<<<num_blocks_sol, THREADS_PER_BLOCK>>>
+	
+	dg2_update<<<num_blocks_sol, THREADS_PER_BLOCK>>>
 	(
 		d_neighbours, 
-		d_buf_assem_sol, 
 		d_assem_sol, 
+		d_buf_assem_sol, 
 		solver_params, 
 		sim_params, 
 		dx_finest, 
@@ -265,21 +220,6 @@ void unit_test_dg2_update_RK2_TIMESTEP_2()
 		rkdg2
 	);
 	
-	dg2_update_y<<<num_blocks_sol, THREADS_PER_BLOCK>>>
-	(
-		d_neighbours, 
-		d_buf_assem_sol, 
-		d_assem_sol, 
-		solver_params, 
-		sim_params, 
-		dx_finest, 
-		dy_finest, 
-		dt, 
-		test_case,
-		d_dt_CFL,
-		rkdg2
-	);
-
 	const real max_error = C(2e-5);
 	const int  max_diffs = 5;
 
