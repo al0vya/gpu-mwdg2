@@ -335,20 +335,22 @@ def write_all_input_files(solver):
 
 def write_par_file(solver):
     params = (
+        "oregon-seaside\n" +
         f"{solver}\n" +
         "cuda\n" +
-        "oregon-seaside\n" +
+        "max_ref_lvl   12\n" +
+        "epsilon       0\n" +
+        "refine_wall   on\n" +
+        "ref_thickness 16\n" +
         "cumulative\n" +
         "raster_out\n" +
-        "max_ref_lvl   12\n" +
         "initial_tstep 1\n" +
-        "epsilon       0\n" +
         "fpfric        0.025\n" + # from "A comparison of a two-dimensional depth-averaged flow model ... for predicting tsunami ..."
         "DEMfile       oregon-seaside-0p02m.dem\n" +
         "startfile     oregon-seaside-0p02m.start\n" +
         "stagefile     oregon-seaside.stage\n" +
-        "refine_wall   on\n" +
-        "ref_thickness 16\n" +
+        "bcifile       oregon-seaside.bci\n" +
+        "bdyfile       oregon-seaside.bdy\n" +
         "massint       0.2\n" +
         "saveint       39.7\n" +
         "sim_time      39.7\n" +

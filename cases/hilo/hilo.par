@@ -5,6 +5,7 @@ raster_out
 voutput_stage
 refine_wall
 ref_thickness 16
+tol_h         1e-2
 massint       10
 saveint       23000
 DEMfile       hilo.dem
