@@ -28,8 +28,11 @@ void write_cumulative_data
 	if (first_t_step) fprintf(cumulative_input, "simtime,runtime_mra,runtime_solver,runtime_total,dt,reduction\n");
 
 	const clock_t end = clock();
+	
+	const int num_cells_uniform = sim_params.xsz * sim_params.ysz;
+	const int num_cells_adaptive = (num_cells_uniform < num_cells) ? num_cells_uniform : num_cells;
 
-	const real compression = ( C(100.0) - C(100.0) * num_cells / (sim_params.xsz * sim_params.ysz) ) / C(100.0);
+	const real reduction = (real)(num_cells_uniform - num_cells_adaptive) / num_cells_uniform;
 
 	fprintf
 	(
@@ -46,7 +49,7 @@ void write_cumulative_data
 		time_solver,
 		time_mra + time_solver,
 		dt,
-		compression
+		reduction
 	);
 
 	fclose(cumulative_input);

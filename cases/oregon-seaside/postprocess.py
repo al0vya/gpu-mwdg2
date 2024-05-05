@@ -499,7 +499,7 @@ def plot_speedups(
         
         rel_speedup = ref_runtime / cumulative_data[:,3]
         
-        compression = 100 * cumulative_data[:,5]
+        reduction = 100 * cumulative_data[:,5]
         
         ax_rel_speedup.plot(
             time,
@@ -513,20 +513,20 @@ def plot_speedups(
         
         line, = ax_reduction.plot(
             time,
-            compression,
+            reduction,
             linewidth=2,
             color=color
         )
         
         ax_reduction.plot(
             [ time[0], round(time[-1], 0) ],
-            [ compression[0], compression[0] ],
+            [ reduction[0], reduction[0] ],
             linestyle='--',
             linewidth=1.5,
             color=color
         )
         
-        y_axis_limits.set_y_axis_limits(field="reduction", field_data=compression)
+        y_axis_limits.set_y_axis_limits(field="reduction", field_data=reduction)
         
         ax_reduction.set_ylabel("$R_{cell}$ (%)")
         

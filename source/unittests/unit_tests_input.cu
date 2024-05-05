@@ -4,6 +4,35 @@
 
 #define TEST_MESSAGE_PASSED_ELSE_FAILED { printf("Passed %s!\n", __func__); } else { printf("Failed %s.\n", __func__); }
 
+void unit_test_read_command_line_params()
+{
+	SimulationParams sim_params;
+	SolverParams solver_params;
+	PlottingParams plot_params;
+	SaveInterval saveint;
+	SaveInterval massint;
+
+	const real epsilon = C(1e-3);
+	const std::string solver = "mwdg2";
+	const std::string dirroot = "dir";
+	const real sim_time = C(10.0);
+	const int  max_ref_lvl = 9;
+	const real interval = C(1.0);
+	const real tol_Krivo = C(10.0);
+
+	const std::string argv = "-epsilon " + std::to_string(epsilon) + 
+		                     "-solver " + solver + 
+		                     "-dirroot " + dirroot + 
+		                     "-sim_time " + std::to_string(sim_time) + 
+		                     "-max_ref_lvl " + std::to_string(max_ref_lvl) + 
+		                     "-saveint " + std::to_string(interval) + 
+		                     "-tol_Krivo " + std::to_string(tol_Krivo) + 
+		                     "input.par";
+	const int argc = 16;
+
+	//read_command_line_params(argc, argv, sim_params, solver_params, plot_params, saveint, massint);
+}
+
 void unit_test_read_keyword_int_KEYWORD_NOT_FOUND()
 {
 	// file looks like:

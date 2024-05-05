@@ -7,6 +7,7 @@
 #include "../classes/SimulationParams.h"
 #include "../classes/SolverParams.h"
 #include "../classes/PlottingParams.h"
+#include "../classes/SaveInterval.h"
 
 void read_command_line_params
 (
@@ -14,5 +15,7 @@ void read_command_line_params
 	char**            argv,
 	SimulationParams& sim_params,
 	SolverParams&     solver_params,
-	PlottingParams&   plot_params
+	PlottingParams&   plot_params,
+	SaveInterval&     saveint,
+	SaveInterval&     massint
 );

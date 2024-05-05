@@ -26,7 +26,9 @@ void run_simulation
 		argv,
 		sim_params,
 		solver_params,
-		plot_params
+		plot_params,
+		saveint,
+		massint
 	);
 
 	int mesh_dim      = 1 << solver_params.L;
@@ -69,7 +71,7 @@ void run_simulation
 	bool    rkdg2          = false;
 	float   avg_cuda_time  = 0.0f;
 	int     timestep       = 1;
-	real    compression    = C(0.0);
+	real    reduction    = C(0.0);
 
 	NodalValues       d_nodal_vals      (interface_dim);
 	AssembledSolution d_assem_sol       (solver_params);
@@ -815,12 +817,12 @@ void run_simulation
 
 		if (timestep % 10000 == 1)
 		{
-			compression = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
+			reduction = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
 
 			printf
 			(
-				"Elements: %d, compression: %f%%, time step: %f, timestep: %d, sim time: %f\n",
-				d_assem_sol.length, compression, dt, timestep, current_time
+				"Elements: %d, reduction: %f%%, time step: %f, timestep: %d, sim time: %f\n",
+				d_assem_sol.length, reduction, dt, timestep, current_time
 			);
 		}
 
@@ -838,12 +840,12 @@ void run_simulation
 
 	end = clock();
 	
-	compression = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
+	reduction = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
 
 	printf
 	(
-		"Elements: %d, compression: %f%%, time step: %f, timestep: %d, sim time: %f\n",
-		d_assem_sol.length, compression, dt, timestep, current_time
+		"Elements: %d, reduction: %f%%, time step: %f, timestep: %d, sim time: %f\n",
+		d_assem_sol.length, reduction, dt, timestep, current_time
 	);
 	
 	run_time = (real)(end - start) / CLOCKS_PER_SEC;

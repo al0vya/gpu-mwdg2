@@ -32,5 +32,4 @@ public:
 	bool refine_wall   = false;
 	int  ref_thickness = 0;
 	bool startq2d      = false;
-    
 };

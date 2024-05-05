@@ -7,6 +7,8 @@ typedef struct SaveInterval
 	real interval;
 	int  count;
 
+    SaveInterval() = default;
+
 	SaveInterval
     (
         const char* input_filename,

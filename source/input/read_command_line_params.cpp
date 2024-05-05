@@ -6,7 +6,9 @@ void read_command_line_params
 	char**            argv,
 	SimulationParams& sim_params,
 	SolverParams&     solver_params,
-	PlottingParams&   plot_params
+	PlottingParams&   plot_params,
+	SaveInterval&     saveint,
+	SaveInterval&     massint
 )
 {
 	for (int i = 0; i < argc - 1; i++)
@@ -43,6 +45,23 @@ void read_command_line_params
 			sscanf(value, "%s", plot_params.dirroot);
 
 			plot_params.make_output_directory();
+		}
+		else if ( !strncmp(flag, "-sim_time", 10) )
+		{
+			sscanf(value, "%" NUM_FRMT, &sim_params.time);
+		}
+		else if ( !strncmp(flag, "-max_ref_lvl", 12) )
+		{
+			sscanf(value, "%d", &solver_params.L);
+		}
+		else if ( !strncmp(flag, "-saveint", 8) )
+		{
+			sscanf(value, "%" NUM_FRMT, &saveint.interval);
+		}
+		else if ( !strncmp(flag, "-tol_Krivo", 10) )
+		{
+			solver_params.limitslopes = true;
+			sscanf(value, "%" NUM_FRMT, &solver_params.tol_Krivo);
 		}
 	}
 }

@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import collections
 
 def EXIT_HELP():
-    help_message = ("Use this tool as:\n" + "python simulate.py <SOLVER>, SOLVER={hwfv1|mwdg2} to select either the GPU-HWFV1 or GPU-MWDG2 solver, respectively.\n")
+    help_message = ("Use this tool as:\n" + "python run-simulations.py <SOLVER>, SOLVER={hwfv1|mwdg2} to select either the GPU-HWFV1 or GPU-MWDG2 solver, respectively.\n")
     
     sys.exit(help_message)
 
@@ -370,7 +370,7 @@ class SimulationMonai:
             
             rel_speedup = self.results[-1][0]["runtime_total"] / self.results[-1][epsilon]["runtime_total"]
             
-            compression = 100 * self.results[-1][epsilon]["reduction"]
+            reduction = 100 * self.results[-1][epsilon]["reduction"]
             
             if   np.isclose(epsilon, 1e-3):
                 label = "$\epsilon = 10^{-3}$"
@@ -389,7 +389,7 @@ class SimulationMonai:
             
             ax_reduction.plot(
                 time,
-                compression,
+                reduction,
                 linewidth=2,
                 color=color,
                 label=label
@@ -397,13 +397,13 @@ class SimulationMonai:
             
             ax_reduction.plot(
                 [ time[0], time[-1] ],
-                [ compression[0], compression[0] ],
+                [ reduction[0], reduction[0] ],
                 linestyle='--',
                 linewidth=1.5,
                 color=color
             )
             
-            y_axis_limits.set_y_axis_limits(field="reduction", field_data=compression)
+            y_axis_limits.set_y_axis_limits(field="reduction", field_data=reduction)
             
             ax_reduction.set_ylabel("$R_{cell}$ (%)")
             

@@ -17,6 +17,8 @@ typedef struct PlottingParams
 	char dirroot[128]  = {'\0'};
 	char resroot[128]  = {'\0'};
 
+	PlottingParams() = default;
+
 	PlottingParams
 	(
 		const char* input_filename

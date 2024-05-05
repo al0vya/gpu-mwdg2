@@ -111,7 +111,7 @@ class SimulationConicalIsland:
                 "runtime_mra",
                 "runtime_solver",
                 "runtime_total",
-                "compression",
+                "reduction",
                 "gauge_data"
             ]
             
@@ -143,7 +143,7 @@ class SimulationConicalIsland:
                     self.results[solver][epsilon]["runtime_mra"]    = cumulative_dataframe["runtime_mra"]
                     self.results[solver][epsilon]["runtime_solver"] = cumulative_dataframe["runtime_solver"]
                     self.results[solver][epsilon]["runtime_total"]  = cumulative_dataframe["runtime_total"]
-                    self.results[solver][epsilon]["compression"]    = cumulative_dataframe["compression"]
+                    self.results[solver][epsilon]["reduction"]    = cumulative_dataframe["reduction"]
                     
                     stage_dataframe = pd.read_csv(self.stage_file, skiprows=10, delimiter=" ", header=None)
                     
@@ -309,7 +309,7 @@ class SimulationConicalIsland:
                 
                 rel_speedup = self.results[solver][0]["runtime_total"] / self.results[solver][epsilon]["runtime_total"]
                 
-                compression = 100 * self.results[solver][epsilon]["compression"]
+                reduction = 100 * self.results[solver][epsilon]["reduction"]
                 
                 if   np.isclose(epsilon, 1e-3):
                     label = "$\epsilon = 10^{-3}$"
@@ -328,7 +328,7 @@ class SimulationConicalIsland:
                 
                 ax_reduction.plot(
                     time,
-                    compression,
+                    reduction,
                     linewidth=2,
                     color=color,
                     label=label
@@ -336,13 +336,13 @@ class SimulationConicalIsland:
                 
                 ax_reduction.plot(
                     [ time.iloc[0], time.iloc[-1] ],
-                    [ compression.iloc[0], compression.iloc[0] ],
+                    [ reduction.iloc[0], reduction.iloc[0] ],
                     linestyle='--',
                     linewidth=1.5,
                     color=color
                 )
                 
-                y_axis_limits.set_y_axis_limits(field="reduction", field_data=compression)
+                y_axis_limits.set_y_axis_limits(field="reduction", field_data=reduction)
                 
                 ax_reduction.set_ylabel("$R_{cell}$ (%)")
                 

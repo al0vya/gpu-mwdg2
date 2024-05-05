@@ -319,6 +319,7 @@ def write_par_file(solver):
         "stagefile     hilo.stage\n" +
         "sim_time      23000\n" +
         "fpfric        0.025\n" +
+        "tol_h         1e-2\n" +
         "max_ref_lvl   10\n" +
         "epsilon       0\n" +
         "wall_height   180\n" +
