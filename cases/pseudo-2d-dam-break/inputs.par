@@ -7,5 +7,5 @@ max_ref_lvl   8
 epsilon       0
 initial_tstep 1
 sim_time      40
-massint       0.4
+massint       0.1
 saveint       40

@@ -2,7 +2,6 @@
 
 void write_cumulative_data
 (
-	const clock_t           start,
 	const real&             current_time,
 	const real&             time_mra,
 	const real&             time_solver,
@@ -27,8 +26,6 @@ void write_cumulative_data
 
 	if (first_t_step) fprintf(cumulative_input, "simtime,runtime_mra,runtime_solver,runtime_total,dt,reduction\n");
 
-	const clock_t end = clock();
-	
 	const int num_cells_uniform = sim_params.xsz * sim_params.ysz;
 	const int num_cells_adaptive = (num_cells_uniform < num_cells) ? num_cells_uniform : num_cells;
 
@@ -49,7 +46,7 @@ void write_cumulative_data
 		time_solver,
 		time_mra + time_solver,
 		dt,
-		reduction
+		(real)num_cells
 	);
 
 	fclose(cumulative_input);

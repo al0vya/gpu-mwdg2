@@ -5,14 +5,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <time.h>
+#include <chrono>
 
 #include "../classes/SimulationParams.h"
 #include "../classes/PlottingParams.h"
 
 void write_cumulative_data
 (
-	const clock_t           start,
 	const real&             current_time,
 	const real&             time_mra,
 	const real&             time_solver,

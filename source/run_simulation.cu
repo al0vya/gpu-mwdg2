@@ -57,21 +57,24 @@ void run_simulation
 	Boundaries   boundaries   (input_filename, sim_params, dx_finest, test_case);
 	PointSources point_sources(input_filename, sim_params, dx_finest, test_case, dt);
 	
-	clock_t end            = clock();
-	clock_t mra_start      = clock();
-	clock_t mra_end        = clock();
-	clock_t solver_start   = clock();
-	clock_t solver_end     = clock();
-	real    run_time       = C(0.0);
-	real    current_time   = C(0.0);
-	real    time_mra       = C(0.0);
-	real    time_solver    = C(0.0);
+	auto mra_start    = std::chrono::high_resolution_clock::now();
+	auto mra_end      = std::chrono::high_resolution_clock::now();
+	auto solver_start = std::chrono::high_resolution_clock::now();
+	auto solver_end   = std::chrono::high_resolution_clock::now();
+	auto time_mra     = std::chrono::duration_cast<std::chrono::microseconds>(mra_end - mra_start);
+	auto time_solver  = std::chrono::duration_cast<std::chrono::microseconds>(solver_end - solver_start);
+
+	real run_time = C(0.0);
+	real current_time = C(0.0);
+	
 	bool    first_timestep = true;
 	bool    for_nghbrs     = false;
 	bool    rkdg2          = false;
 	float   avg_cuda_time  = 0.0f;
 	int     timestep       = 1;
-	real    reduction    = C(0.0);
+	real    reduction      = C(0.0);
+	int     num_cells_unif = sim_params.xsz * sim_params.ysz;
+	int     num_cells_adap = 0;
 
 	NodalValues       d_nodal_vals      (interface_dim);
 	AssembledSolution d_assem_sol       (solver_params);
@@ -236,7 +239,7 @@ void run_simulation
 			current_time += dt;
 		}
 		
-		mra_start = clock();
+		mra_start = std::chrono::high_resolution_clock::now();
 
 		zero_details
 		(
@@ -493,11 +496,11 @@ void run_simulation
 			test_case
 		);
 
-		mra_end = clock();
+		mra_end = std::chrono::high_resolution_clock::now();
 
-		time_mra += (real)(mra_end - mra_start) / CLOCKS_PER_SEC;
+		time_mra += std::chrono::duration_cast<std::chrono::microseconds>(mra_end - mra_start);
 
-		solver_start = clock();
+		solver_start = std::chrono::high_resolution_clock::now();
 
 		if ( sim_params.manning > C(0.0) )
 		{
@@ -714,9 +717,9 @@ void run_simulation
 
 		dt = get_dt_CFL(d_dt_CFL, d_assem_sol.length);
 
-		solver_end = clock();
+		solver_end = std::chrono::high_resolution_clock::now();
 
-		time_solver += (real)(solver_end - solver_start) / CLOCKS_PER_SEC;
+		time_solver += std::chrono::duration_cast<std::chrono::microseconds>(solver_end - solver_start);
 
 		if ( saveint.save(current_time) )
 		{
@@ -760,8 +763,8 @@ void run_simulation
 					sim_params,
 					d_assem_sol,
 					current_time,
-					time_mra,
-					time_solver,
+					time_mra.count(),
+					time_solver.count(),
 					dt,
 					d_assem_sol.length,
 					first_timestep
@@ -775,10 +778,11 @@ void run_simulation
 			{
 			    write_cumulative_data
 			    (
-			        start,
 			        current_time,
-			        time_mra,
-			        time_solver,
+					time_mra.count() / C(1e6),
+					time_solver.count() / C(1e6),
+					//std::chrono::duration_cast<std::chrono::microseconds>(mra_end - mra_start).count() / C(1e6),
+					//std::chrono::duration_cast<std::chrono::microseconds>(solver_end - solver_start).count() / C(1e6),
 					dt,
 					d_assem_sol.length,
 					sim_params,
@@ -815,13 +819,14 @@ void run_simulation
 			);
 		}
 
-		if (timestep % 10000 == 1)
+		if (timestep % 10 == 1)
 		{
-			reduction = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
+			num_cells_adap = (num_cells_unif < d_assem_sol.length) ? num_cells_unif: d_assem_sol.length;
+			reduction = (real)(num_cells_unif - num_cells_adap) / num_cells_unif;
 
 			printf
 			(
-				"Elements: %d, reduction: %f%%, time step: %f, timestep: %d, sim time: %f\n",
+				"Elements: %d, reduction: %f%%, dt: %f, timestep: %d, sim time: %f\n",
 				d_assem_sol.length, reduction, dt, timestep, current_time
 			);
 		}
@@ -838,13 +843,14 @@ void run_simulation
 		#endif
 	}
 
-	end = clock();
+	const clock_t end = clock();
 	
-	reduction = C(100.0) - C(100.0) * d_assem_sol.length / (sim_params.xsz * sim_params.ysz);
+	num_cells_adap = (num_cells_unif < d_assem_sol.length) ? num_cells_unif : d_assem_sol.length;
+	reduction = (real)(num_cells_unif - num_cells_adap) / num_cells_unif;
 
 	printf
 	(
-		"Elements: %d, reduction: %f%%, time step: %f, timestep: %d, sim time: %f\n",
+		"Elements: %d, reduction: %f%%, dt: %f, timestep: %d, sim time: %f\n",
 		d_assem_sol.length, reduction, dt, timestep, current_time
 	);
 	

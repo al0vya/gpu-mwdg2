@@ -127,6 +127,39 @@ void store_scale_coeffs
 __device__ __forceinline__
 void store_scale_coeffs_vector
 (
+	const ChildScaleCoeffsHW& child_coeffs,
+	const ScaleCoefficients& d_scale_coeffs,
+	const HierarchyIndex& child_idx
+)
+{
+	reinterpret_cast<real4*>(d_scale_coeffs.eta0 + child_idx)[0] =
+	{
+		child_coeffs.eta.child_0,
+		child_coeffs.eta.child_1,
+		child_coeffs.eta.child_2,
+		child_coeffs.eta.child_3
+	};
+
+	reinterpret_cast<real4*>(d_scale_coeffs.qx0 + child_idx)[0] =
+	{
+		child_coeffs.qx.child_0,
+		child_coeffs.qx.child_1,
+		child_coeffs.qx.child_2,
+		child_coeffs.qx.child_3
+	};
+
+	reinterpret_cast<real4*>(d_scale_coeffs.qy0 + child_idx)[0] =
+	{
+		child_coeffs.qy.child_0,
+		child_coeffs.qy.child_1,
+		child_coeffs.qy.child_2,
+		child_coeffs.qy.child_3
+	};
+}
+
+__device__ __forceinline__
+void store_scale_coeffs_vector
+(
 	const ChildScaleCoeffsMW& child_coeffs,
 	const ScaleCoefficients& d_scale_coeffs,
 	const HierarchyIndex& child_idx
@@ -208,14 +241,31 @@ void store_scale_coeffs_vector
 __device__ __forceinline__
 void store_children_vector
 (
+	const ScaleChildrenHW& children,
+	real* s,
+	const HierarchyIndex& child_idx
+)
+{
+	reinterpret_cast<real4*>(s + child_idx)[0] =
+	{
+		children.child_0,
+		children.child_1,
+		children.child_2,
+		children.child_3
+	};
+
+}
+__device__ __forceinline__
+void store_children_vector
+(
 	const ScaleChildrenMW& children,
-	      real*            d_0,
-	      real*            d_1x,
-	      real*            d_1y,
+	      real*            s_0,
+	      real*            s_1x,
+	      real*            s_1y,
 	const HierarchyIndex&  child_idx
 )
 {
-	reinterpret_cast<real4*>(d_0 + child_idx)[0] =
+	reinterpret_cast<real4*>(s_0 + child_idx)[0] =
 	{
 		children._0.child_0, 
 		children._0.child_1,
@@ -223,7 +273,7 @@ void store_children_vector
 		children._0.child_3
 	};
 
-	reinterpret_cast<real4*>(d_1x + child_idx)[0] =
+	reinterpret_cast<real4*>(s_1x + child_idx)[0] =
 	{
 		children._1x.child_0,
 		children._1x.child_1,
@@ -231,7 +281,7 @@ void store_children_vector
 		children._1x.child_3
 	};
 
-	reinterpret_cast<real4*>(d_1y + child_idx)[0] =
+	reinterpret_cast<real4*>(s_1y + child_idx)[0] =
 	{
 		children._1y.child_0,
 		children._1y.child_1,

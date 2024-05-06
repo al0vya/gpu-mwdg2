@@ -78,7 +78,7 @@ class SimulationPseudo2DDambreak:
         self.epsilons = [1e-2, 1e-3, 1e-4, 0]
         self.dirroots = ["eps-1e-2", "eps-1e-3", "eps-1e-4", "eps-0"]
         self.input_file = "inputs.par"
-        self.max_ref_lvls = [8, 9, 10, 11]
+        self.max_ref_lvls = [8, 9, 10, 11][:]
         red_dd = lambda: collections.defaultdict(red_dd)
         self.results = red_dd()
         
@@ -86,14 +86,14 @@ class SimulationPseudo2DDambreak:
         
         # runs for verification
         for epsilon, dirroot in zip(self.epsilons, self.dirroots):
-            '''self.run(
+            self.run(
                 epsilon=epsilon,
                 dirroot=dirroot + "-verify",
                 sim_time=2.5,
                 max_ref_lvl=8,
-                tol_Krivo=10,
+                tol_Krivo=9,
                 saveint=2.5
-            )'''
+            )
             
             depths = self.get_depths(dirroot + "-verify")
             
@@ -103,16 +103,16 @@ class SimulationPseudo2DDambreak:
         # runs for speedups
         for epsilon, dirroot in zip(self.epsilons, self.dirroots):
             for L in self.max_ref_lvls:
-                '''self.run(
+                self.run(
                     epsilon=epsilon,
                     dirroot=dirroot + f"-L-{L}",
                     sim_time=40,
                     max_ref_lvl=L,
                     tol_Krivo=9999,
                     saveint=40
-                )'''
+                )
                 
-                self.results[epsilon][L] = pd.read_csv( os.path.join(dirroot + f"-L-{L}", "res.cumu") )
+                self.results[epsilon][L] = pd.read_csv( os.path.join(dirroot + f"-L-{L}", "res.cumu") )[1:]
                     
     def write_par_file(self):
         with open(self.input_file, 'w') as fp:
@@ -126,7 +126,7 @@ class SimulationPseudo2DDambreak:
                 "epsilon       0\n" +
                 "initial_tstep 1\n" +
                 "sim_time      40\n" +
-                "massint       0.4\n" +
+                "massint       0.1\n" +
                 "saveint       40\n"
             )
             
@@ -156,6 +156,8 @@ class SimulationPseudo2DDambreak:
                 self.input_file
             ]
             
+            print(command_line_args)
+            
             subprocess.run(command_line_args)
             
     def get_depths(
@@ -175,75 +177,108 @@ class SimulationPseudo2DDambreak:
         
         depths = depths_raster[centre]
         
+        print("shape of depths:", depths.shape)
+        
         return {"x" : x, "depths" : depths}
         
     def plot_speedups(
         self
     ):
-        fig = plt.figure( figsize=(6.25, 2.5) )
+        fig = plt.figure( figsize=(6, 8) )
         
         gridspec = fig.add_gridspec(
             ncols=3,
-            nrows=1,
-            hspace=1
+            nrows=5
         )
         
-        axs = gridspec.subplots(sharey=True)
+        axs = gridspec.subplots(sharex=True, sharey="row")
         
-        axs[0].set_title(r"$\epsilon = 10^{-2}$")
-        axs[1].set_title(r"$\epsilon = 10^{-3}$")
-        axs[2].set_title(r"$\epsilon = 10^{-4}$")
+        axs[0,0].set_title("$\epsilon = 10^{-2}$")
+        axs[0,1].set_title("$\epsilon = 10^{-3}$")
+        axs[0,2].set_title("$\epsilon = 10^{-4}$")
         
-        max_speedup = -9999.0    
+        max_speedup = -9999.0
         
-        for ax, epsilon in zip( axs, self.epsilons[:-1] ): # skip eps = 0
-            for L in self.max_ref_lvls[1:]:
-                print(f"L: {L}, epsilon: {epsilon}")
-                interp_adaptive = scipy.interpolate.interp1d(
+        for axs_v, epsilon in zip(axs.T, self.epsilons[:-1]):
+            for L in self.max_ref_lvls[:]:
+                reduction_interp = scipy.interpolate.interp1d(
                     self.results[epsilon][L]["simtime"],
                     self.results[epsilon][L]["reduction"],
                     fill_value="extrapolate"
                 )
                 
-                time = self.results[0][L]["simtime"]
-                runtime_adaptive = interp_adaptive(time)
-                runtime_uniform = self.results[0][L]["reduction"]
-                speedup = runtime_adaptive
-                max_speedup = max(max_speedup, np.max(speedup))
-                
-                ax.plot(
-                    time,
-                    speedup,
-                    linewidth=2,
-                    label=f"$L$ = {L}$"
+                solver_interp = scipy.interpolate.interp1d(
+                    self.results[epsilon][L]["simtime"],
+                    self.results[epsilon][L]["runtime_solver"],
+                    fill_value="extrapolate"
                 )
                 
-            xmin = self.results[0][L]["simtime"].iloc[0]
-            xmax = self.results[0][L]["simtime"].iloc[-1]
-            
-            xlim = (xmin, xmax)
-            
-            ax.plot(
-                [xmin, xmax],
-                [1, 1],
-                linewidth=1,
-                linestyle="-.",
-                label="breakeven",
-                color='k'
-            )
-            
-            ax.set_xlabel("$t$ (s)")
-            ax.set_xlim(xlim)
-            ax.set_ylim( 0, 1.1 * max_speedup )
-            axs[0].set_ylabel( "Speedup ratio " + ("GPU-MWDG2/GPU-DG2" if solver == "mwdg2" else "GPU-HWFV1/GPU-FV1") )
-            axs[0].legend()
-            
-            xticks = [0, 10, 20, 30, 40]
-            
-            ax.set_xticks( [] )
-            ax.set_xticks(ticks=xticks, minor=True)
-            ax.set_xticklabels(labels=xticks, minor=True)
+                mra_interp = scipy.interpolate.interp1d(
+                    self.results[epsilon][L]["simtime"],
+                    self.results[epsilon][L]["runtime_mra"],
+                    fill_value="extrapolate"
+                )
                 
+                total_interp = scipy.interpolate.interp1d(
+                    self.results[epsilon][L]["simtime"],
+                    self.results[epsilon][L]["runtime_total"],
+                    fill_value="extrapolate"
+                )
+                
+                time = self.results[0][L]["simtime"]
+                reduction = reduction_interp(time)
+                runtime_solver = solver_interp(time)
+                runtime_mra = mra_interp(time)
+                runtime_adaptive = total_interp(time)
+                runtime_uniform = self.results[0][L]["runtime_total"]
+                speedup = runtime_uniform / runtime_adaptive
+                max_speedup = max(max_speedup, np.max(speedup))
+                
+                axs_v[0].plot(
+                    self.results[epsilon][L]["simtime"],
+                    self.results[epsilon][L]["dt"],
+                    linewidth=1,
+                    label=f"$L$ = {L}"
+                )
+                
+                axs_v[1].plot(
+                    self.results[epsilon][L]["simtime"],
+                    self.results[epsilon][L]["reduction"],
+                    linewidth=1,
+                    label=f"$L$ = {L}"
+                )
+                
+                axs_v[2].plot(
+                    self.results[epsilon][L]["simtime"],
+                    self.results[epsilon][L]["runtime_mra"],
+                    linewidth=1,
+                    label=f"$L$ = {L}"
+                )
+                
+                axs_v[3].plot(
+                    self.results[epsilon][L]["simtime"],
+                    self.results[epsilon][L]["runtime_solver"],
+                    linewidth=1,
+                    label=f"$L$ = {L}"
+                )
+                
+                axs_v[4].plot(
+                    time,
+                    runtime_uniform,
+                    linewidth=1,
+                    label=f"$L$ = {L}"
+                )
+                
+        axs.T[0,0].set_ylabel("dt")
+        axs.T[0,1].set_ylabel("Reduction")
+        axs.T[0,2].set_ylabel("Adaptation")
+        axs.T[0,3].set_ylabel("Solver")
+        axs.T[0,4].set_ylabel("Uniform")
+        
+        for ax in axs[-1]:
+            ax.set_xlabel("$t$ (s)")
+        
+        fig.tight_layout()        
         fig.savefig(os.path.join( "res", "runtimes-" + solver) + ".png", bbox_inches="tight")
             
         plt.close()
@@ -288,19 +323,15 @@ class SimulationPseudo2DDambreak:
         
         xlim = ( self.results["x"][0], self.results["x"][-1] )
         
-        ax.set_xlabel(r"$x \, (m)$")
-        ax.set_ylabel(r"$h \, (m)$")
-        ax.set_xlim(xlim)
+        ax.set_xlabel("$x$ (m)")
+        ax.set_ylabel("$h$ (m)")
+        #ax.set_xlim(xlim)
         ax.legend()
         fig.savefig(os.path.join("res", "verification.png"), bbox_inches="tight")
         
         plt.close()
         
     def plot(self):
-        my_rc_params = {
-            "legend.fontsize" : "small"
-        }
-        
         self.plot_speedups()
         self.plot_depths()
         

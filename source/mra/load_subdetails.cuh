@@ -7,6 +7,21 @@
 #include "../types/HierarchyIndex.h"
 
 __device__ __forceinline__
+SubDetailHW load_subdetails_hw
+(
+	const SubDetails& d,
+	const HierarchyIndex& h_idx
+)
+{
+	return
+	{
+		d.alpha[h_idx],
+		d.beta[h_idx],
+		d.gamma[h_idx]
+	};
+}
+
+__device__ __forceinline__
 SubDetailMW load_subdetails_mw
 (
 	const SubDetails&     d_0,

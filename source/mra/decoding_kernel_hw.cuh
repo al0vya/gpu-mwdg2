@@ -9,10 +9,11 @@
 #include "../types/HierarchyIndex.h"
 #include "../classes/Details.h"
 #include "../classes/ScaleCoefficients.h"
+#include "../classes/ScaleChildren.h"
 #include "../utilities/BLOCK_VAR_MACROS.cuh"
 
 #include "../utilities/get_lvl_idx.cuh"
-#include "load_details.cuh"
+#include "load_subdetails.cuh"
 #include "load_parent_scale_coeffs.cuh"
 #include "decode_scale_coeffs.cuh"
 #include "store_scale_coeffs.cuh"

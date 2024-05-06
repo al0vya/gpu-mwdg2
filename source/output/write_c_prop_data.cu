@@ -18,7 +18,6 @@ void write_c_prop_data
 {
 	write_cumulative_data
 	(
-		start,
 		current_time,
 		time_mra,
 		time_solver,

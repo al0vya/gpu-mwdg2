@@ -15,23 +15,22 @@ void decoding_kernel_hw
 	HierarchyIndex idx   = blockIdx.x * blockDim.x + t_idx;
 
 	if (idx >= num_threads) return;
+
 	typedef cub::BlockScan<int, THREADS_PER_BLOCK> block_scan;
 
 	__shared__ union
 	{
 		typename block_scan::TempStorage temp_storage;
-		real     coeffs[4 * THREADS_PER_BLOCK];
+		HierarchyIndex parents[THREADS_PER_BLOCK];
 
 	} shared;
-
-	__shared__ HierarchyIndex shared_parents[THREADS_PER_BLOCK];
 
 	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
 	HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
 
-	HierarchyIndex parent = curr_lvl_idx + idx;
+	HierarchyIndex parent_idx = curr_lvl_idx + idx;
 
-	int is_sig = d_sig_details[parent];
+	int is_sig = d_sig_details[parent_idx];
 
 	int thread_prefix_sum = 0;
 
@@ -46,63 +45,71 @@ void decoding_kernel_hw
 
 	__syncthreads();
 
-	if (is_sig) shared_parents[thread_prefix_sum] = parent;
+	if (is_sig) shared.parents[thread_prefix_sum] = parent_idx;
 
 	__syncthreads();
 
 	if (t_idx >= num_sig_details) return;
 
-	parent = shared_parents[t_idx];
+	parent_idx = shared.parents[t_idx];
 
-	ParentScaleCoeffsHW parents = load_parent_scale_coeffs_hw(d_scale_coeffs, parent);
-	DetailHW            detail = load_details_hw(d_details, parent);
-	ChildScaleCoeffsHW  children = decode_scale_coeffs(parents, detail);
+	HierarchyIndex child_idx = next_lvl_idx + 4 * (parent_idx - curr_lvl_idx);
+	
+	real            parent_coeff;
+	ScaleChildrenHW children;
+	SubDetailHW     subdetails;
 
-	// storing eta
-	shared.coeffs[4 * t_idx + 0] = children.eta.child_0;
-	shared.coeffs[4 * t_idx + 1] = children.eta.child_1;
-	shared.coeffs[4 * t_idx + 2] = children.eta.child_2;
-	shared.coeffs[4 * t_idx + 3] = children.eta.child_3;
-	__syncthreads();
+	// Decoding eta
+	parent_coeff = d_scale_coeffs.eta0[parent_idx];
 
-	for (int i = 0; i < 4; i++)
-	{
-		HierarchyIndex shared_idx = t_idx + i * num_sig_details;
-		HierarchyIndex child = next_lvl_idx + 4 * (shared_parents[shared_idx / 4] - curr_lvl_idx) + shared_idx % 4;
+	subdetails = load_subdetails_hw
+	(
+		d_details.eta0,
+		parent_idx
+	);
 
-		d_scale_coeffs.eta0[child] = shared.coeffs[shared_idx];
-	}
-	__syncthreads();
+	children = decode_scale_children(parent_coeff, subdetails);
 
-	// storing qx
-	shared.coeffs[4 * t_idx + 0] = children.qx.child_0;
-	shared.coeffs[4 * t_idx + 1] = children.qx.child_1;
-	shared.coeffs[4 * t_idx + 2] = children.qx.child_2;
-	shared.coeffs[4 * t_idx + 3] = children.qx.child_3;
-	__syncthreads();
+	store_children_vector
+	(
+		children,
+		d_scale_coeffs.eta0,
+		child_idx
+	);
 
-	for (int i = 0; i < 4; i++)
-	{
-		HierarchyIndex shared_idx = t_idx + i * num_sig_details;
-		HierarchyIndex child = next_lvl_idx + 4 * (shared_parents[shared_idx / 4] - curr_lvl_idx) + shared_idx % 4;
+	// Decoding qx
+	parent_coeff = d_scale_coeffs.qx0[parent_idx];
 
-		d_scale_coeffs.qx0[child] = shared.coeffs[shared_idx];
-	}
-	__syncthreads();
+	subdetails = load_subdetails_hw
+	(
+		d_details.qx0,
+		parent_idx
+	);
 
-	// storing qy
-	shared.coeffs[4 * t_idx + 0] = children.qy.child_0;
-	shared.coeffs[4 * t_idx + 1] = children.qy.child_1;
-	shared.coeffs[4 * t_idx + 2] = children.qy.child_2;
-	shared.coeffs[4 * t_idx + 3] = children.qy.child_3;
-	__syncthreads();
+	children = decode_scale_children(parent_coeff, subdetails);
 
-	for (int i = 0; i < 4; i++)
-	{
-		HierarchyIndex shared_idx = t_idx + i * num_sig_details;
-		HierarchyIndex child = next_lvl_idx + 4 * (shared_parents[shared_idx / 4] - curr_lvl_idx) + shared_idx % 4;
+	store_children_vector
+	(
+		children,
+		d_scale_coeffs.qx0,
+		child_idx
+	);
 
-		d_scale_coeffs.qy0[child] = shared.coeffs[shared_idx];
-	}
-	__syncthreads();
+	// Decoding qy
+	parent_coeff = d_scale_coeffs.qy0[parent_idx];
+
+	subdetails = load_subdetails_hw
+	(
+		d_details.qy0,
+		parent_idx
+	);
+
+	children = decode_scale_children(parent_coeff, subdetails);
+
+	store_children_vector
+	(
+		children,
+		d_scale_coeffs.qy0,
+		child_idx
+	);
 }

@@ -53,6 +53,8 @@ void read_command_line_params
 		else if ( !strncmp(flag, "-max_ref_lvl", 12) )
 		{
 			sscanf(value, "%d", &solver_params.L);
+			sim_params.xsz = 1 << solver_params.L;
+			sim_params.ysz = 1 << solver_params.L;
 		}
 		else if ( !strncmp(flag, "-saveint", 8) )
 		{
