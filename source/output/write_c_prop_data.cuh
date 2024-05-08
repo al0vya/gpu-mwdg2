@@ -17,9 +17,12 @@ void write_c_prop_data
 	const SimulationParams&  sim_params,
 	const AssembledSolution& d_assem_sol,
 	const real&              current_time,
-	const real&              time_mra,
-	const real&              time_solver,
+	const real&              inst_time_mra,
+	const real&              cumu_time_mra,
+	const real&              inst_time_solver,
+	const real&              cumu_time_solver,
 	const real&              dt,
+	const int&               num_timesteps,
 	const int&               num_cells,
 	const bool&              first_t_step
 );

@@ -36,7 +36,7 @@ void run_simulation
 
 	real dx_finest = (test_case != 0) ? (sim_params.xmax - sim_params.xmin) / mesh_dim : read_cell_size(input_filename);
 	real dy_finest = (test_case != 0) ? (sim_params.ymax - sim_params.ymin) / mesh_dim : read_cell_size(input_filename);
-	real dt        = C(0.001);
+	real dt        = C(0.0001);
 
 	int num_finest_elems      = mesh_dim * mesh_dim;
 	int num_blocks_finest     = get_num_blocks(num_finest_elems, THREADS_PER_BLOCK);
@@ -57,12 +57,16 @@ void run_simulation
 	Boundaries   boundaries   (input_filename, sim_params, dx_finest, test_case);
 	PointSources point_sources(input_filename, sim_params, dx_finest, test_case, dt);
 	
-	auto mra_start    = std::chrono::high_resolution_clock::now();
-	auto mra_end      = std::chrono::high_resolution_clock::now();
-	auto solver_start = std::chrono::high_resolution_clock::now();
-	auto solver_end   = std::chrono::high_resolution_clock::now();
-	auto time_mra     = std::chrono::duration_cast<std::chrono::microseconds>(mra_end - mra_start);
-	auto time_solver  = std::chrono::duration_cast<std::chrono::microseconds>(solver_end - solver_start);
+	cudaEvent_t mra_start, mra_stop, solver_start, solver_stop;
+	cudaEventCreate(&mra_start);
+	cudaEventCreate(&mra_stop);
+	cudaEventCreate(&solver_start);
+	cudaEventCreate(&solver_stop);
+
+	float cumu_time_mra     = 0.0f;
+	float cumu_time_solver  = 0.0f;
+	float inst_time_mra     = 0.0f;
+	float inst_time_solver  = 0.0f;
 
 	real run_time = C(0.0);
 	real current_time = C(0.0);
@@ -239,7 +243,7 @@ void run_simulation
 			current_time += dt;
 		}
 		
-		mra_start = std::chrono::high_resolution_clock::now();
+		cudaEventRecord(mra_start);
 
 		zero_details
 		(
@@ -496,11 +500,14 @@ void run_simulation
 			test_case
 		);
 
-		mra_end = std::chrono::high_resolution_clock::now();
+		cudaEventRecord(mra_stop);
+		cudaEventSynchronize(mra_stop);
+		cudaEventElapsedTime(&inst_time_mra, mra_start, mra_stop);
 
-		time_mra += std::chrono::duration_cast<std::chrono::microseconds>(mra_end - mra_start);
+		inst_time_mra /= 1e3f;
+		cumu_time_mra += inst_time_mra;
 
-		solver_start = std::chrono::high_resolution_clock::now();
+		cudaEventRecord(solver_start);
 
 		if ( sim_params.manning > C(0.0) )
 		{
@@ -717,9 +724,12 @@ void run_simulation
 
 		dt = get_dt_CFL(d_dt_CFL, d_assem_sol.length);
 
-		solver_end = std::chrono::high_resolution_clock::now();
+		cudaEventRecord(solver_stop);
+		cudaEventSynchronize(solver_stop);
+		cudaEventElapsedTime(&inst_time_solver, solver_start, solver_stop);
 
-		time_solver += std::chrono::duration_cast<std::chrono::microseconds>(solver_end - solver_start);
+		inst_time_solver /= 1e3f;
+		cumu_time_solver += inst_time_solver;
 
 		if ( saveint.save(current_time) )
 		{
@@ -763,9 +773,12 @@ void run_simulation
 					sim_params,
 					d_assem_sol,
 					current_time,
-					time_mra.count(),
-					time_solver.count(),
+					inst_time_mra,
+					cumu_time_mra,
+					inst_time_solver,
+					cumu_time_solver,
 					dt,
+					timestep,
 					d_assem_sol.length,
 					first_timestep
 				);
@@ -779,11 +792,12 @@ void run_simulation
 			    write_cumulative_data
 			    (
 			        current_time,
-					time_mra.count() / C(1e6),
-					time_solver.count() / C(1e6),
-					//std::chrono::duration_cast<std::chrono::microseconds>(mra_end - mra_start).count() / C(1e6),
-					//std::chrono::duration_cast<std::chrono::microseconds>(solver_end - solver_start).count() / C(1e6),
+					inst_time_mra,
+					cumu_time_mra,
+					inst_time_solver,
+					cumu_time_solver,
 					dt,
+					timestep,
 					d_assem_sol.length,
 					sim_params,
 			        plot_params,

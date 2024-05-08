@@ -1,14 +1,15 @@
 import os
 import sys
 import subprocess
-import numpy             as np
-import pandas            as pd
+import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import scipy.interpolate
 import collections
 
 def EXIT_HELP():
-    help_message = ("Use this tool as:\n" + "python run-simulations.py <SOLVER>, SOLVER={hwfv1|mwdg2} to select either the GPU-HWFV1 or GPU-MWDG2 solver, respectively.\n")
+    help_message = ('Use this tool as:\n' + 'python run-simulations.py <SOLVER>, SOLVER={hwfv1|mwdg2} to select either the GPU-HWFV1 or GPU-MWDG2 solver, respectively.\n')
     
     sys.exit(help_message)
 
@@ -76,8 +77,8 @@ class SimulationPseudo2DDambreak:
     ):
         self.solver = solver
         self.epsilons = [1e-2, 1e-3, 1e-4, 0]
-        self.dirroots = ["eps-1e-2", "eps-1e-3", "eps-1e-4", "eps-0"]
-        self.input_file = "inputs.par"
+        self.dirroots = ['eps-1e-2', 'eps-1e-3', 'eps-1e-4', 'eps-0']
+        self.input_file = 'inputs.par'
         self.max_ref_lvls = [8, 9, 10, 11][:]
         red_dd = lambda: collections.defaultdict(red_dd)
         self.results = red_dd()
@@ -88,46 +89,46 @@ class SimulationPseudo2DDambreak:
         for epsilon, dirroot in zip(self.epsilons, self.dirroots):
             self.run(
                 epsilon=epsilon,
-                dirroot=dirroot + "-verify",
+                dirroot=dirroot + '-verify',
                 sim_time=2.5,
                 max_ref_lvl=8,
-                tol_Krivo=9,
-                saveint=2.5
+                tol_Krivo=10,
+                saveint=5
             )
             
-            depths = self.get_depths(dirroot + "-verify")
+            depths = self.get_depths(dirroot + '-verify')
             
-            self.results["x"] = depths["x"]
-            self.results[epsilon]["depths"] = depths["depths"]
+            self.results['x'] = depths['x']
+            self.results[epsilon]['depths'] = depths['depths']
         
         # runs for speedups
         for epsilon, dirroot in zip(self.epsilons, self.dirroots):
             for L in self.max_ref_lvls:
                 self.run(
                     epsilon=epsilon,
-                    dirroot=dirroot + f"-L-{L}",
+                    dirroot=dirroot + f'-L-{L}',
                     sim_time=40,
                     max_ref_lvl=L,
                     tol_Krivo=9999,
-                    saveint=40
+                    saveint=9999
                 )
                 
-                self.results[epsilon][L] = pd.read_csv( os.path.join(dirroot + f"-L-{L}", "res.cumu") )[1:]
+                self.results[epsilon][L] = pd.read_csv( os.path.join(dirroot + f'-L-{L}', 'res.cumu') )[1:]
                     
     def write_par_file(self):
         with open(self.input_file, 'w') as fp:
             params = (
-                f"{self.solver}\n" +
-                "cuda\n" +
-                "raster_out\n" +
-                "cumulative\n" +
-                "test_case     5\n" +
-                "max_ref_lvl   8\n" +
-                "epsilon       0\n" +
-                "initial_tstep 1\n" +
-                "sim_time      40\n" +
-                "massint       0.1\n" +
-                "saveint       40\n"
+                f'{self.solver}\n' +
+                'cuda\n' +
+                'raster_out\n' +
+                'cumulative\n' +
+                'test_case     5\n' +
+                'max_ref_lvl   8\n' +
+                'epsilon       0\n' +
+                'initial_tstep 1\n' +
+                'sim_time      40\n' +
+                'massint       0.1\n' +
+                'saveint       40\n'
             )
             
             fp.write(params)
@@ -141,22 +142,20 @@ class SimulationPseudo2DDambreak:
             tol_Krivo,
             saveint
         ):
-            print(f"Running simulation, eps = {epsilon}, L = {max_ref_lvl}, solver: {solver}")
+            print(f'Running simulation, eps = {epsilon}, L = {max_ref_lvl}, solver: {solver}')
             
-            executable = "gpu-mwdg2.exe" if sys.platform == "win32" else "gpu-mwdg2"
+            executable = 'gpu-mwdg2.exe' if sys.platform == 'win32' else 'gpu-mwdg2'
             
             command_line_args = [
-                os.path.join("..", executable),
-                "-epsilon", str(epsilon),
-                "-dirroot", str(dirroot),
-                "-sim_time", str(sim_time),
-                "-max_ref_lvl", str(max_ref_lvl),
-                *(["-tol_Krivo", str(tol_Krivo)] if tol_Krivo != 9999 else [""]),
-                "-saveint", str(saveint),
+                os.path.join('..', executable),
+                '-epsilon', str(epsilon),
+                '-dirroot', str(dirroot),
+                '-sim_time', str(sim_time),
+                '-max_ref_lvl', str(max_ref_lvl),
+                *(['-tol_Krivo', str(tol_Krivo)] if tol_Krivo != 9999 else ['']),
+                '-saveint', str(saveint),
                 self.input_file
             ]
-            
-            print(command_line_args)
             
             subprocess.run(command_line_args)
             
@@ -164,7 +163,7 @@ class SimulationPseudo2DDambreak:
         self,
         dirroot
     ):
-        depths_raster = np.loadtxt(os.path.join(dirroot, "res-1.wd"), skiprows=6)
+        depths_raster = np.loadtxt(os.path.join(dirroot, 'res-1.wd'), skiprows=6)
         
         mesh_dim = depths_raster.shape[1]
         centre = int(mesh_dim / 2)
@@ -177,109 +176,90 @@ class SimulationPseudo2DDambreak:
         
         depths = depths_raster[centre]
         
-        print("shape of depths:", depths.shape)
-        
-        return {"x" : x, "depths" : depths}
+        return {'x' : x, 'depths' : depths}
         
     def plot_speedups(
         self
     ):
-        fig = plt.figure( figsize=(6, 8) )
+        A4 = (8.3, 11.7)
+        fig = plt.figure( figsize=(A4[0]-2, A4[1]-3) )
         
         gridspec = fig.add_gridspec(
-            ncols=3,
-            nrows=5
+            ncols=len(self.max_ref_lvls), # one column per L
+            nrows=9,
+            hspace=0.4
         )
         
-        axs = gridspec.subplots(sharex=True, sharey="row")
+        axs = gridspec.subplots(sharex=True, sharey='row')
         
-        axs[0,0].set_title("$\epsilon = 10^{-2}$")
-        axs[0,1].set_title("$\epsilon = 10^{-3}$")
-        axs[0,2].set_title("$\epsilon = 10^{-4}$")
+        for i, ax in enumerate(axs[0]):
+            ax.set_title(f'$L = {8+i}$')
         
-        max_speedup = -9999.0
+        axs.T[0,0].set_ylabel('Cell count')
+        axs.T[0,1].set_ylabel('$I_{MRA}$ (s)')
+        axs.T[0,2].set_ylabel('$I_{FV1}$ (s)')
+        axs.T[0,3].set_ylabel('$\Delta t$')
+        axs.T[0,4].set_ylabel('Timesteps')
+        axs.T[0,5].set_ylabel('$C_{MRA}$ (s)')
+        axs.T[0,6].set_ylabel('$C_{FV1}$ (s)')
+        axs.T[0,7].set_ylabel('$C_U$ (s)')
+        axs.T[0,8].set_ylabel('Speedup')
         
-        for axs_v, epsilon in zip(axs.T, self.epsilons[:-1]):
-            for L in self.max_ref_lvls[:]:
-                reduction_interp = scipy.interpolate.interp1d(
-                    self.results[epsilon][L]["simtime"],
-                    self.results[epsilon][L]["reduction"],
-                    fill_value="extrapolate"
-                )
-                
-                solver_interp = scipy.interpolate.interp1d(
-                    self.results[epsilon][L]["simtime"],
-                    self.results[epsilon][L]["runtime_solver"],
-                    fill_value="extrapolate"
-                )
-                
-                mra_interp = scipy.interpolate.interp1d(
-                    self.results[epsilon][L]["simtime"],
-                    self.results[epsilon][L]["runtime_mra"],
-                    fill_value="extrapolate"
-                )
-                
+        linewidth = 1
+        lw = linewidth
+        
+        for axs_v, L in zip(axs.T, self.max_ref_lvls):
+            for i, epsilon in enumerate(self.epsilons[:-1]):
                 total_interp = scipy.interpolate.interp1d(
-                    self.results[epsilon][L]["simtime"],
-                    self.results[epsilon][L]["runtime_total"],
-                    fill_value="extrapolate"
+                    self.results[epsilon][L]['simtime'],
+                    self.results[epsilon][L]['runtime_total'],
+                    fill_value='extrapolate'
                 )
                 
-                time = self.results[0][L]["simtime"]
-                reduction = reduction_interp(time)
-                runtime_solver = solver_interp(time)
-                runtime_mra = mra_interp(time)
+                time = self.results[0][L]['simtime']
+                num_timesteps_uniform = self.results[0][L]['num_timesteps']
                 runtime_adaptive = total_interp(time)
-                runtime_uniform = self.results[0][L]["runtime_total"]
+                runtime_uniform = self.results[0][L]['runtime_total']
                 speedup = runtime_uniform / runtime_adaptive
-                max_speedup = max(max_speedup, np.max(speedup))
                 
-                axs_v[0].plot(
-                    self.results[epsilon][L]["simtime"],
-                    self.results[epsilon][L]["dt"],
-                    linewidth=1,
-                    label=f"$L$ = {L}"
-                )
-                
-                axs_v[1].plot(
-                    self.results[epsilon][L]["simtime"],
-                    self.results[epsilon][L]["reduction"],
-                    linewidth=1,
-                    label=f"$L$ = {L}"
-                )
-                
-                axs_v[2].plot(
-                    self.results[epsilon][L]["simtime"],
-                    self.results[epsilon][L]["runtime_mra"],
-                    linewidth=1,
-                    label=f"$L$ = {L}"
-                )
-                
-                axs_v[3].plot(
-                    self.results[epsilon][L]["simtime"],
-                    self.results[epsilon][L]["runtime_solver"],
-                    linewidth=1,
-                    label=f"$L$ = {L}"
-                )
-                
-                axs_v[4].plot(
-                    time,
-                    runtime_uniform,
-                    linewidth=1,
-                    label=f"$L$ = {L}"
-                )
-                
-        axs.T[0,0].set_ylabel("dt")
-        axs.T[0,1].set_ylabel("Reduction")
-        axs.T[0,2].set_ylabel("Adaptation")
-        axs.T[0,3].set_ylabel("Solver")
-        axs.T[0,4].set_ylabel("Uniform")
+                axs_v[0].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['num_cells'],        linewidth=lw, label=f'$L$ = {L}')
+                axs_v[1].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['inst_time_mra'],    linewidth=lw, label=f'$L$ = {L}')
+                axs_v[2].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['inst_time_solver'], linewidth=lw, label=f'$L$ = {L}')
+                axs_v[3].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['dt'],               linewidth=lw, label=f'$L$ = {L}')
+                axs_v[4].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['num_timesteps'],    linewidth=lw, label=f'$L$ = {L}')
+                axs_v[5].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['cumu_time_mra'],    linewidth=lw, label=f'$L$ = {L}')
+                axs_v[6].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['cumu_time_solver'], linewidth=lw, label=f'$L$ = {L}')
+                axs_v[7].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['runtime_total'],    linewidth=lw, label=f'$L$ = {L}')
+                axs_v[8].plot(time, speedup,         linewidth=lw, label=f'$L$ = {L}')
+        
+        slices_num_timesteps = [(self.results[0][L]['num_timesteps'] < np.max(self.results[1e-4][self.max_ref_lvls[-1]]['num_timesteps'])).values for L in self.max_ref_lvls]
+        slices_runtime_total = [(self.results[0][L]['runtime_total'] < np.max(self.results[1e-4][self.max_ref_lvls[-1]]['runtime_total'])).values for L in self.max_ref_lvls]
+        
+        for ax, L, slice in zip(axs[4], self.max_ref_lvls, slices_num_timesteps):
+            ax.plot(self.results[0][L]['simtime'].iloc[slice], self.results[0][L]['num_timesteps'].iloc[slice], linewidth=lw, color='black', linestyle='--')
+        
+        for ax, L, slice in zip(axs[7], self.max_ref_lvls, slices_runtime_total):
+            ax.plot(self.results[0][L]['simtime'].iloc[slice], self.results[0][L]['runtime_total'].iloc[slice], linewidth=lw, color='black', linestyle='--')
+        
+        num_yticks = 5
+        num_xticks = 5
+        
+        for ax in axs.T[0]:
+            ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
+            ax.ticklabel_format(axis='y', style='scientific', scilimits=(0,0))
+            ax.yaxis.get_offset_text().set_fontsize('small')
+            ax.tick_params(axis='y', labelsize='small')
         
         for ax in axs[-1]:
-            ax.set_xlabel("$t$ (s)")
+            ax.xaxis.set_major_locator(ticker.MaxNLocator(num_xticks))
+            ax.set_xlabel('$t$ (s)')
+            ax.tick_params(axis='x', labelsize='small')
         
-        fig.tight_layout()        
-        fig.savefig(os.path.join( "res", "runtimes-" + solver) + ".png", bbox_inches="tight")
+        for ax in axs.flatten():
+            ax.grid(True)
+        
+        #fig.tight_layout()        
+        fig.savefig(os.path.join( 'res', 'runtimes-' + solver) + '.png', bbox_inches='tight')
             
         plt.close()
         
@@ -290,18 +270,18 @@ class SimulationPseudo2DDambreak:
         
         for epsilon in self.epsilons:
             if epsilon == 0:
-                label = ("GPU-DG2"   if solver == "mwdg2" else "GPU-FV1")
+                label = ('GPU-DG2'   if solver == 'mwdg2' else 'GPU-FV1')
             elif np.isclose(epsilon, 1e-2):
-                label = ("GPU-MWDG2" if solver == "mwdg2" else "GPU-HWFV1") + r", $\epsilon = 10^{-2}$"
+                label = ('GPU-MWDG2' if solver == 'mwdg2' else 'GPU-HWFV1') + r', $\epsilon = 10^{-2}$'
             elif np.isclose(epsilon, 1e-3):
-                label = ("GPU-MWDG2" if solver == "mwdg2" else "GPU-HWFV1") + r", $\epsilon = 10^{-3}$"
+                label = ('GPU-MWDG2' if solver == 'mwdg2' else 'GPU-HWFV1') + r', $\epsilon = 10^{-3}$'
             elif np.isclose(epsilon, 1e-4):
-                label = ("GPU-MWDG2" if solver == "mwdg2" else "GPU-HWFV1") + r", $\epsilon = 10^{-4}$"
+                label = ('GPU-MWDG2' if solver == 'mwdg2' else 'GPU-HWFV1') + r', $\epsilon = 10^{-4}$'
             
             if epsilon == 0 or np.isclose(epsilon, 1e-3):
                 ax.plot(
-                    self.results["x"],
-                    self.results[epsilon]["depths"],
+                    self.results['x'],
+                    self.results[epsilon]['depths'],
                     label=label
                 )
             
@@ -311,23 +291,23 @@ class SimulationPseudo2DDambreak:
         h_left  = 6
         h_right = 2
         
-        exact = [ calc_h_exact(xdam, x, Lx, h_left, h_right, t) for x in self.results["x"] ]
+        exact = [ calc_h_exact(xdam, x, Lx, h_left, h_right, t) for x in self.results['x'] ]
         
         ax.plot(
-            self.results["x"],
+            self.results['x'],
             exact,
-            label="Exact solution",
+            label='Exact solution',
             color='k',
             linewidth=1
         )
         
-        xlim = ( self.results["x"][0], self.results["x"][-1] )
+        xlim = ( self.results['x'][0], self.results['x'][-1] )
         
-        ax.set_xlabel("$x$ (m)")
-        ax.set_ylabel("$h$ (m)")
+        ax.set_xlabel('$x$ (m)')
+        ax.set_ylabel('$h$ (m)')
         #ax.set_xlim(xlim)
         ax.legend()
-        fig.savefig(os.path.join("res", "verification.png"), bbox_inches="tight")
+        fig.savefig(os.path.join('res', 'verification.png'), bbox_inches='tight')
         
         plt.close()
         
@@ -335,13 +315,13 @@ class SimulationPseudo2DDambreak:
         self.plot_speedups()
         self.plot_depths()
         
-if __name__ == "__main__":
+if __name__ == '__main__':
     if len(sys.argv) != 2:
         EXIT_HELP()
         
     dummy, solver = sys.argv
     
-    if solver != "hwfv1" and solver != "mwdg2":
+    if solver != 'hwfv1' and solver != 'mwdg2':
         EXIT_HELP()
     
     SimulationPseudo2DDambreak(solver).plot()

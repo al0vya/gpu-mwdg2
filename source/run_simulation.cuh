@@ -48,6 +48,7 @@
 
 // Helper functions
 #include "utilities/get_lvl_idx.cuh"
+#include "utilities/get_sum_from_array.cuh"
 #include "mra/preflag_details.cuh"
 #include "output/project_assem_sol.cuh"
 #include "operators/copy_to_buf_assem_sol.cuh"

@@ -2,8 +2,9 @@ target_sources(
 	    gpu-mwdg2
 		PRIVATE
 		cuda_utils.cu
-		get_max_from_array
-		get_mean_from_array
+		get_max_from_array.cu
+		get_mean_from_array.cu
+		get_sum_from_array.cu
 		get_num_blocks.cpp
 		are_reals_equal.cpp
 		compare_array_on_device_vs_host_int.cu

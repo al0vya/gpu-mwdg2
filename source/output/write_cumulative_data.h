@@ -13,9 +13,12 @@
 void write_cumulative_data
 (
 	const real&             current_time,
-	const real&             time_mra,
-	const real&             time_solver,
+	const real&             inst_time_mra,
+	const real&             cumu_time_mra,
+	const real&             inst_time_solver,
+	const real&             cumu_time_solver,
 	const real&             dt,
+	const int&              num_timesteps,
 	const int&              num_cells,
 	const SimulationParams& sim_params,
 	const PlottingParams&   plot_params,

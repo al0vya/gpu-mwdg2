@@ -9,9 +9,12 @@ void write_c_prop_data
 	const SimulationParams&  sim_params,
 	const AssembledSolution& d_assem_sol,
 	const real&              current_time,
-	const real&              time_mra,
-	const real&              time_solver,
+	const real&              inst_time_mra,
+	const real&              cumu_time_mra,
+	const real&              inst_time_solver,
+	const real&              cumu_time_solver,
 	const real&              dt,
+	const int&               num_timesteps,
 	const int&               num_cells,
 	const bool&              first_t_step
 )
@@ -19,9 +22,12 @@ void write_c_prop_data
 	write_cumulative_data
 	(
 		current_time,
-		time_mra,
-		time_solver,
+		inst_time_mra,
+		cumu_time_mra,
+		inst_time_solver,
+		cumu_time_solver,
 		dt,
+		num_timesteps,
 		num_cells,
 		sim_params,
 		plot_params,
