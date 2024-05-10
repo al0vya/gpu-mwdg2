@@ -285,13 +285,13 @@ class SimulationMonai:
         for ax in axs[-1]:
             ax.xaxis.set_major_locator(ticker.MaxNLocator(num_xticks))
             ax.set_xlabel('$t$ (s)')
-            ax.tick_params(axis='x', labelsize='small')
+            ax.tick_params(axis='x', labelsize='x-small')
         
         for ax in axs.flat:
             ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
             ax.ticklabel_format(axis='y', style='scientific', scilimits=(0,0))
-            ax.yaxis.get_offset_text().set_fontsize('small')
-            ax.tick_params(labelsize='small')
+            ax.yaxis.get_offset_text().set_fontsize('x-small')
+            ax.tick_params(labelsize='x-small')
             ax.grid(True)
             
         linewidth = 1
@@ -311,7 +311,7 @@ class SimulationMonai:
         ax_dt.plot       (self.results[0]['cumu']['simtime'], self.results[0]['cumu']['dt'],            linewidth=lw, color='black')
         ax_num_tstep.plot(self.results[0]['cumu']['simtime'], self.results[0]['cumu']['num_timesteps'], linewidth=lw, color='black')
         
-        fig.savefig('speedups-monai-' + self.solver, bbox_inches='tight')
+        fig.savefig('speedups-monai-' + self.solver + '.svg', bbox_inches='tight')
         
     def plot(
         self,

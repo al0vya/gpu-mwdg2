@@ -87,14 +87,14 @@ class SimulationPseudo2DDambreak:
         
         # runs for verification
         for epsilon, dirroot in zip(self.epsilons, self.dirroots):
-            self.run(
+            '''self.run(
                 epsilon=epsilon,
                 dirroot=dirroot + '-verify',
                 sim_time=2.5,
                 max_ref_lvl=8,
                 tol_Krivo=10,
                 saveint=5
-            )
+            )'''
             
             depths = self.get_depths(dirroot + '-verify')
             
@@ -104,14 +104,14 @@ class SimulationPseudo2DDambreak:
         # runs for speedups
         for epsilon, dirroot in zip(self.epsilons, self.dirroots):
             for L in self.max_ref_lvls:
-                self.run(
+                '''self.run(
                     epsilon=epsilon,
                     dirroot=dirroot + f'-L-{L}',
                     sim_time=40,
                     max_ref_lvl=L,
                     tol_Krivo=9999,
                     saveint=9999
-                )
+                )'''
                 
                 self.results[epsilon][L] = pd.read_csv( os.path.join(dirroot + f'-L-{L}', 'res.cumu') )[1:]
                     
@@ -259,7 +259,7 @@ class SimulationPseudo2DDambreak:
             ax.grid(True)
         
         #fig.tight_layout()        
-        fig.savefig(os.path.join( 'res', 'runtimes-' + solver) + '.png', bbox_inches='tight')
+        fig.savefig(os.path.join( 'res', 'runtimes-' + solver) + '.svg', bbox_inches='tight')
             
         plt.close()
         
