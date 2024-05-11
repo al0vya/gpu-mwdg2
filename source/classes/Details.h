@@ -1,5 +1,7 @@
 #pragma once
 
+#include <algorithm>
+
 #include "SubDetails.h"
 #include "../types/SolverTypes.h"
 
