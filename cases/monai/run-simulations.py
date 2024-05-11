@@ -53,7 +53,7 @@ class SimulationMonai:
                 for run in range(simulation_runs):
                     dirroot = dirroot_base + '-' + str(run)
                     
-                    self.run(epsilon, dirroot)
+                    #self.run(epsilon, dirroot)
                     
                     dfs.append(pd.read_csv(os.path.join(dirroot, 'res.cumu'))[1:])
                     
@@ -306,11 +306,12 @@ class SimulationMonai:
             ax_cumu_mra.plot (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['cumu_time_mra'],    linewidth=lw)
             ax_cumu_dg2.plot (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['cumu_time_solver'], linewidth=lw)
             ax_total.plot    (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['runtime_total'],    linewidth=lw)
-            ax_speedup.plot  (self.results[epsilon]['cumu']['simtime'], self.results[0]['cumu']['runtime_total']/self.results[epsilon]['cumu']['runtime_total'], linewidth=lw)
+            ax_speedup.plot  (self.results[epsilon]['cumu']['simtime'], self.results[0]['cumu']['cumu_time_solver']/self.results[epsilon]['cumu']['runtime_total'], linewidth=lw)
         
         ax_dt.plot       (self.results[0]['cumu']['simtime'], self.results[0]['cumu']['dt'],            linewidth=lw, color='black')
         ax_num_tstep.plot(self.results[0]['cumu']['simtime'], self.results[0]['cumu']['num_timesteps'], linewidth=lw, color='black')
         
+        fig.savefig('speedups-monai-' + self.solver + '.png', bbox_inches='tight')
         fig.savefig('speedups-monai-' + self.solver + '.svg', bbox_inches='tight')
         
     def plot(

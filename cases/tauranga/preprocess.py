@@ -350,6 +350,7 @@ def write_par_file(solver):
         "initial_tstep 1\n" +
         "epsilon       0\n" +
         "fpfric        0.025\n" +
+        "tol_h         1e-2\n" +
         "DEMfile       tauranga.dem\n" +
         "startfile     tauranga.start\n" +
         "bcifile       tauranga.bci\n" +
