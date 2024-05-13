@@ -10,6 +10,7 @@ void write_cumulative_data
 	const real&             dt,
 	const int&              num_timesteps,
 	const int&              num_cells,
+	const int&              num_wet_cells,
 	const SimulationParams& sim_params,
 	const PlottingParams&   plot_params,
 	const bool              first_t_step
@@ -27,7 +28,7 @@ void write_cumulative_data
 		exit(-1);
 	}
 
-	if (first_t_step) fprintf(cumulative_input, "simtime,num_timesteps,dt,num_cells,inst_time_solver,cumu_time_solver,inst_time_mra,cumu_time_mra,runtime_total,\n");
+	if (first_t_step) fprintf(cumulative_input, "simtime,num_timesteps,dt,num_cells,num_wet_cells,inst_time_solver,cumu_time_solver,inst_time_mra,cumu_time_mra,runtime_total,\n");
 
 	const int num_cells_uniform = sim_params.xsz * sim_params.ysz;
 	const int num_cells_adaptive = (num_cells_uniform < num_cells) ? num_cells_uniform : num_cells;
@@ -41,6 +42,7 @@ void write_cumulative_data
 		",%d"         // num_timesteps
 		",%" NUM_FRMT // dt
 		",%d"         // num_cells
+		",%d"         // num_wet_cells
 		",%" NUM_FRMT // inst_time_solver
 		",%" NUM_FRMT // cumu_time_solver
 		",%" NUM_FRMT // inst_time_mra
@@ -51,6 +53,7 @@ void write_cumulative_data
 		num_timesteps,
 		dt,
 		num_cells,
+		num_wet_cells,
 		inst_time_solver,
 		cumu_time_solver,
 		inst_time_mra,

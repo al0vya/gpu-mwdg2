@@ -16,6 +16,7 @@ void write_c_prop_data
 	const real&              dt,
 	const int&               num_timesteps,
 	const int&               num_cells,
+	const int&               num_wet_cells,
 	const bool&              first_t_step
 )
 {
@@ -29,6 +30,7 @@ void write_c_prop_data
 		dt,
 		num_timesteps,
 		num_cells,
+		num_wet_cells,
 		sim_params,
 		plot_params,
 		first_t_step

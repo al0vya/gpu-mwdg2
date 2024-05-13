@@ -20,6 +20,7 @@ void write_cumulative_data
 	const real&             dt,
 	const int&              num_timesteps,
 	const int&              num_cells,
+	const int&              num_wet_cells,
 	const SimulationParams& sim_params,
 	const PlottingParams&   plot_params,
 	const bool              first_t_step

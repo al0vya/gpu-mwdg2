@@ -228,14 +228,16 @@ void AssembledSolution::initialise()
 {
 	size_t bytes_real = this->max_length * sizeof(real);
 	size_t bytes_int  = this->max_length * sizeof(HierarchyIndex);
+	size_t bytes_bool = this->max_length * sizeof(bool);
 
 	this->h0  = (real*)malloc_device(bytes_real);
 	this->qx0 = (real*)malloc_device(bytes_real);
 	this->qy0 = (real*)malloc_device(bytes_real);
 	this->z0  = (real*)malloc_device(bytes_real);
 
-	this->act_idcs = (HierarchyIndex*)malloc_device(bytes_int);
-	this->levels   = (int*)malloc_device(bytes_int);
+	this->act_idcs  = (HierarchyIndex*)malloc_device(bytes_int);
+	this->levels    = (int*)malloc_device(bytes_int);
+	this->wet_cells = (bool*)malloc_device(bytes_bool);
 
 	const int num_blocks = get_num_blocks(this->max_length, THREADS_PER_BLOCK);
 

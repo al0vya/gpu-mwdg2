@@ -780,6 +780,7 @@ void run_simulation
 					dt,
 					timestep,
 					d_assem_sol.length,
+					get_sum_from_array(d_assem_sol.wet_cells, d_assem_sol.length),
 					first_timestep
 				);
 			}
@@ -799,6 +800,7 @@ void run_simulation
 					dt,
 					timestep,
 					d_assem_sol.length,
+					get_sum_from_array(d_assem_sol.wet_cells, d_assem_sol.length),
 					sim_params,
 			        plot_params,
 			        first_timestep

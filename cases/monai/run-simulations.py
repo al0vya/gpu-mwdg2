@@ -46,7 +46,7 @@ class SimulationMonai:
             
             self.write_par_file()
             
-            simulation_runs = 5
+            simulation_runs = 1
             
             for epsilon, dirroot_base in zip(self.epsilons, self.dirroots):
                 dfs = []
@@ -86,8 +86,8 @@ class SimulationMonai:
                 'raster_out\n' +
                 'cumulative\n' +
                 'refine_wall\n' +
-                'ref_thickness 16\n' +
-                'max_ref_lvl   9\n' +
+                'ref_thickness 32\n' +
+                'max_ref_lvl   10\n' +
                 'epsilon       0\n' +
                 'wall_height   0.5\n' +
                 'initial_tstep 1\n' +
@@ -258,25 +258,27 @@ class SimulationMonai:
         )
         
         fig.subplots_adjust(hspace=0.4, wspace=0.3)
-        
+            
         ax_num_cells = axs[0,0]
-        ax_inst_dg2  = axs[0,1]
-        ax_inst_mra  = axs[1,0]
-        ax_dt        = axs[1,1]
-        ax_num_tstep = axs[2,0]
-        ax_cumu_dg2  = axs[2,1]
-        ax_cumu_mra  = axs[3,0]
+        ax_rel_dg2   = axs[1,0]; ax_rel_dg2.sharey(ax_num_cells)
+        ax_inst_dg2  = axs[2,0]
+        ax_inst_mra  = axs[3,0]
+        ax_dt        = axs[4,0]
+        ax_num_tstep = axs[0,1]
+        ax_cumu_dg2  = axs[1,1]
+        ax_cumu_mra  = axs[2,1]
         ax_total     = axs[3,1]
-        ax_speedup   = axs[4,0]
+        ax_speedup   = axs[4,1]
         
-        ax_num_cells.set_ylabel('Cells')
-        ax_inst_dg2.set_ylabel('$I_{DG2}$')
-        ax_inst_mra.set_ylabel('$I_{MRA}$')
-        ax_dt.set_ylabel('$\Delta t$')
+        ax_num_cells.set_ylabel('A (%)')
+        ax_rel_dg2.set_ylabel('$R_{DG2}$ (%)')
+        ax_inst_dg2.set_ylabel('$I_{DG2}$ (ms)')
+        ax_inst_mra.set_ylabel('$I_{MRA}$ (ms)')
+        ax_dt.set_ylabel('$\Delta t$ (s)')
         ax_num_tstep.set_ylabel('$N_{\Delta t}$')
-        ax_cumu_dg2.set_ylabel('$C_{DG2}$')
-        ax_cumu_mra.set_ylabel('$C_{MRA}$')
-        ax_total.set_ylabel('Total')
+        ax_cumu_dg2.set_ylabel('$C_{DG2}$ (s)')
+        ax_cumu_mra.set_ylabel('$C_{MRA}$ (s)')
+        ax_total.set_ylabel('$C_{tot}$ (s)')
         ax_speedup.set_ylabel('Speedup')
         
         num_yticks = 5
@@ -289,7 +291,7 @@ class SimulationMonai:
         
         for ax in axs.flat:
             ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
-            ax.ticklabel_format(axis='y', style='scientific', scilimits=(0,0))
+            ax.ticklabel_format(axis='y', style='scientific', scilimits=(-2,2))
             ax.yaxis.get_offset_text().set_fontsize('x-small')
             ax.tick_params(labelsize='x-small')
             ax.grid(True)
@@ -297,19 +299,24 @@ class SimulationMonai:
         linewidth = 1
         lw = linewidth
         
+        unif_cumu_df = self.results[0]['cumu']
+        num_cells_unif = 784 * 486
+        
         for epsilon in self.epsilons[:-1]: # skip eps = 0
-            ax_num_cells.plot(self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['num_cells'],        linewidth=lw)
-            ax_inst_dg2.plot (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['inst_time_solver'], linewidth=lw)
-            ax_inst_mra.plot (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['inst_time_mra'],    linewidth=lw)
+            ax_num_cells.plot(self.results[epsilon]['cumu']['simtime'], 100 * self.results[epsilon]['cumu']['num_wet_cells'] / unif_cumu_df['num_wet_cells'],        linewidth=lw)
+            ax_rel_dg2.plot  (self.results[epsilon]['cumu']['simtime'], 100 * self.results[epsilon]['cumu']['inst_time_solver'] / unif_cumu_df['inst_time_solver'], linewidth=lw)
+            ax_inst_dg2.plot (self.results[epsilon]['cumu']['simtime'], 1000 * self.results[epsilon]['cumu']['inst_time_solver'], linewidth=lw)
+            ax_inst_mra.plot (self.results[epsilon]['cumu']['simtime'], 1000 * self.results[epsilon]['cumu']['inst_time_mra'],    linewidth=lw)
             ax_dt.plot       (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['dt'],               linewidth=lw)
             ax_num_tstep.plot(self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['num_timesteps'],    linewidth=lw)
             ax_cumu_mra.plot (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['cumu_time_mra'],    linewidth=lw)
             ax_cumu_dg2.plot (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['cumu_time_solver'], linewidth=lw)
             ax_total.plot    (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['runtime_total'],    linewidth=lw)
-            ax_speedup.plot  (self.results[epsilon]['cumu']['simtime'], self.results[0]['cumu']['cumu_time_solver']/self.results[epsilon]['cumu']['runtime_total'], linewidth=lw)
+            ax_speedup.plot  (self.results[epsilon]['cumu']['simtime'], self.results[0]['cumu']['cumu_time_solver'] / self.results[epsilon]['cumu']['runtime_total'], linewidth=lw)
         
-        ax_dt.plot       (self.results[0]['cumu']['simtime'], self.results[0]['cumu']['dt'],            linewidth=lw, color='black')
-        ax_num_tstep.plot(self.results[0]['cumu']['simtime'], self.results[0]['cumu']['num_timesteps'], linewidth=lw, color='black')
+        ax_inst_dg2.plot (unif_cumu_df['simtime'], 1000 * unif_cumu_df['inst_time_solver'], linewidth=lw)
+        ax_dt.plot       (unif_cumu_df['simtime'], unif_cumu_df['dt'],               linewidth=lw)
+        ax_num_tstep.plot(unif_cumu_df['simtime'], unif_cumu_df['num_timesteps'],    linewidth=lw)
         
         fig.savefig('speedups-monai-' + self.solver + '.png', bbox_inches='tight')
         fig.savefig('speedups-monai-' + self.solver + '.svg', bbox_inches='tight')
@@ -331,8 +338,8 @@ if __name__ == '__main__':
     if solver != 'hwfv1' and solver != 'mwdg2':
         EXIT_HELP()
     
-    #subprocess.run( ['python', 'stage.py' ] )
-    #subprocess.run( ['python', 'inflow.py'] )
-    #subprocess.run( ['python', 'raster.py'] )
+    subprocess.run( ['python', 'stage.py' ] )
+    subprocess.run( ['python', 'inflow.py'] )
+    subprocess.run( ['python', 'raster.py'] )
     
     SimulationMonai(solver).plot( ExperimentalDataMonai() )

@@ -58,6 +58,8 @@ void dg2_update
             !highwall
         );
 
+        d_assem_sol_store.wet_cells[idx] = (h >= solver_params.tol_h);
+
         d_dt_CFL[idx] = solver_params.initial_tstep;
     }
 

@@ -4,8 +4,8 @@ cuda
 raster_out
 cumulative
 refine_wall
-ref_thickness 16
-max_ref_lvl   9
+ref_thickness 32
+max_ref_lvl   10
 epsilon       0
 wall_height   0.5
 initial_tstep 1

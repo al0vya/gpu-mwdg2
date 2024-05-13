@@ -6,6 +6,7 @@ target_sources(
 		get_mean_from_array.cu
 		get_sum_from_array.cu
 		get_num_blocks.cpp
+		get_num_wet_cells.cu
 		are_reals_equal.cpp
 		compare_array_on_device_vs_host_int.cu
 		compare_array_on_device_vs_host_real.cu

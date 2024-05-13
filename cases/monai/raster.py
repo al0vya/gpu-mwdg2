@@ -69,16 +69,14 @@ def check_nodal_data(
         fig.savefig(fname=filename + ".svg", bbox_inches="tight")
 
 def projection(
-        nodal_data,
-        nrows,
-        ncols
+        nodal_data
     ):
-        raster = np.full(shape=(nrows-1, ncols-1), fill_value=-9999, dtype=float)
+        raster = np.full(shape=(nodal_data.shape[0]-1, nodal_data.shape[1]-1), fill_value=-9999, dtype=float)
         
         tol_0 = 1e-10
         
-        for j in range(nrows-1):
-            for i in range(ncols-1):
+        for j in range(nodal_data.shape[0]-1):
+            for i in range(nodal_data.shape[1]-1):
                 NE = nodal_data[j, i]
                 NW = nodal_data[j, i+1]
                 SE = nodal_data[j+1, i]
@@ -105,53 +103,26 @@ def write_raster_file(
             "cellsize     %s\n" +
             "NODATA_value -9999"
         ) % (
-            ncols-1,
-            nrows-1,
+            ncols,
+            nrows,
             xmin,
             ymin,
             cellsize
         )
         
         np.savetxt(filename, np.flipud(raster), fmt="%.15f", header=header, comments="")
-
-def project_and_write_raster(
-        nodal_data,
-        filename,
-        nrows,
-        ncols,
-        xmin,
-        ymin,
-        cellsize
-    ):
-        raster = projection(
-            nrows=nrows,
-            ncols=ncols,
-            nodal_data=nodal_data
-        )
-        
-        write_raster_file(
-            nrows=nrows,
-            ncols=ncols,
-            raster=raster,
-            filename=filename,
-            xmin=xmin,
-            ymin=ymin,
-            cellsize=cellsize
-        )
    
 def main():
     print("Preparing input raster files...")
     
-    nrows = 243 + 1
-    ncols = 392 + 1
+    nrows = 243
+    ncols = 392
     
-    bed_data = np.loadtxt(fname="bed-data.txt", skiprows=1, usecols=2).reshape(ncols, nrows).transpose()
+    bed_data = np.loadtxt(fname="bed-data.txt", skiprows=1, usecols=2).reshape(ncols+1, nrows+1).transpose()
     
     # adjustment for datum
     bed_data *= -1
     bed_data +=  0.13535
-    
-    initial_depths = np.maximum(0.13535 - bed_data, 0)
     
     remove_NODATA_values(nodal_data=bed_data, NODATA_value=-30)
     
@@ -159,32 +130,40 @@ def main():
     
     check_nodal_data(
         nodal_data=bed_data,
-        nrows=nrows,
-        ncols=ncols,
+        nrows=nrows+1,
+        ncols=ncols+1,
         xmin=0,
         ymin=0,
         cellsize=cellsize,
         filename="monai-topography"
     )
     
-    project_and_write_raster(
-        nrows=nrows,
-        ncols=ncols,
-        nodal_data=bed_data,
+    # project from nodal to modal data
+    bed_data = projection(nodal_data=bed_data)
+    
+    # upscale
+    bed_data = np.kron(bed_data, np.ones((2,2)))
+    
+    initial_depths = np.maximum(0.13535 - bed_data, 0)
+    
+    write_raster_file(
+        nrows=2*nrows,
+        ncols=2*ncols,
+        raster=bed_data,
         filename="monai.dem",
         xmin=0,
         ymin=0,
-        cellsize=cellsize
+        cellsize=cellsize / 2
     )
     
-    project_and_write_raster(
-        nrows=nrows,
-        ncols=ncols,
-        nodal_data=initial_depths,
+    write_raster_file(
+        nrows=2*nrows,
+        ncols=2*ncols,
+        raster=initial_depths,
         filename="monai.start",
         xmin=0,
         ymin=0,
-        cellsize=cellsize
+        cellsize=cellsize / 2
     )
     
 if __name__ == "__main__":

@@ -87,6 +87,7 @@ public:
 	HierarchyIndex* act_idcs = nullptr;
 
 	int* levels = nullptr;
+	bool* wet_cells = nullptr;
 	
 	int length = 0;
 	int max_length = 0;

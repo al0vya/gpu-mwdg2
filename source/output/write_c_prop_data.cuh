@@ -24,5 +24,6 @@ void write_c_prop_data
 	const real&              dt,
 	const int&               num_timesteps,
 	const int&               num_cells,
+	const int&               num_wet_cells,
 	const bool&              first_t_step
 );
