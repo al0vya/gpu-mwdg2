@@ -79,7 +79,7 @@ class SimulationPseudo2DDambreak:
         self.epsilons = [1e-2, 1e-3, 1e-4, 0]
         self.dirroots = ['eps-1e-2', 'eps-1e-3', 'eps-1e-4', 'eps-0']
         self.input_file = 'inputs.par'
-        self.max_ref_lvls = [8, 9, 10, 11][:]
+        self.max_ref_lvls = [8, 9, 10, 11][:-1]
         red_dd = lambda: collections.defaultdict(red_dd)
         self.results = red_dd()
         
@@ -93,14 +93,11 @@ class SimulationPseudo2DDambreak:
                 sim_time=2.5,
                 max_ref_lvl=8,
                 tol_Krivo=10,
-                saveint=5
+                saveint=2.5
             )'''
             
-            depths = self.get_depths(dirroot + '-verify')
+            self.results['x'], self.results[epsilon]['depths'] = self.get_depths(dirroot + '-verify')
             
-            self.results['x'] = depths['x']
-            self.results[epsilon]['depths'] = depths['depths']
-        
         # runs for speedups
         for epsilon, dirroot in zip(self.epsilons, self.dirroots):
             for L in self.max_ref_lvls:
@@ -176,7 +173,7 @@ class SimulationPseudo2DDambreak:
         
         depths = depths_raster[centre]
         
-        return {'x' : x, 'depths' : depths}
+        return x, depths
         
     def plot_speedups(
         self
@@ -186,25 +183,36 @@ class SimulationPseudo2DDambreak:
         
         gridspec = fig.add_gridspec(
             ncols=len(self.max_ref_lvls), # one column per L
-            nrows=9,
+            nrows=10,
             hspace=0.4
         )
         
-        axs = gridspec.subplots(sharex=True, sharey='row')
+        axs = gridspec.subplots(sharex=True)#, sharey='row')
+        
+        if axs.ndim == 1:
+            axs = axs.reshape((10,1))
         
         for i, ax in enumerate(axs[0]):
             ax.set_title(f'$L = {8+i}$')
         
-        axs.T[0,0].set_ylabel('Cell count')
-        axs.T[0,1].set_ylabel('$I_{MRA}$ (s)')
-        axs.T[0,2].set_ylabel('$I_{FV1}$ (s)')
-        axs.T[0,3].set_ylabel('$\Delta t$')
-        axs.T[0,4].set_ylabel('Timesteps')
-        axs.T[0,5].set_ylabel('$C_{MRA}$ (s)')
-        axs.T[0,6].set_ylabel('$C_{FV1}$ (s)')
-        axs.T[0,7].set_ylabel('$C_U$ (s)')
-        axs.T[0,8].set_ylabel('Speedup')
+        axs.T[0,0].set_ylabel('A (%)')
+        axs.T[0,1].set_ylabel('$R_{FV1}$ (%)')
+        axs.T[0,2].set_ylabel('$I_{FV1}$ (ms)')
+        axs.T[0,3].set_ylabel('$I_{MRA}$ (ms)')
+        axs.T[0,4].set_ylabel('$\Delta t$')
+        axs.T[0,5].set_ylabel('$N_{\Delta t}$')
+        axs.T[0,6].set_ylabel('$C_{MRA}$ (s)')
+        axs.T[0,7].set_ylabel('$C_{FV1}$ (s)')
+        axs.T[0,8].set_ylabel('$C_{tot}$ (s)')
+        axs.T[0,9].set_ylabel('Speedup')
         
+        for ax in axs[:2,:].flat:
+            ax.sharey(axs[0,0])
+            
+        for axs_ in axs[2:,:]:
+            for ax in axs_:
+                ax.sharey(axs_[0])
+            
         linewidth = 1
         lw = linewidth
         
@@ -216,37 +224,50 @@ class SimulationPseudo2DDambreak:
                     fill_value='extrapolate'
                 )
                 
+                num_cells_interp = scipy.interpolate.interp1d(
+                    self.results[epsilon][L]['simtime'],
+                    self.results[epsilon][L]['num_cells'],
+                    fill_value='extrapolate'
+                )
+                
+                inst_time_solver_interp = scipy.interpolate.interp1d(
+                    self.results[epsilon][L]['simtime'],
+                    self.results[epsilon][L]['inst_time_solver'],
+                    fill_value='extrapolate'
+                )
+                
                 time = self.results[0][L]['simtime']
                 num_timesteps_uniform = self.results[0][L]['num_timesteps']
                 runtime_adaptive = total_interp(time)
                 runtime_uniform = self.results[0][L]['runtime_total']
                 speedup = runtime_uniform / runtime_adaptive
                 
-                axs_v[0].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['num_cells'],        linewidth=lw, label=f'$L$ = {L}')
-                axs_v[1].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['inst_time_mra'],    linewidth=lw, label=f'$L$ = {L}')
-                axs_v[2].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['inst_time_solver'], linewidth=lw, label=f'$L$ = {L}')
-                axs_v[3].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['dt'],               linewidth=lw, label=f'$L$ = {L}')
-                axs_v[4].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['num_timesteps'],    linewidth=lw, label=f'$L$ = {L}')
-                axs_v[5].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['cumu_time_mra'],    linewidth=lw, label=f'$L$ = {L}')
-                axs_v[6].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['cumu_time_solver'], linewidth=lw, label=f'$L$ = {L}')
-                axs_v[7].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['runtime_total'],    linewidth=lw, label=f'$L$ = {L}')
-                axs_v[8].plot(time, speedup,         linewidth=lw, label=f'$L$ = {L}')
+                axs_v[0].plot(time, 100 * num_cells_interp(time) / self.results[0][L]['num_cells'],        linewidth=lw, label=f'$L$ = {L}')
+                axs_v[1].plot(time, 100 * inst_time_solver_interp(time) / self.results[0][L]['inst_time_solver'],        linewidth=lw, label=f'$L$ = {L}')
+                axs_v[2].plot(self.results[epsilon][L]['simtime'], 1000 * self.results[epsilon][L]['inst_time_solver'], linewidth=lw, label=f'$L$ = {L}')
+                axs_v[3].plot(self.results[epsilon][L]['simtime'], 1000 * self.results[epsilon][L]['inst_time_mra'],    linewidth=lw, label=f'$L$ = {L}')
+                axs_v[4].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['dt'],               linewidth=lw, label=f'$L$ = {L}')
+                axs_v[5].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['num_timesteps'],    linewidth=lw, label=f'$L$ = {L}')
+                axs_v[6].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['cumu_time_mra'],    linewidth=lw, label=f'$L$ = {L}')
+                axs_v[7].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['cumu_time_solver'], linewidth=lw, label=f'$L$ = {L}')
+                axs_v[8].plot(self.results[epsilon][L]['simtime'], self.results[epsilon][L]['runtime_total'],    linewidth=lw, label=f'$L$ = {L}')
+                axs_v[9].plot(time, speedup,         linewidth=lw, label=f'$L$ = {L}')
         
-        slices_num_timesteps = [(self.results[0][L]['num_timesteps'] < np.max(self.results[1e-4][self.max_ref_lvls[-1]]['num_timesteps'])).values for L in self.max_ref_lvls]
-        slices_runtime_total = [(self.results[0][L]['runtime_total'] < np.max(self.results[1e-4][self.max_ref_lvls[-1]]['runtime_total'])).values for L in self.max_ref_lvls]
+        slices_num_timesteps = [(self.results[0][L]['num_timesteps']    < np.max(self.results[1e-4][self.max_ref_lvls[-1]]['num_timesteps'])).values for L in self.max_ref_lvls]
+        slices_runtime_total = [(self.results[0][L]['cumu_time_solver'] < np.max(self.results[1e-4][self.max_ref_lvls[-1]]['runtime_total'])).values for L in self.max_ref_lvls]
         
-        for ax, L, slice in zip(axs[4], self.max_ref_lvls, slices_num_timesteps):
+        for ax, L, slice in zip(axs[5], self.max_ref_lvls, slices_num_timesteps):
             ax.plot(self.results[0][L]['simtime'].iloc[slice], self.results[0][L]['num_timesteps'].iloc[slice], linewidth=lw, color='black', linestyle='--')
         
-        for ax, L, slice in zip(axs[7], self.max_ref_lvls, slices_runtime_total):
-            ax.plot(self.results[0][L]['simtime'].iloc[slice], self.results[0][L]['runtime_total'].iloc[slice], linewidth=lw, color='black', linestyle='--')
+        for ax, L, slice in zip(axs[8], self.max_ref_lvls, slices_runtime_total):
+            ax.plot(self.results[0][L]['simtime'].iloc[slice], self.results[0][L]['cumu_time_solver'].iloc[slice], linewidth=lw, color='black', linestyle='--')
         
         num_yticks = 5
         num_xticks = 5
         
         for ax in axs.T[0]:
             ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
-            ax.ticklabel_format(axis='y', style='scientific', scilimits=(0,0))
+            ax.ticklabel_format(axis='y', style='scientific', scilimits=(-2,3))
             ax.yaxis.get_offset_text().set_fontsize('small')
             ax.tick_params(axis='y', labelsize='small')
         
@@ -255,13 +276,15 @@ class SimulationPseudo2DDambreak:
             ax.set_xlabel('$t$ (s)')
             ax.tick_params(axis='x', labelsize='small')
         
-        for ax in axs.flatten():
+        for ax in axs[:,1:].flat:
+            ax.axes.tick_params(axis='y', labelleft=False)
+        
+        for ax in axs.flat:
             ax.grid(True)
         
         #fig.tight_layout()        
+        fig.savefig(os.path.join( 'res', 'runtimes-' + solver) + '.png', bbox_inches='tight')
         fig.savefig(os.path.join( 'res', 'runtimes-' + solver) + '.svg', bbox_inches='tight')
-            
-        plt.close()
         
     def plot_depths(
         self

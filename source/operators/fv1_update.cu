@@ -48,6 +48,8 @@ void fv1_update
             h_w >= solver_params.tol_h
         );
 
+        d_assem_sol.wet_cells[idx] = (is_wet);
+
         d_dt_CFL[idx] = solver_params.initial_tstep;
     }
 

@@ -51,7 +51,7 @@ def write_par_file(
             "refine_wall\n" +
             "ref_thickness 16\n" +
             "max_ref_lvl   9\n" +
-            f"epsilon       {epsilon}\n" +
+            f"epsilon      {epsilon}\n" +
             "wall_height   0.5\n" +
             "initial_tstep 1\n" +
             "fpfric        0.01\n" +

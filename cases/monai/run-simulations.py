@@ -53,7 +53,7 @@ class SimulationMonai:
                 for run in range(simulation_runs):
                     dirroot = dirroot_base + '-' + str(run)
                     
-                    #self.run(epsilon, dirroot)
+                    self.run(epsilon, dirroot)
                     
                     dfs.append(pd.read_csv(os.path.join(dirroot, 'res.cumu'))[1:])
                     
