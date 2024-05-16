@@ -79,7 +79,7 @@ class SimulationPseudo2DDambreak:
         self.epsilons = [1e-2, 1e-3, 1e-4, 0]
         self.dirroots = ['eps-1e-2', 'eps-1e-3', 'eps-1e-4', 'eps-0']
         self.input_file = 'inputs.par'
-        self.max_ref_lvls = [8, 9, 10, 11][:]
+        self.max_ref_lvls = [8, 9, 10, 11][:-1]
         red_dd = lambda: collections.defaultdict(red_dd)
         self.results = red_dd()
         

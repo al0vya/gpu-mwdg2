@@ -44,7 +44,9 @@ void encode_flow_kernel_single_block_hw
 		if (tidx < num_threads_active)
 		{
 			real norm_detail   = C(0.0);
-			real epsilon_local = solver_params.epsilon / (1 << (solver_params.L - level));
+			real epsilon_local = ( solver_params.epsilon > C(0.0) ) 
+		                         ? solver_params.epsilon / ( 1 << (solver_params.L - level_kernel) )
+						         : C(9999.0);
 			
 			const HierarchyIndex curr_lvl_idx = get_lvl_idx(level_kernel);
 			const HierarchyIndex next_lvl_idx = get_lvl_idx(level_kernel + 1);
