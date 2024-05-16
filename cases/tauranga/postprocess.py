@@ -3,13 +3,14 @@ import collections
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 
 epsilons = [1e-3, 1e-4, 0]
 
 dirroots = [
-    "_eps-1e-3",
-    "_eps-1e-4",
-    "_eps-0"
+    "eps-1e-3",
+    "eps-1e-4",
+    "eps-0"
 ]
 
 def load_experimental_stage_timeseries():
@@ -498,117 +499,97 @@ class YAxisLimits:
             minor=False
         )
         
+A4 = (8.3, 11.7)
+
 def plot_speedups():
-    print("Plotting speedups...")
-    
-    ref_runtime = np.loadtxt(
-        fname=os.path.join("_eps-0", "res.cumu"),
-        skiprows=1,
-        delimiter=','
-    )[:,3]
+    print('Plotting speedups...')
     
     fig, axs = plt.subplots(
-        nrows=2,
-        ncols=2,
-        figsize=(6, 4),
+        nrows=3,
+        ncols=3,
+        figsize=(A4[0]-2, A4[1]-6),
         sharex=True
     )
+      
+    ax_wet_cells    = axs[0,0]; 
+    ax_rel_dg2      = axs[0,1]; ax_rel_dg2.sharey(ax_wet_cells)
+    ax_rel_mra      = axs[0,2]; ax_rel_mra.sharey(ax_wet_cells)
+    ax_inst_speedup = axs[1,0]
+    ax_dt           = axs[1,1]
+    ax_num_tstep    = axs[1,2]
+    ax_cumu_split   = axs[2,0]
+    ax_total        = axs[2,1]
+    ax_speedup      = axs[2,2]
     
-    gridspec = axs[0,0].get_gridspec()
+    ax_wet_cells.set_title('$N_{wet}$ (%)',                      fontsize='small')
+    ax_rel_dg2.set_title('$R_{DG2}$ (%)',                        fontsize='small')
+    ax_rel_mra.set_title('$R_{MRA}$ (%)',                        fontsize='small')
+    ax_inst_speedup.set_title('$S_{inst}$ (-)',                  fontsize='small')
+    ax_dt.set_title('$\Delta t$ (s)',                            fontsize='small')
+    ax_num_tstep.set_title('$N_{\Delta t}$ (-)',                 fontsize='small')
+    ax_cumu_split.set_title('$C_{MRA}$ (dotted), $C_{DG2}$ (h)', fontsize='small')
+    ax_total.set_title('$C_{tot}$ (h)',                          fontsize='small')
+    ax_speedup.set_title('$S_{acc}$ (-)',                        fontsize='small')
     
-    axs[0,0].remove()
-    axs[1,0].remove()
+    linewidth = 1
+    lw = linewidth
     
-    ax_reduction   = fig.add_subplot( gridspec[:,0] )
-    ax_frac_DG2    = axs[0,1]
-    ax_rel_speedup = axs[1,1]
+    unif_cumu_df = pd.read_csv(os.path.join('eps-0', 'res.cumu'))[1:]
     
-    axs = [ax_reduction, ax_frac_DG2, ax_rel_speedup]
+    num_cells_finest = 4096 * 2196
     
-    y_axis_limits = YAxisLimits()
+    for dirroot, epsilon in zip(dirroots, epsilons):
+        if epsilon == 0:
+            continue
+        
+        cumu_df = pd.read_csv(os.path.join(dirroot, 'res.cumu'))[1:]
+        
+        time_hrs     = cumu_df['simtime'] / 3600
+        wet_cells    = cumu_df['num_wet_cells']    / unif_cumu_df['num_wet_cells']
+        rel_dg2      = cumu_df['inst_time_solver'] / unif_cumu_df['inst_time_solver']
+        rel_mra      = cumu_df['inst_time_mra']    / unif_cumu_df['inst_time_solver']
+        inst_speedup = 1 / (rel_dg2 + rel_mra)
+        speedup      = unif_cumu_df['cumu_time_solver'] / cumu_df['runtime_total']
+        
+        ax_wet_cells.plot   (time_hrs, 100 * wet_cells,             linewidth=lw)
+        ax_rel_dg2.plot     (time_hrs, 100 * rel_dg2,               linewidth=lw)
+        ax_rel_mra.plot     (time_hrs, 100 * rel_mra,               linewidth=lw)
+        ax_inst_speedup.plot(time_hrs, inst_speedup,                linewidth=lw)
+        ax_dt.plot          (time_hrs, cumu_df['dt'],               linewidth=lw)
+        ax_num_tstep.plot   (time_hrs, cumu_df['num_timesteps'],    linewidth=lw)
+        ax_cumu_split.plot  (time_hrs, cumu_df['cumu_time_solver'] / 3600, linewidth=lw)
+        ax_cumu_split.scatter(time_hrs.iloc[::8], cumu_df['cumu_time_mra'].iloc[::8] / 3600, marker='x', s=4, color=ax_cumu_split.get_lines()[-1].get_color())
+        ax_total.plot       (time_hrs, cumu_df['runtime_total'] / 3600,    linewidth=lw)
+        ax_speedup.plot     (time_hrs, speedup,                     linewidth=lw)
     
-    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    ax_dt.plot       (time_hrs, unif_cumu_df['dt'],               linewidth=lw)
+    ax_num_tstep.plot(time_hrs, unif_cumu_df['num_timesteps'],    linewidth=lw)
+    ax_total.plot    (time_hrs, unif_cumu_df['cumu_time_solver'] / 3600, linewidth=lw)
     
-    lines = []
+    num_yticks = 5
+    num_xticks = 5
     
-    for dirroot, color in zip(dirroots, colors):
-        if dirroot == "_eps-0": continue
-        
-        cumulative_data = np.loadtxt(fname=os.path.join(dirroot, "res.cumu"), skiprows=1, delimiter=',')
-        
-        time = cumulative_data[:,0] / 3600
-        
-        rel_speedup = ref_runtime / cumulative_data[:,3]
-        
-        reduction = 100 * cumulative_data[:,5]
-        
-        ax_rel_speedup.plot(
-            time,
-            rel_speedup,
-            linewidth=2
-        )
-        
-        y_axis_limits.set_y_axis_limits(field="rel_speedup", field_data=rel_speedup[1:])
-        
-        ax_rel_speedup.set_ylabel("$S_{rel}$ (-)")
-        
-        line, = ax_reduction.plot(
-            time,
-            reduction,
-            linewidth=2,
-            color=color
-        )
-        
-        ax_reduction.plot(
-            [ time[0], time[-1] ],
-            [ reduction[0], reduction[0] ],
-            linestyle='--',
-            linewidth=1.5,
-            color=color
-        )
-        
-        y_axis_limits.set_y_axis_limits(field="reduction", field_data=reduction)
-        
-        ax_reduction.set_ylabel("$R_{cell}$ (%)")
-        
-        frac_DG2 = 100 * (
-            cumulative_data[:,2]
-            /
-            cumulative_data[:,3]
-        )
-        
-        ax_frac_DG2.plot(
-            time[1:],
-            frac_DG2[1:],
-            linewidth=2
-        )
-        
-        y_axis_limits.set_y_axis_limits(field="frac_DG2", field_data=frac_DG2[1:])
-        
-        ax_frac_DG2.set_ylabel("$F_{DG2}$ (%)")
-        
-        lines.append(line)
+    for ax in axs[-1]:
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(num_xticks))
+        ax.set_xlabel('$t$ (h)')
+        ax.tick_params(axis='x', labelsize='small')
     
-    #ax_reduction.invert_yaxis()
+    for ax in axs.flat:
+        ax.set_xlim((0, 40))
+        ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
+        ax.ticklabel_format(axis='y', style='scientific', scilimits=(-2,3), useMathText=True)
+        ax.yaxis.get_offset_text().set_fontsize('small')
+        ax.tick_params(labelsize='small')
+        ax.grid(True)
     
-    y_axis_limits.set_y_axis_ticks(ax=ax_rel_speedup, field="rel_speedup", num_ticks=5, num_digits_round=1)
-    y_axis_limits.set_y_axis_ticks(ax=ax_reduction,   field="reduction",   num_ticks=10)
-    y_axis_limits.set_y_axis_ticks(ax=ax_frac_DG2,    field="frac_DG2",    num_ticks=5)
-    
-    xlim = ( 0, round(time[-1], 0) )
-    
-    for ax in axs:
-        ax.set_xlim(xlim)
-    
-    ax_reduction.set_xlabel("$t$ (hr)")
-    ax_rel_speedup.set_xlabel("$t$ (hr)")
-    ax_reduction.legend(handles=lines, labels=["$\epsilon = 10^{-3}$", "$\epsilon = 10^{-4}$"])
+    ax_wet_cells.legend(handles=ax_dt.get_lines(), labels=["$\epsilon = 10^{-3}$", "$\epsilon = 10^{-4}$", "GPU-DG2"], fontsize='x-small', loc='lower right')
+        
     fig.tight_layout()
-    fig.savefig(fname="speedups.svg", bbox_inches="tight")
-    plt.close()
+    fig.savefig('speedups-tauranga.svg', bbox_inches='tight')
+    fig.savefig('speedups-tauranga.png', bbox_inches='tight')
 
 def main():
-    compare_all_stage_timeseries()
+    #compare_all_stage_timeseries()
     plot_speedups()
     
 if __name__ == "__main__":

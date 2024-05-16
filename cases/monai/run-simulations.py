@@ -250,52 +250,33 @@ class SimulationMonai:
         fig.savefig('predictions-' + self.solver, bbox_inches='tight')
             
     def plot_speedups(self):
-        fig, axs_T = plt.subplots(
-            nrows=2,
-            ncols=5,
-            figsize=(A4[0]-2, A4[1]-9.5),
+        fig, axs = plt.subplots(
+            nrows=3,
+            ncols=3,
+            figsize=(A4[0]-2, A4[1]-6),
             sharex=True
         )
+          
+        ax_wet_cells    = axs[0,0]; 
+        ax_rel_dg2      = axs[0,1]; ax_rel_dg2.sharey(ax_wet_cells)
+        ax_rel_mra      = axs[0,2]; ax_rel_mra.sharey(ax_wet_cells)
+        ax_inst_speedup = axs[1,0]
+        ax_dt           = axs[1,1]
+        ax_num_tstep    = axs[1,2]
+        ax_cumu_split   = axs[2,0]
+        ax_total        = axs[2,1]
+        ax_speedup      = axs[2,2]
         
-        axs = axs_T.T
-            
-        ax_num_cells = axs[0,0]
-        ax_rel_dg2   = axs[1,0]; ax_rel_dg2.sharey(ax_num_cells)
-        ax_inst_dg2  = axs[2,0]
-        ax_inst_mra  = axs[3,0]
-        ax_dt        = axs[4,0]
-        ax_num_tstep = axs[0,1]
-        ax_cumu_dg2  = axs[1,1]
-        ax_cumu_mra  = axs[2,1]
-        ax_total     = axs[3,1]
-        ax_speedup   = axs[4,1]
+        ax_wet_cells.set_title('$N_{wet}$ (%)',                      fontsize='small')
+        ax_rel_dg2.set_title('$R_{DG2}$ (%)',                        fontsize='small')
+        ax_rel_mra.set_title('$R_{MRA}$ (%)',                        fontsize='small')
+        ax_inst_speedup.set_title('$S_{inst}$ (-)',                  fontsize='small')
+        ax_dt.set_title('$\Delta t$ (s)',                            fontsize='small')
+        ax_num_tstep.set_title('$N_{\Delta t}$ (-)',                 fontsize='small')
+        ax_cumu_split.set_title('$C_{MRA}$ (dotted), $C_{DG2}$ (s)', fontsize='small')
+        ax_total.set_title('$C_{tot}$ (s)',                          fontsize='small')
+        ax_speedup.set_title('$S_{acc}$ (-)',                        fontsize='small')
         
-        ax_num_cells.set_title('A (%)', fontsize='small')
-        ax_rel_dg2.set_title('$R_{DG2}$ (%)', fontsize='small')
-        ax_inst_dg2.set_title('$I_{DG2}$ (ms)', fontsize='small')
-        ax_inst_mra.set_title('$I_{MRA}$ (ms)', fontsize='small')
-        ax_dt.set_title('$\Delta t$ (ms)', fontsize='small')
-        ax_num_tstep.set_title('$N_{\Delta t}$', fontsize='small')
-        ax_cumu_dg2.set_title('$C_{DG2}$ (s)', fontsize='small')
-        ax_cumu_mra.set_title('$C_{MRA}$ (s)', fontsize='small')
-        ax_total.set_title('$C_{tot}$ (s)', fontsize='small')
-        ax_speedup.set_title('Speedup', fontsize='small')
-        
-        num_yticks = 5
-        num_xticks = 5
-        
-        for ax in axs_T[-1]:
-            ax.xaxis.set_major_locator(ticker.MaxNLocator(num_xticks))
-            ax.set_xlabel('$t$ (s)')
-            ax.tick_params(axis='x', labelsize='x-small')
-        
-        for ax in axs.flat:
-            ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
-            ax.ticklabel_format(axis='y', style='scientific', scilimits=(-5,3))
-            ax.yaxis.get_offset_text().set_fontsize('x-small')
-            ax.tick_params(labelsize='x-small')
-            ax.grid(True)
-            
         linewidth = 1
         lw = linewidth
         
@@ -303,22 +284,48 @@ class SimulationMonai:
         num_cells_unif = 784 * 486
         
         for epsilon in self.epsilons[:-1]: # skip eps = 0
-            ax_num_cells.plot(self.results[epsilon]['cumu']['simtime'], 100 * self.results[epsilon]['cumu']['num_wet_cells'] / unif_cumu_df['num_wet_cells'],        linewidth=lw)
-            ax_rel_dg2.plot  (self.results[epsilon]['cumu']['simtime'], 100 * self.results[epsilon]['cumu']['inst_time_solver'] / unif_cumu_df['inst_time_solver'], linewidth=lw)
-            ax_inst_dg2.plot (self.results[epsilon]['cumu']['simtime'], 1000 * self.results[epsilon]['cumu']['inst_time_solver'], linewidth=lw)
-            ax_inst_mra.plot (self.results[epsilon]['cumu']['simtime'], 1000 * self.results[epsilon]['cumu']['inst_time_mra'],    linewidth=lw)
-            ax_dt.plot       (self.results[epsilon]['cumu']['simtime'], 1000 * self.results[epsilon]['cumu']['dt'],               linewidth=lw)
-            ax_num_tstep.plot(self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['num_timesteps'],    linewidth=lw)
-            ax_cumu_mra.plot (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['cumu_time_mra'],    linewidth=lw)
-            ax_cumu_dg2.plot (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['cumu_time_solver'], linewidth=lw)
-            ax_total.plot    (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['runtime_total'],    linewidth=lw)
-            ax_speedup.plot  (self.results[epsilon]['cumu']['simtime'], self.results[0]['cumu']['cumu_time_solver'] / self.results[epsilon]['cumu']['runtime_total'], linewidth=lw)
+            cumu_df = self.results[epsilon]['cumu']
         
-        ax_inst_dg2.plot (unif_cumu_df['simtime'], 1000 * unif_cumu_df['inst_time_solver'], linewidth=lw)
-        ax_dt.plot       (unif_cumu_df['simtime'], 1000 * unif_cumu_df['dt'],               linewidth=lw)
+            wet_cells    = cumu_df['num_wet_cells']    / unif_cumu_df['num_wet_cells']
+            rel_dg2      = cumu_df['inst_time_solver'] / unif_cumu_df['inst_time_solver']
+            rel_mra      = cumu_df['inst_time_mra']    / unif_cumu_df['inst_time_solver']
+            inst_speedup = 1 / (rel_dg2 + rel_mra)
+            speedup      = unif_cumu_df['cumu_time_solver'] / cumu_df['runtime_total']
+            
+            ax_wet_cells.plot   (cumu_df['simtime'], 100 * wet_cells,             linewidth=lw)
+            ax_rel_dg2.plot     (cumu_df['simtime'], 100 * rel_dg2,               linewidth=lw)
+            ax_rel_mra.plot     (cumu_df['simtime'], 100 * rel_mra,               linewidth=lw)
+            ax_inst_speedup.plot(cumu_df['simtime'], inst_speedup,                linewidth=lw)
+            ax_dt.plot          (cumu_df['simtime'], cumu_df['dt'],               linewidth=lw)
+            ax_num_tstep.plot   (cumu_df['simtime'], cumu_df['num_timesteps'],    linewidth=lw)
+            ax_cumu_split.plot  (cumu_df['simtime'], cumu_df['cumu_time_solver'], linewidth=lw)
+            ax_cumu_split.scatter(cumu_df['simtime'].iloc[::8], cumu_df['cumu_time_mra'].iloc[::8], marker='x', s=4, color=ax_cumu_split.get_lines()[-1].get_color())
+            ax_total.plot       (cumu_df['simtime'], cumu_df['runtime_total'],    linewidth=lw)
+            ax_speedup.plot     (cumu_df['simtime'], speedup,                     linewidth=lw)
+        
+        ax_dt.plot       (unif_cumu_df['simtime'], unif_cumu_df['dt'],               linewidth=lw)
         ax_num_tstep.plot(unif_cumu_df['simtime'], unif_cumu_df['num_timesteps'],    linewidth=lw)
+        ax_total.plot    (unif_cumu_df['simtime'], unif_cumu_df['cumu_time_solver'], linewidth=lw)
         
-        fig.subplots_adjust(hspace=0.5, wspace=0.5)
+        num_yticks = 5
+        num_xticks = 5
+        
+        for ax in axs[-1]:
+            ax.xaxis.set_major_locator(ticker.MaxNLocator(num_xticks))
+            ax.set_xlabel('$t$ (s)')
+            ax.tick_params(axis='x', labelsize='small')
+        
+        for ax in axs.flat:
+            ax.set_xlim((0, max(unif_cumu_df['simtime'])))
+            ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
+            ax.ticklabel_format(axis='y', style='scientific', scilimits=(-2,3), useMathText=True)
+            ax.yaxis.get_offset_text().set_fontsize('small')
+            ax.tick_params(labelsize='small')
+            ax.grid(True)
+            
+        ax_wet_cells.legend(handles=ax_dt.get_lines(), labels=["$\epsilon = 10^{-3}$", "$\epsilon = 10^{-4}$", "GPU-DG2"], fontsize='x-small', loc='upper left')
+        
+        fig.tight_layout()
         fig.savefig('speedups-monai-' + self.solver + '.png', bbox_inches='tight')
         fig.savefig('speedups-monai-' + self.solver + '.svg', bbox_inches='tight')
         
@@ -339,8 +346,8 @@ if __name__ == '__main__':
     if solver != 'hwfv1' and solver != 'mwdg2':
         EXIT_HELP()
     
-    subprocess.run( ['python', 'stage.py' ] )
-    subprocess.run( ['python', 'inflow.py'] )
-    subprocess.run( ['python', 'raster.py'] )
+    #subprocess.run( ['python', 'stage.py' ] )
+    #subprocess.run( ['python', 'inflow.py'] )
+    #subprocess.run( ['python', 'raster.py'] )
     
     SimulationMonai(solver).plot( ExperimentalDataMonai() )

@@ -203,53 +203,32 @@ def plot_speedups():
     ]
     
     fig, axs = plt.subplots(
-        nrows=5,
-        ncols=2,
+        nrows=3,
+        ncols=3,
         figsize=(A4[0]-2, A4[1]-6),
         sharex=True
     )
+      
+    ax_wet_cells    = axs[0,0]; 
+    ax_rel_dg2      = axs[0,1]; ax_rel_dg2.sharey(ax_wet_cells)
+    ax_rel_mra      = axs[0,2]; ax_rel_mra.sharey(ax_wet_cells)
+    ax_inst_speedup = axs[1,0]
+    ax_dt           = axs[1,1]
+    ax_num_tstep    = axs[1,2]
+    ax_cumu_split   = axs[2,0]
+    ax_total        = axs[2,1]
+    ax_speedup      = axs[2,2]
     
-    fig.subplots_adjust(hspace=0.4, wspace=0.3)
+    ax_wet_cells.set_title('$N_{wet}$ (%)',                      fontsize='small')
+    ax_rel_dg2.set_title('$R_{DG2}$ (%)',                        fontsize='small')
+    ax_rel_mra.set_title('$R_{MRA}$ (%)',                        fontsize='small')
+    ax_inst_speedup.set_title('$S_{inst}$ (-)',                  fontsize='small')
+    ax_dt.set_title('$\Delta t$ (s)',                            fontsize='small')
+    ax_num_tstep.set_title('$N_{\Delta t}$ (-)',                 fontsize='small')
+    ax_cumu_split.set_title('$C_{MRA}$ (dotted), $C_{DG2}$ (min)', fontsize='small')
+    ax_total.set_title('$C_{tot}$ (min)',                          fontsize='small')
+    ax_speedup.set_title('$S_{acc}$ (-)',                        fontsize='small')
     
-    ax_wet_cells = axs[0,0]
-    ax_rel_dg2   = axs[1,0]
-    ax_inst_dg2  = axs[2,0]
-    ax_inst_mra  = axs[3,0]
-    ax_dt        = axs[4,0]
-    ax_num_tstep = axs[0,1]
-    ax_cumu_dg2  = axs[1,1]
-    ax_cumu_mra  = axs[2,1]
-    ax_total     = axs[3,1]
-    ax_speedup   = axs[4,1]
-    
-    ax_wet_cells.sharey(ax_rel_dg2)
-    
-    ax_wet_cells.set_ylabel('A (%)')
-    ax_rel_dg2.set_ylabel('$R_{DG2}$ (%)')
-    ax_inst_dg2.set_ylabel('$I_{DG2}$ (ms)')
-    ax_inst_mra.set_ylabel('$I_{MRA}$ (ms)')
-    ax_dt.set_ylabel('$\Delta t$ (s)')
-    ax_num_tstep.set_ylabel('$N_{\Delta t}$ (-)')
-    ax_cumu_dg2.set_ylabel('$C_{DG2}$ (s)')
-    ax_cumu_mra.set_ylabel('$C_{MRA}$ (s)')
-    ax_total.set_ylabel('$C_{tot}$ (s)')
-    ax_speedup.set_ylabel('Speedup')
-    
-    num_yticks = 5
-    num_xticks = 10
-    
-    for ax in axs[-1]:
-        ax.xaxis.set_major_locator(ticker.MaxNLocator(num_xticks))
-        ax.set_xlabel('$t$ (hr)')
-        ax.tick_params(axis='x', labelsize='x-small')
-    
-    for ax in axs.flat:
-        ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
-        ax.ticklabel_format(axis='y', style='scientific', scilimits=(-4,3))
-        ax.yaxis.get_offset_text().set_fontsize('x-small')
-        ax.tick_params(labelsize='x-small')
-        ax.grid(True)
-        
     linewidth = 1
     lw = linewidth
     
@@ -264,28 +243,48 @@ def plot_speedups():
         cumu_df = pd.read_csv(cumu_file)[1:]
         
         time_hrs = cumu_df['simtime'] / 3600 + 7
-        active_wet = 100 * cumu_df['num_wet_cells'] / unif_cumu_df['num_wet_cells']
-        rel_dg2 = 100 * cumu_df['inst_time_solver'] / unif_cumu_df['inst_time_solver']
-        speedup = unif_cumu_df['cumu_time_solver'] / cumu_df['runtime_total']
+        wet_cells    = cumu_df['num_wet_cells']    / unif_cumu_df['num_wet_cells']
+        rel_dg2      = cumu_df['inst_time_solver'] / unif_cumu_df['inst_time_solver']
+        rel_mra      = cumu_df['inst_time_mra']    / unif_cumu_df['inst_time_solver']
+        inst_speedup = 1 / (rel_dg2 + rel_mra)
+        speedup      = unif_cumu_df['cumu_time_solver'] / cumu_df['runtime_total']
         
-        ax_wet_cells.plot(time_hrs, active_wet,                  linewidth=lw)
-        ax_rel_dg2.plot  (time_hrs, rel_dg2,                     linewidth=lw)
-        ax_inst_dg2.plot (time_hrs, 1000 * cumu_df['inst_time_solver'], linewidth=lw)
-        ax_inst_mra.plot (time_hrs, 1000 * cumu_df['inst_time_mra'],    linewidth=lw)
-        ax_dt.plot       (time_hrs, cumu_df['dt'],               linewidth=lw)
-        ax_num_tstep.plot(time_hrs, cumu_df['num_timesteps'],    linewidth=lw)
-        ax_cumu_mra.plot (time_hrs, cumu_df['cumu_time_mra'],    linewidth=lw)
-        ax_cumu_dg2.plot (time_hrs, cumu_df['cumu_time_solver'], linewidth=lw)
-        ax_total.plot    (time_hrs, cumu_df['runtime_total'],    linewidth=lw)
-        ax_speedup.plot  (time_hrs, speedup,                     linewidth=lw)
+        ax_wet_cells.plot   (time_hrs, 100 * wet_cells,             linewidth=lw)
+        ax_rel_dg2.plot     (time_hrs, 100 * rel_dg2,               linewidth=lw)
+        ax_rel_mra.plot     (time_hrs, 100 * rel_mra,               linewidth=lw)
+        ax_inst_speedup.plot(time_hrs, inst_speedup,                linewidth=lw)
+        ax_dt.plot          (time_hrs, cumu_df['dt'],               linewidth=lw)
+        ax_num_tstep.plot   (time_hrs, cumu_df['num_timesteps'],    linewidth=lw)
+        ax_cumu_split.plot  (time_hrs, cumu_df['cumu_time_solver'] / 60, linewidth=lw)
+        ax_cumu_split.scatter(time_hrs.iloc[::64], cumu_df['cumu_time_mra'].iloc[::64] / 60, marker='x', s=4, color=ax_cumu_split.get_lines()[-1].get_color())
+        ax_total.plot       (time_hrs, cumu_df['runtime_total'] / 60,    linewidth=lw)
+        ax_speedup.plot     (time_hrs, speedup,                     linewidth=lw)
     
-    ax_inst_dg2.plot (time_hrs, 1000 * unif_cumu_df['inst_time_solver'], linewidth=lw)
     ax_dt.plot       (time_hrs, unif_cumu_df['dt'],               linewidth=lw)
     ax_num_tstep.plot(time_hrs, unif_cumu_df['num_timesteps'],    linewidth=lw)
-    ax_total.plot    (time_hrs, unif_cumu_df['cumu_time_solver'], linewidth=lw)
+    ax_total.plot    (time_hrs, unif_cumu_df['cumu_time_solver'] / 60, linewidth=lw)
+    
+    num_yticks = 5
+    num_xticks = 5
+    
+    for ax in axs[-1]:
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(num_xticks))
+        ax.set_xlabel('$t$ (h)')
+        ax.tick_params(axis='x', labelsize='small')
+    
+    for ax in axs.flat:
+        ax.set_xlim((7+0, 7+6.38888889))
+        ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
+        ax.ticklabel_format(axis='y', style='scientific', scilimits=(-2,3), useMathText=True)
+        ax.yaxis.get_offset_text().set_fontsize('small')
+        ax.tick_params(labelsize='small')
+        ax.grid(True)
+       
+    ax_wet_cells.legend(handles=ax_dt.get_lines(), labels=["$\epsilon = 10^{-3}$", "$\epsilon = 10^{-4}$", "GPU-DG2"], fontsize='x-small', loc='lower right')
+     
+    fig.tight_layout()
     fig.savefig('speedups-hilo.svg', bbox_inches='tight')
     fig.savefig('speedups-hilo.png', bbox_inches='tight')
-    plt.show()
 
 def main():
     plot_speedups()
