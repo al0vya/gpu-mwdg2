@@ -3,14 +3,15 @@ import collections
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 
 def load_experimental_timeseries(gauges):
     exp_data = collections.defaultdict(dict)
     
-    wavegage = np.loadtxt(fname=os.path.join("comparison-data", "Wavegage.txt"), skiprows=1)
+    wavegage = np.loadtxt(fname=os.path.join('comparison-data', 'Wavegage.txt'), skiprows=1)
     
     location_data = {
-        gauge : np.loadtxt(fname=os.path.join("comparison-data", "Location_" + gauge + ".txt"), skiprows=3)
+        gauge : np.loadtxt(fname=os.path.join('comparison-data', 'Location_' + gauge + '.txt'), skiprows=3)
         for gauge in gauges[4:] # skip W gauges
     }
     
@@ -32,21 +33,21 @@ def load_computed_stage_timeseries(
     dirroot,
     gauges
 ):
-    print("Loading computed stage timeseries: %s..." % dirroot)
+    print('Loading computed stage timeseries: %s...' % dirroot)
     
-    gauge_data = np.loadtxt(os.path.join(dirroot, "res.stage"), skiprows=42, delimiter=" ")
+    gauge_data = np.loadtxt(os.path.join(dirroot, 'res.stage'), skiprows=42, delimiter=' ')
     
-    return { key : gauge_data[:,i] for i, key in enumerate(['t', "BD"] + gauges) }
+    return { key : gauge_data[:,i] for i, key in enumerate(['t', 'BD'] + gauges) }
     
 def load_computed_velocity_timeseries(
     dirroot,
     gauges
 ):
-    print("Loading computed velocity timeseries: %s..." % dirroot)
+    print('Loading computed velocity timeseries: %s...' % dirroot)
     
-    gauge_data = np.loadtxt(os.path.join(dirroot, "res.xvelocity"), skiprows=42, delimiter=" ")
+    gauge_data = np.loadtxt(os.path.join(dirroot, 'res.xvelocity'), skiprows=42, delimiter=' ')
     
-    return { key : gauge_data[:,i] for i, key in enumerate(['t', "BD"] + gauges) }
+    return { key : gauge_data[:,i] for i, key in enumerate(['t', 'BD'] + gauges) }
     
 def load_all_computed_timeseries(
     dirroots,
@@ -88,7 +89,7 @@ def read_stage_elevations(
 ):
     header = []
     
-    with open(os.path.join(dirroot, "res.stage"), 'r') as fp:
+    with open(os.path.join(dirroot, 'res.stage'), 'r') as fp:
         for i, line in enumerate(fp):
             if i > 2:
                 header.append(line)
@@ -96,20 +97,20 @@ def read_stage_elevations(
             if i > 38:
                 break
     
-    return { gauge : float( header[i].split()[3] ) for i, gauge in enumerate(["BD"] + gauges) }
+    return { gauge : float( header[i].split()[3] ) for i, gauge in enumerate(['BD'] + gauges) }
     
 def load_all_computed_maps(
     dirroots,
     epsilons
 ):
-    print("Loading computed raster maps...")
+    print('Loading computed raster maps...')
     
     all_wd_maps = {
-        epsilon : np.loadtxt(fname=os.path.join(dirroot, "res-1.wd"), skiprows=6) for dirroot, epsilon in zip(dirroots, epsilons)
+        epsilon : np.loadtxt(fname=os.path.join(dirroot, 'res-1.wd'), skiprows=6) for dirroot, epsilon in zip(dirroots, epsilons)
     }
     
     all_vx_maps = {
-        epsilon : np.loadtxt(fname=os.path.join(dirroot, "res-1.vx"), skiprows=6) for dirroot, epsilon in zip(dirroots, epsilons)
+        epsilon : np.loadtxt(fname=os.path.join(dirroot, 'res-1.vx'), skiprows=6) for dirroot, epsilon in zip(dirroots, epsilons)
     }
     
     all_Mx_maps = {epsilon : np.multiply( all_wd_maps[epsilon], np.square( all_vx_maps[epsilon] ) ) for epsilon in epsilons}
@@ -135,8 +136,8 @@ def compute_RMSE_timeseries(
     
     return pd.DataFrame(
         data=[[RMSE['e'][1e-3], RMSE['e'][1e-4]], [RMSE['u'][1e-3], RMSE['u'][1e-4]], [RMSE['M'][1e-3], RMSE['M'][1e-4]]],
-        index=["h + z", "vx", "Mx"],
-        columns=["\epsilon = 10-3", "\epsilon = 10-4"]
+        index=['h + z', 'vx', 'Mx'],
+        columns=['\epsilon = 10-3', '\epsilon = 10-4']
     )
 
 def compute_corr_timeseries(
@@ -154,8 +155,8 @@ def compute_corr_timeseries(
     
     return pd.DataFrame(
         data=[[corr['e'][1e-3], corr['e'][1e-4]], [corr['u'][1e-3], corr['u'][1e-4]], [corr['M'][1e-3], corr['M'][1e-4]]],
-        index=["h + z", "vx", "Mx"],
-        columns=["\epsilon = 10-3", "\epsilon = 10-4"]
+        index=['h + z', 'vx', 'Mx'],
+        columns=['\epsilon = 10-3', '\epsilon = 10-4']
     )
 
 def compute_RMSE_maps(
@@ -172,8 +173,8 @@ def compute_RMSE_maps(
     
     return pd.DataFrame(
         data=[[RMSE['e'][1e-3], RMSE['e'][1e-4]], [RMSE['u'][1e-3], RMSE['u'][1e-4]], [RMSE['M'][1e-3], RMSE['M'][1e-4]]],
-        index=["h + z", "vx", "Mx"],
-        columns=["\epsilon = 10-3", "\epsilon = 10-4"]
+        index=['h + z', 'vx', 'Mx'],
+        columns=['\epsilon = 10-3', '\epsilon = 10-4']
     )
     
 def compute_corr_maps(
@@ -190,34 +191,34 @@ def compute_corr_maps(
     
     return pd.DataFrame(
         data=[[corr['e'][1e-3], corr['e'][1e-4]], [corr['u'][1e-3], corr['u'][1e-4]], [corr['M'][1e-3], corr['M'][1e-4]]],
-        index=["h + z", "vx", "Mx"],
-        columns=["\epsilon = 10-3", "\epsilon = 10-4"]
+        index=['h + z', 'vx', 'Mx'],
+        columns=['\epsilon = 10-3', '\epsilon = 10-4']
     )
 
 def write_table(
     all_computed_timeseries,
     all_computed_maps
 ):
-    print("Writing table...")
+    print('Writing table...')
     
-    corr_A1   = compute_corr_timeseries(all_computed_timeseries, gauge="A1")
-    corr_B6   = compute_corr_timeseries(all_computed_timeseries, gauge="B6")
-    corr_D4   = compute_corr_timeseries(all_computed_timeseries, gauge="D4")
+    corr_A1   = compute_corr_timeseries(all_computed_timeseries, gauge='A1')
+    corr_B6   = compute_corr_timeseries(all_computed_timeseries, gauge='B6')
+    corr_D4   = compute_corr_timeseries(all_computed_timeseries, gauge='D4')
     corr_maps = compute_corr_maps(all_computed_maps)
     
-    RMSE_A1   = compute_RMSE_timeseries(all_computed_timeseries, gauge="A1")
-    RMSE_B6   = compute_RMSE_timeseries(all_computed_timeseries, gauge="B6")
-    RMSE_D4   = compute_RMSE_timeseries(all_computed_timeseries, gauge="D4")
+    RMSE_A1   = compute_RMSE_timeseries(all_computed_timeseries, gauge='A1')
+    RMSE_B6   = compute_RMSE_timeseries(all_computed_timeseries, gauge='B6')
+    RMSE_D4   = compute_RMSE_timeseries(all_computed_timeseries, gauge='D4')
     RMSE_maps = compute_RMSE_maps(all_computed_maps)
     
-    RMSE_corr_A1   = pd.concat([RMSE_A1,   corr_A1],   axis=1, keys=["RMSE", "R2"])
-    RMSE_corr_B6   = pd.concat([RMSE_B6,   corr_B6],   axis=1, keys=["RMSE", "R2"])
-    RMSE_corr_D4   = pd.concat([RMSE_D4,   corr_D4],   axis=1, keys=["RMSE", "R2"])
-    RMSE_corr_maps = pd.concat([RMSE_maps, corr_maps], axis=1, keys=["RMSE", "R2"])
+    RMSE_corr_A1   = pd.concat([RMSE_A1,   corr_A1],   axis=1, keys=['RMSE', 'R2'])
+    RMSE_corr_B6   = pd.concat([RMSE_B6,   corr_B6],   axis=1, keys=['RMSE', 'R2'])
+    RMSE_corr_D4   = pd.concat([RMSE_D4,   corr_D4],   axis=1, keys=['RMSE', 'R2'])
+    RMSE_corr_maps = pd.concat([RMSE_maps, corr_maps], axis=1, keys=['RMSE', 'R2'])
     
-    RMSE_corr = pd.concat([RMSE_corr_A1, RMSE_corr_B6, RMSE_corr_D4, RMSE_corr_maps], keys=["Time series at A1", "Time series at B6", "Time series at D4", "Spatial map at ts"])
+    RMSE_corr = pd.concat([RMSE_corr_A1, RMSE_corr_B6, RMSE_corr_D4, RMSE_corr_maps], keys=['Time series at A1', 'Time series at B6', 'Time series at D4', 'Spatial map at ts'])
     
-    RMSE_corr.to_csv("table.csv")
+    RMSE_corr.to_csv('table.csv')
     
 def plot_timeseries_at_gauge(
     gauge,
@@ -227,9 +228,9 @@ def plot_timeseries_at_gauge(
     outer_subplot_spec,
     include_legend=False
 ):
-    print("Plotting timeseries at gauge: " + gauge)
+    print('Plotting timeseries at gauge: ' + gauge)
     
-    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
     
     # to find a way to iterate over epsilons and epsilons_vx
     iterator_stage = zip(
@@ -292,10 +293,10 @@ def plot_timeseries_at_gauge(
     
     if include_legend:
         main_labels = [
-            "GPU-MWDG2, $\epsilon = 10^{-3}$",
-            "GPU-MWDG2, $\epsilon = 10^{-4}$",
-            "GPU-DG2",
-            "Experimental"
+            'GPU-MWDG2, $\epsilon = 10^{-3}$',
+            'GPU-MWDG2, $\epsilon = 10^{-4}$',
+            'GPU-DG2',
+            'Experimental'
         ]
         
         axs[0].legend(
@@ -308,22 +309,22 @@ def plot_timeseries_at_gauge(
     plt.setp(
         axs[0],
         xlim=(20,40),
-        xlabel="$t$ (s)",
-        ylabel="$h + z$ (m)"
+        xlabel='$t$ (s)',
+        ylabel='$h + z$ (m)'
     )
     
     plt.setp(
         axs[1],
         xlim=(20,40),
-        xlabel="$t$ (s)",
-        ylabel="$u$ (ms$^{-1}$)"
+        xlabel='$t$ (s)',
+        ylabel='$u$ (ms$^{-1}$)'
     )
         
     plt.setp(
         axs[2],
         xlim=(20,40),
-        xlabel="$t$ (s)",
-        ylabel="$M_x$ (m$^3$s$^{-2}$)"
+        xlabel='$t$ (s)',
+        ylabel='$M_x$ (m$^3$s$^{-2}$)'
     )
    
 def plot_main_gauge_timeseries(
@@ -331,7 +332,7 @@ def plot_main_gauge_timeseries(
     epsilons,
     all_computed_timeseries
 ):
-    print("Plotting main gauge data...")
+    print('Plotting main gauge data...')
     
     fig = plt.figure(
         figsize=(6,4)
@@ -346,16 +347,16 @@ def plot_main_gauge_timeseries(
     axs = outer_gridspec.subplots()
     
     # plotting the gauge data
-    axs[0].axis("off")
-    axs[1].axis("off")
-    axs[2].axis("off")
+    axs[0].axis('off')
+    axs[1].axis('off')
+    axs[2].axis('off')
     
-    axs[0].set_title("Point A1")
-    axs[1].set_title("Point B6")
-    axs[2].set_title("Point D4")
+    axs[0].set_title('Point A1')
+    axs[1].set_title('Point B6')
+    axs[2].set_title('Point D4')
     
     plot_timeseries_at_gauge(
-        gauge="A1",
+        gauge='A1',
         all_computed_timeseries=all_computed_timeseries,
         exp_data=exp_data,
         epsilons=epsilons,
@@ -364,7 +365,7 @@ def plot_main_gauge_timeseries(
     )
     
     plot_timeseries_at_gauge(
-        gauge="B6",
+        gauge='B6',
         all_computed_timeseries=all_computed_timeseries,
         exp_data=exp_data,
         epsilons=epsilons,
@@ -372,223 +373,129 @@ def plot_main_gauge_timeseries(
     )
     
     plot_timeseries_at_gauge(
-        gauge="D4",
+        gauge='D4',
         all_computed_timeseries=all_computed_timeseries,
         exp_data=exp_data,
         epsilons=epsilons,
         outer_subplot_spec=outer_gridspec[2]
     )
     
-    fig.savefig("predictions", bbox_inches="tight")
+    fig.savefig('predictions.svg', bbox_inches='tight')
 
-class YAxisLimits:
-    def __init__(self):
-        limits = {}
-        
-        limits["reduction"]   = {}
-        limits["frac_DG2"]    = {}
-        limits["rel_speedup"] = {}
-        
-        for key in limits:
-            limits[key]["min"] =  (2 ** 63 + 1)
-            limits[key]["max"] = -(2 ** 63 + 1)
-        
-        limits["reduction"]["min"] = 0
-        
-        self.limits = limits
-    
-    def set_y_axis_limits(
-        self,
-        field,
-        field_data
-    ):
-        self.limits[field]["min"] = min(
-            self.limits[field]["min"],
-            min(field_data)
-        )
-        
-        self.limits[field]["max"] = max(
-            self.limits[field]["max"],
-            max(field_data)
-        )
-    
-    def get_y_axis_ticks(
-        self,
-        field,
-        num_ticks
-    ):
-        if field == "rel_speedup":
-            min_val = 0.9 * self.limits[field]["min"]
-            max_val = 1.1 * self.limits[field]["max"]
-        else:
-            min_val = max( 0,   0.9 * self.limits[field]["min"] )
-            max_val = min( 100, 1.1 * self.limits[field]["max"] )
-        
-        d_val = (max_val - min_val) / num_ticks
-        
-        return [ min_val + i * d_val for i in range(num_ticks+1) ]
-        
-    def set_y_axis_ticks(
-        self,
-        ax,
-        field,
-        num_ticks,
-        num_digits_round=1
-    ):
-        yticks = self.get_y_axis_ticks(
-            field=field,
-            num_ticks=num_ticks
-        )
-        
-        ax.set_yticks( [] )
-        ax.set_yticks(
-            ticks=yticks,
-            minor=False
-        )
-        
-        yticks = [round(ytick, num_digits_round) if field == "rel_speedup" else int(ytick) for ytick in yticks]
-        
-        ax.set_yticklabels(
-            labels=yticks,
-            minor=False
-        )
+A4 = (8.3, 11.7)
 
 def plot_speedups(
     dirroots,
     epsilons
 ):
-    print("Plotting speedups...")
-    
-    ref_runtime = np.loadtxt(
-        fname=os.path.join("eps-0", "res.cumu"),
-        skiprows=1,
-        delimiter=','
-    )[:,3]
+    print('Plotting speedups...')
     
     fig, axs = plt.subplots(
-        nrows=2,
+        nrows=5,
         ncols=2,
-        figsize=(6, 4),
+        figsize=(A4[0]-2, A4[1]-6),
         sharex=True
     )
     
-    gridspec = axs[0,0].get_gridspec()
+    fig.subplots_adjust(hspace=0.4, wspace=0.3)
     
-    axs[0,0].remove()
-    axs[1,0].remove()
+    ax_num_cells = axs[0,0]
+    ax_rel_dg2   = axs[1,0]; ax_rel_dg2.sharey(ax_num_cells)
+    ax_inst_dg2  = axs[2,0]
+    ax_inst_mra  = axs[3,0]
+    ax_dt        = axs[4,0]
+    ax_num_tstep = axs[0,1]
+    ax_cumu_dg2  = axs[1,1]
+    ax_cumu_mra  = axs[2,1]
+    ax_total     = axs[3,1]
+    ax_speedup   = axs[4,1]
     
-    ax_reduction   = fig.add_subplot( gridspec[:,0] )
-    ax_frac_DG2    = axs[0,1]
-    ax_rel_speedup = axs[1,1]
+    ax_num_cells.set_ylabel('A (%)')
+    ax_rel_dg2.set_ylabel('$R_{DG2}$ (%)')
+    ax_inst_dg2.set_ylabel('$I_{DG2}$ (ms)')
+    ax_inst_mra.set_ylabel('$I_{MRA}$ (ms)')
+    ax_dt.set_ylabel('$\Delta t$ (s)')
+    ax_num_tstep.set_ylabel('$N_{\Delta t}$')
+    ax_cumu_dg2.set_ylabel('$C_{DG2}$ (s)')
+    ax_cumu_mra.set_ylabel('$C_{MRA}$ (s)')
+    ax_total.set_ylabel('$C_{tot}$ (s)')
+    ax_speedup.set_ylabel('Speedup')
     
-    axs = [ax_reduction, ax_frac_DG2, ax_rel_speedup]
+    num_yticks = 5
+    num_xticks = 10
     
-    y_axis_limits = YAxisLimits()
+    for ax in axs[-1]:
+        ax.xaxis.set_major_locator(ticker.MaxNLocator(num_xticks))
+        ax.set_xlabel('$t$ (s)')
+        ax.tick_params(axis='x', labelsize='x-small')
     
-    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    for ax in axs.flat:
+        ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
+        ax.ticklabel_format(axis='y', style='scientific', scilimits=(-1,2))
+        ax.yaxis.get_offset_text().set_fontsize('x-small')
+        ax.tick_params(labelsize='x-small')
+        ax.grid(True)
+        
+    linewidth = 1
+    lw = linewidth
     
-    lines = []
+    unif_cumu_df = pd.read_csv(os.path.join('eps-0', 'res.cumu'))[1:]
     
-    for epsilon, dirroot, color in zip(epsilons, dirroots, colors):
+    num_cells_unif = 2181 * 1091
+    
+    for dirroot, epsilon in zip(dirroots, epsilons):
         if epsilon == 0:
             continue
         
-        cumulative_data = np.loadtxt(fname=os.path.join(dirroot, "res.cumu"), skiprows=1, delimiter=',')
+        cumu_df = pd.read_csv(os.path.join(dirroot, 'res.cumu'))[1:]
         
-        time = cumulative_data[:,0]
-        
-        rel_speedup = ref_runtime / cumulative_data[:,3]
-        
-        reduction = 100 * cumulative_data[:,5]
-        
-        ax_rel_speedup.plot(
-            time,
-            rel_speedup,
-            linewidth=2
-        )
-        
-        y_axis_limits.set_y_axis_limits(field="rel_speedup", field_data=rel_speedup)
-        
-        ax_rel_speedup.set_ylabel("$S_{rel}$ (-)")
-        
-        line, = ax_reduction.plot(
-            time,
-            reduction,
-            linewidth=2,
-            color=color
-        )
-        
-        ax_reduction.plot(
-            [ time[0], round(time[-1], 0) ],
-            [ reduction[0], reduction[0] ],
-            linestyle='--',
-            linewidth=1.5,
-            color=color
-        )
-        
-        y_axis_limits.set_y_axis_limits(field="reduction", field_data=reduction)
-        
-        ax_reduction.set_ylabel("$R_{cell}$ (%)")
-        
-        frac_DG2 = 100 * (
-            cumulative_data[:,2]
-            /
-            cumulative_data[:,3]
-        )
-        
-        ax_frac_DG2.plot(
-            time[1:],
-            frac_DG2[1:],
-            linewidth=2
-        )
-        
-        y_axis_limits.set_y_axis_limits(field="frac_DG2", field_data=frac_DG2[1:])
-        
-        ax_frac_DG2.set_ylabel("$F_{DG2}$ (%)")
-        
-        lines.append(line)
+        ax_num_cells.plot(cumu_df['simtime'], 100 * cumu_df['num_cells'] / num_cells_unif,        linewidth=lw)
+        ax_rel_dg2.plot  (cumu_df['simtime'], 100 * cumu_df['inst_time_solver'] / unif_cumu_df['inst_time_solver'], linewidth=lw)
+        ax_inst_dg2.plot (cumu_df['simtime'], 1000 * cumu_df['inst_time_solver'], linewidth=lw)
+        ax_inst_mra.plot (cumu_df['simtime'], 1000 * cumu_df['inst_time_mra'],    linewidth=lw)
+        ax_dt.plot       (cumu_df['simtime'], cumu_df['dt'],               linewidth=lw)
+        ax_num_tstep.plot(cumu_df['simtime'], cumu_df['num_timesteps'],    linewidth=lw)
+        ax_cumu_mra.plot (cumu_df['simtime'], cumu_df['cumu_time_mra'],    linewidth=lw)
+        ax_cumu_dg2.plot (cumu_df['simtime'], cumu_df['cumu_time_solver'], linewidth=lw)
+        ax_total.plot    (cumu_df['simtime'], cumu_df['runtime_total'],    linewidth=lw)
+        ax_speedup.plot  (cumu_df['simtime'], unif_cumu_df['cumu_time_solver']/cumu_df['runtime_total'], linewidth=lw)
     
-    y_axis_limits.set_y_axis_ticks(ax=ax_rel_speedup, field="rel_speedup", num_ticks=5, num_digits_round=1)
-    y_axis_limits.set_y_axis_ticks(ax=ax_reduction,   field="reduction",   num_ticks=10)
-    y_axis_limits.set_y_axis_ticks(ax=ax_frac_DG2,    field="frac_DG2",    num_ticks=5)
+    ax_inst_dg2.plot (unif_cumu_df['simtime'], 1000 * unif_cumu_df['inst_time_solver'], linewidth=lw)
+    ax_dt.plot       (unif_cumu_df['simtime'], unif_cumu_df['dt'],            linewidth=lw)
+    ax_num_tstep.plot(unif_cumu_df['simtime'], unif_cumu_df['num_timesteps'], linewidth=lw)
+    ax_total.plot    (unif_cumu_df['simtime'], unif_cumu_df['cumu_time_solver'], linewidth=lw)
     
-    xlim = ( 0, round(time[-1], 0) )
+    fig.savefig('speedups-oregon-seaside.svg', bbox_inches='tight')
+    fig.savefig('speedups-oregon-seaside.png', bbox_inches='tight')
     
-    for ax in axs:
-        ax.set_xlim(xlim)
-    
-    ax_reduction.set_xlabel("$t$ (s)")
-    ax_rel_speedup.set_xlabel("$t$ (s)")
-    ax_reduction.legend(handles=lines, labels=["$\epsilon = 10^{-3}$", "$\epsilon = 10^{-4}$"])
-    fig.tight_layout()
-    fig.savefig(fname="speedups.png", bbox_inches="tight")
+    plt.show()
     
 def main():
     epsilons = [1e-3, 1e-4, 0]
     
     dirroots = [
-        "eps-1e-3",
-        "eps-1e-4",
-        "eps-0"
+        'eps-1e-3',
+        'eps-1e-4',
+        'eps-0'
     ]
     
     gauges = [
-        "W1", "W2", "W3", "W4",
-        "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9",
-        "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9",
-        "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9",
-        "D1", "D2", "D3", "D4"
+        'W1', 'W2', 'W3', 'W4',
+        'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9',
+        'B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B9',
+        'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9',
+        'D1', 'D2', 'D3', 'D4'
     ]
     
-    exp_data                = load_experimental_timeseries(gauges)
-    all_computed_timeseries = load_all_computed_timeseries(dirroots, epsilons, gauges)
-    all_computed_maps       = load_all_computed_maps(dirroots, epsilons)
+    #exp_data                = load_experimental_timeseries(gauges)
+    #all_computed_timeseries = load_all_computed_timeseries(dirroots, epsilons, gauges)
+    #all_computed_maps       = load_all_computed_maps(dirroots, epsilons)
     
-    write_table(all_computed_timeseries, all_computed_maps)
+    #write_table(all_computed_timeseries, all_computed_maps)
     
     plot_speedups(dirroots, epsilons)
     
-    plot_main_gauge_timeseries(exp_data, epsilons, all_computed_timeseries)
+    #plot_main_gauge_timeseries(exp_data, epsilons, all_computed_timeseries)
     
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -835,7 +835,7 @@ void run_simulation
 			);
 		}
 
-		if (timestep % 10 == 1)
+		if (timestep % 10000 == 1)
 		{
 			num_cells_adap = (d_assem_sol.length > num_cells_unif) ? num_cells_unif : d_assem_sol.length;
 			reduction = (real)(num_cells_unif - num_cells_adap) / num_cells_unif;
