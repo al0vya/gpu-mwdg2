@@ -24,7 +24,9 @@ void encode_topography_kernel_hw
 	HierarchyIndex parent_idx = curr_lvl_idx + idx;
 	HierarchyIndex child_idx  = next_lvl_idx + 4 * idx;
 
-	real epsilon_local = solver_params.epsilon / ( 1 << (solver_params.L - level) );
+	real epsilon_local = ( solver_params.epsilon > C(0.0) ) 
+		                 ? solver_params.epsilon / ( 1 << (solver_params.L - level) )
+						 : C(9999.0);
 
 	ScaleChildrenHW z_children =
 	{
