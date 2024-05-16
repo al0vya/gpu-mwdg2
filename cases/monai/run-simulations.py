@@ -53,7 +53,7 @@ class SimulationMonai:
                 for run in range(simulation_runs):
                     dirroot = dirroot_base + '-' + str(run)
                     
-                    self.run(epsilon, dirroot)
+                    #self.run(epsilon, dirroot)
                     
                     dfs.append(pd.read_csv(os.path.join(dirroot, 'res.cumu'))[1:])
                     
@@ -250,14 +250,14 @@ class SimulationMonai:
         fig.savefig('predictions-' + self.solver, bbox_inches='tight')
             
     def plot_speedups(self):
-        fig, axs = plt.subplots(
-            nrows=5,
-            ncols=2,
-            figsize=(A4[0]-2, A4[1]-6),
+        fig, axs_T = plt.subplots(
+            nrows=2,
+            ncols=5,
+            figsize=(A4[0]-2, A4[1]-9.5),
             sharex=True
         )
         
-        fig.subplots_adjust(hspace=0.4, wspace=0.3)
+        axs = axs_T.T
             
         ax_num_cells = axs[0,0]
         ax_rel_dg2   = axs[1,0]; ax_rel_dg2.sharey(ax_num_cells)
@@ -270,28 +270,28 @@ class SimulationMonai:
         ax_total     = axs[3,1]
         ax_speedup   = axs[4,1]
         
-        ax_num_cells.set_ylabel('A (%)')
-        ax_rel_dg2.set_ylabel('$R_{DG2}$ (%)')
-        ax_inst_dg2.set_ylabel('$I_{DG2}$ (ms)')
-        ax_inst_mra.set_ylabel('$I_{MRA}$ (ms)')
-        ax_dt.set_ylabel('$\Delta t$ (s)')
-        ax_num_tstep.set_ylabel('$N_{\Delta t}$')
-        ax_cumu_dg2.set_ylabel('$C_{DG2}$ (s)')
-        ax_cumu_mra.set_ylabel('$C_{MRA}$ (s)')
-        ax_total.set_ylabel('$C_{tot}$ (s)')
-        ax_speedup.set_ylabel('Speedup')
+        ax_num_cells.set_title('A (%)', fontsize='small')
+        ax_rel_dg2.set_title('$R_{DG2}$ (%)', fontsize='small')
+        ax_inst_dg2.set_title('$I_{DG2}$ (ms)', fontsize='small')
+        ax_inst_mra.set_title('$I_{MRA}$ (ms)', fontsize='small')
+        ax_dt.set_title('$\Delta t$ (ms)', fontsize='small')
+        ax_num_tstep.set_title('$N_{\Delta t}$', fontsize='small')
+        ax_cumu_dg2.set_title('$C_{DG2}$ (s)', fontsize='small')
+        ax_cumu_mra.set_title('$C_{MRA}$ (s)', fontsize='small')
+        ax_total.set_title('$C_{tot}$ (s)', fontsize='small')
+        ax_speedup.set_title('Speedup', fontsize='small')
         
         num_yticks = 5
-        num_xticks = 10
+        num_xticks = 5
         
-        for ax in axs[-1]:
+        for ax in axs_T[-1]:
             ax.xaxis.set_major_locator(ticker.MaxNLocator(num_xticks))
             ax.set_xlabel('$t$ (s)')
             ax.tick_params(axis='x', labelsize='x-small')
         
         for ax in axs.flat:
             ax.yaxis.set_major_locator(ticker.MaxNLocator(num_yticks))
-            ax.ticklabel_format(axis='y', style='scientific', scilimits=(-2,2))
+            ax.ticklabel_format(axis='y', style='scientific', scilimits=(-5,3))
             ax.yaxis.get_offset_text().set_fontsize('x-small')
             ax.tick_params(labelsize='x-small')
             ax.grid(True)
@@ -307,7 +307,7 @@ class SimulationMonai:
             ax_rel_dg2.plot  (self.results[epsilon]['cumu']['simtime'], 100 * self.results[epsilon]['cumu']['inst_time_solver'] / unif_cumu_df['inst_time_solver'], linewidth=lw)
             ax_inst_dg2.plot (self.results[epsilon]['cumu']['simtime'], 1000 * self.results[epsilon]['cumu']['inst_time_solver'], linewidth=lw)
             ax_inst_mra.plot (self.results[epsilon]['cumu']['simtime'], 1000 * self.results[epsilon]['cumu']['inst_time_mra'],    linewidth=lw)
-            ax_dt.plot       (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['dt'],               linewidth=lw)
+            ax_dt.plot       (self.results[epsilon]['cumu']['simtime'], 1000 * self.results[epsilon]['cumu']['dt'],               linewidth=lw)
             ax_num_tstep.plot(self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['num_timesteps'],    linewidth=lw)
             ax_cumu_mra.plot (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['cumu_time_mra'],    linewidth=lw)
             ax_cumu_dg2.plot (self.results[epsilon]['cumu']['simtime'], self.results[epsilon]['cumu']['cumu_time_solver'], linewidth=lw)
@@ -315,14 +315,15 @@ class SimulationMonai:
             ax_speedup.plot  (self.results[epsilon]['cumu']['simtime'], self.results[0]['cumu']['cumu_time_solver'] / self.results[epsilon]['cumu']['runtime_total'], linewidth=lw)
         
         ax_inst_dg2.plot (unif_cumu_df['simtime'], 1000 * unif_cumu_df['inst_time_solver'], linewidth=lw)
-        ax_dt.plot       (unif_cumu_df['simtime'], unif_cumu_df['dt'],               linewidth=lw)
+        ax_dt.plot       (unif_cumu_df['simtime'], 1000 * unif_cumu_df['dt'],               linewidth=lw)
         ax_num_tstep.plot(unif_cumu_df['simtime'], unif_cumu_df['num_timesteps'],    linewidth=lw)
         
+        fig.subplots_adjust(hspace=0.5, wspace=0.5)
         fig.savefig('speedups-monai-' + self.solver + '.png', bbox_inches='tight')
         fig.savefig('speedups-monai-' + self.solver + '.svg', bbox_inches='tight')
         
     def plot(
-        self,
+        self,   
         exp_data
     ):
         self.plot_speedups()
