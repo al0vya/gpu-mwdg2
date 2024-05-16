@@ -779,7 +779,7 @@ void run_simulation
 					cumu_time_solver,
 					dt,
 					timestep,
-					d_assem_sol.length,
+					(d_assem_sol.length > num_cells_unif) ? num_cells_unif : d_assem_sol.length,
 					get_sum_from_array(d_assem_sol.wet_cells, d_assem_sol.length),
 					first_timestep
 				);
@@ -799,7 +799,7 @@ void run_simulation
 					cumu_time_solver,
 					dt,
 					timestep,
-					d_assem_sol.length,
+					(d_assem_sol.length > num_cells_unif) ? num_cells_unif : d_assem_sol.length, // adaptive cell count
 					get_sum_from_array(d_assem_sol.wet_cells, d_assem_sol.length),
 					sim_params,
 			        plot_params,
@@ -835,7 +835,7 @@ void run_simulation
 			);
 		}
 
-		if (timestep % 10 == 1)
+		if (timestep % 10000 == 1)
 		{
 			num_cells_adap = (d_assem_sol.length > num_cells_unif) ? num_cells_unif : d_assem_sol.length;
 			reduction = (real)(num_cells_unif - num_cells_adap) / num_cells_unif;
@@ -843,7 +843,7 @@ void run_simulation
 			printf
 			(
 				"Elements: %d, reduction: %f%%, dt: %f, timestep: %d, sim time: %f\n",
-				d_assem_sol.length, reduction, dt, timestep, current_time
+				num_cells_adap, reduction, dt, timestep, current_time
 			);
 		}
 
@@ -867,7 +867,7 @@ void run_simulation
 	printf
 	(
 		"Elements: %d, reduction: %f%%, dt: %f, timestep: %d, sim time: %f\n",
-		d_assem_sol.length, reduction, dt, timestep, current_time
+		num_cells_adap, reduction, dt, timestep, current_time
 	);
 	
 	run_time = (real)(end - start) / CLOCKS_PER_SEC;
