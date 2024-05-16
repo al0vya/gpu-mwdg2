@@ -42,7 +42,9 @@ void encode_flow_kernel_mw
 	if (idx >= num_threads) return;
 	
 	real norm_detail   = C(0.0);
-	real epsilon_local = solver_params.epsilon / ( 1 << (solver_params.L - level) );
+	real epsilon_local = ( solver_params.epsilon > C(0.0) ) 
+		                 ? solver_params.epsilon / ( 1 << (solver_params.L - level) )
+						 : C(9999.0);
 
 	HierarchyIndex prev_lvl_idx = get_lvl_idx(level - 1);
 	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);

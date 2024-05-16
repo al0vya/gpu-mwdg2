@@ -20,6 +20,19 @@ bool* preflag_details
 
 	HierarchyIndex starting_idx = get_lvl_idx(max_ref_lvl - 1);
 
+	if ( !( solver_params.epsilon > C(0.0) ) )
+	{
+		for (Coordinate j = 0; j < sim_params.ysz; j++)
+		{
+			for (Coordinate i = 0; i < sim_params.xsz; i++)
+			{
+				MortonCode child_code = generate_morton_code(i, j) / 4;
+
+				h_preflagged_details[starting_idx + child_code] = true;
+			}
+		}
+	}
+
 	for (int i = 0; i < stage_points.num_points; i++)
 	{
 		MortonCode child_code = stage_points.codes[i] / 4; // to get Morton code one level below
