@@ -97,15 +97,16 @@ void run_simulation
 	size_t bytes_soln    = num_finest_elems * sizeof(real);
 
 	// Arrays
-	MortonCode* d_morton_codes        = (MortonCode*)malloc_device(bytes_morton);
-	MortonCode* d_sorted_morton_codes = (MortonCode*)malloc_device(bytes_morton);
-	MortonCode* d_indices             = (MortonCode*)malloc_device(bytes_morton);
-	MortonCode* d_rev_z_order         = (MortonCode*)malloc_device(bytes_morton);
-	MortonCode* d_rev_row_major       = (MortonCode*)malloc_device(bytes_morton);
-	real*       d_eta_temp            = (real*)malloc_device(bytes_soln);
-	real*       d_norm_details        = (real*)malloc_device(bytes_details);
-	bool*       d_sig_details         = (bool*)malloc_device(num_details);
-	real*       d_dt_CFL              = (real*)malloc_device(bytes_soln);
+	MortonCode* d_morton_codes           = (MortonCode*)malloc_device(bytes_morton);
+	MortonCode* d_sorted_morton_codes    = (MortonCode*)malloc_device(bytes_morton);
+	MortonCode* d_morton_codes_compacted = (MortonCode*)malloc_device(bytes_morton);
+	MortonCode* d_indices                = (MortonCode*)malloc_device(bytes_morton);
+	MortonCode* d_rev_z_order            = (MortonCode*)malloc_device(bytes_morton);
+	MortonCode* d_rev_row_major          = (MortonCode*)malloc_device(bytes_morton);
+	real*       d_eta_temp               = (real*)malloc_device(bytes_soln);
+	real*       d_norm_details           = (real*)malloc_device(bytes_details);
+	bool*       d_sig_details            = (bool*)malloc_device(num_details);
+	real*       d_dt_CFL                 = (real*)malloc_device(bytes_soln);
 	
 	bool* d_preflagged_details = preflag_details
 	(
@@ -303,7 +304,7 @@ void run_simulation
 		    (
 		    	d_scale_coeffs,
 		    	d_details,
-		    	d_norm_details,
+				d_norm_details,
 		    	d_sig_details,
 		    	d_preflagged_details,
 		    	maxes,
@@ -873,9 +874,15 @@ void run_simulation
 	run_time = (real)(end - start) / CLOCKS_PER_SEC;
 	
 	printf("Loop time: %f s\n", run_time);
+	
+	cudaEventDestroy(mra_start);
+	cudaEventDestroy(mra_stop);
+	cudaEventDestroy(solver_start);
+	cudaEventDestroy(solver_stop);
 
 	CHECK_CUDA_ERROR( free_device(d_morton_codes) );
 	CHECK_CUDA_ERROR( free_device(d_sorted_morton_codes) );
+	CHECK_CUDA_ERROR( free_device(d_morton_codes_compacted) );
 	CHECK_CUDA_ERROR( free_device(d_indices) );
 	CHECK_CUDA_ERROR( free_device(d_rev_z_order) );
 	CHECK_CUDA_ERROR( free_device(d_rev_row_major) );

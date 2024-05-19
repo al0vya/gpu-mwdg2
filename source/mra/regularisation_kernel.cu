@@ -3,18 +3,16 @@
 __global__
 void regularisation_kernel
 (
-	bool* d_sig_details,
-	int   level,
-	int   num_threads
+	bool*          d_sig_details,
+	HierarchyIndex curr_lvl_idx,
+	HierarchyIndex next_lvl_idx,
+	int            num_threads
 )
 {
 	const int idx = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (idx >= num_threads) return;
 
-	const HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
-	const HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
-	
 	const HierarchyIndex parent_idx = curr_lvl_idx + idx;
 	const HierarchyIndex child_idx  = next_lvl_idx + 4 * idx;
 

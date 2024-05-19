@@ -23,6 +23,9 @@ void encode_flow
 		                     ? solver_params.epsilon / ( 1 << (solver_params.L - level) )
 						     : C(9999.0);
 
+		HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
+		HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
+
 		if (solver_params.solver_type == HWFV1)
 		{
 			encode_flow_kernel_hw<<<num_blocks, THREADS_PER_BLOCK>>>
@@ -34,6 +37,8 @@ void encode_flow
 				d_preflagged_details,
 				maxes,
 				epsilon_local,
+				curr_lvl_idx,
+				next_lvl_idx,
 				level,
 				num_threads
 			);
@@ -48,7 +53,9 @@ void encode_flow
 				d_sig_details,
 				d_preflagged_details,
 				maxes,
-				solver_params,
+				epsilon_local,
+				curr_lvl_idx,
+				next_lvl_idx,
 				level,
 				num_threads,
 				for_nghbrs

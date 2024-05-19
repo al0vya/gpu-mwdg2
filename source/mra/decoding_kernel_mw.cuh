@@ -25,6 +25,7 @@ void decoding_kernel_mw
 	Details           d_details,
 	ScaleCoefficients d_scale_coeffs,
 	SolverParams      solver_params,
-	int               level,
+	HierarchyIndex    curr_lvl_idx,
+	HierarchyIndex    next_lvl_idx,
 	int               num_threads
 );

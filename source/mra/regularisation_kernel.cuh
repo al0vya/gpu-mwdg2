@@ -14,7 +14,8 @@
 __global__
 void regularisation_kernel
 (
-	bool* d_sig_details,
-	int   level,
-	int   num_threads
+	bool*          d_sig_details,
+	HierarchyIndex curr_lvl_idx,
+	HierarchyIndex next_lvl_idx,
+	int            num_threads
 );

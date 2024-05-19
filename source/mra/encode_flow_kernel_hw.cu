@@ -31,6 +31,8 @@ void encode_flow_kernel_hw
 	bool*             d_preflagged_details,
 	Maxes             maxes,
 	real              epsilon_local,
+	HierarchyIndex    curr_lvl_idx,
+	HierarchyIndex    next_lvl_idx,
 	int               level,
 	int               num_threads
 )
@@ -40,12 +42,8 @@ void encode_flow_kernel_hw
 
 	if (idx >= num_threads) return;
 	
-	real norm_detail   = C(0.0);
+	real norm_detail = C(0.0);
 	
-	HierarchyIndex prev_lvl_idx = get_lvl_idx(level - 1);
-	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
-	HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
-
 	typedef cub::BlockScan<int, THREADS_PER_BLOCK> block_scan;
 
 	__shared__ union

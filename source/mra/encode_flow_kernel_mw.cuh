@@ -31,7 +31,9 @@ void encode_flow_kernel_mw
 	bool*             d_sig_details,
 	bool*             d_preflagged_details,
 	Maxes             maxes,
-	SolverParams      solver_params,
+	real              epsilon_local,
+	HierarchyIndex    curr_lvl_idx,
+	HierarchyIndex    next_lvl_idx,
 	int               level,
 	int               num_threads,
 	bool              for_nghbrs

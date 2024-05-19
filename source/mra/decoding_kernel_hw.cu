@@ -7,7 +7,8 @@ void decoding_kernel_hw
 	Details           d_details,
 	ScaleCoefficients d_scale_coeffs,
 	SolverParams      solver_params,
-	int               level,
+	HierarchyIndex    curr_lvl_idx,
+	HierarchyIndex    next_lvl_idx,
 	int               num_threads
 )
 {
@@ -24,9 +25,6 @@ void decoding_kernel_hw
 		HierarchyIndex parents[THREADS_PER_BLOCK];
 
 	} shared;
-
-	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
-	HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
 
 	HierarchyIndex parent_idx = curr_lvl_idx + idx;
 

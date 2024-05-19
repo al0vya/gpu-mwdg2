@@ -18,9 +18,12 @@
 __global__
 void extra_significance_kernel
 (
-	bool*        d_sig_details,
-	real*        d_norm_details,
-	SolverParams solver_params,
-	int          level,
-	int          num_threads
+	bool*          d_sig_details,
+	real*          d_norm_details,
+	real           eps_local,
+	real           eps_extra_sig,
+	HierarchyIndex curr_lvl_idx,
+	HierarchyIndex next_lvl_idx,
+	int            level,
+	int            num_threads
 );

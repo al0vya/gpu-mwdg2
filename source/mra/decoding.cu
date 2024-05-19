@@ -36,8 +36,10 @@ void decoding
 
 	for (int level = LVL_SINGLE_BLOCK; level < solver_params.L; level++)
 	{				
-		int num_threads = 1 << (2 * level);
-		int num_blocks  = get_num_blocks(num_threads, THREADS_PER_BLOCK);
+		int            num_threads  = 1 << (2 * level);
+		int            num_blocks   = get_num_blocks(num_threads, THREADS_PER_BLOCK);
+		HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
+		HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
 
 		if (solver_params.solver_type == HWFV1)
 		{
@@ -47,7 +49,8 @@ void decoding
 				d_details, 
 				d_scale_coeffs, 
 				solver_params, 
-				level, 
+				curr_lvl_idx,
+				next_lvl_idx,
 				num_threads
 			);
 		}
@@ -59,7 +62,8 @@ void decoding
 				d_details, 
 				d_scale_coeffs, 
 				solver_params, 
-				level, 
+				curr_lvl_idx,
+				next_lvl_idx,
 				num_threads
 			);
 		}
