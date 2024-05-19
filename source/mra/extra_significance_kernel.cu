@@ -19,11 +19,11 @@ void extra_significance_kernel
 	HierarchyIndex parent_idx   = curr_lvl_idx + idx;
 	HierarchyIndex child_idx    = next_lvl_idx + 4 * idx;
 
-	real eps_local = ( solver_params.epsilon > C(0.0) ) 
-		                 ? solver_params.epsilon / ( 1 << (solver_params.L - level) )
-						 : C(9999.0);
+	real eps_local = solver_params.epsilon / ( 1 << (solver_params.L - level) );
 
-	real eps_extra_sig = eps_local * pow(C(2.0), M_BAR + 1);
+	real eps_extra_sig = ( solver_params.epsilon > C(0.0) ) 
+		                 ? eps_local * pow(C(2.0), M_BAR + 1)
+						 : C(9999.0);
 
 	bool sig_detail  = d_sig_details[parent_idx];
 	real norm_detail = d_norm_details[parent_idx];

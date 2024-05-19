@@ -31,7 +31,7 @@ void encode_flow_kernel_hw
 	bool*             d_sig_details,
 	bool*             d_preflagged_details,
 	Maxes             maxes,
-	SolverParams      solver_params,
+	real              epsilon_local,
 	int               level,
 	int               num_threads
 );

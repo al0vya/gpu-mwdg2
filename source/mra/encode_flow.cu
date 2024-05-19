@@ -17,9 +17,12 @@ void encode_flow
 	
 	for (int level = solver_params.L - 1; level >= LVL_SINGLE_BLOCK; level--)
 	{
-	    int num_threads = 1 << (2 * level);
-		int num_blocks  = get_num_blocks(num_threads, THREADS_PER_BLOCK);
-		
+	    int  num_threads   = 1 << (2 * level);
+		int  num_blocks    = get_num_blocks(num_threads, THREADS_PER_BLOCK);
+		real epsilon_local = ( solver_params.epsilon > C(0.0) ) 
+		                     ? solver_params.epsilon / ( 1 << (solver_params.L - level) )
+						     : C(9999.0);
+
 		if (solver_params.solver_type == HWFV1)
 		{
 			encode_flow_kernel_hw<<<num_blocks, THREADS_PER_BLOCK>>>
@@ -30,7 +33,7 @@ void encode_flow
 				d_sig_details,
 				d_preflagged_details,
 				maxes,
-				solver_params,
+				epsilon_local,
 				level,
 				num_threads
 			);

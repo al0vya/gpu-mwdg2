@@ -30,7 +30,7 @@ void encode_flow_kernel_hw
 	bool*             d_sig_details,
 	bool*             d_preflagged_details,
 	Maxes             maxes,
-	SolverParams      solver_params,
+	real              epsilon_local,
 	int               level,
 	int               num_threads
 )
@@ -41,10 +41,7 @@ void encode_flow_kernel_hw
 	if (idx >= num_threads) return;
 	
 	real norm_detail   = C(0.0);
-	real epsilon_local = ( solver_params.epsilon > C(0.0) ) 
-		                 ? solver_params.epsilon / ( 1 << (solver_params.L - level) )
-						 : C(9999.0);
-
+	
 	HierarchyIndex prev_lvl_idx = get_lvl_idx(level - 1);
 	HierarchyIndex curr_lvl_idx = get_lvl_idx(level);
 	HierarchyIndex next_lvl_idx = get_lvl_idx(level + 1);
