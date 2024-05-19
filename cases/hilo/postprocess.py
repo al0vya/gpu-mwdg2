@@ -244,10 +244,10 @@ def plot_speedups():
         
         time_hrs = cumu_df['simtime'] / 3600 + 7
         wet_cells    = cumu_df['num_wet_cells']    / unif_cumu_df['num_wet_cells']
-        rel_dg2      = cumu_df['inst_time_solver'] / unif_cumu_df['inst_time_solver']
-        rel_mra      = cumu_df['inst_time_mra']    / unif_cumu_df['inst_time_solver']
+        rel_dg2      = cumu_df['inst_time_solver'] / (unif_cumu_df['inst_time_solver'] + unif_cumu_df['inst_time_mra'])
+        rel_mra      = cumu_df['inst_time_mra']    / (unif_cumu_df['inst_time_solver'] + unif_cumu_df['inst_time_mra'])
         inst_speedup = 1 / (rel_dg2 + rel_mra)
-        speedup      = unif_cumu_df['cumu_time_solver'] / cumu_df['runtime_total']
+        speedup      = unif_cumu_df['runtime_total'] / cumu_df['runtime_total']
         
         ax_wet_cells.plot   (time_hrs, 100 * wet_cells,             linewidth=lw)
         ax_rel_dg2.plot     (time_hrs, 100 * rel_dg2,               linewidth=lw)
@@ -262,7 +262,7 @@ def plot_speedups():
     
     ax_dt.plot       (time_hrs, unif_cumu_df['dt'],               linewidth=lw)
     ax_num_tstep.plot(time_hrs, unif_cumu_df['num_timesteps'],    linewidth=lw)
-    ax_total.plot    (time_hrs, unif_cumu_df['cumu_time_solver'] / 60, linewidth=lw)
+    ax_total.plot    (time_hrs, unif_cumu_df['runtime_total'] / 60, linewidth=lw)
     
     num_yticks = 5
     num_xticks = 5

@@ -430,11 +430,11 @@ def plot_speedups(
         
         cumu_df = pd.read_csv(os.path.join(dirroot, 'res.cumu'))[1:]
         
-        wet_cells    = cumu_df['num_wet_cells']    / unif_cumu_df['num_wet_cells']
-        rel_dg2      = cumu_df['inst_time_solver'] / unif_cumu_df['inst_time_solver']
-        rel_mra      = cumu_df['inst_time_mra']    / unif_cumu_df['inst_time_solver']
+        wet_cells    = cumu_df['num_cells']    / unif_cumu_df['num_cells']
+        rel_dg2      = cumu_df['inst_time_solver'] / (unif_cumu_df['inst_time_solver'] + unif_cumu_df['inst_time_mra'])
+        rel_mra      = cumu_df['inst_time_mra']    / (unif_cumu_df['inst_time_solver'] + unif_cumu_df['inst_time_mra'])
         inst_speedup = 1 / (rel_dg2 + rel_mra)
-        speedup      = unif_cumu_df['cumu_time_solver'] / cumu_df['runtime_total']
+        speedup      = unif_cumu_df['runtime_total'] / cumu_df['runtime_total']
         
         ax_wet_cells.plot   (cumu_df['simtime'], 100 * wet_cells,             linewidth=lw)
         ax_rel_dg2.plot     (cumu_df['simtime'], 100 * rel_dg2,               linewidth=lw)
@@ -449,7 +449,7 @@ def plot_speedups(
         
     ax_dt.plot       (unif_cumu_df['simtime'], unif_cumu_df['dt'],               linewidth=lw)
     ax_num_tstep.plot(unif_cumu_df['simtime'], unif_cumu_df['num_timesteps'],    linewidth=lw)
-    ax_total.plot    (unif_cumu_df['simtime'], unif_cumu_df['cumu_time_solver'], linewidth=lw)
+    ax_total.plot    (unif_cumu_df['simtime'], unif_cumu_df['runtime_total'], linewidth=lw)
     
     num_yticks = 5
     num_xticks = 5
